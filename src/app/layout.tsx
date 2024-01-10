@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
+import React, { useState } from 'react'
+import Link from 'next/link'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -16,7 +19,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <header className="bg-gray-800 text-white p-4">
+          <nav className="container mx-auto flex justify-between">
+            <div>
+              <Link href="/household">
+                Household
+              </Link>
+            </div>
+          </nav>
+        </header>
+        {children}
+      </body>
     </html>
   )
 }
