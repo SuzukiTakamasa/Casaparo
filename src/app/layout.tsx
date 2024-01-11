@@ -21,10 +21,27 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <header className="bg-gray-800 text-white p-4">
-          <nav className="container mx-auto flex justify-between">
-            <div>
+          <nav className="flex justify-between">
+            <div className="flex flex-row">
+              <Link href="/">
+                CASAPARO
+              </Link>
+            </div>
+            <div className="flex space-x-4 ml-auto">
               <Link href="/household">
                 Household
+              </Link>
+              <Link href="/schedule">
+                Schedule
+              </Link>
+              <Link href="/statistics">
+                Statistics
+              </Link>
+              <Link href="/wiki">
+                Wiki
+              </Link>
+              <Link href="/setting">
+                Setting
               </Link>
             </div>
           </nav>
