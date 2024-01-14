@@ -1,17 +1,16 @@
 "use client"
 
 import React, {useState, useEffect} from "react"
+import YearPicker from "../components/YearPicker"
 import {HouseholdData} from "../utils/constants"
 
 const Household = () => {
-    const [year, setYear] = useState(new Date().getFullYear())
-    const [month, setMonth] = useState(new Date().getMonth())
-
     const [showDialog, setShowDialog] = useState(false)
 
     const [households, setHouseholds] = useState<HouseholdData[]>([])
     const [newItemName, setNewItemName] = useState("")
     const [newAmount, setNewAmount] = useState("")
+    const [isDefault, setIsDefault] = useState(false)
     const [billingAmount, setBillingAmount] = useState(0)
 
     const handleAddHousehold = () => {
@@ -39,6 +38,8 @@ const Household = () => {
     return (
     <>
         <h1 className="text-2xl font-bold mc-4">Household</h1>
+
+        <YearPicker />
 
         <div className="container mx-auto p-4">
             <button
