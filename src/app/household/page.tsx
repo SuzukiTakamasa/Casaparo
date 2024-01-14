@@ -23,6 +23,9 @@ const Household = () => {
         setNewItemName("")
         setNewAmount("")
     }
+    const handleSetIsDefault = () => {
+        setIsDefault(!isDefault)
+    }
     const calculateBillingAmount = () => {
         let balance = 0
         households.forEach((household, i) => {
@@ -32,7 +35,7 @@ const Household = () => {
     }
 
     useEffect(() => {
-
+        calculateBillingAmount()
     }, [])
 
     return (
@@ -67,6 +70,14 @@ const Household = () => {
                                 value={newAmount}
                                 onChange={(e) => setNewAmount(e.target.value)}
                             />
+                            <label className="flex items-center space-x-2 text-black">
+                                <input
+                                    type="checkbox"
+                                    checked={isDefault}
+                                    onChange={handleSetIsDefault}            
+                                />
+                                <span>デフォルト値に設定</span>
+                            </label>
                         </div>
                         <div className="flex justify-end space-x-4">
                         <button
@@ -96,14 +107,14 @@ const Household = () => {
                     {households.map((household, i) => (
                         <tr key={i}>
                             <td className="border px-4 py-2">{household.name}</td>
-                            <td className="border px-4 py-2">{household.amount}</td>
+                            <td className="border px-4 py-2 text-right">{household.amount}</td>
                             <td className="border px-4 py-2">{household.user}</td>
                         </tr>
                     ))}
                 </tbody>
                 <tfoot>
-                    <td className="border px-4 py-2 text-right font-bold">合計金額</td>
-                    <td className="border px-4 py-2">{billingAmount}</td>
+                    <td className="border px-4 py-2 text-center font-bold">請求金額</td>
+                    <td className="border px-4 py-2 text-right">{billingAmount}</td>
                 </tfoot>
             </table>
         </div>
