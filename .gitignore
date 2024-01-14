@@ -38,6 +38,7 @@ next-env.d.ts
 
 # api-server
 /api-server/.env
+/api-server/node_modules/
 
 # line-bot-server
 /line-bot-server/node_modules/

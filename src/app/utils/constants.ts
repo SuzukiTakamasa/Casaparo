@@ -2,6 +2,8 @@
 export interface HouseholdData {
     name: string,
     amount: number,
+    year: number,
+    month: number
     user?: string,
     user_id?: number,
     is_owner: number

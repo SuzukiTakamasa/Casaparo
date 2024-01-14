@@ -4,7 +4,11 @@ import React, {useState, useEffect} from "react"
 import {HouseholdData} from "../utils/constants"
 
 const Household = () => {
+    const [year, setYear] = useState(new Date().getFullYear())
+    const [month, setMonth] = useState(new Date().getMonth())
+
     const [showDialog, setShowDialog] = useState(false)
+
     const [households, setHouseholds] = useState<HouseholdData[]>([])
     const [newItemName, setNewItemName] = useState("")
     const [newAmount, setNewAmount] = useState("")
