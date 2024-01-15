@@ -4,6 +4,7 @@ export interface HouseholdData {
     amount: number,
     year: number,
     month: number
+    is_deafult: number
     user?: string,
     user_id?: number,
     is_owner: number

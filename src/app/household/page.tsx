@@ -28,7 +28,7 @@ const Household = () => {
     }
     const calculateBillingAmount = () => {
         let balance = 0
-        households.forEach((household, i) => {
+        households.forEach((household, _) => {
             household.is_owner ? balance += household.amount : balance -= household.amount
         })
         setBillingAmount(balance)
