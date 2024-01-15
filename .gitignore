@@ -40,6 +40,9 @@ next-env.d.ts
 /api-server/.env
 /api-server/node_modules/
 
+# api-server-wasm
+/api-server-wasm/target/
+
 # line-bot-server
 /line-bot-server/node_modules/
 
