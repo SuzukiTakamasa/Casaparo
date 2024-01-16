@@ -1,7 +1,12 @@
 "use client"
 
 import React, {useState, useEffect} from "react"
+
 import YearPicker from "../components/YearPicker"
+
+import {MonthProvider} from '../components/MonthPaginator'
+import MonthPaginator from '../components/MonthPaginator'
+
 import {HouseholdData} from "../utils/constants"
 
 const Household = () => {
@@ -118,6 +123,9 @@ const Household = () => {
                 </tfoot>
             </table>
         </div>
+
+        <MonthPaginator />
+        
     </>
     )
 }
