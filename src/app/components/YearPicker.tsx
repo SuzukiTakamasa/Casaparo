@@ -1,6 +1,6 @@
 import {createContext, useContext, useState, ReactNode} from 'react'
 
-type YearContextType  = {
+export type YearContextType  = {
     year: number,
     setYear: (year: number) => void
 }
@@ -9,10 +9,14 @@ type YearProviderProps = {
     children: ReactNode
 }
 
-const YearContext = createContext<YearContextType | undefined>(undefined)
-
 const currentYear = new Date().getFullYear()
 const lastYear = currentYear - 1
+const defaultYearContext: YearContextType = {
+    year: currentYear,
+    setYear: () => {}
+}
+
+export const YearContext = createContext<YearContextType>(defaultYearContext)
 
 export const YearProvider = ({ children }: YearProviderProps) => {
     const [year, setYear] = useState(currentYear)
@@ -24,7 +28,7 @@ export const YearProvider = ({ children }: YearProviderProps) => {
     )
 }
 
-const YearComponent = () => {
+const YearPicker = () => {
     const {year, setYear} = useContext(YearContext) as YearContextType
 
     return (
@@ -38,14 +42,6 @@ const YearComponent = () => {
                 <option value={currentYear}>{currentYear}</option>
             </select>
         </div>
-    )
-}
-
-const YearPicker = () => {
-    return (
-    <YearProvider>
-        <YearComponent />
-    </YearProvider>
     )
 }
 

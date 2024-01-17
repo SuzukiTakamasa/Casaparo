@@ -1,11 +1,12 @@
 "use client"
 
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useContext} from "react"
 
+import {YearProvider} from "../components/YearPicker"
 import YearPicker from "../components/YearPicker"
 
-import {MonthProvider} from '../components/MonthPaginator'
-import MonthPaginator from '../components/MonthPaginator'
+import {MonthProvider} from "../components/MonthPaginator"
+import MonthPaginator from "../components/MonthPaginator"
 
 import {HouseholdData} from "../utils/constants"
 
@@ -44,10 +45,12 @@ const Household = () => {
     }, [])
 
     return (
-    <>
+    <MonthProvider>
         <h1 className="text-2xl font-bold mc-4">Household</h1>
 
-        <YearPicker />
+        <YearProvider>
+            <YearPicker />
+        </YearProvider>
 
         <div className="container mx-auto p-4">
             <button
@@ -125,8 +128,7 @@ const Household = () => {
         </div>
 
         <MonthPaginator />
-        
-    </>
+    </MonthProvider>
     )
 }
 

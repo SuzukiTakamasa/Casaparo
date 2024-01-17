@@ -1,6 +1,6 @@
 import {createContext, useContext, useState, ReactNode} from 'react'
 
-type MonthContextType  = {
+export type MonthContextType  = {
     month: number,
     handleMonthIncrement: () => void
     handleMonthDecrement: () => void
@@ -10,9 +10,14 @@ type MonthProviderProps = {
     children: ReactNode
 }
 
-const MonthContext = createContext<MonthContextType | undefined>(undefined)
+const currentMonth = new Date().getMonth() + 1
+const defaultMonthContext: MonthContextType = {
+    month: currentMonth,
+    handleMonthIncrement: () => {},
+    handleMonthDecrement: () => {},
+}
 
-const currentMonth = new Date().getMonth()
+export const MonthContext = createContext<MonthContextType>(defaultMonthContext)
 
 export const MonthProvider = ({ children }: MonthProviderProps) => {
     const [month, setMonth] = useState(currentMonth)
@@ -32,7 +37,7 @@ export const MonthProvider = ({ children }: MonthProviderProps) => {
     )
 }
 
-const MonthComponent = () => {
+export const MonthPaginator = () => {
     const {month, handleMonthIncrement, handleMonthDecrement} = useContext(MonthContext) as MonthContextType
 
     return (
@@ -52,14 +57,6 @@ const MonthComponent = () => {
                 {month < 12 ? `${month + 1}月の家計簿` : `-`}
             </button>
         </div>
-    )
-}
-
-const MonthPaginator = () => {
-    return (
-        <MonthProvider>
-            <MonthComponent />
-        </MonthProvider>
     )
 }
 
