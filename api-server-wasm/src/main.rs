@@ -1,4 +1,7 @@
+//use worker::*;
+//use serde_json::from_str;
 
-fn main() {
-    println!("This is WASM API server");
+//use database::database_scheme::*;
+pub fn main() {
+
 }
