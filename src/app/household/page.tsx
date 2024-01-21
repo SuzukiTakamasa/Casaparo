@@ -17,6 +17,7 @@ const Household = () => {
     const [newItemName, setNewItemName] = useState("")
     const [newAmount, setNewAmount] = useState("")
     const [isDefault, setIsDefault] = useState(false)
+    const [isOwner, setIsOwner] = useState(false)
     const [billingAmount, setBillingAmount] = useState(0)
 
     const handleAddHousehold = () => {
@@ -31,6 +32,9 @@ const Household = () => {
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)
+    }
+    const handleSetIsOwner = () => {
+        setIsOwner(!isOwner)
     }
     const calculateBillingAmount = () => {
         let balance = 0
@@ -85,6 +89,14 @@ const Household = () => {
                                     onChange={handleSetIsDefault}            
                                 />
                                 <span>デフォルト値に設定</span>
+                            </label>
+                            <label className="flex items-center space-x-2 text-black">
+                                <input
+                                    type="checkbox"
+                                    checked={isOwner}
+                                    onChange={handleSetIsOwner}            
+                                />
+                                <span>オーナーとして登録</span>
                             </label>
                         </div>
                         <div className="flex justify-end space-x-4">

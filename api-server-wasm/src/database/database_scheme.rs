@@ -6,13 +6,7 @@ pub struct Households {
     amount: u32,
     year: u16,
     month: u8,
-    is_default: u8
-}
-
-#[derive(Deserialize, Serialize)]
-pub struct Users {
-    name: String,
-    session_id: String,
+    is_default: u8,
     is_owner: u8
 }
 
@@ -26,3 +20,12 @@ pub struct Schedules {
     from_time: Datetime<Local>,
     to_time: Datetime<Local>
 }
+
+/*
+#[derive(Deserialize, Serialize)]
+pub struct Users {
+    name: String,
+    session_id: String,
+    is_owner: u8
+}
+*/
