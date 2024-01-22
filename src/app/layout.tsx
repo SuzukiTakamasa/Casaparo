@@ -6,6 +6,9 @@ import './globals.css'
 import React, { useState } from 'react'
 import Link from 'next/link'
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faHouse, faCalendar, faChartBar, faBook, faCog } from '@fortawesome/free-solid-svg-icons'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
@@ -26,18 +29,23 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
             </button>
             <div className={`absolute inset-y-0 left-0 transform ${menuVisible ? 'translate-x-0' : '-translate-x-full'} w-64 bg-gray-800 transition duration-300 ease-in-out top-12`}>
               <Link href="/household" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
+                <FontAwesomeIcon icon={faHouse} style={{ marginRight: '8px'}} />
                 Household
               </Link>
               <Link href="/schedule" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
+                <FontAwesomeIcon icon={faCalendar} style={{ marginRight: '8px'}} />
                 Schedule
               </Link>
               <Link href="/statistics" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
+                <FontAwesomeIcon icon={faChartBar} style={{ marginRight: '8px'}} />
                 Statistics
               </Link>
               <Link href="/wiki" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
+                <FontAwesomeIcon icon={faBook} style={{ marginRight: '8px'}} />
                 Wiki
               </Link>
               <Link href="/setting" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
+              <FontAwesomeIcon icon={faCog} style={{ marginRight: '8px'}} />
                 Setting
               </Link>
             </div>
