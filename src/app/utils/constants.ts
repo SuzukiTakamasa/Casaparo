@@ -5,12 +5,25 @@ export interface HouseholdData {
     year: number,
     month: number
     is_deafult: number
-    user?: string,
-    user_id?: number,
     is_owner: number
 }
 
-export interface UserData {
-    name: string,
-    is_owner: number
+export interface ScheduleData {
+    description: string,
+    year: number,
+    month: number,
+    date: number,
+    from_time: string,
+    to_time: string
 }
+
+export interface HouseholdResponse {
+    households: HouseholdData[]
+}
+
+export interface ScheduleResponse {
+    schedules: ScheduleData[]
+}
+
+export type APIRequest = HouseholdData | ScheduleData
+export type APIResponse = HouseholdResponse | ScheduleResponse
