@@ -120,7 +120,6 @@ const Household = () => {
                     <tr>
                         <th className="border px-4 py-2">項目名</th>
                         <th className="border px-4 py-2">金額</th>
-                        <th className="border px-4 py-2">登録者</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -128,7 +127,6 @@ const Household = () => {
                         <tr key={i}>
                             <td className="border px-4 py-2">{household.name}</td>
                             <td className="border px-4 py-2 text-right">{household.amount}</td>
-                            <td className="border px-4 py-2">{household.user}</td>
                         </tr>
                     ))}
                 </tbody>
