@@ -14,7 +14,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let statement = d1.prepare("select * from households where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = query.all().await?;
-            Response::from_json(&result.results::<models::Household>().unwrap())
+            Response::from_json(&result.results::<models::Households>().unwrap())
         })
         .get_async("/schedule", |_, ctx| async move {
             let year = ctx.param("year").unwrap();
@@ -23,11 +23,11 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let statement = d1.prepare("select * from schedules where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = query.all().await?;
-            Response::from_json(&result.results::<models::Schedule>().unwrap())
+            Response::from_json(&result.results::<models::Schedules>().unwrap())
         })
         .post_async("/household/create", |mut req, ctx| async move {
             let json_body = req.text().await?;
-            let household: models::Household = from_str(json_body.as_str()).unwrap();
+            let household: models::Households = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB")?;
             let statement = d1.prepare("insert into households (name, amount, year, month, is_default, is_owner, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
@@ -44,7 +44,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/schedule/create", |mut req, ctx| async move {
             let json_body = req.text().await?;
-            let schedule: models::Schedule = from_str(json_body.as_str()).unwrap();
+            let schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB")?;
             let statement = d1.prepare("insert into schedules (description, year, month, date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");

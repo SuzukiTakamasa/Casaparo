@@ -1,0 +1,11 @@
+DROP TABLE IF EXISTS households;
+CREATE TABLE households (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    amount INTEGER NOT NULL,
+    year INTEGER NOT NULL,
+    month INTEGER NOT NULL,
+    is_default BOOLEAN NOT NULL,
+    is_owner BOOLEAN NOT NULL,
+    version INTEGER NOT NULL
+);

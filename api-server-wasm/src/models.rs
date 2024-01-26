@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Household {
+pub struct Households {
+    pub id: Option<u32>,
     pub name: String,
     pub amount: u32,
     pub year: u16,
@@ -12,7 +13,8 @@ pub struct Household {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Schedule {
+pub struct Schedules {
+    pub id: Option<u32>,
     pub description: String,
     pub year: u16,
     pub month: u8,
