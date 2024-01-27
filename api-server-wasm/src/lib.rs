@@ -60,7 +60,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 return Response::error("Failed to fetch version", 500);
             }
             let statement = d1.prepare("update households set name = ?1, amount = ?2, version = ?3 where id = ?4");
-            let query = statement.bind(&[household.name.into(), household.amount.into(), household.version.into(), household.id.into()])?;
+            let query = statement.bind(&[household.name.into(),
+                                                              household.amount.into(),
+                                                              household.version.into(),
+                                                              household.id.into()])?;
             let result = query.run().await?;
             console_log!("{:?}", result.success());
             Response::ok("Household data was updated.")
@@ -100,7 +103,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 return Response::error("Failed to fetch version", 500);
             }
             let statement = d1.prepare("update schedules set description = ?1, from_time = ?2, to_time = ?3 where id = ?4");
-            let query = statement.bind(&[schedule.description.into(), schedule.from_time.into(), schedule.to_time.into(), schedule.id.into()])?;
+            let query = statement.bind(&[schedule.description.into(),
+                                                              schedule.from_time.into(),
+                                                              schedule.to_time.into(),
+                                                              schedule.id.into()])?;
             let result = query.run().await?;
             console_log!("{:?}", result.success());
             Response::ok("Schedue data was updated.")
