@@ -1,5 +1,6 @@
 
 export interface HouseholdData {
+    id: number,
     name: string,
     amount: number,
     year: number,
@@ -9,6 +10,7 @@ export interface HouseholdData {
 }
 
 export interface ScheduleData {
+    id: number,
     description: string,
     year: number,
     month: number,

@@ -40,7 +40,30 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               household.version.into()])?;
             let result = query.run().await?;
             console_log!("{:?}", result.success());
-            Response::ok("household data was created.")
+            Response::ok("Household data was created.")
+        })
+        .post_async("/household/update", |mut req, ctx| async move {
+            let json_body = req.text().await?;
+            let mut household: models::Households = from_str(json_body.as_str()).unwrap();
+
+            let d1 = ctx.env.d1("DB")?;
+            let fetch_version_statement = d1.prepare("select version from households where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
+            let fetch_version_result = fetch_version_query.first::<models::Households>(None).await?;
+            if let Some(latest) = fetch_version_result {
+                if household.version == latest.version {
+                    household.version += 1;
+                } else {
+                    return Response::error("Stale object error", 500);
+                }
+            } else {
+                return Response::error("Failed to fetch version", 500);
+            }
+            let statement = d1.prepare("update households set name = ?1, amount = ?2, version = ?3 where id = ?4");
+            let query = statement.bind(&[household.name.into(), household.amount.into(), household.version.into(), household.id.into()])?;
+            let result = query.run().await?;
+            console_log!("{:?}", result.success());
+            Response::ok("Household data was updated.")
         })
         .post_async("/schedule/create", |mut req, ctx| async move {
             let json_body = req.text().await?;
@@ -57,7 +80,30 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               schedule.version.into()])?;
             let result = query.run().await?;
             console_log!("{:?}", result.success());
-            Response::ok("schedule data was created.")
+            Response::ok("Schedule data was created.")
+        })
+        .post_async("/schedule/update", |mut req, ctx| async move {
+            let json_body = req.text().await?;
+            let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
+
+            let d1 = ctx.env.d1("DB")?;
+            let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
+            let fetch_version_result = fetch_version_query.first::<models::Schedules>(None).await?;
+            if let Some(latest) = fetch_version_result {
+                if schedule.version == latest.version {
+                    schedule.version += 1
+                } else {
+                    return Response::error("Stale object error", 500);
+                }
+            } else {
+                return Response::error("Failed to fetch version", 500);
+            }
+            let statement = d1.prepare("update schedles set description = ?1, from_time = ?2, to_time = ?3 where id = ?4");
+            let query = statement.bind(&[schedule.description.into(), schedule.from_time.into(), schedule.to_time.into(), schedule.id.into()])?;
+            let result = query.run().await?;
+            console_log!("{:?}", result.success());
+            Response::ok("Schedue data was updated.")
         })
     .run(req, env)
     .await
