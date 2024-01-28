@@ -9,6 +9,11 @@ import {MonthProvider} from "../components/MonthPaginator"
 import MonthPaginator from "../components/MonthPaginator"
 
 import {HouseholdData} from "../utils/constants"
+import APIClient from "../utils/api_client"
+
+
+const api_client = new APIClient()
+
 
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)

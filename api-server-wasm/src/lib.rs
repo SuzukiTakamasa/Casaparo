@@ -54,10 +54,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 if household.version == latest.version {
                     household.version += 1;
                 } else {
-                    return Response::error("Stale object error", 500);
+                    return Response::error("Attempt to update a stale object", 500)
                 }
             } else {
-                return Response::error("Failed to fetch version", 500);
+                return Response::error("Failed to fetch version", 500)
             }
             let statement = d1.prepare("update households set name = ?1, amount = ?2, version = ?3 where id = ?4");
             let query = statement.bind(&[household.name.into(),
@@ -67,6 +67,29 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let result = query.run().await?;
             console_log!("{:?}", result.success());
             Response::ok("Household data was updated.")
+        })
+        .post_async("/household/delete", |mut req, ctx| async move {
+            let json_body = req.text().await?;
+            let mut household: models::Households = from_str(json_body.as_str()).unwrap();
+
+            let d1 = ctx.env.d1("DB")?;
+            let fetch_version_statement = d1.prepare("select version from households where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
+            let fetch_version_result = fetch_version_query.first::<models::Households>(None).await?;
+            if let Some(latest) = fetch_version_result {
+                if household.version == latest.version {
+                    household.version += 1;
+                } else {
+                    return Response::error("Attempt tp update a stale object", 500)
+                }
+            } else {
+                return Response::error("Failed to fetch version", 500)
+            }
+            let statement = d1.prepare("delete from households where id = ?1");
+            let query = statement.bind(&[household.id.into()])?;
+            let result = query.run().await?;
+            console_log!("{:?}", result.success());
+            Response::ok("Household data was deleted.")
         })
         .post_async("/schedule/create", |mut req, ctx| async move {
             let json_body = req.text().await?;
@@ -97,7 +120,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 if schedule.version == latest.version {
                     schedule.version += 1
                 } else {
-                    return Response::error("Stale object error", 500);
+                    return Response::error("Attempt to update a stale object", 500);
                 }
             } else {
                 return Response::error("Failed to fetch version", 500);
@@ -110,6 +133,29 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let result = query.run().await?;
             console_log!("{:?}", result.success());
             Response::ok("Schedue data was updated.")
+        })
+        .post_async("/schedule/delete", |mut req, ctx| async move {
+            let json_body = req.text().await?;
+            let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
+
+            let d1 = ctx.env.d1("DB")?;
+            let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
+            let fetch_version_result = fetch_version_query.first::<models::Schedules>(None).await?;
+            if let Some(latest) = fetch_version_result {
+                if schedule.version == latest.version {
+                    schedule.version += 1
+                } else {
+                    return Response::error("Attempt tp update a stale object", 500);
+                }
+            } else {
+                return Response::error("Failed to fetch version", 500);
+            }
+            let statement = d1.prepare("delete from schedules where id = ?1");
+            let query = statement.bind(&[schedule.id.into()])?;
+            let result = query.run().await?;
+            console_log!("{:?}", result.success());
+            Response::ok("Shcedule data was deleted.")
         })
     .run(req, env)
     .await
