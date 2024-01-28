@@ -42,6 +42,8 @@ next-env.d.ts
 
 # api-server-wasm
 /api-server-wasm/target/
+/api-server-wasm/node_modules/
+/api-server-wasm/.wrangler/
 
 # line-bot-server
 /line-bot-server/node_modules/

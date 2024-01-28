@@ -1,4 +1,4 @@
-DROP TABLE schedules IF EXISTS schedules;
+DROP TABLE IF EXISTS schedules;
 CREATE TABLE schedules (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     description TEXT NOT NULL,
