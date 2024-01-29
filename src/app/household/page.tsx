@@ -23,6 +23,7 @@ const Household = () => {
     const [newAmount, setNewAmount] = useState("")
     const [isDefault, setIsDefault] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
+    const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
 
     const handleAddHousehold = () => {
