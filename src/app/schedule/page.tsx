@@ -1,26 +1,16 @@
 "use client"
 
 import React, {useState} from 'react'
-import LineChartComponent from '../components/Chart'
 
 const Schedule = () => {
-    const [monthlyHousehold, setMonthlyHousehold] = useState(0)
-
-    const monthlyHouseholdChartData = {
-        label: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-        datasets: []
-    }
-    const options = {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
+    const [description, setDescription] = useState("")
+    const [date, setDate] = useState("")
+    const [fromTime, setFromTime] = useState("")
+    const [toTime, setToTime] = useState("")
+    const [version, setVersion] = useState(1)
 
     return (
         <>
-            
         </>
     )
 }

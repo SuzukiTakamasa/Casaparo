@@ -1,8 +1,10 @@
 import React from 'react'
 
 const Setting = () => {
-    return (<>
-            </>)
+    return (
+        <>
+        </>
+    )
 }
 
 export default Setting
