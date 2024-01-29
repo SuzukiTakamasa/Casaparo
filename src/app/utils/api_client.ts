@@ -5,7 +5,7 @@ class APIClient {
     private headers: {[key: string]: string}
 
     constructor() {
-        this.host = process.env.BACKEND_HOST_NAME || 'localhost'
+        this.host = process.env.BACKEND_HOST_NAME || 'localhost:8787'
         this.headers = {
             'Content-Type': 'application/json'
         }
