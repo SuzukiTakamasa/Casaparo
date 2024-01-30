@@ -1,6 +1,5 @@
 use worker::*;
 use serde_json::from_str;
-use std::collections::HashMap;
 
 mod models;
 
@@ -8,45 +7,40 @@ mod models;
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     Router::new()
-        .get_async("/household", |req, ctx| async move {
-            let url = req.url()?;
-            let query = match url.query() {
-                Some(q) => q,
-                None => return Response::error("Bad Request", 400)
-            };
-            let params = match serde_urlencoded::from_str::<HashMap<String, String>>(&query) {
-                Ok(p) => p,
-                Err(_) => return Response::error("Failed to parse query params", 400)
-            };
-
-            let year = params.get("year").unwrap().to_string();
-            let month = params.get("month").unwrap().to_string();
+        .get_async("/health", |_, _| async move {
+            Response::ok("Healthcheck ok")
+        })
+        .get_async("/household/:year/:month", |_, ctx| async move {
+            let year = ctx.param("year").unwrap();
+            let month = ctx.param("month").unwrap();
             
             let d1 = ctx.env.d1("DB")?;
             let statement = d1.prepare("select * from households where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
-            let result = query.all().await?;
-            Response::from_json(&result.results::<models::Households>().unwrap())
+            let result = match query.all().await {
+                Ok(res) => res,
+                Err(_) => return Response::error("Query failed", 500)
+            };
+            match result.results::<models::Households>() {
+                Ok(households) => Response::from_json(&households),
+                Err(_) => Response::error("Error parsing results", 500) 
+            }
         })
-        .get_async("/schedule", |req, ctx| async move {
-            let url = req.url()?;
-            let query = match url.query() {
-                Some(q) => q,
-                None => return Response::error("Bad Request", 400)
-            };
-            let params = match serde_urlencoded::from_str::<HashMap<String, String>>(&query) {
-                Ok(p) => p,
-                Err(_) => return Response::error("Failed to parse query params", 400)
-            };
-
-            let year = params.get("year").unwrap().to_string();
-            let month = params.get("month").unwrap().to_string();
+        .get_async("/schedule/:year/:month", |_, ctx| async move {
+            let year = ctx.param("year").unwrap();
+            let month = ctx.param("month").unwrap();
             
             let d1 = ctx.env.d1("DB")?;
             let statement = d1.prepare("select * from schedules where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
-            let result = query.all().await?;
-            Response::from_json(&result.results::<models::Schedules>().unwrap())
+            let result = match query.all().await {
+                Ok(res) => res,
+                Err(_) => return Response::error("Query failed", 500)
+            };
+            match result.results::<models::Schedules>() {
+                Ok(schedules) => Response::from_json(&schedules),
+                Err(_) => Response::error("Error parsing results", 500) 
+            }
         })
         .post_async("/household/create", |mut req, ctx| async move {
             let json_body = req.text().await?;
