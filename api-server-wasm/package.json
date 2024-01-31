@@ -4,7 +4,8 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev --local"
+		"dev": "wrangler dev --local",
+		"build": "wasm-pack build --target web"
 	},
 	"devDependencies": {
 		"wrangler": "^3.1.2"
