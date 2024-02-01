@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faCalendar, faChartBar, faBook, faCog } from '@fortawesome/free-solid-svg-icons'
 
+
 const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({children}: {children: React.ReactNode}) {

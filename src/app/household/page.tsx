@@ -5,7 +5,7 @@ import React, {useState, useEffect} from "react"
 import {YearProvider} from "../components/YearPicker"
 import YearPicker from "../components/YearPicker"
 
-import {MonthProvider} from "../components/MonthPaginator"
+import {MonthProvider, MonthStrProvider} from "../components/MonthPaginator"
 import MonthPaginator from "../components/MonthPaginator"
 
 import {HouseholdData} from "../utils/constants"
@@ -69,6 +69,8 @@ const Household = () => {
                 >
                 登録
             </button>
+
+            <MonthStrProvider monthStr="月の家計簿" cssStr="text-2xl font-bold mc-4" />
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">

@@ -10,6 +10,11 @@ type MonthProviderProps = {
     children: ReactNode
 }
 
+type MonthStrProps = {
+    monthStr: string,
+    cssStr: string
+}
+
 const currentMonth = new Date().getMonth() + 1
 const defaultMonthContext: MonthContextType = {
     month: currentMonth,
@@ -37,7 +42,16 @@ export const MonthProvider = ({ children }: MonthProviderProps) => {
     )
 }
 
-export const MonthPaginator = () => {
+export const MonthStrProvider = ({monthStr, cssStr}: MonthStrProps) => {
+    const {month} = useContext(MonthContext) as MonthContextType
+    return (
+        <div className={`${cssStr}`}>
+            {month + `${monthStr}`}
+        </div>
+    )
+}
+
+const MonthPaginator = () => {
     const {month, handleMonthIncrement, handleMonthDecrement} = useContext(MonthContext) as MonthContextType
 
     return (
