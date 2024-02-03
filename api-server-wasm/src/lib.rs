@@ -3,6 +3,7 @@ use serde_json::from_str;
 
 mod models;
 
+
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
@@ -14,7 +15,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
             
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let statement = d1.prepare("select * from households where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
@@ -30,7 +31,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
             
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let statement = d1.prepare("select * from schedules where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
@@ -46,7 +47,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let json_body = req.text().await?;
             let household: models::Households = from_str(json_body.as_str()).unwrap();
 
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let statement = d1.prepare("insert into households (name, amount, year, month, is_default, is_owner, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
             let query = statement.bind(&[household.name.into(),
                                                               household.amount.into(),
@@ -63,7 +64,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let json_body = req.text().await?;
             let mut household: models::Households = from_str(json_body.as_str()).unwrap();
 
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
             let fetch_version_result = fetch_version_query.first::<models::Households>(None).await?;
@@ -89,7 +90,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let json_body = req.text().await?;
             let mut household: models::Households = from_str(json_body.as_str()).unwrap();
 
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
             let fetch_version_result = fetch_version_query.first::<models::Households>(None).await?;
@@ -112,7 +113,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let json_body = req.text().await?;
             let schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let statement = d1.prepare("insert into schedules (description, year, month, date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
             let query = statement.bind(&[schedule.description.into(),
                                                               schedule.year.into(),
@@ -129,7 +130,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let json_body = req.text().await?;
             let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
             let fetch_version_result = fetch_version_query.first::<models::Schedules>(None).await?;
@@ -155,7 +156,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let json_body = req.text().await?;
             let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
-            let d1 = ctx.env.d1("DB")?;
+            let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
             let fetch_version_result = fetch_version_query.first::<models::Schedules>(None).await?;

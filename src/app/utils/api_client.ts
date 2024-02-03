@@ -1,13 +1,17 @@
 import {APIRequest, APIResponse} from './constants'
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 
 class APIClient {
     private host: string
     private headers: {[key: string]: string}
 
     constructor() {
-        this.host = process.env.BACKEND_HOST_NAME || 'localhost:8787'
+        this.host = process.env.BACKEND_HOST_NAME as string
         this.headers = {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Environment': process.env.DATABASE_ENVIRONMENT as string
         }
     }
     public async get(endpoint: string, params?: {[key: string]: string}): Promise<APIResponse|null> {
