@@ -9,3 +9,8 @@ command = "cargo install -q worker-build && worker-build --release"
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "casaparo"
 database_id = "9f32bbb8-b727-499f-b323-de1c399466df"
+
+[[d1_databases]]
+binding = "DB_DEV" # i.e. available in your Worker on env.DB
+database_name = "casaparo-dev"
+database_id = "14a0d526-a91e-44da-861c-2bd2e2a54b3b"
