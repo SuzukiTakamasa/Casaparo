@@ -1,11 +1,11 @@
 "use client"
 
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, useContext} from "react"
 
-import {YearProvider} from "../components/YearPicker"
+import {YearProvider, YearContext} from "../components/YearPicker"
 import YearPicker from "../components/YearPicker"
 
-import {MonthProvider, MonthStrProvider} from "../components/MonthPaginator"
+import {MonthProvider, MonthStrProvider, MonthContext} from "../components/MonthPaginator"
 import MonthPaginator from "../components/MonthPaginator"
 
 import {HouseholdData} from "../utils/constants"
@@ -25,6 +25,9 @@ const Household = () => {
     const [isOwner, setIsOwner] = useState(false)
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
+
+    const { year } = useContext(YearContext)
+    const { month } = useContext(MonthContext)
 
     const handleAddHousehold = () => {
         setShowDialog(false)
@@ -51,6 +54,7 @@ const Household = () => {
     }
 
     useEffect(() => {
+        const hh = api_client.get(`household/${year}/${month}`)
         calculateBillingAmount()
     }, [])
 

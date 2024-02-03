@@ -14,8 +14,8 @@ class APIClient {
             'Environment': process.env.DATABASE_ENVIRONMENT as string
         }
     }
-    public async get(endpoint: string, params?: {[key: string]: string}): Promise<APIResponse|null> {
-        if (params) endpoint += new URLSearchParams(params).toString()
+    public async get(endpoint: string, params?: string): Promise<APIResponse[]> {
+        if (params) endpoint += params
 
         try {
             const res = await fetch(this.host + endpoint, {
@@ -25,7 +25,7 @@ class APIClient {
             return await res.json()
         } catch (e) {
             console.log(e)
-            return null
+            return []
         }
     }
     public async post(endpoint: string, data: APIRequest): Promise<APIResponse|null> {
