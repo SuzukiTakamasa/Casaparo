@@ -56,7 +56,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             }
         })
         .post_async("/household/create", |mut req, ctx| async move {
-            let json_body = req.text().await?;
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
             let household: models::Households = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
@@ -68,12 +74,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               household.is_default.into(),
                                                               household.is_owner.into(),
                                                               household.version.into()])?;
-            let result = query.run().await?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
             console_log!("{:?}", result.success());
             Response::ok("Household data was created.")
         })
         .post_async("/household/update", |mut req, ctx| async move {
-            let json_body = req.text().await?;
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
             let mut household: models::Households = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
@@ -94,12 +112,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               household.amount.into(),
                                                               household.version.into(),
                                                               household.id.into()])?;
-            let result = query.run().await?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
             console_log!("{:?}", result.success());
             Response::ok("Household data was updated.")
         })
         .post_async("/household/delete", |mut req, ctx| async move {
-            let json_body = req.text().await?;
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
             let mut household: models::Households = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
@@ -117,12 +147,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             }
             let statement = d1.prepare("delete from households where id = ?1");
             let query = statement.bind(&[household.id.into()])?;
-            let result = query.run().await?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
             console_log!("{:?}", result.success());
             Response::ok("Household data was deleted.")
         })
         .post_async("/schedule/create", |mut req, ctx| async move {
-            let json_body = req.text().await?;
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
             let schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
@@ -134,12 +176,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
                                                               schedule.version.into()])?;
-            let result = query.run().await?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
             console_log!("{:?}", result.success());
             Response::ok("Schedule data was created.")
         })
         .post_async("/schedule/update", |mut req, ctx| async move {
-            let json_body = req.text().await?;
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
             let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
@@ -160,12 +214,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
                                                               schedule.id.into()])?;
-            let result = query.run().await?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
             console_log!("{:?}", result.success());
             Response::ok("Schedue data was updated.")
         })
         .post_async("/schedule/delete", |mut req, ctx| async move {
-            let json_body = req.text().await?;
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
             let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
@@ -183,7 +249,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             }
             let statement = d1.prepare("delete from schedules where id = ?1");
             let query = statement.bind(&[schedule.id.into()])?;
-            let result = query.run().await?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
             console_log!("{:?}", result.success());
             Response::ok("Shcedule data was deleted.")
         })

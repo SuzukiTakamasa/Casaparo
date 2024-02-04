@@ -5,8 +5,9 @@ export interface HouseholdData {
     amount: number,
     year: number,
     month: number
-    is_deafult: number
+    is_default: number
     is_owner: number
+    version: number
 }
 
 export interface ScheduleData {
@@ -16,7 +17,8 @@ export interface ScheduleData {
     month: number,
     date: number,
     from_time: string,
-    to_time: string
+    to_time: string,
+    version: number
 }
 
 export type HouseholdResponse = HouseholdData[]
