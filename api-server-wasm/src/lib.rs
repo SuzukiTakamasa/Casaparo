@@ -63,7 +63,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let household: models::Households = from_str(json_body.as_str()).unwrap();
+            let household: models::Households = match from_str(json_body.as_str()) {
+                Ok(household) => household,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
 
             let d1 = ctx.env.d1("DB_DEV")?;
             let statement = d1.prepare("insert into households (name, amount, year, month, is_default, is_owner, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
@@ -92,7 +98,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut household: models::Households = from_str(json_body.as_str()).unwrap();
+            let mut household: models::Households = match from_str(json_body.as_str()) {
+                Ok(household) => household,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
 
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
@@ -130,7 +142,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut household: models::Households = from_str(json_body.as_str()).unwrap();
+            let mut household: models::Households = match from_str(json_body.as_str()) {
+                Ok(household) => household,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
 
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
@@ -165,7 +183,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
+            let schedule: models::Schedules = match from_str(json_body.as_str()) {
+                Ok(schedule) => schedule,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
 
             let d1 = ctx.env.d1("DB_DEV")?;
             let statement = d1.prepare("insert into schedules (description, year, month, date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
@@ -194,7 +218,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
+            let mut schedule: models::Schedules = match from_str(json_body.as_str()) {
+                Ok(schedule) => schedule,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
 
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
@@ -232,7 +262,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut schedule: models::Schedules = from_str(json_body.as_str()).unwrap();
+            let mut schedule: models::Schedules = match from_str(json_body.as_str()) {
+                Ok(schedule) => schedule,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
 
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
