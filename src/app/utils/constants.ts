@@ -5,8 +5,8 @@ export interface HouseholdData {
     amount: number,
     year: number,
     month: number
-    is_default: boolean
-    is_owner: boolean
+    is_default: number
+    is_owner: number
     version: number
 }
 

@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Households {
     pub id: Option<u32>,
@@ -7,8 +8,8 @@ pub struct Households {
     pub amount: u32,
     pub year: u16,
     pub month: u8,
-    pub is_default: bool,
-    pub is_owner: bool,
+    pub is_default: u8,
+    pub is_owner: u8,
     pub version: u32
 }
 

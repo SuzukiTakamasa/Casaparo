@@ -14,6 +14,10 @@ import APIClient from "../utils/api_client"
 
 const api_client = new APIClient()
 
+const boolToInt = (flag: boolean) => {
+    return flag ? 1 : 0
+} 
+
 
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
@@ -61,8 +65,8 @@ const Household = () => {
             amount: newAmount,
             year: year,
             month: month,
-            is_default: isDefault,
-            is_owner: isOwner,
+            is_default: boolToInt(isDefault),
+            is_owner: boolToInt(isOwner),
             version: version
         }
         try {
