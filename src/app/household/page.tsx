@@ -8,7 +8,7 @@ import YearPicker from "../components/YearPicker"
 import {MonthProvider, MonthStrProvider, MonthContext} from "../components/MonthPaginator"
 import MonthPaginator from "../components/MonthPaginator"
 
-import {HouseholdData} from "../utils/constants"
+import {HouseholdResponse} from "../utils/constants"
 import APIClient from "../utils/api_client"
 
 
@@ -18,7 +18,7 @@ const api_client = new APIClient()
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
 
-    const [households, setHouseholds] = useState<HouseholdData[]>([])
+    const [households, setHouseholds] = useState<HouseholdResponse>([])
     const [newItemName, setNewItemName] = useState("")
     const [newAmount, setNewAmount] = useState("")
     const [isDefault, setIsDefault] = useState(false)
@@ -45,6 +45,14 @@ const Household = () => {
     const handleSetIsOwner = () => {
         setIsOwner(!isOwner)
     }
+    const fetchHouseholds = async () => {
+        try {
+            const hh = await api_client.get<HouseholdResponse>(`household/${year}/${month}`)
+            setHouseholds(hh || [])
+        } catch (e) {
+            console.error("Failed to fetch households", e)
+        }
+    }
     const calculateBillingAmount = () => {
         let balance = 0
         households.forEach((household, _) => {
@@ -54,7 +62,7 @@ const Household = () => {
     }
 
     useEffect(() => {
-        const hh = api_client.get(`household/${year}/${month}`)
+        fetchHouseholds()
         calculateBillingAmount()
     }, [])
 

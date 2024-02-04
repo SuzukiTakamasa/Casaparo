@@ -19,13 +19,8 @@ export interface ScheduleData {
     to_time: string
 }
 
-export interface HouseholdResponse {
-    households: HouseholdData[]
-}
+export type HouseholdResponse = HouseholdData[]
 
-export interface ScheduleResponse {
-    schedules: ScheduleData[]
-}
+export type ScheduleResponse = ScheduleData[]
 
 export type APIRequest = HouseholdData | ScheduleData
-export type APIResponse = HouseholdResponse | ScheduleResponse

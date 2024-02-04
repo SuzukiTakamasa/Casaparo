@@ -1,4 +1,4 @@
-import {APIRequest, APIResponse} from './constants'
+import { APIRequest } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -14,7 +14,7 @@ class APIClient {
             'Environment': process.env.DATABASE_ENVIRONMENT as string
         }
     }
-    public async get(endpoint: string, params?: string): Promise<APIResponse[]> {
+    public async get<T>(endpoint: string, params?: string): Promise<T|null> {
         if (params) endpoint += params
 
         try {
@@ -25,10 +25,10 @@ class APIClient {
             return await res.json()
         } catch (e) {
             console.log(e)
-            return []
+            return null
         }
     }
-    public async post(endpoint: string, data: APIRequest): Promise<APIResponse|null> {
+    public async post<T>(endpoint: string, data: APIRequest): Promise<T|null> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',
