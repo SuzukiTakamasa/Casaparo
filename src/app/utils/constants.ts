@@ -1,17 +1,17 @@
 
 export interface HouseholdData {
-    id: number,
+    id?: number,
     name: string,
     amount: number,
     year: number,
     month: number
-    is_default: number
-    is_owner: number
+    is_default: boolean
+    is_owner: boolean
     version: number
 }
 
 export interface ScheduleData {
-    id: number,
+    id?: number,
     description: string,
     year: number,
     month: number,

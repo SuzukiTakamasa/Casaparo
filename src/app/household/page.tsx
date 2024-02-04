@@ -20,7 +20,7 @@ const Household = () => {
 
     const [households, setHouseholds] = useState<HouseholdResponse>([])
     const [newItemName, setNewItemName] = useState("")
-    const [newAmount, setNewAmount] = useState("")
+    const [newAmount, setNewAmount] = useState(0)
     const [isDefault, setIsDefault] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
     const [version, setVersion] = useState(1)
@@ -30,14 +30,15 @@ const Household = () => {
     const { month } = useContext(MonthContext)
 
     const handleAddHousehold = () => {
+        addHousehold()
         setShowDialog(false)
         setNewItemName("")
-        setNewAmount("")
+        setNewAmount(0)
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
         setNewItemName("")
-        setNewAmount("")
+        setNewAmount(0)
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)
@@ -45,12 +46,29 @@ const Household = () => {
     const handleSetIsOwner = () => {
         setIsOwner(!isOwner)
     }
+
     const fetchHouseholds = async () => {
         try {
-            const hh = await api_client.get<HouseholdResponse>(`household/${year}/${month}`)
+            const hh = await api_client.get<HouseholdResponse>(`/household/${year}/${month}`)
             setHouseholds(hh || [])
         } catch (e) {
             console.error("Failed to fetch households", e)
+        }
+    }
+    const addHousehold = async () => {
+        const householdData = {
+            name: newItemName,
+            amount: newAmount,
+            year: year,
+            month: month,
+            is_default: isDefault,
+            is_owner: isOwner,
+            version: version
+        }
+        try {
+            const res = await api_client.post<HouseholdResponse>('/household/create', householdData)
+        } catch (e) {
+            console.error("Failed to add households", e)
         }
     }
     const calculateBillingAmount = () => {
@@ -64,7 +82,7 @@ const Household = () => {
     useEffect(() => {
         fetchHouseholds()
         calculateBillingAmount()
-    }, [])
+    }, [year, month])
 
     return (
     <MonthProvider>
@@ -100,7 +118,7 @@ const Household = () => {
                                 type="text"
                                 placeholder="金額"
                                 value={newAmount}
-                                onChange={(e) => setNewAmount(e.target.value)}
+                                onChange={(e) => setNewAmount(Number(e.target.value))}
                             />
                             <label className="flex items-center space-x-2 text-black">
                                 <input
