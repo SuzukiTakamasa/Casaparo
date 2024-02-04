@@ -24,6 +24,10 @@ jobs:
     - name: Install Wrangler CLI
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
       working-directory: ${{ github.workspace }}/api-server-wasm
+    
+    - name: Login to Cloudflare
+      run: wrangler login
+      working-directory: ${{ github.workspace }}/api-server-wasm
 
     - name: Publish to Cloudflare Workers
       run: npm run deploy
