@@ -20,11 +20,17 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
-                Err(_) => return Response::error("Query failed", 500)
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
             };
             match result.results::<models::Households>() {
                 Ok(households) => Response::from_json(&households),
-                Err(_) => Response::error("Error parsing results", 500) 
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    Response::error("Error parsing results", 500)
+                }
             }
         })
         .get_async("/schedule/:year/:month", |_, ctx| async move {
@@ -36,11 +42,17 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
-                Err(_) => return Response::error("Query failed", 500)
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
             };
             match result.results::<models::Schedules>() {
                 Ok(schedules) => Response::from_json(&schedules),
-                Err(_) => Response::error("Error parsing results", 500) 
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    Response::error("Error parsing results", 500) 
+                }
             }
         })
         .post_async("/household/create", |mut req, ctx| async move {
