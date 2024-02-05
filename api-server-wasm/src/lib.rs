@@ -119,9 +119,11 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Failed to fetch version", 500)
             }
-            let statement = d1.prepare("update households set name = ?1, amount = ?2, version = ?3 where id = ?4");
+            let statement = d1.prepare("update households set name = ?1, amount = ?2, is_default = ?3, is_owner = ?4, version = ?5 where id = ?6");
             let query = statement.bind(&[household.name.into(),
                                                               household.amount.into(),
+                                                              household.is_default.into(),
+                                                              household.is_owner.into(),
                                                               household.version.into(),
                                                               household.id.into()])?;
             let result = match query.run().await {
