@@ -241,11 +241,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Failed to fetch version", 500);
             }
-            let statement = d1.prepare("update schedules set description = ?1, from_time = ?2, to_time = ?3 where id = ?4");
+            let statement = d1.prepare("update schedules set description = ?1, from_time = ?2, to_time = ?3, version = ?4 where id = ?5");
             let query = statement.bind(&[schedule.description.into(),
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
-                                                              schedule.id.into()])?;
+                                                              schedule.id.into(),
+                                                              schedule.version.into()])?;
             let result = match query.run().await {
                 Ok(res) => res,
                 Err(e) => {

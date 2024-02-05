@@ -3,8 +3,8 @@ export interface HouseholdData {
     id?: number,
     name: string,
     amount: number,
-    year: number,
-    month: number
+    year?: number,
+    month?: number
     is_default: number
     is_owner: number
     version: number
@@ -13,9 +13,9 @@ export interface HouseholdData {
 export interface ScheduleData {
     id?: number,
     description: string,
-    year: number,
-    month: number,
-    date: number,
+    year?: number,
+    month?: number,
+    date?: number,
     from_time: string,
     to_time: string,
     version: number
