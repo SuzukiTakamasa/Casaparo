@@ -27,7 +27,6 @@ const Household = () => {
     const [newAmount, setNewAmount] = useState(0)
     const [isDefault, setIsDefault] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
-    const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
 
     const { year } = useContext(YearContext)
@@ -38,11 +37,15 @@ const Household = () => {
         setShowDialog(false)
         setNewItemName("")
         setNewAmount(0)
+        setIsDefault(false)
+        setIsOwner(false)
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
         setNewItemName("")
         setNewAmount(0)
+        setIsDefault(false)
+        setIsOwner(false)
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)
@@ -67,7 +70,7 @@ const Household = () => {
             month: month,
             is_default: boolToInt(isDefault),
             is_owner: boolToInt(isOwner),
-            version: version
+            version: 1
         }
         try {
             const res = await api_client.post<HouseholdResponse>('/household/create', householdData)
@@ -86,7 +89,7 @@ const Household = () => {
     useEffect(() => {
         fetchHouseholds()
         calculateBillingAmount()
-    }, [year, month])
+    }, [])
 
     return (
     <MonthProvider>
@@ -167,7 +170,7 @@ const Household = () => {
                 <tbody>
                     {households.map((household, i) => (
                         <tr key={i}>
-                            <td className="border px-4 py-2">{household.name}</td>
+                            <td className="border px-4 py-2 text-center">{household.name}</td>
                             <td className="border px-4 py-2 text-right">{household.amount}</td>
                         </tr>
                     ))}
