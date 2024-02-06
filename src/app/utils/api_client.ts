@@ -8,10 +8,10 @@ class APIClient {
     private headers: {[key: string]: string}
 
     constructor() {
-        this.host = process.env.BACKEND_HOST_NAME as string
+        this.host = process.env.NEXT_PUBLIC_BACKEND_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
-            'Environment': process.env.DATABASE_ENVIRONMENT as string
+            'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         }
     }
     public async get<T>(endpoint: string, params?: string): Promise<T|null> {

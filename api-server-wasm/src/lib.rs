@@ -7,6 +7,16 @@ mod models;
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
+    let mut headers = Headers::new();
+    headers.set("Access-Control-Allow-Origin", "*")?;
+    headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
+    headers.set("Access-Control-Allow-Headers", "*")?;
+
+    if req.method() == Method::Options {
+        return Response::empty()
+            .map(|resp| resp.with_headers(headers))
+    }
+
     Router::new()
         .get_async("/health", |_, _| async move {
             Response::ok("Healthcheck ok")
@@ -300,4 +310,5 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
     .run(req, env)
     .await
+    .map(|resp| resp.with_headers(headers))
 }
