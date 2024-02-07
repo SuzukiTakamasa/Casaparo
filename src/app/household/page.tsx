@@ -169,21 +169,21 @@ const Household = () => {
             <table className="table-auto w-full">
                 <thead>
                     <tr>
-                        <th className="border px-4 py-2">項目名</th>
-                        <th className="border px-4 py-2">金額</th>
+                        <th className="border px-4 py-2 bg-blue-900 text-white">項目名</th>
+                        <th className="border px-4 py-2 bg-blue-900 text-white">金額</th>
                     </tr>
                 </thead>
                 <tbody>
                     {households.map((household, i) => (
                         <tr key={i}>
                             <td className="border px-4 py-2 text-center">{household.name}</td>
-                            <td className="border px-4 py-2 text-right">{household.amount}</td>
+                            <td className="border px-4 py-2 text-right">¥ {household.amount}</td>
                         </tr>
                     ))}
                 </tbody>
                 <tfoot>
                     <td className="border px-4 py-2 text-center font-bold">請求金額</td>
-                    <td className="border px-4 py-2 text-right">{billingAmount}</td>
+                    <td className="border px-4 py-2 text-right">¥ {billingAmount}</td>
                 </tfoot>
             </table>
         </div>
