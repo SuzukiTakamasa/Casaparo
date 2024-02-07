@@ -1,4 +1,4 @@
-import {createContext, useContext, useState, ReactNode} from 'react'
+import {createContext, useContext, ReactNode} from 'react'
 
 export type YearContextType  = {
     year: number,
@@ -7,6 +7,8 @@ export type YearContextType  = {
 
 type YearProviderProps = {
     children: ReactNode
+    year: number
+    setYear: React.Dispatch<React.SetStateAction<number>>
 }
 
 const currentYear = new Date().getFullYear()
@@ -18,8 +20,7 @@ const defaultYearContext: YearContextType = {
 
 export const YearContext = createContext<YearContextType>(defaultYearContext)
 
-export const YearProvider = ({ children }: YearProviderProps) => {
-    const [year, setYear] = useState(currentYear)
+export const YearProvider = ({ children, year, setYear }: YearProviderProps) => {
 
     return (
         <YearContext.Provider value={{year, setYear}}>

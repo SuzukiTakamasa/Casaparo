@@ -29,8 +29,11 @@ const Household = () => {
     const [isOwner, setIsOwner] = useState(false)
     const [billingAmount, setBillingAmount] = useState(0)
 
-    const { year } = useContext(YearContext)
     const { month } = useContext(MonthContext)
+    const [householdMonth, setHouseholdMonth] = useState(month)
+
+    const { year } = useContext(YearContext)
+    const [householdYear, setHouseholdYear] = useState(year)
 
     const handleAddHousehold = () => {
         addHousehold()
@@ -56,7 +59,7 @@ const Household = () => {
 
     const fetchHouseholds = async () => {
         try {
-            const hh = await api_client.get<HouseholdResponse>(`/household/${year}/${month}`)
+            const hh = await api_client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
             setHouseholds(hh || [])
         } catch (e) {
             console.error("Failed to fetch households", e)
@@ -66,8 +69,8 @@ const Household = () => {
         const householdData = {
             name: newItemName,
             amount: newAmount,
-            year: year,
-            month: month,
+            year: householdYear,
+            month: householdMonth,
             is_default: boolToInt(isDefault),
             is_owner: boolToInt(isOwner),
             version: 1
@@ -88,14 +91,17 @@ const Household = () => {
 
     useEffect(() => {
         fetchHouseholds()
+    }, [householdYear, householdMonth])
+
+    useEffect(() => {
         calculateBillingAmount()
-    }, [])
+    }, [households])
 
     return (
-    <MonthProvider>
+    <MonthProvider month={householdMonth} setMonth={setHouseholdMonth}>
         <h1 className="text-2xl font-bold mc-4">Household</h1>
 
-        <YearProvider>
+        <YearProvider year={householdYear} setYear={setHouseholdYear}>
             <YearPicker />
         </YearProvider>
 

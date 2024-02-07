@@ -1,4 +1,4 @@
-import {createContext, useContext, useState, ReactNode} from 'react'
+import {createContext, useContext, ReactNode} from 'react'
 
 export type MonthContextType  = {
     month: number,
@@ -8,6 +8,8 @@ export type MonthContextType  = {
 
 type MonthProviderProps = {
     children: ReactNode
+    month: number
+    setMonth: React.Dispatch<React.SetStateAction<number>>
 }
 
 type MonthStrProps = {
@@ -15,17 +17,15 @@ type MonthStrProps = {
     cssStr: string
 }
 
-const currentMonth = new Date().getMonth() + 1
 const defaultMonthContext: MonthContextType = {
-    month: currentMonth,
+    month: new Date().getMonth() + 1,
     handleMonthIncrement: () => {},
     handleMonthDecrement: () => {},
 }
 
 export const MonthContext = createContext<MonthContextType>(defaultMonthContext)
 
-export const MonthProvider = ({ children }: MonthProviderProps) => {
-    const [month, setMonth] = useState(currentMonth)
+export const MonthProvider = ({ children, month, setMonth }: MonthProviderProps) => {
 
     const handleMonthIncrement = () => {
         setMonth(m => m + 1)
