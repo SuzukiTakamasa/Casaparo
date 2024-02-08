@@ -26,7 +26,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let month = ctx.param("month").unwrap();
             
             let d1 = ctx.env.d1("DB_DEV")?;
-            let statement = d1.prepare("select * from households where year = ?1 and month = ?2");
+            let statement = d1.prepare("select * from households where ( year = ?1 and month = ?2 ) or is_default = 1");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
