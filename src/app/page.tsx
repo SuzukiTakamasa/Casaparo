@@ -1,5 +1,7 @@
 "use client"
 
+export const runtime = 'edge'
+
 import Image from 'next/image'
 import { useContext } from 'react'
 import { MonthContext } from './components/MonthPaginator'
