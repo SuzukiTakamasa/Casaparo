@@ -10,7 +10,7 @@ import YearPicker from "../components/YearPicker"
 import {MonthProvider, MonthStrProvider, MonthContext} from "../components/MonthPaginator"
 import MonthPaginator from "../components/MonthPaginator"
 
-import {HouseholdResponse} from "../utils/constants"
+import {HouseholdData, HouseholdResponse} from "../utils/constants"
 import APIClient from "../utils/api_client"
 
 
@@ -18,7 +18,10 @@ const api_client = new APIClient()
 
 const boolToInt = (flag: boolean) => {
     return flag ? 1 : 0
-} 
+}
+const intToBool = (bit: number) => {
+    return bit ? true : false
+}
 
 
 const Household = () => {
@@ -44,6 +47,24 @@ const Household = () => {
         setNewAmount(0)
         setIsDefault(false)
         setIsOwner(false)
+    }
+    const handleUpdateHousehold = () => {
+        updateHousehold()
+        setShowDialog(false)
+        setNewItemName("")
+        setNewAmount(0)
+        setIsDefault(false)
+        setIsOwner(false)
+    }
+    const handleOpenAddDialog = () => {
+        setShowDialog(true)
+    }
+    const handleOpenUpdateDialog = ({name, amount, is_default, is_owner}: HouseholdData) => {
+        setShowDialog(true)
+        setNewItemName(name)
+        setNewAmount(amount)
+        setIsDefault(intToBool(is_default))
+        setIsOwner(intToBool(is_owner))
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
@@ -80,7 +101,30 @@ const Household = () => {
         try {
             const res = await api_client.post<HouseholdResponse>('/household/create', householdData)
         } catch (e) {
-            console.error("Failed to add households", e)
+            console.error("Failed to add a households", e)
+        }
+    }
+    const updateHousehold = async () => {
+        const updatedHouseholdData = {
+            name: newItemName,
+            amount: newAmount,
+            year: householdYear,
+            month: householdMonth,
+            is_default: boolToInt(isDefault),
+            is_owner: boolToInt(isOwner),
+            version: 1
+        }
+        try {
+            const res = await api_client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
+        } catch (e) {
+            console.error("Failed to update a household", e)
+        }  
+    }
+    const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
+        try {
+            const res = await api_client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
+        } catch (e) {
+            console.error("Failed to delete a household", e)
         }
     }
     const calculateBillingAmount = () => {
@@ -110,7 +154,7 @@ const Household = () => {
         <div className="container mx-auto p-4">
             <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                onClick={() => setShowDialog(true)}
+                onClick={handleOpenAddDialog}
                 >
                 登録
             </button>
