@@ -26,8 +26,10 @@ const intToBool = (bit: number) => {
 
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
+    const [isUpdate, setIsUpdate] = useState(false)
 
     const [households, setHouseholds] = useState<HouseholdResponse>([])
+    const [id, setId] = useState(0)
     const [newItemName, setNewItemName] = useState("")
     const [newAmount, setNewAmount] = useState(0)
     const [isDefault, setIsDefault] = useState(false)
@@ -52,13 +54,15 @@ const Household = () => {
     const handleOpenAddDialog = () => {
         setShowDialog(true)
     }
-    const handleOpenUpdateDialog = ({name, amount, is_default, is_owner, version}: HouseholdData) => {
+    const handleOpenUpdateDialog = ({id, name, amount, is_default, is_owner, version}: HouseholdData) => {
         setShowDialog(true)
+        setId(id as number)
         setNewItemName(name)
         setNewAmount(amount)
         setIsDefault(intToBool(is_default))
         setIsOwner(intToBool(is_owner))
         setVersion(version)
+        setIsUpdate(true)
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
@@ -67,6 +71,7 @@ const Household = () => {
         setIsDefault(false)
         setIsOwner(false)
         setVersion(1)
+        setIsUpdate(false)
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)
@@ -95,12 +100,14 @@ const Household = () => {
         }
         try {
             const res = await api_client.post<HouseholdResponse>('/household/create', addedHouseholdData)
+            await fetchHouseholds()
         } catch (e) {
             console.error("Failed to add a households", e)
         }
     }
     const updateHousehold = async () => {
         const updatedHouseholdData = {
+            id: id,
             name: newItemName,
             amount: newAmount,
             year: householdYear,
@@ -111,6 +118,7 @@ const Household = () => {
         }
         try {
             const res = await api_client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
+            await fetchHouseholds()
         } catch (e) {
             console.error("Failed to update a household", e)
         }  
@@ -119,6 +127,7 @@ const Household = () => {
         if (!window.confirm("削除しますか？")) return
         try {
             const res = await api_client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
+            await fetchHouseholds()
         } catch (e) {
             console.error("Failed to delete a household", e)
         }
@@ -195,8 +204,8 @@ const Household = () => {
                         <div className="flex justify-end space-x-4">
                         <button
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={handleAddHousehold}>
-                            登録
+                            onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}>
+                            {isUpdate ? "変更" : "登録"}
                         </button>
                         <button
                             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -225,6 +234,7 @@ const Household = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-2 rounded"
                                     onClick={() => handleOpenUpdateDialog({
+                                        id: household.id,
                                         name: household.name,
                                         amount: household.amount,
                                         is_default: household.is_default,
@@ -237,6 +247,7 @@ const Household = () => {
                                 <button
                                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
                                     onClick={() => deleteHousehold({
+                                        id: household.id,
                                         name: household.name,
                                         amount: household.amount,
                                         is_default: household.is_default,
