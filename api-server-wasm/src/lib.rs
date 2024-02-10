@@ -133,7 +133,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Attempt to update a stale object", 500)
                 }
             } else {
-                return Response::error("Failed to fetch version", 500)
+                return Response::error("Version is found None", 500)
             }
             let statement = d1.prepare("update households set name = ?1, amount = ?2, is_default = ?3, is_owner = ?4, version = ?5 where id = ?6");
             let query = statement.bind(&[household.name.into(),
@@ -185,7 +185,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Attempt to update a stale object", 500)
                 }
             } else {
-                return Response::error("Failed to fetch version", 500)
+                return Response::error("Version is found None", 500)
             }
             let statement = d1.prepare("delete from households where id = ?1");
             let query = statement.bind(&[household.id.into()])?;
@@ -267,7 +267,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Attempt to update a stale object", 500);
                 }
             } else {
-                return Response::error("Failed to fetch version", 500);
+                return Response::error("Version is found None", 500);
             }
             let statement = d1.prepare("update schedules set description = ?1, from_time = ?2, to_time = ?3, version = ?4 where id = ?5");
             let query = statement.bind(&[schedule.description.into(),
@@ -318,7 +318,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Attempt tp update a stale object", 500);
                 }
             } else {
-                return Response::error("Failed to fetch version", 500);
+                return Response::error("Version is found None", 500);
             }
             let statement = d1.prepare("delete from schedules where id = ?1");
             let query = statement.bind(&[schedule.id.into()])?;
