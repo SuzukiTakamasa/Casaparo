@@ -32,6 +32,7 @@ const Household = () => {
     const [newAmount, setNewAmount] = useState(0)
     const [isDefault, setIsDefault] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
+    const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
 
     const { month } = useContext(MonthContext)
@@ -42,29 +43,22 @@ const Household = () => {
 
     const handleAddHousehold = () => {
         addHousehold()
-        setShowDialog(false)
-        setNewItemName("")
-        setNewAmount(0)
-        setIsDefault(false)
-        setIsOwner(false)
+        handleCloseDialog()
     }
     const handleUpdateHousehold = () => {
         updateHousehold()
-        setShowDialog(false)
-        setNewItemName("")
-        setNewAmount(0)
-        setIsDefault(false)
-        setIsOwner(false)
+        handleCloseDialog()
     }
     const handleOpenAddDialog = () => {
         setShowDialog(true)
     }
-    const handleOpenUpdateDialog = ({name, amount, is_default, is_owner}: HouseholdData) => {
+    const handleOpenUpdateDialog = ({name, amount, is_default, is_owner, version}: HouseholdData) => {
         setShowDialog(true)
         setNewItemName(name)
         setNewAmount(amount)
         setIsDefault(intToBool(is_default))
         setIsOwner(intToBool(is_owner))
+        setVersion(version)
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
@@ -72,6 +66,7 @@ const Household = () => {
         setNewAmount(0)
         setIsDefault(false)
         setIsOwner(false)
+        setVersion(1)
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)
@@ -89,7 +84,7 @@ const Household = () => {
         }
     }
     const addHousehold = async () => {
-        const householdData = {
+        const addedHouseholdData = {
             name: newItemName,
             amount: newAmount,
             year: householdYear,
@@ -99,7 +94,7 @@ const Household = () => {
             version: 1
         }
         try {
-            const res = await api_client.post<HouseholdResponse>('/household/create', householdData)
+            const res = await api_client.post<HouseholdResponse>('/household/create', addedHouseholdData)
         } catch (e) {
             console.error("Failed to add a households", e)
         }
@@ -112,7 +107,7 @@ const Household = () => {
             month: householdMonth,
             is_default: boolToInt(isDefault),
             is_owner: boolToInt(isOwner),
-            version: 1
+            version: version
         }
         try {
             const res = await api_client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
@@ -121,6 +116,7 @@ const Household = () => {
         }  
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
+        if (!window.confirm("削除しますか？")) return
         try {
             const res = await api_client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
         } catch (e) {
@@ -217,6 +213,7 @@ const Household = () => {
                     <tr>
                         <th className="border px-4 py-2 bg-blue-900 text-white">項目名</th>
                         <th className="border px-4 py-2 bg-blue-900 text-white">金額</th>
+                        <th className="border px-4 py-2 bg-blue-900 text-white"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -224,6 +221,32 @@ const Household = () => {
                         <tr key={i}>
                             <td className="border px-4 py-2 text-center">{household.name}</td>
                             <td className="border px-4 py-2 text-right">¥ {household.amount}</td>
+                            <td className="border px-4 py-2 flext justify-center items-center space-x-2 w-36">
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-2 rounded"
+                                    onClick={() => handleOpenUpdateDialog({
+                                        name: household.name,
+                                        amount: household.amount,
+                                        is_default: household.is_default,
+                                        is_owner: household.is_owner,
+                                        version: household.version
+                                    })}
+                                >
+                                    編集
+                                </button>
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                                    onClick={() => deleteHousehold({
+                                        name: household.name,
+                                        amount: household.amount,
+                                        is_default: household.is_default,
+                                        is_owner: household.is_owner,
+                                        version: household.version
+                                    })}
+                                >
+                                    削除
+                                </button>
+                            </td>
                         </tr>
                     ))}
                 </tbody>
