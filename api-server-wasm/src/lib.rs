@@ -119,7 +119,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
-            let fetch_version_result = fetch_version_query.first::<models::Households>(None).await?;
+            let fetch_version_result = match fetch_version_query.first::<models::Households>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
             if let Some(latest) = fetch_version_result {
                 if household.version == latest.version {
                     household.version += 1;
@@ -129,7 +135,6 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Failed to fetch version", 500)
             }
-            console_log!("{:?}", household);
             let statement = d1.prepare("update households set name = ?1, amount = ?2, is_default = ?3, is_owner = ?4, version = ?5 where id = ?6");
             let query = statement.bind(&[household.name.into(),
                                                               household.amount.into(),
@@ -166,12 +171,18 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
-            let fetch_version_result = fetch_version_query.first::<models::Households>(None).await?;
+            let fetch_version_result = match fetch_version_query.first::<models::Households>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
             if let Some(latest) = fetch_version_result {
                 if household.version == latest.version {
                     household.version += 1;
                 } else {
-                    return Response::error("Attempt tp update a stale object", 500)
+                    return Response::error("Attempt to update a stale object", 500)
                 }
             } else {
                 return Response::error("Failed to fetch version", 500)
@@ -242,7 +253,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
-            let fetch_version_result = fetch_version_query.first::<models::Schedules>(None).await?;
+            let fetch_version_result = match fetch_version_query.first::<models::Schedules>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
             if let Some(latest) = fetch_version_result {
                 if schedule.version == latest.version {
                     schedule.version += 1
@@ -287,7 +304,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1("DB_DEV")?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
-            let fetch_version_result = fetch_version_query.first::<models::Schedules>(None).await?;
+            let fetch_version_result = match fetch_version_query.first::<models::Schedules>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
             if let Some(latest) = fetch_version_result {
                 if schedule.version == latest.version {
                     schedule.version += 1
