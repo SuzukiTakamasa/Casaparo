@@ -262,8 +262,8 @@ const Household = () => {
                     ))}
                 </tbody>
                 <tfoot>
-                    <td className="border px-4 py-2 text-center font-bold">請求金額</td>
-                    <td className="border px-4 py-2 text-right font-bold">¥ {billingAmount}</td>
+                    <td className="border px-4 py-4 text-lg text-center font-bold">請求金額</td>
+                    <td className="border px-4 py-4 text-lg text-right font-bold">¥ {billingAmount}</td>
                 </tfoot>
             </table>
         </div>
