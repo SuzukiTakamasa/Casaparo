@@ -227,7 +227,7 @@ const Household = () => {
                 </thead>
                 <tbody>
                     {households.map((household, i) => (
-                        <tr key={i}>
+                        <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
                             <td className="border px-4 py-2 text-center">{household.name}</td>
                             <td className="border px-4 py-2 text-right">¥ {household.amount}</td>
                             <td className="border px-4 py-2 flext justify-center items-center space-x-2 w-36">
@@ -263,7 +263,7 @@ const Household = () => {
                 </tbody>
                 <tfoot>
                     <td className="border px-4 py-2 text-center font-bold">請求金額</td>
-                    <td className="border px-4 py-2 text-right">¥ {billingAmount}</td>
+                    <td className="border px-4 py-2 text-right font-bold">¥ {billingAmount}</td>
                 </tfoot>
             </table>
         </div>

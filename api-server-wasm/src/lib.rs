@@ -26,7 +26,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let month = ctx.param("month").unwrap();
             
             let d1 = ctx.env.d1("DB_DEV")?;
-            let statement = d1.prepare("select * from households where ( year = ?1 and month = ?2 ) or is_default = 1");
+            let statement = d1.prepare("select * from households where ( year = ?1 and month = ?2 ) or is_default = 1 order by is_default desc");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
@@ -117,9 +117,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1("DB_DEV")?;
-            let fetch_version_statement = d1.prepare("select * from households where id = ?1");
+            let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::Households>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -169,9 +169,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1("DB_DEV")?;
-            let fetch_version_statement = d1.prepare("select * from households where id = ?1");
+            let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::Households>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -251,9 +251,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1("DB_DEV")?;
-            let fetch_version_statement = d1.prepare("select * from schedules where id = ?1");
+            let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::Schedules>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -302,9 +302,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1("DB_DEV")?;
-            let fetch_version_statement = d1.prepare("select * from schedules where id = ?1");
+            let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::Schedules>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
