@@ -29,3 +29,15 @@ pub struct Schedules {
 pub struct LatestVersion {
     pub version: u32
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CompletedHouseholds {
+    pub id: Option<u32>,
+    pub year: u16,
+    pub month: u8,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct IsCompleted {
+    pub is_completed: u8
+}
