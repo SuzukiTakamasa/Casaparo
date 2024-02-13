@@ -65,6 +65,21 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
+        .get_async("/completed_household/:year/:month", |_, ctx| async move {
+            let year = ctx.param("year").unwrap();
+            let month = ctx.param("year").unwrap();
+
+            let d1 = ctx.env.d1("DB_DEV")?;
+            let statement = d1.prepare("select case when exists (select * from completed_households where year = ?1 and month = ?2) then 'true' else 'false' end as is_completed;");
+            let query = statement.bind(&[year.into(), month.into()])?;
+            match query.first::<models::IsCompleted>(None).await {
+                Ok(res) => Response::from_json(&res),
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    Response::error("Error parsing results", 500)
+                }
+            }
+        })
         .post_async("/household/create", |mut req, ctx| async move {
             let json_body = match req.text().await {
                 Ok(body) => body,
@@ -331,6 +346,36 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
             console_log!("{:?}", result.success());
             Response::ok("Shcedule data was deleted.")
+        })
+        .post_async("/completed_household/create", |mut req, ctx| async move {
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
+            let completed_household: models::CompletedHouseholds = match from_str(json_body.as_str()) {
+                Ok(completed_household) => completed_household,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1("DB_DEV")?;
+            let statement = d1.prepare("insert into completed_households (year, month) values (?1, ?2)");
+            let query = statement.bind(&[completed_household.year.into(),
+                                                              completed_household.month.into()])?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            return Response::ok("Completed household data was created.")
         })
     .run(req, env)
     .await
