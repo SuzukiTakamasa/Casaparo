@@ -10,7 +10,7 @@ import YearPicker from "../components/YearPicker"
 import {MonthProvider, MonthStrProvider, MonthContext} from "../components/MonthPaginator"
 import MonthPaginator from "../components/MonthPaginator"
 
-import {HouseholdData, HouseholdResponse} from "../utils/constants"
+import {HouseholdData, HouseholdResponse, IsCompleted} from "../utils/constants"
 import APIClient from "../utils/api_client"
 
 
@@ -22,7 +22,9 @@ const boolToInt = (flag: boolean) => {
 const intToBool = (bit: number) => {
     return bit ? true : false
 }
-
+const setUser = (isOwner: number) => {
+    return isOwner ? "🥺" : "🥺ྀི"
+}
 
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
@@ -36,6 +38,7 @@ const Household = () => {
     const [isOwner, setIsOwner] = useState(false)
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
+    const [isCompleted, setIsCompleted] = useState(false)
 
     const { month } = useContext(MonthContext)
     const [householdMonth, setHouseholdMonth] = useState(month)
@@ -86,6 +89,18 @@ const Household = () => {
             setHouseholds(hh || [])
         } catch (e) {
             console.error("Failed to fetch households", e)
+        }
+    }
+    const fetchIsCompleted = async () => {
+        try {
+            const res = await api_client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
+            if (res !== null) {
+                setIsCompleted(res.is_completed)
+            } else {
+                throw new Error()
+            }
+        } catch (e) {
+            console.error("Failed to fetch is_completed", e)
         }
     }
     const addHousehold = async () => {
@@ -160,11 +175,18 @@ const Household = () => {
             <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                 onClick={handleOpenAddDialog}
+                disabled={isCompleted}
                 >
                 登録
             </button>
-
-            <MonthStrProvider monthStr="月の家計簿" cssStr="text-2xl font-bold mc-4" />
+            <div className="flex">
+                <MonthStrProvider monthStr="月の家計簿" cssStr="text-2xl font-bold mc-4" />
+                {isCompleted && 
+                    <div className="text-2xl font-bold mc-4 bg-red-900">
+                        (請求済み)
+                    </div>
+                }
+            </div>
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -222,6 +244,7 @@ const Household = () => {
                     <tr>
                         <th className="border px-4 py-2 bg-blue-900 text-white">項目名</th>
                         <th className="border px-4 py-2 bg-blue-900 text-white">金額</th>
+                        <th className="border px-4 py-2 bg-blue-900 text-white">登録者</th>
                         <th className="border px-4 py-2 bg-blue-900 text-white"></th>
                     </tr>
                 </thead>
@@ -229,7 +252,8 @@ const Household = () => {
                     {households.map((household, i) => (
                         <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
                             <td className="border px-4 py-2 text-center">{household.name}</td>
-                            <td className="border px-4 py-2 text-right">¥ {household.amount}</td>
+                            <td className="border px-4 py-2 text-right">¥ {household.is_owner ? household.amount : `-${household.amount}`}</td>
+                            <td className="border px-4 py-2 text-center w-24">{setUser(household.is_owner)}</td>
                             <td className="border px-4 py-2 flext justify-center items-center space-x-2 w-36">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-2 rounded"
@@ -241,6 +265,7 @@ const Household = () => {
                                         is_owner: household.is_owner,
                                         version: household.version
                                     })}
+                                    disabled={isCompleted}
                                 >
                                     編集
                                 </button>
@@ -254,6 +279,7 @@ const Household = () => {
                                         is_owner: household.is_owner,
                                         version: household.version
                                     })}
+                                    disabled={isCompleted}
                                 >
                                     削除
                                 </button>

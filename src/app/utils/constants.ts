@@ -21,6 +21,10 @@ export interface ScheduleData {
     version: number
 }
 
+export interface IsCompleted {
+    is_completed: boolean
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]
