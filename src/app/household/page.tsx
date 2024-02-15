@@ -157,6 +157,7 @@ const Household = () => {
 
     useEffect(() => {
         fetchHouseholds()
+        fetchIsCompleted()
     }, [householdYear, householdMonth])
 
     useEffect(() => {
