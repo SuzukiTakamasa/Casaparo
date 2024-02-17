@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import React, {useState, useEffect, useContext} from "react"
+import React, {useState, useEffect, useContext, useCallback} from "react"
 
 import {YearProvider, YearContext} from "../components/YearPicker"
 import YearPicker from "../components/YearPicker"
@@ -83,15 +83,15 @@ const Household = () => {
         setIsOwner(!isOwner)
     }
 
-    const fetchHouseholds = async () => {
+    const fetchHouseholds = useCallback(async () => {
         try {
             const hh = await api_client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
             setHouseholds(hh || [])
         } catch (e) {
             console.error("Failed to fetch households", e)
         }
-    }
-    const fetchIsCompleted = async () => {
+    }, [householdYear, householdMonth])
+    const fetchIsCompleted = useCallback(async () => {
         try {
             const res = await api_client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
             if (res !== null) {
@@ -102,7 +102,7 @@ const Household = () => {
         } catch (e) {
             console.error("Failed to fetch is_completed", e)
         }
-    }
+    }, [householdYear, householdMonth])
     const addHousehold = async () => {
         const addedHouseholdData = {
             name: newItemName,
@@ -147,22 +147,22 @@ const Household = () => {
             console.error("Failed to delete a household", e)
         }
     }
-    const calculateBillingAmount = () => {
+    const calculateBillingAmount = useCallback(() => {
         let balance = 0
         households.forEach((household, _) => {
             household.is_owner ? balance += household.amount : balance -= household.amount
         })
         setBillingAmount(balance)
-    }
+    }, [households])
 
     useEffect(() => {
         fetchHouseholds()
         fetchIsCompleted()
-    }, [householdYear, householdMonth])
+    }, [fetchHouseholds, fetchIsCompleted])
 
     useEffect(() => {
         calculateBillingAmount()
-    }, [households])
+    }, [calculateBillingAmount])
 
     return (
     <MonthProvider month={householdMonth} setMonth={setHouseholdMonth}>
