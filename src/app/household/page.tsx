@@ -16,12 +16,8 @@ import APIClient from "../utils/api_client"
 
 const api_client = new APIClient()
 
-const boolToInt = (flag: boolean) => {
-    return flag ? 1 : 0
-}
-const intToBool = (bit: number) => {
-    return bit ? true : false
-}
+const boolToInt = (flag: boolean) => +flag
+const intToBool = (bit: number) => !!bit
 const setUser = (isOwner: number) => {
     return isOwner ? "🥺" : "🥺ྀི"
 }
