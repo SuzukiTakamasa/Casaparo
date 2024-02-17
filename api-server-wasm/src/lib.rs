@@ -70,13 +70,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let month = ctx.param("year").unwrap();
 
             let d1 = ctx.env.d1("DB_DEV")?;
-            let statement = d1.prepare("select case when exists (select * from completed_households where year = ?1 and month = ?2) then 'true' else 'false' end as is_completed;");
+            let statement = d1.prepare("select case when exists (select * from completed_households where year = ?1 and month = ?2) then 1 else 0 end as is_completed");
             let query = statement.bind(&[year.into(), month.into()])?;
             match query.first::<models::IsCompleted>(None).await {
-                Ok(res) => Response::from_json(&res),
+                Ok(is_completed) => Response::from_json(&is_completed),
                 Err(e) => {
                     console_log!("{:?}", e);
-                    Response::error("Error parsing results", 500)
+                    return Response::error("Error parsing results", 500)
                 }
             }
         })
