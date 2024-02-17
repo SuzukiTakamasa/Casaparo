@@ -22,7 +22,7 @@ export interface ScheduleData {
 }
 
 export interface IsCompleted {
-    is_completed: boolean
+    is_completed: number
 }
 
 export type HouseholdResponse = HouseholdData[]

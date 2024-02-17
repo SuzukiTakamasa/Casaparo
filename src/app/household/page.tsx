@@ -38,7 +38,7 @@ const Household = () => {
     const [isOwner, setIsOwner] = useState(false)
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
-    const [isCompleted, setIsCompleted] = useState(false)
+    const [isCompleted, setIsCompleted] = useState(0)
 
     const { month } = useContext(MonthContext)
     const [householdMonth, setHouseholdMonth] = useState(month)
@@ -176,17 +176,13 @@ const Household = () => {
             <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                 onClick={handleOpenAddDialog}
-                disabled={isCompleted}
+                disabled={intToBool(isCompleted)}
                 >
                 登録
             </button>
             <div className="flex">
                 <MonthStrProvider monthStr="月の家計簿" cssStr="text-2xl font-bold mc-4" />
-                {isCompleted && 
-                    <div className="text-2xl font-bold mc-4 bg-red-900">
-                        (請求済み)
-                    </div>
-                }
+                {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900">(請求済み)</div>}
             </div>
 
             {showDialog && (
@@ -266,7 +262,7 @@ const Household = () => {
                                         is_owner: household.is_owner,
                                         version: household.version
                                     })}
-                                    disabled={isCompleted}
+                                    disabled={intToBool(isCompleted)}
                                 >
                                     編集
                                 </button>
@@ -280,7 +276,7 @@ const Household = () => {
                                         is_owner: household.is_owner,
                                         version: household.version
                                     })}
-                                    disabled={isCompleted}
+                                    disabled={intToBool(isCompleted)}
                                 >
                                     削除
                                 </button>
