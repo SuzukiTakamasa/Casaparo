@@ -14,6 +14,12 @@ pub struct Households {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct FixedAmount {
+    pub billing_amount: u32,
+    pub total_amount: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Schedules {
     pub id: Option<u32>,
     pub description: String,

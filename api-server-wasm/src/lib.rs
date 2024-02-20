@@ -43,6 +43,21 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
+        .get_async("/household/fixed_amount/:year/:month", |_, ctx| async move {
+            let year = ctx.param("year").unwrap();
+            let month = ctx.param("month").unwrap();
+
+            let d1 = ctx.env.d1("DB_DEV")?;
+            let statement = d1.prepare("select sum(case when is owner = 1 then amount else -amount end) as billing_amount, sum(amount) as total_amount from households where ( year = ?1 and month = ?2 ) or is_default = 1");
+            let query = statement.bind(&[year.into(), month.into()])?;
+            match query.first::<models::FixedAmount>(None).await {
+                Ok(fixed_amount) => Response::from_json(&fixed_amount),
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Error parsing results", 500)
+                }
+            }
+        })
         .get_async("/schedule/:year/:month", |_, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
@@ -298,7 +313,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Schedue data was updated.")
+            Response::ok("Schedule data was updated.")
         })
         .post_async("/schedule/delete", |mut req, ctx| async move {
             let json_body = match req.text().await {
@@ -345,7 +360,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Shcedule data was deleted.")
+            Response::ok("Schedule data was deleted.")
         })
         .post_async("/completed_household/create", |mut req, ctx| async move {
             let json_body = match req.text().await {
