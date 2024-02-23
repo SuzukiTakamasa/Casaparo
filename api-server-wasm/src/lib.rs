@@ -17,15 +17,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             .map(|resp| resp.with_headers(headers))
     }
 
+    fn get_db_env(req: &Request) -> Result<String> {
+        let header_name = "Environment"; 
+        match req.headers().get(header_name)? {
+            Some(value) => Ok(value),
+            None => Err(worker::Error::RustError(format!("Failed to get {} value", header_name))),
+        }
+    }
+
     Router::new()
-        .get_async("/health", |_, _| async move {
-            Response::ok("Healthcheck ok")
-        })
-        .get_async("/household/:year/:month", |_, ctx| async move {
+        .get_async("/household/:year/:month", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select * from households where ( year = ?1 and month = ?2 ) or is_default = 1 order by is_default desc");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
@@ -43,11 +52,15 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
-        .get_async("/household/fixed_amount/:year/:month", |_, ctx| async move {
+        .get_async("/household/fixed_amount/:year/:month", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select sum(case when is owner = 1 then amount else -amount end) as billing_amount, sum(amount) as total_amount from households where ( year = ?1 and month = ?2 ) or is_default = 1");
             let query = statement.bind(&[year.into(), month.into()])?;
             match query.first::<models::FixedAmount>(None).await {
@@ -58,11 +71,15 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
-        .get_async("/completed_household/:year/:month", |_, ctx| async move {
+        .get_async("/completed_household/:year/:month", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select case when exists (select * from completed_households where year = ?1 and month = ?2) then 1 else 0 end as is_completed");
             let query = statement.bind(&[year.into(), month.into()])?;
             match query.first::<models::IsCompleted>(None).await {
@@ -73,11 +90,15 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
-        .get_async("/schedule/:year/:month", |_, ctx| async move {
+        .get_async("/schedule/:year/:month", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select * from schedules where year = ?1 and month = ?2");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
@@ -96,6 +117,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             }
         })
         .post_async("/household/create", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -111,7 +136,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("insert into households (name, amount, year, month, is_default, is_owner, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
             let query = statement.bind(&[household.name.into(),
                                                               household.amount.into(),
@@ -131,6 +156,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             Response::ok("Household data was created.")
         })
         .post_async("/household/update", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -146,7 +175,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
             let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
@@ -183,6 +212,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             Response::ok("Household data was updated.")
         })
         .post_async("/household/delete", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -198,7 +231,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
             let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
@@ -230,6 +263,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             Response::ok("Household data was deleted.")
         })
         .post_async("/schedule/create", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -245,7 +282,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("insert into schedules (description, year, month, date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
             let query = statement.bind(&[schedule.description.into(),
                                                               schedule.year.into(),
@@ -265,6 +302,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             Response::ok("Schedule data was created.")
         })
         .post_async("/schedule/update", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -280,7 +321,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
             let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
@@ -316,6 +357,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             Response::ok("Schedule data was updated.")
         })
         .post_async("/schedule/delete", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -331,7 +376,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
             let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
@@ -363,6 +408,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             Response::ok("Schedule data was deleted.")
         })
         .post_async("/completed_household/create", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
             let json_body = match req.text().await {
                 Ok(body) => body,
                 Err(e) => {
@@ -378,7 +427,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let d1 = ctx.env.d1("DB_DEV")?;
+            let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("insert into completed_households (year, month) values (?1, ?2)");
             let query = statement.bind(&[completed_household.year.into(),
                                                               completed_household.month.into()])?;
