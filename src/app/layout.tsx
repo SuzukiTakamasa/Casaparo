@@ -36,24 +36,24 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
             <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 ${menuVisible ? 'block' : 'hidden'}`} onClick={toggleMenu}></div>
             <div className={`absolute inset-y-0 left-0 transform ${menuVisible ? 'translate-x-0' : '-translate-x-full'} w-64 bg-gray-800 transition duration-300 ease-in-out top-16`} style={{zIndex: 1000}}>
               <Link href="/household" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
-                <FontAwesomeIcon icon={faHouse} style={{ marginRight: '8px'}} />
-                Household
+                <FontAwesomeIcon icon={faHouse} style={{ marginRight: '16px'}} />
+                家計簿
               </Link>
               <Link href="/schedule" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
-                <FontAwesomeIcon icon={faCalendar} style={{ marginRight: '8px'}} />
-                Schedule
+                <FontAwesomeIcon icon={faCalendar} style={{ marginRight: '16px'}} />
+                スケジュール
               </Link>
               <Link href="/statistics" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
-                <FontAwesomeIcon icon={faChartBar} style={{ marginRight: '8px'}} />
-                Statistics
+                <FontAwesomeIcon icon={faChartBar} style={{ marginRight: '16px'}} />
+                統計
               </Link>
               <Link href="/wiki" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
-                <FontAwesomeIcon icon={faBook} style={{ marginRight: '8px'}} />
+                <FontAwesomeIcon icon={faBook} style={{ marginRight: '16px'}} />
                 Wiki
               </Link>
               <Link href="/setting" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
-              <FontAwesomeIcon icon={faCog} style={{ marginRight: '8px'}} />
-                Setting
+              <FontAwesomeIcon icon={faCog} style={{ marginRight: '16px'}} />
+                設定
               </Link>
             </div>
           </nav>
