@@ -4,7 +4,7 @@ import {
   WebhookEvent
 } from "@line/bot-sdk"
 
-interface Env {
+export interface Env {
     LINE_BOT_CHANNEL_ACCESS_TOKEN: string
     WORKER_RS_BACKEND_API_HOST: string
     DATABASE_ENVIRONMENT: string
@@ -33,17 +33,17 @@ export default class LINEMessagingAPIHandler {
     private currentYear: number
     private currentMonth: number
 
-    constructor(env: Env) {
+    constructor({WORKER_RS_BACKEND_API_HOST, LINE_BOT_CHANNEL_ACCESS_TOKEN, DATABASE_ENVIRONMENT}: Env) {
         this.lineBotHost = "https://api.line.me/v2/bot/message"
-        this.backendHost = env.WORKER_RS_BACKEND_API_HOST
-        this.accessToken = env.LINE_BOT_CHANNEL_ACCESS_TOKEN
+        this.backendHost = WORKER_RS_BACKEND_API_HOST
+        this.accessToken = LINE_BOT_CHANNEL_ACCESS_TOKEN
         this.lineBotHeaders = {
             "Content-Type": "application/json",
             "Authorization": `Bear ${this.accessToken}`
         }
         this.backendHeaders = {
             "Content-Type": "application/json",
-            "Environment": env.DATABASE_ENVIRONMENT
+            "Environment": DATABASE_ENVIRONMENT
         }
         this.currentYear = new Date().getFullYear()
         this.currentMonth = new Date().getMonth() + 1
@@ -141,8 +141,8 @@ export default class LINEMessagingAPIHandler {
       await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
     }
 
-    public async replyFixedHousehold(context: any) {
-      const data = await context.req.json()
+    public async replyFixedHousehold(ctx: any) {
+      const data = await ctx.req.json()
       const events = data.events
 
       await Promise.all(
@@ -159,16 +159,16 @@ export default class LINEMessagingAPIHandler {
           let response = ""
 
           if (message === "支払い完了") {
-            const is_completed = await this._getAPIHandler<IsCompleted>(`${this.backendHost}/completed_household/${this.currentYear}/${this.currentMonth}`)
-            if (is_completed.is_completed === 1) {
+            const isCompleted = await this._getAPIHandler<IsCompleted>(`${this.backendHost}/completed_household/${this.currentYear}/${this.currentMonth}`)
+            if (isCompleted.is_completed === 1) {
               response += "今月分の支払いは既に完了しています。"
               return
             }
-            const completed_household: CompletedHouseholds = {
+            const completedHousehold: CompletedHouseholds = {
               year: this.currentYear,
               month: this.currentMonth
             }
-            await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completed_household)
+            await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completedHousehold)
             response += "来月もよろしくな！！"
           } else {
             const responseArr = [
