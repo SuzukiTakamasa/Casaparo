@@ -10,6 +10,11 @@ interface FixedAmount {
     total_amount: number
 }
 
+interface CompletedHouseholds {
+  year: number
+  month: number
+}
+
 export default class LINEMessagingAPIHandler {
     private lineBotHost: string
     private backendHost: string
@@ -95,6 +100,12 @@ export default class LINEMessagingAPIHandler {
             ]
         }
         await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
+        
+        const completedHousehold: CompletedHouseholds = {
+          year: this.currentYear,
+          month: this.currentMonth
+        }
+        await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completedHousehold)
     }
 
     public async remindFixedHousehold() {
