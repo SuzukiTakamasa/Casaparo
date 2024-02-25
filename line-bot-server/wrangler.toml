@@ -1,4 +1,4 @@
-name = "line-bot-cron"
+name = "line-bot-server"
 main = "src/index.ts"
 compatibility_date = "2024-02-08"
 

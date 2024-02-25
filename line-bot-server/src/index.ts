@@ -1,21 +1,15 @@
-import app from './webhook_handler'
-import LINEMessagingAPIHandler, { Env } from "./api_handler"
-
-addEventListener('fetch', (event) => {
-    event.respondWith(app.fetch(event.request))
-})
-
+import { app, scheduled } from './webhook_handler'
+import { Env } from "./api_handler"
 
 export default {
-    async scheduled(event: any, env: Env, _: ExecutionContext) {
-        const apiHandler = new LINEMessagingAPIHandler(env)
-        switch (event.cron) {
-            case "0 0 19 * *":
-                await apiHandler.remindFixedHousehold()
-                break
-            case "0 0 20 * *":
-                await apiHandler.broadcastFixedHousehold()
-                break
-        }
+    async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+      if (request.url.endsWith('/reply_message')) {
+        return app.fetch(request)
+      } else if (request.method === 'POST' && request.headers.has('x-cron-job-trigger')) {
+        return await scheduled(request, env, ctx)
+      } else {
+        throw new Error('Unexpected request was received')
+      }
     }
-}
+  };
+  

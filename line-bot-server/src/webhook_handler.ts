@@ -14,4 +14,16 @@ app.post("/reply_message", async (ctx) => {
     return result
 })
 
-export default app
+const scheduled = async(event: any, env: Env, _: ExecutionContext) => {
+    const apiHandler = new LINEMessagingAPIHandler(env)
+    switch (event.cron) {
+        case "0 0 19 * *":
+            await apiHandler.remindFixedHousehold()
+            break
+        case "0 0 20 * *":
+            await apiHandler.broadcastFixedHousehold()
+            break
+    }
+}
+
+export { app, scheduled }
