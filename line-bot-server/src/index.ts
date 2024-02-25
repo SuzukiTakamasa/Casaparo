@@ -13,6 +13,8 @@ app.post("/reply_message", async (ctx) => {
     await apiHandler.replyFixedHousehold(ctx)
 })
 
+export { app }
+
 export default {
     async scheduled(event: any, env: Env, _: ExecutionContext) {
         const apiHandler = new LINEMessagingAPIHandler(env)
