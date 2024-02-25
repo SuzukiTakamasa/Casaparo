@@ -1,4 +1,4 @@
-name = "line-bot-cron-notificator"
+name = "line-bot-cron"
 main = "src/index.ts"
 compatibility_date = "2024-02-08"
 
