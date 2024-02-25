@@ -10,7 +10,8 @@ app.post("/reply_message", async (ctx) => {
         DATABASE_ENVIRONMENT: ctx.env!.DATABASE_ENVIRONMENT
     }
     const apiHandler = new LINEMessagingAPIHandler(env as Env)
-    await apiHandler.replyFixedHousehold(ctx)
+    const result = await apiHandler.replyFixedHousehold(ctx)
+    return result
 })
 
 export { app }

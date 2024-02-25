@@ -184,7 +184,7 @@ export default class LINEMessagingAPIHandler {
             const randomIndex = Math.floor(Math.random() * responseArr.length)
             response += responseArr[randomIndex]
           }
-          await this._postAPIHandler(this.lineBotHost, "/reply", {
+          const result = await this._postAPIHandler(this.lineBotHost, "/reply", {
             replyToken: replyToken,
             messages: [
               {
@@ -193,6 +193,7 @@ export default class LINEMessagingAPIHandler {
               }
             ]
           })
+          return result
         })
       )
     }
