@@ -52,13 +52,7 @@ jobs:
       working-directory: ${{ github.workspace }}/line-bot-server
     
     - name: Publish to Cloudflare Workers(cron-notificator)
-      run: npm run deploy-c
-      working-directory: ${{ github.workspace }}/line-bot-server/
-      env:
-        CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-    
-    - name: Publish to Cloudflare Workers(webhook-notificator)
-      run: npm run deploy-w
-      working-directory: ${{ github.workspace }}/line-bot-server/
+      run: npm run deploy
+      working-directory: ${{ github.workspace }}/line-bot-server
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
