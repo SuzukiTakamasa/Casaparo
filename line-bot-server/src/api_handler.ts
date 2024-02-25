@@ -30,7 +30,7 @@ export default class LINEMessagingAPIHandler {
         this.accessToken = LINE_BOT_CHANNEL_ACCESS_TOKEN
         this.lineBotHeaders = {
             "Content-Type": "application/json",
-            "Authorization": `Bear ${this.accessToken}`
+            "Authorization": `Bearer ${this.accessToken}`
         }
         this.backendHeaders = {
             "Content-Type": "application/json",
