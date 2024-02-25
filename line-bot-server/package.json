@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "deploy": "wrangler deploy",
+    "deploy-c": "cd .src/cron_handler/ && wrangler deploy",
+    "deploy-w": "cd .src/webhook_handler/ && wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev"
   },
