@@ -14,11 +14,11 @@ app.post("/reply_message", async (ctx) => {
     return result
 })
 
-export { app }
-
 addEventListener('fetch', (event) => {
     event.respondWith(app.fetch(event.request))
   })
+
+export { app }
 
 
 export default {
