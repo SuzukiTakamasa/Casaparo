@@ -1,8 +1,3 @@
-import {
-  MessageAPIResponseBase,
-  TextMessage,
-  WebhookEvent
-} from "@line/bot-sdk"
 
 export interface Env {
     LINE_BOT_CHANNEL_ACCESS_TOKEN: string
@@ -13,15 +8,6 @@ export interface Env {
 interface FixedAmount {
     billing_amount: number
     total_amount: number
-}
-
-interface CompletedHouseholds {
-  year: number,
-  month: number
-}
-
-interface IsCompleted {
-  is_completed: number
 }
 
 export default class LINEMessagingAPIHandler {
@@ -104,24 +90,6 @@ export default class LINEMessagingAPIHandler {
                           "contents": []
                         }
                       ]
-                    },
-                    "footer": {
-                      "type": "box",
-                      "layout": "horizontal",
-                      "contents": [
-                        {
-                          "type": "button",
-                          "action": {
-                            "type": "message",
-                            "label": "支払い完了",
-                            "text": "支払い完了"
-                          },
-                          "color": "#201145FF",
-                          "height": "sm",
-                          "style": "primary",
-                          "gravity": "bottom"
-                        }
-                      ]
                     }
                   }
             ]
@@ -141,7 +109,7 @@ export default class LINEMessagingAPIHandler {
       await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
     }
 
-    public async replyFixedHousehold(ctx: any) {
+    /*public async replyFixedHousehold(ctx: any) {
       const data = await ctx.req.json()
       const events = data.events
 
@@ -196,5 +164,5 @@ export default class LINEMessagingAPIHandler {
           return result
         })
       )
-    }
+    }*/
 }
