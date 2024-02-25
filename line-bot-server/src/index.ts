@@ -16,6 +16,11 @@ app.post("/reply_message", async (ctx) => {
 
 export { app }
 
+addEventListener('fetch', (event) => {
+    event.respondWith(app.fetch(event.request))
+  })
+
+
 export default {
     async scheduled(event: any, env: Env, _: ExecutionContext) {
         const apiHandler = new LINEMessagingAPIHandler(env)
