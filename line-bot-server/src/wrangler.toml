@@ -1,6 +1,12 @@
-name = "line-bot-webhook-notificator"
+name = "line-bot-cron-notificator"
 main = "index.ts"
 compatibility_date = "2024-02-08"
+
+[triggers]
+crons = [
+    "0 0 19 * *",
+    "0 0 20 * *"
+]
 
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.

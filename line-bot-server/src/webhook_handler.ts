@@ -1,5 +1,5 @@
 import { Hono } from "hono"
-import LINEMessagingAPIHandler, { Env } from "../api_handler"
+import LINEMessagingAPIHandler, { Env } from "./api_handler"
 
 const app = new Hono()
 

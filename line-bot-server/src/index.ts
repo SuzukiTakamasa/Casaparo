@@ -1,4 +1,10 @@
-import LINEMessagingAPIHandler, { Env } from "../api_handler"
+import app from './webhook_handler'
+import LINEMessagingAPIHandler, { Env } from "./api_handler"
+
+addEventListener('fetch', (event) => {
+    event.respondWith(app.fetch(event.request))
+})
+
 
 export default {
     async scheduled(event: any, env: Env, _: ExecutionContext) {
