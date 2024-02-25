@@ -5,6 +5,7 @@ addEventListener('fetch', (event) => {
     event.respondWith(app.fetch(event.request))
 })
 
+
 export default {
     async scheduled(event: any, env: Env, _: ExecutionContext) {
         const apiHandler = new LINEMessagingAPIHandler(env)
