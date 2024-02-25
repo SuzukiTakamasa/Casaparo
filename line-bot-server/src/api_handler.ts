@@ -11,8 +11,8 @@ interface FixedAmount {
 }
 
 interface CompletedHouseholds {
-  year: number
-  month: number
+    year: number
+    month: number
 }
 
 export default class LINEMessagingAPIHandler {

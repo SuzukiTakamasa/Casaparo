@@ -4,6 +4,14 @@ use serde_json::from_str;
 mod models;
 
 
+fn get_db_env(req: &Request) -> Result<String> {
+    let header_name = "Environment"; 
+    match req.headers().get(header_name)? {
+        Some(value) => Ok(value),
+        None => Err(worker::Error::RustError(format!("Failed to get {} value", header_name))),
+    }
+}
+
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
@@ -15,14 +23,6 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     if req.method() == Method::Options {
         return Response::empty()
             .map(|resp| resp.with_headers(headers))
-    }
-
-    fn get_db_env(req: &Request) -> Result<String> {
-        let header_name = "Environment"; 
-        match req.headers().get(header_name)? {
-            Some(value) => Ok(value),
-            None => Err(worker::Error::RustError(format!("Failed to get {} value", header_name))),
-        }
     }
 
     Router::new()
