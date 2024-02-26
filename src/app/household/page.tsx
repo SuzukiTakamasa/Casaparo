@@ -14,7 +14,7 @@ import {HouseholdData, HouseholdResponse, IsCompleted} from "../utils/constants"
 import APIClient from "../utils/api_client"
 
 
-const api_client = new APIClient()
+const client = new APIClient()
 
 const boolToInt = (flag: boolean) => +flag
 const intToBool = (bit: number) => !!bit
@@ -81,7 +81,7 @@ const Household = () => {
 
     const fetchHouseholds = useCallback(async () => {
         try {
-            const hh = await api_client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
+            const hh = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
             setHouseholds(hh || [])
         } catch (e) {
             console.error("Failed to fetch households", e)
@@ -89,7 +89,7 @@ const Household = () => {
     }, [householdYear, householdMonth])
     const fetchIsCompleted = useCallback(async () => {
         try {
-            const res = await api_client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
+            const res = await client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
             if (res !== null) {
                 setIsCompleted(res.is_completed)
             } else {
@@ -110,7 +110,7 @@ const Household = () => {
             version: 1
         }
         try {
-            const res = await api_client.post<HouseholdResponse>('/household/create', addedHouseholdData)
+            const res = await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
             await fetchHouseholds()
         } catch (e) {
             console.error("Failed to add a households", e)
@@ -128,7 +128,7 @@ const Household = () => {
             version: version
         }
         try {
-            const res = await api_client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
+            const res = await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
             await fetchHouseholds()
         } catch (e) {
             console.error("Failed to update a household", e)
@@ -137,7 +137,7 @@ const Household = () => {
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
         try {
-            const res = await api_client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
+            const res = await client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
             await fetchHouseholds()
         } catch (e) {
             console.error("Failed to delete a household", e)

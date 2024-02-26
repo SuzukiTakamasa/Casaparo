@@ -25,6 +25,11 @@ export interface IsCompleted {
     is_completed: number
 }
 
+export interface FixedAmount {
+    billing_amount: number
+    total_amount: number
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]
