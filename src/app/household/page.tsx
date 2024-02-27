@@ -247,7 +247,7 @@ const Household = () => {
                             <td className="border-b px-2 py-1 text-center">{household.name}</td>
                             <td className="border-b px-2 py-1 text-right">¥ {household.is_owner ? household.amount : `-${household.amount}`}</td>
                             <td className="border-b px-2 py-1 text-center w-24">{setUser(household.is_owner)}</td>
-                            <td className="border-b px-2 py-1 flex-row justify-center items-center space-x-2 w-36">
+                            <td className="border-b px-2 py-1 flex-row justify-end items-center space-x-1 w-36">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
                                     onClick={() => handleOpenUpdateDialog({
