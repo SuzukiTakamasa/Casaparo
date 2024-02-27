@@ -232,24 +232,24 @@ const Household = () => {
                 </div>
             )}
 
-            <table className="table-auto w-auto md:w-full">
+            <table className="table-auto w-full">
                 <thead>
                     <tr>
-                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white">項目名</th>
-                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white">金額</th>
-                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white">登録者</th>
-                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white"></th>
+                        <th className="border-b-2 px-2 py-1 bg-blue-900 text-white">項目名</th>
+                        <th className="border-b-2 px-2 py-1 bg-blue-900 text-white">金額</th>
+                        <th className="border-b-2 px-2 py-1 bg-blue-900 text-white">登録者</th>
+                        <th className="border-b-2 px-2 py-1 bg-blue-900 text-white"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {households.map((household, i) => (
                         <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
-                            <td className="border-b px-4 py-2 text-center">{household.name}</td>
-                            <td className="border-b px-4 py-2 text-right">¥ {household.is_owner ? household.amount : `-${household.amount}`}</td>
-                            <td className="border-b px-4 py-2 text-center w-24">{setUser(household.is_owner)}</td>
-                            <td className="border-b px-4 py-2 flex-col md:flex-row justify-center items-center space-x-2 w-36">
+                            <td className="border-b px-2 py-1 text-center">{household.name}</td>
+                            <td className="border-b px-2 py-1 text-right">¥ {household.is_owner ? household.amount : `-${household.amount}`}</td>
+                            <td className="border-b px-2 py-1 text-center w-24">{setUser(household.is_owner)}</td>
+                            <td className="border-b px-2 py-1 flex-row justify-center items-center space-x-2 w-36">
                                 <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-2 rounded"
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
                                     onClick={() => handleOpenUpdateDialog({
                                         id: household.id,
                                         name: household.name,
@@ -263,7 +263,7 @@ const Household = () => {
                                     編集
                                 </button>
                                 <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
                                     onClick={() => deleteHousehold({
                                         id: household.id,
                                         name: household.name,
@@ -281,8 +281,8 @@ const Household = () => {
                     ))}
                 </tbody>
                 <tfoot>
-                    <td className="border-b px-4 py-4 md:text-lg text-center font-bold">請求金額</td>
-                    <td className="border-b px-4 py-4 md:text-lg text-right font-bold">¥ {billingAmount}</td>
+                    <td className="border-b px-2 py-1 md:text-lg text-center font-bold">請求金額</td>
+                    <td className="border-b px-2 py-1 md:text-lg text-right font-bold">¥ {billingAmount}</td>
                 </tfoot>
             </table>
         </div>
