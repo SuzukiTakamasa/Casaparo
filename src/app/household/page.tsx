@@ -232,7 +232,7 @@ const Household = () => {
                 </div>
             )}
 
-            <table className="table-auto w-full">
+            <table className="table-auto w-full overflow-x-auto">
                 <thead>
                     <tr>
                         <th className="border-b-2 px-4 py-2 md:px-2 md:py-1 bg-blue-900 text-white">項目名</th>
