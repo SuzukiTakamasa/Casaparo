@@ -232,22 +232,22 @@ const Household = () => {
                 </div>
             )}
 
-            <table className="table-auto w-full overflow-x-auto">
+            <table className="table-auto w-auto md:w-full">
                 <thead>
                     <tr>
-                        <th className="border-b-2 px-4 py-2 md:px-2 md:py-1 bg-blue-900 text-white">項目名</th>
-                        <th className="border-b-2 px-4 py-2 md:px-2 md:py-1 bg-blue-900 text-white">金額</th>
-                        <th className="border-b-2 px-4 py-2 md:px-2 md:py-1 bg-blue-900 text-white">登録者</th>
-                        <th className="border-b-2 px-4 py-2 md:px-2 md:py-1 bg-blue-900 text-white"></th>
+                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white">項目名</th>
+                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white">金額</th>
+                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white">登録者</th>
+                        <th className="border-b-2 px-4 py-2 bg-blue-900 text-white"></th>
                     </tr>
                 </thead>
                 <tbody>
                     {households.map((household, i) => (
                         <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
-                            <td className="border-b px-4 py-2 md:px-2 md:py-1 text-center">{household.name}</td>
-                            <td className="border-b px-4 py-2 md:px-2 md:py-1 text-right">¥ {household.is_owner ? household.amount : `-${household.amount}`}</td>
-                            <td className="border-b px-4 py-2 md:px-2 md:py-1 text-center w-24">{setUser(household.is_owner)}</td>
-                            <td className="border-b px-4 py-2 md:px-2 md:py-1 flext justify-center items-center space-x-2 w-36">
+                            <td className="border-b px-4 py-2 text-center">{household.name}</td>
+                            <td className="border-b px-4 py-2 text-right">¥ {household.is_owner ? household.amount : `-${household.amount}`}</td>
+                            <td className="border-b px-4 py-2 text-center w-24">{setUser(household.is_owner)}</td>
+                            <td className="border-b px-4 py-2 flex-col md:flex-row justify-center items-center space-x-2 w-36">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-2 rounded"
                                     onClick={() => handleOpenUpdateDialog({
@@ -281,8 +281,8 @@ const Household = () => {
                     ))}
                 </tbody>
                 <tfoot>
-                    <td className="border-b px-4 py-4 md:px-2 md:py-2 text-lg text-center font-bold">請求金額</td>
-                    <td className="border-b px-4 py-4 md:px-2 md:py-2 text-lg text-right font-bold">¥ {billingAmount}</td>
+                    <td className="border-b px-4 py-4 md:text-lg text-center font-bold">請求金額</td>
+                    <td className="border-b px-4 py-4 md:text-lg text-right font-bold">¥ {billingAmount}</td>
                 </tfoot>
             </table>
         </div>
