@@ -3,7 +3,6 @@
 //export const runtime = 'edge'
 
 import React, {useState, useEffect, useContext, useCallback} from "react"
-//import { PencilIcon, TrashIcon } from "@heroicons/react"
 
 import {YearProvider, YearContext} from "../components/YearPicker"
 import YearPicker from "../components/YearPicker"
