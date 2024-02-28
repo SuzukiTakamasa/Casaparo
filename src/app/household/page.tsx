@@ -29,7 +29,7 @@ const Household = () => {
     const [households, setHouseholds] = useState<HouseholdResponse>([])
     const [id, setId] = useState(0)
     const [newItemName, setNewItemName] = useState("")
-    const [newAmount, setNewAmount] = useState(0)
+    const [newAmount, setNewAmount] = useState("")
     const [isDefault, setIsDefault] = useState(false)
     const [isOwner, setIsOwner] = useState(false)
     const [version, setVersion] = useState(1)
@@ -57,7 +57,7 @@ const Household = () => {
         setShowDialog(true)
         setId(id as number)
         setNewItemName(name)
-        setNewAmount(amount)
+        setNewAmount(String(amount))
         setIsDefault(intToBool(is_default))
         setIsOwner(intToBool(is_owner))
         setVersion(version)
@@ -66,7 +66,7 @@ const Household = () => {
     const handleCloseDialog = () => {
         setShowDialog(false)
         setNewItemName("")
-        setNewAmount(0)
+        setNewAmount("")
         setIsDefault(false)
         setIsOwner(false)
         setVersion(1)
@@ -102,7 +102,7 @@ const Household = () => {
     const addHousehold = async () => {
         const addedHouseholdData = {
             name: newItemName,
-            amount: newAmount,
+            amount: Number(newAmount),
             year: householdYear,
             month: householdMonth,
             is_default: boolToInt(isDefault),
@@ -120,7 +120,7 @@ const Household = () => {
         const updatedHouseholdData = {
             id: id,
             name: newItemName,
-            amount: newAmount,
+            amount: Number(newAmount),
             year: householdYear,
             month: householdMonth,
             is_default: boolToInt(isDefault),
@@ -162,7 +162,7 @@ const Household = () => {
 
     return (
     <MonthProvider month={householdMonth} setMonth={setHouseholdMonth}>
-        <h1 className="text-2xl font-bold mc-4">家計簿</h1>
+        <h1 className="text-2xl font-bold mc-4">⚪️ 家計簿 ⚪️</h1>
 
         <YearProvider year={householdYear} setYear={setHouseholdYear}>
             <YearPicker />
@@ -197,7 +197,7 @@ const Household = () => {
                                 type="text"
                                 placeholder="金額"
                                 value={newAmount}
-                                onChange={(e) => setNewAmount(Number(e.target.value))}
+                                onChange={(e) => setNewAmount(e.target.value)}
                             />
                             <label className="flex items-center space-x-2 text-black">
                                 <input
@@ -219,12 +219,15 @@ const Household = () => {
                         <div className="flex justify-end space-x-4">
                         <button
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}>
+                            onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
+                            disabled={newItemName == "" || newAmount == ""}
+                        >
                             {isUpdate ? "変更" : "登録"}
                         </button>
                         <button
                             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={handleCloseDialog}>
+                            onClick={handleCloseDialog}
+                        >
                             キャンセル
                         </button>
                         </div>

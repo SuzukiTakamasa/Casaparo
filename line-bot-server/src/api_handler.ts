@@ -16,11 +16,11 @@ interface CompletedHouseholds {
 }
 
 export default class LINEMessagingAPIHandler {
-    private lineBotHost: string
-    private backendHost: string
-    private accessToken: string
-    private lineBotHeaders: {[key: string]: string}
-    private backendHeaders: {[key: string]: string}
+    private readonly lineBotHost: string
+    private readonly backendHost: string
+    private readonly accessToken: string
+    private readonly lineBotHeaders: {[key: string]: string}
+    private readonly backendHeaders: {[key: string]: string}
     private currentYear: number
     private currentMonth: number
 
@@ -100,12 +100,6 @@ export default class LINEMessagingAPIHandler {
             ]
         }
         await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
-        
-        const completedHousehold: CompletedHouseholds = {
-          year: this.currentYear,
-          month: this.currentMonth
-        }
-        await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completedHousehold)
     }
 
     public async remindFixedHousehold() {
@@ -118,6 +112,14 @@ export default class LINEMessagingAPIHandler {
         ]
       }
       await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
+    }
+
+    public async completeHouseHold() {
+      const completedHousehold: CompletedHouseholds = {
+        year: this.currentMonth == 1 ? this.currentYear - 1 : this.currentMonth,
+        month: this.currentMonth == 1 ? 12 : this.currentMonth - 1
+      }
+      await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completedHousehold)
     }
 
     /*public async replyFixedHousehold(ctx: any) {

@@ -12,8 +12,7 @@ const Schedule = () => {
     const [version, setVersion] = useState(1)
 
     return (
-        <>
-        </>
+        <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
     )
 }
 

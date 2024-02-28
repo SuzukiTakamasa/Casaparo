@@ -10,6 +10,8 @@ const scheduled = async(event: any, env: Env) => {
         case "0 0 20 * *":
             await apiHandler.broadcastFixedHousehold()
             break
+        case "0 0 1 * *":
+            await apiHandler.completeHouseHold()
     }
 }
 

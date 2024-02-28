@@ -4,8 +4,7 @@ import React from 'react'
 
 const Setting = () => {
     return (
-        <>
-        </>
+        <h1 className="text-2xl font-bold mc-4">🦵 設定 🦵</h1>
     )
 }
 
