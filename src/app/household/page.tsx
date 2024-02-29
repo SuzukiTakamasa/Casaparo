@@ -176,10 +176,8 @@ const Household = () => {
                 >
                 登録
             </button>
-            <div className="flex">
-                <MonthStrProvider monthStr="月の家計簿" cssStr="text-2xl font-bold mc-4" />
-                {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900">(請求済み)</div>}
-            </div>
+            <MonthPaginator monthStr="月の家計簿" cssStr="text-2xl font-bold mx-4" />
+            {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900">(請求済み)</div>}
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -235,7 +233,7 @@ const Household = () => {
                 </div>
             )}
 
-            <table className="table-auto min-w-full">
+            <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>
                         <th className="border-b-2 py-1 bg-blue-900"></th>
@@ -285,8 +283,7 @@ const Household = () => {
                             </td>
                             <td className="border-b px-1 py-1 text-center">{household.name}</td>
                             <td className="border-b px-1 py-1 text-right">¥{household.is_owner ? household.amount : `-${household.amount}`}</td>
-                            <td className="border-b px-1 py-1 text-center w-24">{setUser(household.is_owner)}</td>
-                            
+                            <td className="border-b px-1 py-1 text-center w-24">{setUser(household.is_owner)}</td>  
                         </tr>
                     ))}
                 </tbody>
@@ -297,8 +294,6 @@ const Household = () => {
                 </tfoot>
             </table>
         </div>
-
-        <MonthPaginator />
     </MonthProvider>
     )
 }
