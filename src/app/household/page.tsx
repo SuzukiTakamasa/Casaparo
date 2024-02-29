@@ -176,7 +176,7 @@ const Household = () => {
                 >
                 登録
             </button>
-            <MonthPaginator monthStr="月の家計簿" cssStr="text-lg font-bold mx-4" />
+            <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
             {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900">(請求済み)</div>}
 
             {showDialog && (
