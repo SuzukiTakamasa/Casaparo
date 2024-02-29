@@ -55,7 +55,7 @@ const MonthPaginator = ({monthStr, cssStr}: MonthStrProps) => {
     const {month, handleMonthIncrement, handleMonthDecrement} = useContext(MonthContext) as MonthContextType
 
     return (
-        <div className="flex justify-center space-x-32">
+        <div className="flex justify-center space-x-16">
             <button
                 className={`bg-transparent text-white font-bold py-2 px-4 rounded ${month === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}`}
                 onClick={handleMonthDecrement}
