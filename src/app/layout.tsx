@@ -31,9 +31,9 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
             <div className="flex items-center">
               <button onClick={toggleMenu} className="hamburger">
                 {menuVisible ? 
-                <XMarkIcon />
-                 : 
-                <HamburgerIcon />
+                  <XMarkIcon />
+                  : 
+                  <HamburgerIcon />
                 }
               </button>
               <Link href="/" className="ml-4 px-4 py-2 text-white hover:bg-gray-600">Casaparo</Link>
