@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon } from '../utils/HeroicIcons'
+import { ChevronLeftIcon, ChevronRightIcon } from './HeroicIcons'
 
 export type MonthContextType  = {
     month: number,

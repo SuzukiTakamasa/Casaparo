@@ -8,7 +8,7 @@ import './globals.css'
 import React, { useState } from 'react'
 import Link from 'next/link'
 
-import { XMarkIcon, HamburgerIcon } from './utils/HeroicIcons'
+import { XMarkIcon, HamburgerIcon } from './components/HeroicIcons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faCalendar, faChartBar, faBook, faCog } from '@fortawesome/free-solid-svg-icons'
 

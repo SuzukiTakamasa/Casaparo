@@ -11,7 +11,7 @@ import { MonthProvider, MonthContext } from '../components/MonthPaginator'
 import MonthPaginator from '../components/MonthPaginator'
 
 import { HouseholdData, HouseholdResponse, IsCompleted } from '../utils/constants'
-import { PencilIcon, TrashBoxIcon } from '../utils/HeroicIcons'
+import { PencilIcon, TrashBoxIcon } from '../components/HeroicIcons'
 import APIClient from '../utils/api_client'
 
 
