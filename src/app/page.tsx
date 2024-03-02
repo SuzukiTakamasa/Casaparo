@@ -3,10 +3,14 @@
 //export const runtime = 'edge'
 
 import Image from 'next/image'
-import { useState, useContext } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
+
 import { MonthContext } from './components/MonthPaginator'
 import { YearContext } from './components/YearPicker'
-import APIClient from "./utils/api_client"
+
+import APIClient from './utils/api_client'
+
+import { FixedAmount } from './utils/constants'
 
 
 const client = new  APIClient()
@@ -19,6 +23,23 @@ export default function Home() {
 
   const [totalAmount, setTotalAmount] = useState(0)
   const [billingAmount, setBillingAmount] = useState(0)
+
+  const fetchFixedAmount = useCallback(async () => {
+    try {
+      const fixedAmount = await client.get<FixedAmount>(`/household/fixed_amount/${year}/${month}`)
+      if (fixedAmount !== null) {
+        setTotalAmount(fixedAmount.total_amount)
+      } else {
+        throw new Error()
+      }
+      } catch (e) {
+        console.error("Failed to feth fixed_amount", e)
+      }
+  }, [year, month])
+
+   useEffect(() => {
+    fetchFixedAmount()
+   }, [fetchFixedAmount])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

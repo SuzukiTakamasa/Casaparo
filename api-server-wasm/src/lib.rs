@@ -61,7 +61,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select sum(case when is owner = 1 then amount else -amount end) as billing_amount, sum(amount) as total_amount from households where ( year = ?1 and month = ?2 ) or is_default = 1");
+            let statement = d1.prepare("select sum(case when is_owner = 1 then amount else -amount end) as billing_amount, sum(amount) as total_amount from households where ( year = ?1 and month = ?2 ) or is_default = 1");
             let query = statement.bind(&[year.into(), month.into()])?;
             match query.first::<models::FixedAmount>(None).await {
                 Ok(fixed_amount) => Response::from_json(&fixed_amount),
