@@ -47,9 +47,9 @@ export default function Home() {
       <div className="container max-w-full">
         <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1">
           <div className="bg-black text-white p-2">
-            <h2 className="text-x1 font-bold mb-4 text-center">🥺 今月の生活費・請求金額 🥺ྀི</h2>
-            <p className="text-base mb-2 text-right">{`生活費合計： ¥${totalAmount}`}</p>
-            <p className="text-base mb-2 text-right">{`請求金額： ¥${billingAmount}`}</p>
+            <h2 className="text-2xl font-bold mb-4 text-center">🥺 今月の生活費・請求金額 🥺ྀི</h2>
+            <p className="text-xl mb-2 text-right">{`生活費合計： ¥${totalAmount}`}</p>
+            <p className="text-xl mb-2 text-right">{`請求金額： ¥${billingAmount}`}</p>
           </div>
         </div>
       </div>
