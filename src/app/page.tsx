@@ -52,7 +52,7 @@ export default function Home() {
             <h2 className="text-2xl font-bold mb-4 text-center">今月の生活費・各負担分</h2>
             <p className="text-xl mb-2 text-right">{`生活費合計： ¥${formatNumberWithCommas(totalAmount)}`}</p>
             <p className="text-xl mb-2 text-right">{`🥺負担分： ¥${formatNumberWithCommas(totalAmount - billingAmount)}`}</p>
-            <p className="text-xl mb-2 text-right">{`🥺ྀི 負担分： ¥${formatNumberWithCommas(billingAmount)}`}</p>
+            <p className="text-xl mb-2 text-right">{`🥺ྀི負担分： ¥${formatNumberWithCommas(billingAmount)}`}</p>
             <div className="flex justify-end">
               <Link href="/household" className="flex text-xl text-blue-700 hover:underline">
                 <ArrowRightStartToIcon />
