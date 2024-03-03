@@ -11,6 +11,7 @@ import { MonthProvider, MonthContext } from '../components/MonthPaginator'
 import MonthPaginator from '../components/MonthPaginator'
 
 import { HouseholdData, HouseholdResponse, IsCompleted } from '../utils/constants'
+import { formatNumberWithCommas } from '../utils/utility_function'
 import { PencilIcon, TrashBoxIcon } from '../components/HeroicIcons'
 import APIClient from '../utils/api_client'
 
@@ -278,7 +279,7 @@ const Household = () => {
                                 </button>
                             </td>
                             <td className="border-b px-1 py-1 text-center">{household.name}</td>
-                            <td className="border-b px-1 py-1 text-right">¥{household.is_owner ? household.amount : `-${household.amount}`}</td>
+                            <td className="border-b px-1 py-1 text-right">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
                             <td className="border-b px-1 py-1 text-center w-24">{setUser(household.is_owner)}</td>  
                         </tr>
                     ))}
@@ -286,7 +287,7 @@ const Household = () => {
                 <tfoot>
                     <td className="border-b"></td>
                     <td className="border-b px-2 py-1 md:text-lg text-center font-bold">請求金額</td>
-                    <td className="border-b px-2 py-1 md:text-lg text-right font-bold">¥{billingAmount}</td>
+                    <td className="border-b px-2 py-1 md:text-lg text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
                 </tfoot>
             </table>
         </div>

@@ -10,6 +10,7 @@ import { YearContext } from './components/YearPicker'
 import APIClient from './utils/api_client'
 
 import { FixedAmount } from './utils/constants'
+import { formatNumberWithCommas } from './utils/utility_function'
 import { ArrowRightStartToIcon } from './components/HeroicIcons'
 
 
@@ -49,9 +50,9 @@ export default function Home() {
         <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1">
           <div className="bg-black text-white p-2">
             <h2 className="text-2xl font-bold mb-4 text-center">今月の生活費・各負担分</h2>
-            <p className="text-xl mb-2 text-right">{`生活費合計： ¥${totalAmount}`}</p>
-            <p className="text-xl mb-2 text-right">{`🥺負担分： ¥${totalAmount - billingAmount}`}</p>
-            <p className="text-xl mb-2 text-right">{`🥺ྀི 負担分： ¥${billingAmount}`}</p>
+            <p className="text-xl mb-2 text-right">{`生活費合計： ¥${formatNumberWithCommas(totalAmount)}`}</p>
+            <p className="text-xl mb-2 text-right">{`🥺負担分： ¥${formatNumberWithCommas(totalAmount - billingAmount)}`}</p>
+            <p className="text-xl mb-2 text-right">{`🥺ྀི 負担分： ¥${formatNumberWithCommas(billingAmount)}`}</p>
             <div className="flex justify-end">
               <Link href="/household" className="flex text-xl text-blue-700 hover:underline">
                 <ArrowRightStartToIcon />
