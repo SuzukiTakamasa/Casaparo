@@ -47,3 +47,12 @@ pub struct CompletedHouseholds {
 pub struct IsCompleted {
     pub is_completed: u8
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Wikis {
+    pub id: Option<u32>,
+    pub title: String,
+    pub content: String,
+    pub created_by: u8,
+    pub version: u32
+}

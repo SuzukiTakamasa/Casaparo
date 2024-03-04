@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS wikis;
+CREATE TABLE wikis (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_by INTEGER NOT NULL,
+    version INTEGER NOT NULL
+)

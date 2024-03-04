@@ -116,6 +116,28 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
+        .get_async("/wiki", |req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let query = d1.prepare("select * from wikis");
+            let result = match query.all().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            match result.results::<models::Wikis>() {
+                Ok(wikis) => Response::from_json(&wikis),
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    Response::error("Error pparsing results", 500)
+                }
+            }
+        })
         .post_async("/household/create", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
                 Ok(val) => val,
@@ -153,7 +175,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Household data was created.")
+            Response::ok("A household was created.")
         })
         .post_async("/household/update", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -209,7 +231,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Household data was updated.")
+            Response::ok("A household was updated.")
         })
         .post_async("/household/delete", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -260,7 +282,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Household data was deleted.")
+            Response::ok("A household was deleted.")
         })
         .post_async("/schedule/create", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -299,7 +321,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Schedule data was created.")
+            Response::ok("A schedule was created.")
         })
         .post_async("/schedule/update", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -354,7 +376,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Schedule data was updated.")
+            Response::ok("A schedule was updated.")
         })
         .post_async("/schedule/delete", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -405,7 +427,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("Schedule data was deleted.")
+            Response::ok("A schedule was deleted.")
         })
         .post_async("/completed_household/create", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -439,7 +461,150 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            return Response::ok("Completed household data was created.")
+            return Response::ok("A completed household was created.")
+        })
+        .post_async("/wiki/create", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
+            let wiki: models::Wikis = match from_str(json_body.as_str()) {
+                Ok(wiki) => wiki,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let statement = d1.prepare("insert into wikis (title, content, created_by, version) values (?1, ?2, ?3, ?4)");
+            let query = statement.bind(&[wiki.title.into(),
+                                                              wiki.content.into(),
+                                                              wiki.created_by.into(),
+                                                              wiki.version.into()])?;
+            
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            return Response::ok("A wiki was created")
+        })
+        .post_async("/wiki/update", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                } 
+            };
+            let mut wiki: models::Wikis = match from_str(json_body.as_str()) {
+                Ok(wiki) => wiki,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let fetch_version_statement = d1.prepare("select version from wikis where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[wiki.id.into()])?;
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
+            if let Some(latest) = fetch_version_result {
+                if wiki.version == latest.version {
+                    wiki.version += 1
+                } else {
+                    return Response::error("Attempt to update a stale object", 500)
+                }
+            } else {
+                return Response::error("Version is found None", 500)
+            }
+            let statement = d1.prepare("update wikis set title = ?1, content = ?2, created_by = ?3, version = ?4 where id = ?5");
+            let query = statement.bind(&[wiki.title.into(),
+                                                                         wiki.content.into(),
+                                                                         wiki.created_by.into(),
+                                                                         wiki.version.into(),
+                                                                         wiki.id.into()])?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            Response::ok("A wiki was updated.")
+        })
+        .post_async("/wiki/delete", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                } 
+            };
+            let mut wiki: models::Wikis = match from_str(json_body.as_str()) {
+                Ok(wiki) => wiki,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let fetch_version_statement = d1.prepare("select version from wikis where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[wiki.id.into()])?;
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
+            if let Some(latest) = fetch_version_result {
+                if wiki.version == latest.version {
+                    wiki.version += 1
+                } else {
+                    return Response::error("Attempt to update a stale object", 500)
+                }
+            } else {
+                return Response::error("Version is found None", 500)
+            }
+            let statement = d1.prepare("delete from wikis where id = ?1");
+            let query = statement.bind(&[wiki.id.into()])?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            Response::ok("A wikis was deleted.")
         })
     .run(req, env)
     .await
