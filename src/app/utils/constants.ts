@@ -30,8 +30,18 @@ export interface FixedAmount {
     total_amount: number
 }
 
+export interface WikiData {
+    id?: number,
+    title: string,
+    content: string,
+    created_by: number,
+    version: number
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]
 
-export type APIRequest = HouseholdData | ScheduleData
+export type WikiResponse = WikiData[]
+
+export type APIRequest = HouseholdData | ScheduleData | WikiData

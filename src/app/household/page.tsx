@@ -67,6 +67,7 @@ const Household = () => {
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
+        setId(0)
         setNewItemName("")
         setNewAmount("")
         setIsDefault(false)
@@ -83,8 +84,8 @@ const Household = () => {
 
     const fetchHouseholds = useCallback(async () => {
         try {
-            const hh = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
-            setHouseholds(hh || [])
+            const households = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
+            setHouseholds(households || [])
         } catch (e) {
             console.error("Failed to fetch households", e)
         }
@@ -109,7 +110,7 @@ const Household = () => {
             month: householdMonth,
             is_default: boolToInt(isDefault),
             is_owner: boolToInt(isOwner),
-            version: 1
+            version: version
         }
         try {
             const res = await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
