@@ -138,6 +138,24 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
+        .get_async("/wiki/:id", |req, ctx| async move {
+            let id = ctx.param("id").unwrap();
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let statement = d1.prepare("select * from wikis where id = ?1");
+            let query = statement.bind(&[id.into()])?;
+            match query.first::<models::Wikis>(None).await {
+                Ok(wiki_detail) => Response::from_json(&wiki_detail),
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Error parsing results", 500)
+                }
+            }
+        })
         .post_async("/household/create", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
                 Ok(val) => val,
