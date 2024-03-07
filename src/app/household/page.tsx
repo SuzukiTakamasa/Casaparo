@@ -218,19 +218,19 @@ const Household = () => {
                             </label>
                         </div>
                         <div className="flex justify-end space-x-4">
-                        <button
-                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
-                            disabled={newItemName == "" || newAmount == ""}
-                        >
-                            {isUpdate ? "変更" : "登録"}
-                        </button>
-                        <button
-                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                            onClick={handleCloseDialog}
-                        >
-                            キャンセル
-                        </button>
+                            <button
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
+                                disabled={newItemName == "" || newAmount == ""}
+                            >
+                                {isUpdate ? "変更" : "登録"}
+                            </button>
+                            <button
+                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={handleCloseDialog}
+                            >
+                                キャンセル
+                            </button>
                         </div>
                     </div>
                 </div>
