@@ -137,10 +137,10 @@ const Wiki = () => {
                             >
                             </textarea>
                             <button
-                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                className="aria-label text-black text-left"
                                 onClick={handleShowPreview}
                             >
-                                {showPreview ? "プレビューを非表示" : "プレビューを表示"}
+                                {showPreview ? "▼プレビューを非表示" : "▶︎プレビューを表示"}
                             </button>
                             {showPreview &&
                                 <div className="text-black">
