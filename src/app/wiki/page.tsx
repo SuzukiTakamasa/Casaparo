@@ -1,10 +1,13 @@
 "use client"
 
 import React, { useState, useEffect, useCallback} from 'react'
+import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 
 import { WikiData, WikiResponse } from '../utils/constants'
+import { PencilIcon, TrashBoxIcon } from '../components/HeroicIcons'
 import APIClient from '../utils/api_client'
+import { setUser } from '../utils/utility_function'
 
 
 const client = new APIClient()
@@ -19,7 +22,7 @@ const Wiki = () => {
     const [id, setId] = useState(0)
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
-    const [createdBy, setCreatedBy] = useState(0)
+    const [createdBy, setCreatedBy] = useState(1)
     const [version, setVersion] = useState(1)
 
     const handleAddWiki = () => {
@@ -47,9 +50,12 @@ const Wiki = () => {
         setId(0)
         setTitle("")
         setContent("")
-        setCreatedBy(0)
+        setCreatedBy(1)
         setVersion(1)
         setIsUpdate(false)
+    }
+    const handleSetCreatedBy = (event: any) => {
+        setCreatedBy(Number(event.target.value))
     }
     const handleShowPreview = () => {
         setShowPreview(!showPreview)
@@ -136,6 +142,23 @@ const Wiki = () => {
                                 onChange={(e) => setContent(e.target.value)}
                             >
                             </textarea>
+                            <div className="text-black">作成者</div>
+                            <div className="text-3xl text-center">
+                                <input
+                                    type="radio"
+                                    value="1"
+                                    checked={createdBy === 1}
+                                    onChange={handleSetCreatedBy}
+                                    />
+                                    <span className="mr-8">🥺</span>
+                                <input
+                                    type="radio"
+                                    value="0"
+                                    checked={createdBy === 0}
+                                    onChange={handleSetCreatedBy}
+                                    />
+                                    <span>🥺ྀི</span>
+                            </div>
                             <button
                                 className="aria-label text-black text-left"
                                 onClick={handleShowPreview}
@@ -165,6 +188,52 @@ const Wiki = () => {
                     </div>
                 </div>
             )}
+
+            <table className="table-auto min-w-full mt-4">
+                <thead>
+                    <tr>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white"></th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white">タイトル</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white">作成者</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {wikis.map((wiki, i) => (
+                        <tr key={i} >
+                            <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                    onClick={() => handleOpenUpdateDialog({
+                                        id: wiki.id,
+                                        title: wiki.title,
+                                        content: wiki.content,
+                                        created_by: wiki.created_by,
+                                        version: wiki.version
+                                    })}
+                                >
+                                    <PencilIcon />
+                                </button>
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                    onClick={() => deleteWiki({
+                                        id: wiki.id,
+                                        title: wiki.title,
+                                        content: wiki.content,
+                                        created_by: wiki.created_by,
+                                        version: wiki.version
+                                    })}
+                                >
+                                    <TrashBoxIcon />
+                                </button>
+                            </td>
+                            <td className="border-b px-1 py-1 text-center">
+                                <Link href={`/wiki/${wiki.id}`} className="text-blue-700 hover:underline">{wiki.title}</Link>
+                            </td>
+                            <td className="border-b px-1 py-1 text-center">{setUser(wiki.created_by)}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     </>
     )

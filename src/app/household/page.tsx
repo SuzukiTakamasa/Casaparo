@@ -14,15 +14,11 @@ import { HouseholdData, HouseholdResponse, IsCompleted } from '../utils/constant
 import { formatNumberWithCommas } from '../utils/utility_function'
 import { PencilIcon, TrashBoxIcon } from '../components/HeroicIcons'
 import APIClient from '../utils/api_client'
+import { setUser, boolToInt, intToBool } from '../utils/utility_function'
 
 
 const client = new APIClient()
 
-const boolToInt = (flag: boolean) => +flag
-const intToBool = (bit: number) => !!bit
-const setUser = (isOwner: number) => {
-    return isOwner ? "🥺" : "🥺ྀི"
-}
 
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
