@@ -4,17 +4,17 @@
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
 
-import { YearProvider, YearContext } from '../components/YearPicker'
-import YearPicker from '../components/YearPicker'
+import { YearProvider, YearContext } from '@components/YearPicker'
+import YearPicker from '@components/YearPicker'
 
-import { MonthProvider, MonthContext } from '../components/MonthPaginator'
-import MonthPaginator from '../components/MonthPaginator'
+import { MonthProvider, MonthContext } from '@components/MonthPaginator'
+import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted } from '../utils/constants'
-import { formatNumberWithCommas } from '../utils/utility_function'
-import { PencilIcon, TrashBoxIcon } from '../components/HeroicIcons'
-import APIClient from '../utils/api_client'
-import { setUser, boolToInt, intToBool } from '../utils/utility_function'
+import { HouseholdData, HouseholdResponse, IsCompleted } from '@utils/constants'
+import { formatNumberWithCommas } from '@utils/utility_function'
+import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import APIClient from '@utils/api_client'
+import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 
 
 const client = new APIClient()

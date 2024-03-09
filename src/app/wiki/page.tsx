@@ -4,10 +4,10 @@ import React, { useState, useEffect, useCallback} from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 
-import { WikiData, WikiResponse } from '../utils/constants'
-import { PencilIcon, TrashBoxIcon } from '../components/HeroicIcons'
-import APIClient from '../utils/api_client'
-import { setUser } from '../utils/utility_function'
+import { WikiData, WikiResponse } from '@utils/constants'
+import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import APIClient from '@utils/api_client'
+import { setUser } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -62,12 +62,8 @@ const Wiki = () => {
     }
 
     const fetchWikis = useCallback(async () => {
-        try {
-            const wikis = await client.get<WikiResponse>('/wiki')
-            setWikis(wikis || [])
-        } catch (e) {
-            console.error("Failed to fetch wikis", e)
-        }
+        const wikis = await client.get<WikiResponse>('/wiki')
+        setWikis(wikis || [])
     }, [])
     const addWiki = async () => {
         const addedWikiData = {
@@ -76,12 +72,8 @@ const Wiki = () => {
             created_by: createdBy,
             version: version
         }
-        try {
-            const res = await client.post<WikiResponse>('/wiki/create', addedWikiData)
-            await fetchWikis()
-        } catch (e) {
-            console.error("Failed to add a wiki", e)
-        }
+        const res = await client.post<WikiResponse>('/wiki/create', addedWikiData)
+        await fetchWikis()
     }
     const updateWiki = async () => {
         const updatedWikiData = {
@@ -91,21 +83,12 @@ const Wiki = () => {
             created_by: createdBy,
             version: version
         }
-        try {
-            const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
-            await fetchWikis()
-        } catch (e) {
-            console.error("Failed to update a wiki", e)
-        }
+        await fetchWikis()
     }
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
-        try {
-            const res = await client.post<WikiResponse>('/wiki/delete', deleteWikiData)
-            await fetchWikis()
-        } catch (e) {
-            console.error("Failed to delete a wiki", e)
-        }
+        const res = await client.post<WikiResponse>('/wiki/delete', deleteWikiData)
+        await fetchWikis()
     }
 
     useEffect(() => {
