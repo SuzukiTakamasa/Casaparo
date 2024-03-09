@@ -79,24 +79,14 @@ const Household = () => {
     }
 
     const fetchHouseholds = useCallback(async () => {
-        try {
-            const households = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
-            setHouseholds(households || [])
-        } catch (e) {
-            console.error("Failed to fetch households", e)
-        }
+        const households = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
+        setHouseholds(households || [])
     }, [householdYear, householdMonth])
     const fetchIsCompleted = useCallback(async () => {
-        try {
             const res = await client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
             if (res !== null) {
                 setIsCompleted(res.is_completed)
-            } else {
-                throw new Error()
             }
-        } catch (e) {
-            console.error("Failed to fetch is_completed", e)
-        }
     }, [householdYear, householdMonth])
     const addHousehold = async () => {
         const addedHouseholdData = {
@@ -108,12 +98,8 @@ const Household = () => {
             is_owner: boolToInt(isOwner),
             version: version
         }
-        try {
-            const res = await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
-            await fetchHouseholds()
-        } catch (e) {
-            console.error("Failed to add a households", e)
-        }
+        const res = await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
+        await fetchHouseholds()
     }
     const updateHousehold = async () => {
         const updatedHouseholdData = {
@@ -126,21 +112,13 @@ const Household = () => {
             is_owner: boolToInt(isOwner),
             version: version
         }
-        try {
-            const res = await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
-            await fetchHouseholds()
-        } catch (e) {
-            console.error("Failed to update a household", e)
-        }  
+        const res = await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
+        await fetchHouseholds()
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
-        try {
-            const res = await client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
-            await fetchHouseholds()
-        } catch (e) {
-            console.error("Failed to delete a household", e)
-        }
+        const res = await client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
+        await fetchHouseholds()
     }
     const calculateBillingAmount = useCallback(() => {
         let balance = 0

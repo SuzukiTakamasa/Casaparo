@@ -26,16 +26,10 @@ export default function Home() {
   const [billingAmount, setBillingAmount] = useState(0)
 
   const fetchFixedAmount = useCallback(async () => {
-    try {
       const fixedAmount = await client.get<FixedAmount>(`/household/fixed_amount/${year}/${month}`)
       if (fixedAmount !== null) {
         setTotalAmount(fixedAmount.total_amount)
         setBillingAmount(fixedAmount.billing_amount)
-      } else {
-        throw new Error()
-      }
-      } catch (e) {
-        console.error("Failed to feth fixed_amount", e)
       }
   }, [year, month])
 
