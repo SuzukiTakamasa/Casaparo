@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import APIClient from '@utils/api_client'
 import { WikiData } from '@utils/constants'
 
+
 const client = new APIClient()
 
 
@@ -25,8 +26,10 @@ const WikiDetail = () => {
     }, [fetchWikiDetail])
     return (
         <>
-            <h1>{wikiDetail.title}</h1>
-            <p>{wikiDetail.content}</p>
+            <div className="container mx-auto p-4 text-center">
+                <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
+                <p className="text-lg mt-8">{wikiDetail.content}</p>
+            </div>
         </>
     )
 }

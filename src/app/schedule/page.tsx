@@ -17,6 +17,7 @@ import APIClient from '@utils/api_client'
 
 const client = new APIClient()
 
+
 const getDaysArray = (year: number, month: number) => {
     let daysArray = []
     let numberOfDays = new Date(year, month, 0).getDate()
