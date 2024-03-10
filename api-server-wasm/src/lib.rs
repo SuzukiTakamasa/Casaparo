@@ -122,7 +122,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 Err(e) => return Response::error(e.to_string(), 400)
             };
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let query = d1.prepare("select * from wikis order by desc");
+            let query = d1.prepare("select * from wikis order by id desc");
             let result = match query.all().await {
                 Ok(res) => res,
                 Err(e) => {
