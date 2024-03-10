@@ -46,6 +46,58 @@ const Schedule = () => {
     const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
+    const handleOpenAddDialog = () => {
+        setShowDialog(true)
+    }
+    const handleOpenUpdateDialog = ({id, description, from_time, to_time, version}: ScheduleData) => {
+        setShowDialog(true)
+        setId(id as number)
+        setDescription(description)
+        setFromTime(from_time)
+        setToTime(to_time)
+        setVersion(version)
+        setIsUpdate(true)
+    }
+    const handleCloseDialog = () => {
+        setShowDialog(false)
+        setId(0)
+        setDescription("")
+        setFromTime("")
+        setToTime("")
+        setVersion(1)
+        setIsUpdate(false)
+    }
+    const fetchSchedules = useCallback(async () => {
+        const schedules = await client.get<ScheduleResponse>(`/shcedule/${scheduleYear}/${scheduleMonth}`)
+        setSchedules(schedules || [])
+    }, [scheduleYear, scheduleMonth])
+    const addSchedule = async () => {
+        const addScheduleData = {
+            description: description,
+            from_time: fromTime,
+            to_time: toTime,
+            version: version
+        }
+        const res = await client.post<ScheduleResponse>('/schedule/create', addScheduleData)
+        await fetchSchedules()
+    }
+    const updateSchedule = async () => {
+        const updateSchedule = {
+            id: id,
+            description: description,
+            from_time: fromTime,
+            to_time: toTime,
+            version: version
+        }
+        const res = await client.post<ScheduleResponse>('/schedule/update', updateSchedule)
+        await fetchSchedules()
+    }
+    const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
+        if (!window.confirm("削除しますか？")) return
+        const res = await client.post<ScheduleResponse>('/shcedule/delete', deletedScheduleData)
+        await fetchSchedules()
+    }
+
     return (
     <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth}>
         <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
