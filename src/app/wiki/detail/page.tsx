@@ -1,12 +1,21 @@
 "use client"
 
-import { useEffect, useState, useCallback} from 'react'
+import React, { useEffect, useState, useCallback} from 'react'
 import { useSearchParams } from 'next/navigation'
 import APIClient from '@utils/api_client'
 import { WikiData } from '@utils/constants'
 
 
 const client = new APIClient()
+
+const addBreakPoint = (text: string) => {
+    return text.split('\n').map((l, i) => (
+        <span key={i}>
+            {l}
+            <br />
+        </span>
+    ))
+}
 
 
 const WikiDetail = () => {
@@ -26,9 +35,11 @@ const WikiDetail = () => {
     }, [fetchWikiDetail])
     return (
         <>
-            <div className="container mx-auto p-4 text-center">
+            <div className="container mx-auto p-4 grid place-items-center">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
-                <p className="text-lg mt-8">{wikiDetail.content}</p>
+                <div className="text-lg mt-8">
+                    {wikiDetail.content.includes('\n') ? addBreakPoint(wikiDetail.content) : wikiDetail.content}
+                </div>
             </div>
         </>
     )

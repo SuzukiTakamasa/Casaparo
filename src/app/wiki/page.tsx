@@ -83,6 +83,7 @@ const Wiki = () => {
             created_by: createdBy,
             version: version
         }
+        const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
         await fetchWikis()
     }
     const deleteWiki = async(deleteWikiData: WikiData) => {
