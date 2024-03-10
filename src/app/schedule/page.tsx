@@ -3,6 +3,8 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
+import { TimePicker } from 'react-time-picker'
+import dayjs from 'dayjs'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
@@ -36,8 +38,8 @@ const Schedule = () => {
     const [id, setId] = useState(0)
     const [description, setDescription] = useState("")
     const [date, setDate] = useState("")
-    const [fromTime, setFromTime] = useState("")
-    const [toTime, setToTime] = useState("")
+    const [fromTime, setFromTime] = useState("0:00")
+    const [toTime, setToTime] = useState("0:00")
     const [version, setVersion] = useState(1)
 
     const { month } = useContext(MonthContext)
@@ -46,6 +48,18 @@ const Schedule = () => {
     const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
+    const handleChangeFromTime = () => {
+        setFromTime(fromTime)
+    }
+
+    const handleAddSchedule = () => {
+        addSchedule()
+        handleCloseDialog()
+    }
+    const handleUpdateSchedule = () => {
+        updateSchedule()
+        handleCloseDialog()
+    }
     const handleOpenAddDialog = () => {
         setShowDialog(true)
     }
@@ -62,8 +76,8 @@ const Schedule = () => {
         setShowDialog(false)
         setId(0)
         setDescription("")
-        setFromTime("")
-        setToTime("")
+        setFromTime("0:00")
+        setToTime("0:00")
         setVersion(1)
         setIsUpdate(false)
     }
@@ -107,7 +121,44 @@ const Schedule = () => {
         </YearProvider>
 
         <div className="container mx-auto p-4">
+            <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                onClick={handleOpenAddDialog}
+            >
+            登録
+            </button>
             <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
+
+            {showDialog && (
+            <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                <div className="bg-white p-4 rounded">
+                    <div className="flex flex-col space-y-4 mb-4">
+                        <input
+                            className="border p-2 text-black"
+                            type="text"
+                            placeholder="予定"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex justify-end space-x-4">
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                            onClick={isUpdate ? handleUpdateSchedule : handleAddSchedule}
+                            disabled={description == "" || fromTime == "" || toTime == ""}
+                        >
+                            {isUpdate ? "変更" : "登録"}
+                        </button>
+                        <button
+                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                            onClick={handleCloseDialog}
+                        >
+                            キャンセル
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
         </div>
     </MonthProvider>
     )

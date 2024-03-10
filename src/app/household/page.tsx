@@ -150,7 +150,7 @@ const Household = () => {
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                 onClick={handleOpenAddDialog}
                 disabled={intToBool(isCompleted)}
-                >
+            >
                 登録
             </button>
             <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
