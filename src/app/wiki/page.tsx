@@ -7,7 +7,7 @@ import ReactMarkdown from 'react-markdown'
 import { WikiData, WikiResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
-import { setUser } from '@utils/utility_function'
+import { setUser, getCurrentDateTime } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -60,7 +60,6 @@ const Wiki = () => {
     const handleShowPreview = () => {
         setShowPreview(!showPreview)
     }
-
     const fetchWikis = useCallback(async () => {
         const wikis = await client.get<WikiResponse>('/wiki')
         setWikis(wikis || [])
@@ -70,6 +69,7 @@ const Wiki = () => {
             title: title,
             content: content,
             created_by: createdBy,
+            updated_at: getCurrentDateTime(),
             version: version
         }
         const res = await client.post<WikiResponse>('/wiki/create', addedWikiData)
@@ -81,6 +81,7 @@ const Wiki = () => {
             title: title,
             content: content,
             created_by: createdBy,
+            updated_at: getCurrentDateTime(),
             version: version
         }
         const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
@@ -192,6 +193,7 @@ const Wiki = () => {
                                         title: wiki.title,
                                         content: wiki.content,
                                         created_by: wiki.created_by,
+                                        updated_at: wiki.updated_at,
                                         version: wiki.version
                                     })}
                                 >
@@ -204,6 +206,7 @@ const Wiki = () => {
                                         title: wiki.title,
                                         content: wiki.content,
                                         created_by: wiki.created_by,
+                                        updated_at: wiki.updated_at,
                                         version: wiki.version
                                     })}
                                 >
@@ -212,6 +215,7 @@ const Wiki = () => {
                             </td>
                             <td className="border-b px-1 py-1 text-center">
                                 <Link href={`/wiki/detail?id=${wiki.id}`} className="text-blue-700 hover:underline">{wiki.title}</Link>
+                                <div className="text-xs">{`(最終更新: ${wiki.updated_at})`}</div>
                             </td>
                             <td className="border-b px-1 py-1 text-center">{setUser(wiki.created_by)}</td>
                         </tr>

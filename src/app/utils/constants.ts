@@ -35,6 +35,7 @@ export interface WikiData {
     title: string,
     content: string,
     created_by: number,
+    updated_at: string,
     version: number
 }
 
