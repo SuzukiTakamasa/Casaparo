@@ -4,5 +4,6 @@ CREATE TABLE wikis (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     created_by INTEGER NOT NULL,
+    updated_at TEXT NOT NULL,
     version INTEGER NOT NULL
 )

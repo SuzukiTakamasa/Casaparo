@@ -54,5 +54,6 @@ pub struct Wikis {
     pub title: String,
     pub content: String,
     pub created_by: u8,
+    pub updated_at: String,
     pub version: u32
 }
