@@ -1,3 +1,4 @@
+import { useContext, useState } from 'react' 
 import ClipLoader from 'react-spinners/ClipLoader'
 
 type LoaderProps = {
@@ -14,3 +15,5 @@ const Loader = ({size, isLoading}: LoaderProps) => {
         />
     )
 }
+
+export default Loader
