@@ -15,15 +15,15 @@ fn get_db_env(req: &Request) -> Result<String> {
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
-    let allowed_origins = vec![
+    /*let allowed_origins = vec![
         env.var("CORS_FRONTEND_HOST_DEV")?.to_string(),
         env.var("CORS_FRONTEND_HOST_PROD_DEFAULT")?.to_string(),
         env.var("CORS_FRONTEND_HOST_PROD_LINE_BOT")?.to_string(),
     ];
-    let allowed_origins_str = allowed_origins.join("\0");
+    let allowed_origins_str = allowed_origins.join("\0");*/
 
     let mut headers = Headers::new();
-    headers.set("Access-Control-Allow-Origin", &allowed_origins_str)?;
+    headers.set("Access-Control-Allow-Origin", "*")?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
 
