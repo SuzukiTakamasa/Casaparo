@@ -33,7 +33,6 @@ const Household = () => {
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
-    const [isLoading, setIsLoading] = useState(true)
 
     const { month } = useContext(MonthContext)
     const [householdMonth, setHouseholdMonth] = useState(month)

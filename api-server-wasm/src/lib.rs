@@ -20,7 +20,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         env.var("CORS_FRONTEND_HOST_PROD_DEFAULT")?.to_string(),
         env.var("CORS_FRONTEND_HOST_PROD_LINE_BOT")?.to_string(),
     ];
-    let allowed_origins_str = allowed_origins.join(", ");
+    let allowed_origins_str = allowed_origins.join("\0");
 
     let mut headers = Headers::new();
     headers.set("Access-Control-Allow-Origin", &allowed_origins_str)?;
