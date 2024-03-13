@@ -79,6 +79,8 @@ const Schedule = () => {
         setShowDialog(false)
         setId(0)
         setDescription("")
+        setFromDate(1)
+        setToDate(1)
         setFromTime("0:00")
         setToTime("0:00")
         setVersion(1)
