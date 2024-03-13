@@ -15,7 +15,8 @@ export interface ScheduleData {
     description: string,
     year?: number,
     month?: number,
-    date?: number,
+    from_date: number,
+    to_date: number,
     from_time: string,
     to_time: string,
     version: number

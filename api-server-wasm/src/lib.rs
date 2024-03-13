@@ -330,11 +330,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into schedules (description, year, month, date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
+            let statement = d1.prepare("insert into schedules (description, year, month, from_date, to_date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)");
             let query = statement.bind(&[schedule.description.into(),
                                                               schedule.year.into(),
                                                               schedule.month.into(),
-                                                              schedule.date.into(),
+                                                              schedule.from_date.into(),
+                                                              schedule.to_date.into(),
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
                                                               schedule.version.into()])?;
@@ -387,8 +388,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Version is found None", 500);
             }
-            let statement = d1.prepare("update schedules set description = ?1, from_time = ?2, to_time = ?3, version = ?4 where id = ?5");
+            let statement = d1.prepare("update schedules set description = ?1, from_date = ?2, to_date = ?3, from_time = ?4, to_time = ?5, version = ?6 where id = ?7");
             let query = statement.bind(&[schedule.description.into(),
+                                                              schedule.from_date.into(),
+                                                              schedule.to_date.into(),
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
                                                               schedule.id.into(),

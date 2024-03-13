@@ -37,7 +37,8 @@ const Schedule = () => {
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
     const [description, setDescription] = useState("")
-    const [date, setDate] = useState("")
+    const [fromDate, setFromDate] = useState(1)
+    const [toDate, setToDate] = useState(1)
     const [fromTime, setFromTime] = useState("0:00")
     const [toTime, setToTime] = useState("0:00")
     const [version, setVersion] = useState(1)
@@ -63,10 +64,12 @@ const Schedule = () => {
     const handleOpenAddDialog = () => {
         setShowDialog(true)
     }
-    const handleOpenUpdateDialog = ({id, description, from_time, to_time, version}: ScheduleData) => {
+    const handleOpenUpdateDialog = ({id, description, from_date, to_date, from_time, to_time, version}: ScheduleData) => {
         setShowDialog(true)
         setId(id as number)
         setDescription(description)
+        setFromDate(from_date)
+        setToDate(to_date)
         setFromTime(from_time)
         setToTime(to_time)
         setVersion(version)
@@ -88,6 +91,8 @@ const Schedule = () => {
     const addSchedule = async () => {
         const addScheduleData = {
             description: description,
+            from_date: fromDate,
+            to_date: toDate,
             from_time: fromTime,
             to_time: toTime,
             version: version
@@ -99,6 +104,8 @@ const Schedule = () => {
         const updateSchedule = {
             id: id,
             description: description,
+            from_date: fromDate,
+            to_date: toDate,
             from_time: fromTime,
             to_time: toTime,
             version: version

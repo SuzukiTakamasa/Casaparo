@@ -25,7 +25,8 @@ pub struct Schedules {
     pub description: String,
     pub year: Option<u16>,
     pub month: Option<u8>,
-    pub date: Option<u8>,
+    pub from_date: Option<u8>,
+    pub to_date: Option<u8>,
     pub from_time: String,
     pub to_time: String,
     pub version: u32
