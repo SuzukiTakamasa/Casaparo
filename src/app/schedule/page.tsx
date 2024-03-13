@@ -30,6 +30,16 @@ const getDaysArray = (year: number, month: number) => {
     return daysArray
 }
 
+const getTimeArray = () => {
+    const timeArray = []
+    for (let h = 1; h <= 23; h++) {
+        for (let m = 0; m <= 30; m += 30) {
+            timeArray.push(`${h}:${m}`)
+        }
+    }
+    return timeArray
+}
+
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
