@@ -20,25 +20,15 @@ import APIClient from '@utils/api_client'
 const client = new APIClient()
 
 
-const getDaysArray = (year: number, month: number) => {
-    let daysArray = []
-    let numberOfDays = new Date(year, month, 0).getDate()
-
-    for (let d = 1; d <= numberOfDays; d++) {
-        daysArray.push(new Date(year, month -1, d))
-    }
-    return daysArray
-}
-
 const getTimeArray = () => {
     const timeArray = []
     for (let h = 1; h <= 23; h++) {
         for (let m = 0; m <= 30; m += 30) {
-            timeArray.push(`${h}:${m}`)
+            timeArray.push(`${h}:${m === 0 ? '00' : m}`)
         }
     }
-    return timeArray
 }
+
 
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
@@ -52,6 +42,9 @@ const Schedule = () => {
     const [fromTime, setFromTime] = useState("0:00")
     const [toTime, setToTime] = useState("0:00")
     const [version, setVersion] = useState(1)
+
+    const [daysArray, setDaysArray] = useState<number[]>([])
+    const [isMultipleDays, setIsMultipleDays] = useState(false)
 
     const { month } = useContext(MonthContext)
     const [scheduleMonth, setScheduleMonth] = useState(month)
@@ -73,6 +66,7 @@ const Schedule = () => {
     }
     const handleOpenAddDialog = () => {
         setShowDialog(true)
+        handleGenerateDaysArray()
     }
     const handleOpenUpdateDialog = ({id, description, from_date, to_date, from_time, to_time, version}: ScheduleData) => {
         setShowDialog(true)
@@ -84,6 +78,7 @@ const Schedule = () => {
         setToTime(to_time)
         setVersion(version)
         setIsUpdate(true)
+        handleGenerateDaysArray()
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
@@ -95,12 +90,19 @@ const Schedule = () => {
         setToTime("0:00")
         setVersion(1)
         setIsUpdate(false)
+        handleResetDaysArray()
+    }
+    const handleIsMultipleDays = () => {
+        setIsMultipleDays(!isMultipleDays)
     }
     const fetchSchedules = useCallback(async () => {
         const schedules = await client.get<ScheduleResponse>(`/shcedule/${scheduleYear}/${scheduleMonth}`)
         setSchedules(schedules || [])
     }, [scheduleYear, scheduleMonth])
     const addSchedule = async () => {
+        if (!isMultipleDays) {
+            setToDate(fromDate)
+        }
         const addScheduleData = {
             description: description,
             from_date: fromDate,
@@ -113,6 +115,9 @@ const Schedule = () => {
         await fetchSchedules()
     }
     const updateSchedule = async () => {
+        if (!isMultipleDays) {
+            setToDate(fromDate)
+        }
         const updateSchedule = {
             id: id,
             description: description,
@@ -130,6 +135,22 @@ const Schedule = () => {
         const res = await client.post<ScheduleResponse>('/shcedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
+    const handleGenerateDaysArray = () => {
+        const darr = []
+        let numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
+
+        for (let d = 1; d <= numberOfDays; d++) {
+            darr.push(d)
+        }
+        setDaysArray(darr)
+    }
+    const handleResetDaysArray = () => {
+        setDaysArray([])
+    }
+
+    useEffect(() => {
+        fetchSchedules()
+    }, [fetchSchedules])
 
     return (
     <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth}>
@@ -159,6 +180,39 @@ const Schedule = () => {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                         />
+                        <label className="text-black">
+                            <span>日付{isMultipleDays && '(開始日)'}</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(Number(e.target.value))}
+                            >
+                                {daysArray.map((d, i) => (
+                                    <option key={i} value={d}>{d}</option>
+                            ))}
+                            </select>
+                        </label>
+                        {isMultipleDays &&
+                        <label className="text-black">
+                            <span>日付(終了日)</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={fromDate}
+                                onChange={(e) => setFromDate(Number(e.target.value))}
+                            >
+                                {daysArray.map((d, i) => (
+                                    <option key={i} value={d}>{d}</option>
+                            ))}
+                            </select>
+                        </label>}
+                        <label className="flex items-center space-x-2 text-black">
+                            <input
+                                type="checkbox"
+                                checked={isMultipleDays}
+                                onChange={handleIsMultipleDays}
+                            />
+                            <span>複数日付を選択</span>
+                        </label>
                     </div>
                     <div className="flex justify-end space-x-4">
                         <button
