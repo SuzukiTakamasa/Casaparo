@@ -330,7 +330,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into schedules (description, year, month, from_date, to_date, from_time, to_time, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)");
+            let statement = d1.prepare("insert into schedules (description, year, month, from_date, to_date, from_time, to_time, created_by, label_id, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)");
             let query = statement.bind(&[schedule.description.into(),
                                                               schedule.year.into(),
                                                               schedule.month.into(),
@@ -338,6 +338,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               schedule.to_date.into(),
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
+                                                              schedule.created_by.into(),
+                                                              schedule.label_id.into(),
                                                               schedule.version.into()])?;
             let result = match query.run().await {
                 Ok(res) => res,
@@ -388,14 +390,16 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Version is found None", 500);
             }
-            let statement = d1.prepare("update schedules set description = ?1, from_date = ?2, to_date = ?3, from_time = ?4, to_time = ?5, version = ?6 where id = ?7");
+            let statement = d1.prepare("update schedules set description = ?1, from_date = ?2, to_date = ?3, from_time = ?4, to_time = ?5, created_by = ?6, label_id = ?7, version = ?8 where id = ?9");
             let query = statement.bind(&[schedule.description.into(),
                                                               schedule.from_date.into(),
                                                               schedule.to_date.into(),
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
-                                                              schedule.id.into(),
-                                                              schedule.version.into()])?;
+                                                              schedule.version.into(),
+                                                              schedule.created_by.into(),
+                                                              schedule.label_id.into(),
+                                                              schedule.id.into()])?;
             let result = match query.run().await {
                 Ok(res) => res,
                 Err(e) => {

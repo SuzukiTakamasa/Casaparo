@@ -29,6 +29,8 @@ pub struct Schedules {
     pub to_date: Option<u8>,
     pub from_time: String,
     pub to_time: String,
+    pub created_by: u8,
+    pub label_id: u32,
     pub version: u32
 }
 
