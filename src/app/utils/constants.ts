@@ -18,6 +18,8 @@ export interface ScheduleData {
     from_date: number,
     to_date: number,
     from_time: string,
+    created_by: number,
+    label_id: number,
     to_time: string,
     version: number
 }

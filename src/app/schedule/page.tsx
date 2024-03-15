@@ -3,8 +3,6 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
-import { TimePicker } from 'react-time-picker'
-import dayjs from 'dayjs'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
@@ -22,11 +20,21 @@ const client = new APIClient()
 
 const getTimeArray = () => {
     const timeArray = []
-    for (let h = 1; h <= 23; h++) {
+    for (let h = 0; h <= 23; h++) {
         for (let m = 0; m <= 30; m += 30) {
             timeArray.push(`${h}:${m === 0 ? '00' : m}`)
         }
     }
+    return timeArray
+}
+
+const getWeekDay = (year: number, month: number, day: number) => {
+    const monthStr = month < 10 ? `0${month}` : month
+    const dayStr = day < 10 ? `0${day}` : day
+    const dateStr = `${year}-${monthStr}-${dayStr}`
+    const weekDays = ["日", "月", "火", "水", "木", "金", "土", "日"]
+    const weekDayIndex = new Date(dateStr).getDay()
+    return weekDays[weekDayIndex]
 }
 
 
@@ -41,6 +49,8 @@ const Schedule = () => {
     const [toDate, setToDate] = useState(1)
     const [fromTime, setFromTime] = useState("0:00")
     const [toTime, setToTime] = useState("0:00")
+    const [createdBy, setCreatedBy] = useState(1)
+    const [label, setLabel] = useState(0)
     const [version, setVersion] = useState(1)
 
     const [daysArray, setDaysArray] = useState<number[]>([])
@@ -52,9 +62,6 @@ const Schedule = () => {
     const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
-    const handleChangeFromTime = () => {
-        setFromTime(fromTime)
-    }
 
     const handleAddSchedule = () => {
         addSchedule()
@@ -68,7 +75,7 @@ const Schedule = () => {
         setShowDialog(true)
         handleGenerateDaysArray()
     }
-    const handleOpenUpdateDialog = ({id, description, from_date, to_date, from_time, to_time, version}: ScheduleData) => {
+    const handleOpenUpdateDialog = ({id, description, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
         setShowDialog(true)
         setId(id as number)
         setDescription(description)
@@ -76,6 +83,8 @@ const Schedule = () => {
         setToDate(to_date)
         setFromTime(from_time)
         setToTime(to_time)
+        setCreatedBy(created_by)
+        setLabel(label_id)
         setVersion(version)
         setIsUpdate(true)
         handleGenerateDaysArray()
@@ -88,6 +97,8 @@ const Schedule = () => {
         setToDate(1)
         setFromTime("0:00")
         setToTime("0:00")
+        setCreatedBy(1)
+        setLabel(0)
         setVersion(1)
         setIsUpdate(false)
         handleResetDaysArray()
@@ -109,6 +120,8 @@ const Schedule = () => {
             to_date: toDate,
             from_time: fromTime,
             to_time: toTime,
+            created_by: createdBy,
+            label_id: label,
             version: version
         }
         const res = await client.post<ScheduleResponse>('/schedule/create', addScheduleData)
@@ -125,6 +138,8 @@ const Schedule = () => {
             to_date: toDate,
             from_time: fromTime,
             to_time: toTime,
+            created_by: createdBy,
+            label_id: label,
             version: version
         }
         const res = await client.post<ScheduleResponse>('/schedule/update', updateSchedule)
@@ -188,7 +203,7 @@ const Schedule = () => {
                                 onChange={(e) => setFromDate(Number(e.target.value))}
                             >
                                 {daysArray.map((d, i) => (
-                                    <option key={i} value={d}>{d}</option>
+                                    <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
                             ))}
                             </select>
                         </label>
@@ -201,10 +216,11 @@ const Schedule = () => {
                                 onChange={(e) => setFromDate(Number(e.target.value))}
                             >
                                 {daysArray.map((d, i) => (
-                                    <option key={i} value={d}>{d}</option>
+                                    <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
                             ))}
                             </select>
-                        </label>}
+                        </label>
+                        }
                         <label className="flex items-center space-x-2 text-black">
                             <input
                                 type="checkbox"
@@ -213,6 +229,32 @@ const Schedule = () => {
                             />
                             <span>複数日付を選択</span>
                         </label>
+                        <div className="flex justify-center">
+                            <label className="text-black">
+                            <span>時刻(開始)</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={fromTime}
+                                onChange={(e) => setFromTime(e.target.value)}
+                            >
+                                {getTimeArray().map((t, i) => (
+                                    <option key={i} value={t}>{t}</option>
+                                ))}
+                            </select>
+                            </label>
+                            <label className="text-black">
+                            <span>時刻(終了)</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={toTime}
+                                onChange={(e) => setToTime(e.target.value)}
+                            >
+                                {getTimeArray().map((t, i) => (
+                                    <option key={i} value={t}>{t}</option>
+                                ))}
+                            </select>
+                            </label>
+                        </div>
                     </div>
                     <div className="flex justify-end space-x-4">
                         <button
