@@ -396,9 +396,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                                                               schedule.to_date.into(),
                                                               schedule.from_time.into(),
                                                               schedule.to_time.into(),
-                                                              schedule.version.into(),
                                                               schedule.created_by.into(),
                                                               schedule.label_id.into(),
+                                                              schedule.version.into(),
                                                               schedule.id.into()])?;
             let result = match query.run().await {
                 Ok(res) => res,
