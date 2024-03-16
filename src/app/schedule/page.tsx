@@ -172,7 +172,7 @@ const Schedule = () => {
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
         const darr = []
-        const startWeekDate = new Date().getDate() - new Date().getDay() + 1
+        const startWeekDate = new Date().getDate() - new Date().getDay()
             for (let d = startWeekDate; d <= startWeekDate + 6; d++) {
                 darr.push(d)
             }
