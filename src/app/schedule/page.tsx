@@ -40,11 +40,11 @@ const getWeekDay = (year: number, month: number, day: number) => {
 const getDateColorStr = (year: number, month: number, day: number) => {
     switch (getWeekDay(year, month, day)) {
         case "土":
-            return "text-blue-700"
+            return "text-blue-700 font-bold"
         case "日":
-            return "text-red-700"
+            return "text-red-700 font-bold"
         default:
-            return "text-white"
+            return "text-white font-bold"
     }
 }
 
