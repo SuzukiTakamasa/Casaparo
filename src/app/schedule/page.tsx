@@ -52,7 +52,7 @@ const getDateColorStr = (year: number, month: number, day: number) => {
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
-    const [activeTab, setActvieTab] = useState('month')
+    const [activeTab, setActiveTab] = useState('month')
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
@@ -188,6 +188,12 @@ const Schedule = () => {
         handleGenerateWeekDaysArray()
     }, [handleGenerateMonthDaysArray, handleGenerateWeekDaysArray])
 
+    useEffect(() => {
+        if (activeTab === 'week') {
+            setActiveTab('month')
+        }
+    }, [scheduleYear, scheduleMonth])
+
     return (
     <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth}>
         <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
@@ -299,13 +305,13 @@ const Schedule = () => {
             <div className="flex justify-center">
                 <button
                     className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${activeTab === 'month' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
-                    onClick={() => setActvieTab('month')}
+                    onClick={() => setActiveTab('month')}
                 >
                     月
                 </button>
                 <button
                     className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${!(year === scheduleYear && month === scheduleMonth) && 'opacity-50 cursor-not-allowed'} ${activeTab === 'week' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
-                    onClick={() => setActvieTab('week')}
+                    onClick={() => setActiveTab('week')}
                     disabled={!(year === scheduleYear && month === scheduleMonth)}
                 >
                     週
