@@ -217,7 +217,6 @@ const Household = () => {
                         <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">項目</th>
                         <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">金額</th>
                         <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">登録者</th>
-                        
                     </tr>
                 </thead>
                 <tbody>
