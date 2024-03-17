@@ -54,9 +54,6 @@ const Wiki = () => {
         setVersion(1)
         setIsUpdate(false)
     }
-    const handleSetCreatedBy = (event: any) => {
-        setCreatedBy(Number(event.target.value))
-    }
     const handleShowPreview = () => {
         setShowPreview(!showPreview)
     }
@@ -118,13 +115,13 @@ const Wiki = () => {
                                 type="text"
                                 placeholder="タイトル"
                                 value={title}
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={e => setTitle(e.target.value)}
                             />
                             <textarea
                                 className="border p-2 text-black"
                                 placeholder="内容"
                                 value={content}
-                                onChange={(e) => setContent(e.target.value)}
+                                onChange={e => setContent(e.target.value)}
                             >
                             </textarea>
                             <div className="text-black">作成者</div>
@@ -133,14 +130,14 @@ const Wiki = () => {
                                     type="radio"
                                     value="1"
                                     checked={createdBy === 1}
-                                    onChange={handleSetCreatedBy}
+                                    onChange={e => setCreatedBy(Number(e.target.value))}
                                     />
                                     <span className="mr-8">🥺</span>
                                 <input
                                     type="radio"
                                     value="0"
                                     checked={createdBy === 0}
-                                    onChange={handleSetCreatedBy}
+                                    onChange={e => setCreatedBy(Number(e.target.value))}
                                     />
                                     <span>🥺ྀི</span>
                             </div>

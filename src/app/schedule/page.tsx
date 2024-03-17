@@ -220,14 +220,14 @@ const Schedule = () => {
                                 type="text"
                                 placeholder="予定"
                                 value={description}
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={e => setDescription(e.target.value)}
                             />
                             <label className="text-black">
                                 <span>日付{isMultipleDays && '(開始日)'}</span>
                                 <select
                                     className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
                                     value={fromDate}
-                                    onChange={(e) => setFromDate(Number(e.target.value))}
+                                    onChange={e => setFromDate(Number(e.target.value))}
                                 >
                                     {monthDaysArray.map((d, i) => (
                                         <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
@@ -240,7 +240,7 @@ const Schedule = () => {
                                 <select
                                     className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
                                     value={fromDate}
-                                    onChange={(e) => setFromDate(Number(e.target.value))}
+                                    onChange={e => setFromDate(Number(e.target.value))}
                                 >
                                     {monthDaysArray.map((d, i) => (
                                         <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
@@ -262,7 +262,7 @@ const Schedule = () => {
                                 <select
                                     className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
                                     value={fromTime}
-                                    onChange={(e) => setFromTime(e.target.value)}
+                                    onChange={e => setFromTime(e.target.value)}
                                 >
                                     {getTimeArray().map((t, i) => (
                                         <option key={i} value={t}>{t}</option>
@@ -274,13 +274,30 @@ const Schedule = () => {
                                 <select
                                     className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
                                     value={toTime}
-                                    onChange={(e) => setToTime(e.target.value)}
+                                    onChange={e => setToTime(e.target.value)}
                                 >
                                     {getTimeArray().map((t, i) => (
                                         <option key={i} value={t}>{t}</option>
                                     ))}
                                 </select>
                                 </label>
+                            </div>
+                            <div className="text-black">作成者</div>
+                            <div className="text-3xl text-center">
+                                <input
+                                    type="radio"
+                                    value="1"
+                                    checked={createdBy === 1}
+                                    onChange={e => setCreatedBy(Number(e.target.value))}
+                                    />
+                                    <span className="mr-8">🥺</span>
+                                <input
+                                    type="radio"
+                                    value="0"
+                                    checked={createdBy === 0}
+                                    onChange={e => setCreatedBy(Number(e.target.value))}
+                                    />
+                                    <span>🥺ྀི</span>
                             </div>
                         </div>
                         <div className="flex justify-end space-x-4">
