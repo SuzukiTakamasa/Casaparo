@@ -661,7 +661,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
             console_log!("{:?}", result.success());
-            Response::ok("A wikis was deleted.")
+            Response::ok("A wiki was deleted.")
         })
         .post_async("/label/create", |mut req, ctx| async move {
             let db_str = match get_db_env(&req) {
@@ -697,6 +697,110 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
             console_log!("{:?}", result.success());
             Response::ok("A label was created.")
+        })
+        .post_async("/label/update", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error(e.to_string(), 400)
+                }
+            };
+            let mut label: models::Labels = match from_str(json_body.as_str()) {
+                Ok(label) => label,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let fetch_version_statement = d1.prepare("select version from labels where id = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[label.version.into()])?;
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
+            if let Some(latest) = fetch_version_result {
+                if label.version == latest.version {
+                    label.version += 1
+                } else {
+                    return Response::error("Version is found None", 500)
+                }
+            } else {
+                return Response::error("Version is found None", 500)
+            }
+            let statement = d1.prepare("update labels set name = ?1, label = ?2, version = ?3 where id = ?4");
+            let query = statement.bind(&[label.name.into(),
+                                                              label.label.into(),
+                                                              label.version.into()])?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            Response::ok("A label was updated.")
+        })
+        .post_async("/label/delete", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
+            let mut label: models::Labels = match from_str(json_body.as_str()) {
+                Ok(label) => label,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let fetch_version_statement = d1.prepare("select version from labels where id  = ?1");
+            let fetch_version_query = fetch_version_statement.bind(&[label.id.into()])?;
+            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Failed to fetch version", 500)
+                }
+            };
+            if let Some(latest) = fetch_version_result {
+                if label.version == latest.version {
+                    label.version += 1
+                } else {
+                    return Response::error("Attemt to update a stale object", 500)
+                }
+            } else {
+                return Response::error("Version is found None", 500)
+            }
+            let statement = d1.prepare("delete from labels where id = ?1");
+            let query = statement.bind(&[label.id.into()])?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            Response::ok("A label was deleted")
         })
     .run(req, env)
     .await
