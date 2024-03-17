@@ -1,0 +1,7 @@
+DROP TABLE IF EXISTS labels;
+CREATE TABLE labels (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    label TEXT NOT NULL,
+    version INTEGER NOT NULL
+)

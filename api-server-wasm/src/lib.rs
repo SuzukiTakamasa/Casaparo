@@ -141,7 +141,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 Ok(wikis) => Response::from_json(&wikis),
                 Err(e) => {
                     console_log!("{:?}", e);
-                    Response::error("Error pparsing results", 500)
+                    Response::error("Error parsing results", 500)
                 }
             }
         })
@@ -160,6 +160,29 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 Err(e) => {
                     console_log!("{:?}", e);
                     return Response::error("Error parsing results", 500)
+                }
+            }
+        })
+        .get_async("/label", |req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let query = d1.prepare("select * from labels order by id desc");
+            let result = match query.all().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            match result.results::<models::Labels>() {
+                Ok(labels) => Response::from_json(&labels),
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    Response::error("Error parsing results", 500)
                 }
             }
         })
@@ -639,6 +662,41 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
             console_log!("{:?}", result.success());
             Response::ok("A wikis was deleted.")
+        })
+        .post_async("/label/create", |mut req, ctx| async move {
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+            let json_body = match req.text().await {
+                Ok(body) => body,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Bad request", 400)
+                }
+            };
+            let label: models::Labels = match from_str(json_body.as_str()) {
+                Ok(label) => label,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Invalid request body", 400)
+                }
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let statement = d1.prepare("insert into labels (name, label, version) values (?1, ?2, ?3)");
+            let query = statement.bind(&[label.name.into(),
+                                                              label.label.into(),
+                                                              label.version.into()])?;
+            let result = match query.run().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Query failed", 500)
+                }
+            };
+            console_log!("{:?}", result.success());
+            Response::ok("A label was created.")
         })
     .run(req, env)
     .await
