@@ -42,10 +42,19 @@ export interface WikiData {
     version: number
 }
 
+export interface LabelData {
+    id?: number,
+    name: string,
+    label: string,
+    version: number
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]
 
 export type WikiResponse = WikiData[]
 
-export type APIRequest = HouseholdData | ScheduleData | WikiData
+export type LabelResponse = LabelData[]
+
+export type APIRequest = HouseholdData | ScheduleData | WikiData | LabelData
