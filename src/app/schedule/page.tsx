@@ -269,8 +269,8 @@ const Schedule = () => {
                                 <span>日付(終了日)</span>
                                 <select
                                     className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={fromDate}
-                                    onChange={e => setFromDate(Number(e.target.value))}
+                                    value={toDate}
+                                    onChange={e => setToDate(Number(e.target.value))}
                                 >
                                     {monthDaysArray.map((d, i) => (
                                         <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
