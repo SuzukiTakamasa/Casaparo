@@ -87,13 +87,15 @@ const Schedule = () => {
                     </div>
                 </td>
                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                    {schedules.map((schedule, i) => (
-                        (schedule.year === year &&
-                        schedule.month === month &&
-                        schedule.from_date <= day &&
-                        schedule.to_date >= day) &&
-                        `${setUser(schedule.created_by)}${schedule.label} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
-                    ))}
+                    <div className="text-center">
+                        {schedules.map((schedule, i) => (
+                            (schedule.year === year &&
+                            schedule.month === month &&
+                            schedule.from_date <= day &&
+                            schedule.to_date >= day) &&
+                            `${setUser(schedule.created_by)}${schedule.label} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
+                        ))}
+                    </div>
                 </td>
             </>
         )
