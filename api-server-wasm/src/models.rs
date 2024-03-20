@@ -31,7 +31,8 @@ pub struct Schedules {
     pub to_time: String,
     pub created_by: u8,
     pub label_id: u32,
-    pub version: u32
+    pub version: u32,
+    pub label: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Debug)]

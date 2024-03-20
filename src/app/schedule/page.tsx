@@ -13,6 +13,7 @@ import MonthPaginator from '@components/MonthPaginator'
 import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
+import { setUser } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -86,7 +87,13 @@ const Schedule = () => {
                     </div>
                 </td>
                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                    {}
+                    {schedules.map((schedule, i) => (
+                        (schedule.year === year &&
+                        schedule.month === month &&
+                        schedule.from_date <= day &&
+                        schedule.to_date >= day) &&
+                        `${setUser(schedule.created_by)}${schedule.label_id} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
+                    ))}
                 </td>
             </>
         )
@@ -145,6 +152,8 @@ const Schedule = () => {
         }
         const addScheduleData = {
             description: description,
+            year: scheduleYear,
+            month: scheduleMonth,
             from_date: fromDate,
             to_date: toDate,
             from_time: fromTime,
@@ -167,6 +176,8 @@ const Schedule = () => {
         const updateSchedule = {
             id: id,
             description: description,
+            year: scheduleYear,
+            month: scheduleMonth,
             from_date: fromDate,
             to_date: toDate,
             from_time: fromTime,
