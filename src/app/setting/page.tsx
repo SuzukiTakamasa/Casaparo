@@ -53,7 +53,7 @@ const Setting = () => {
         const labels = await client.get<LabelResponse>("/label")
         setLabels(labels || [])
     }, [])
-    const addlabels = useCallback(async () => {
+    const addlabels = async () => {
         const addedLabelData = {
             name: labelName,
             label: newLabel,
@@ -61,8 +61,8 @@ const Setting = () => {
         }
         const res = await client.post<LabelResponse>('/label/create', addedLabelData)
         await fetchLabels()
-    }, [])
-    const updateLabels = useCallback(async () => {
+    }
+    const updateLabels = async () => {
         const updatedLabelData = {
             id: labelId,
             name: labelName,
@@ -71,7 +71,7 @@ const Setting = () => {
         }
         const res = await client.post<LabelResponse>('/label/update', updatedLabelData)
         await fetchLabels()
-    }, [])
+    }
     const deleteLabel = async (deleteLabelData: LabelData) => {
         if (!window.confirm("削除しますか？")) return
         const res = await client.post<LabelResponse>('/label/delete', deleteLabelData)
