@@ -69,7 +69,7 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        const res = await client.post<LabelResponse>('/label.update', updatedLabelData)
+        const res = await client.post<LabelResponse>('/label/update', updatedLabelData)
         await fetchLabels()
     }, [])
     const deleteLabel = async (deleteLabelData: LabelData) => {
@@ -109,7 +109,7 @@ const Setting = () => {
                                 className="border p-2 text-black"
                                 type="text"
                                 placeholder="ラベル名"
-                                value={newLabel}
+                                value={labelName}
                                 onChange={(e) => setLabelName(e.target.value)}                       
                             />
                         </div>
