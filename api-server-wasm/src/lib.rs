@@ -740,7 +740,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let statement = d1.prepare("update labels set name = ?1, label = ?2, version = ?3 where id = ?4");
             let query = statement.bind(&[label.name.into(),
                                                               label.label.into(),
-                                                              label.version.into()])?;
+                                                              label.version.into(),
+                                                              label.id.into()])?;
             let result = match query.run().await {
                 Ok(res) => res,
                 Err(e) => {
