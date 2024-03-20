@@ -117,7 +117,7 @@ const Schedule = () => {
         setIsMultipleDays(!isMultipleDays)
     }
     const fetchSchedules = useCallback(async () => {
-        const schedules = await client.get<ScheduleResponse>(`/shcedule/${scheduleYear}/${scheduleMonth}`)
+        const schedules = await client.get<ScheduleResponse>(`/schedule/${scheduleYear}/${scheduleMonth}`)
         setSchedules(schedules || [])
     }, [scheduleYear, scheduleMonth])
     const addSchedule = async () => {
