@@ -92,7 +92,7 @@ const Schedule = () => {
                         schedule.month === month &&
                         schedule.from_date <= day &&
                         schedule.to_date >= day) &&
-                        `${setUser(schedule.created_by)}${schedule.label_id} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
+                        `${setUser(schedule.created_by)}${schedule.label} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
                     ))}
                 </td>
             </>
@@ -147,15 +147,12 @@ const Schedule = () => {
         setSchedules(schedules || [])
     }, [scheduleYear, scheduleMonth])
     const addSchedule = async () => {
-        if (!isMultipleDays) {
-            setToDate(fromDate)
-        }
         const addScheduleData = {
             description: description,
             year: scheduleYear,
             month: scheduleMonth,
             from_date: fromDate,
-            to_date: toDate,
+            to_date: isMultipleDays ? toDate : fromDate,
             from_time: fromTime,
             to_time: toTime,
             created_by: createdBy,
@@ -170,16 +167,13 @@ const Schedule = () => {
         setLabels(labels || [])
     }
     const updateSchedule = async () => {
-        if (!isMultipleDays) {
-            setToDate(fromDate)
-        }
         const updateSchedule = {
             id: id,
             description: description,
             year: scheduleYear,
             month: scheduleMonth,
             from_date: fromDate,
-            to_date: toDate,
+            to_date: isMultipleDays ? toDate : fromDate,
             from_time: fromTime,
             to_time: toTime,
             created_by: createdBy,
