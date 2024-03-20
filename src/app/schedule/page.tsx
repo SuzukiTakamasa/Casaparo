@@ -10,7 +10,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse } from '@utils/constants'
+import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 
@@ -37,17 +37,6 @@ const getWeekDay = (year: number, month: number, day: number) => {
     return weekDays[weekDayIndex]
 }
 
-const getDateColorStr = (year: number, month: number, day: number) => {
-    switch (getWeekDay(year, month, day)) {
-        case "土":
-            return "text-blue-700 font-bold"
-        case "日":
-            return "text-red-700 font-bold"
-        default:
-            return "text-white font-bold"
-    }
-}
-
 
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
@@ -62,8 +51,10 @@ const Schedule = () => {
     const [fromTime, setFromTime] = useState("0:00")
     const [toTime, setToTime] = useState("0:00")
     const [createdBy, setCreatedBy] = useState(1)
-    const [label, setLabel] = useState(0)
+    const [labelId, setLabelId] = useState(0)
     const [version, setVersion] = useState(1)
+
+    const [labels, setLabels] = useState<LabelResponse>([])
 
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
@@ -75,6 +66,32 @@ const Schedule = () => {
     const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
+    const getCalendar = (year: number, month: number, day: number) => {
+
+        let dateColorStr = ""
+        switch (getWeekDay(year, month, day)) {
+            case "土":
+                dateColorStr += "text-blue-700 font-bold"
+            case "日":
+                dateColorStr += "text-red-700 font-bold"
+            default:
+                dateColorStr += "text-white font-bold"
+        }
+    
+        return (
+            <>
+                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                    <div className={dateColorStr}>
+                    {`${day}日(${getWeekDay(year, month, day)})`}
+                    </div>
+                </td>
+                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                    {}
+                </td>
+            </>
+        )
+    }
+
 
     const handleAddSchedule = () => {
         addSchedule()
@@ -85,9 +102,11 @@ const Schedule = () => {
         handleCloseDialog()
     }
     const handleOpenAddDialog = () => {
+        fetchLabels()
         setShowDialog(true)
     }
     const handleOpenUpdateDialog = ({id, description, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
+        fetchLabels()
         setShowDialog(true)
         setId(id as number)
         setDescription(description)
@@ -96,7 +115,7 @@ const Schedule = () => {
         setFromTime(from_time)
         setToTime(to_time)
         setCreatedBy(created_by)
-        setLabel(label_id)
+        setLabelId(label_id)
         setVersion(version)
         setIsUpdate(true)
     }
@@ -109,7 +128,7 @@ const Schedule = () => {
         setFromTime("0:00")
         setToTime("0:00")
         setCreatedBy(1)
-        setLabel(0)
+        setLabelId(0)
         setVersion(1)
         setIsUpdate(false)
     }
@@ -131,11 +150,15 @@ const Schedule = () => {
             from_time: fromTime,
             to_time: toTime,
             created_by: createdBy,
-            label_id: label,
+            label_id: labelId,
             version: version
         }
         const res = await client.post<ScheduleResponse>('/schedule/create', addScheduleData)
         await fetchSchedules()
+    }
+    const fetchLabels = async () => {
+        const labels = await client.get<LabelResponse>("/label")
+        setLabels(labels || [])
     }
     const updateSchedule = async () => {
         if (!isMultipleDays) {
@@ -149,7 +172,7 @@ const Schedule = () => {
             from_time: fromTime,
             to_time: toTime,
             created_by: createdBy,
-            label_id: label,
+            label_id: labelId,
             version: version
         }
         const res = await client.post<ScheduleResponse>('/schedule/update', updateSchedule)
@@ -299,6 +322,21 @@ const Schedule = () => {
                                     />
                                     <span>🥺ྀི</span>
                             </div>
+                            <div>
+                                <label className="text-black">
+                                <span>ラベル(任意)</span>
+                                <select
+                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                    value={labelId}
+                                    onChange={e => setLabelId(Number(e.target.value))}
+                                >
+                                    <option value={0}>ラベルを選択</option>
+                                    {labels.map((l, i) => (
+                                        <option key={i} value={l.id}>{`${l.label} ${l.name}`}</option>
+                                    ))}
+                                </select>
+                                </label>
+                            </div>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button
@@ -344,24 +382,12 @@ const Schedule = () => {
                     <tbody>
                         {activeTab === "month" && monthDaysArray.map((d, i) => (
                             <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && new Date().getDate() === d && "bg-gray-500"}`}>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                    <div className={getDateColorStr(scheduleYear, scheduleMonth, d)}>
-                                    {`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}
-                                    </div>
-                                </td>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                </td>
+                                {getCalendar(scheduleYear, scheduleMonth, d)}
                             </tr>
                         ))}
                         {activeTab === "week" && weekDaysArray.map((d, i) => (
                             <tr key={i} className={`${new Date().getDate() === d && "bg-gray-500"}`}>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                    <div className={getDateColorStr(scheduleYear, scheduleMonth, d)}>
-                                    {`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}
-                                    </div>
-                                </td>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                </td>
+                                {getCalendar(scheduleYear, scheduleMonth, d)}
                             </tr>
                         ))}
                     </tbody>
