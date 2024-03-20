@@ -106,7 +106,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
             
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select * from (select schedules.*, labels.label from schedules join labels on schedules.label_id = labels.id where year = ?1 and month = ?2) as schedules");
+            let statement = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where year = ?1 and month = ?2) as schedules");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
