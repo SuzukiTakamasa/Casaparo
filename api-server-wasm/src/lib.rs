@@ -707,7 +707,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 Ok(body) => body,
                 Err(e) => {
                     console_log!("{:?}", e);
-                    return Response::error(e.to_string(), 400)
+                    return Response::error("Bad request", 400)
                 }
             };
             let mut label: models::Labels = match from_str(json_body.as_str()) {
@@ -720,7 +720,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from labels where id = ?1");
-            let fetch_version_query = fetch_version_statement.bind(&[label.version.into()])?;
+            let fetch_version_query = fetch_version_statement.bind(&[label.id.into()])?;
             let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
@@ -732,7 +732,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 if label.version == latest.version {
                     label.version += 1
                 } else {
-                    return Response::error("Version is found None", 500)
+                    return Response::error("Attempt to update a stale object", 500)
                 }
             } else {
                 return Response::error("Version is found None", 500)
@@ -785,7 +785,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 if label.version == latest.version {
                     label.version += 1
                 } else {
-                    return Response::error("Attemt to update a stale object", 500)
+                    return Response::error("Attempt to update a stale object", 500)
                 }
             } else {
                 return Response::error("Version is found None", 500)
