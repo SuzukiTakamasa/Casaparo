@@ -86,16 +86,16 @@ const Schedule = () => {
                     {`${day}日(${getWeekDay(year, month, day)})`}
                     </div>
                 </td>
-                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                    <div className="text-center">
-                        {schedules.map((schedule, i) => (
-                            (schedule.year === year &&
-                            schedule.month === month &&
-                            schedule.from_date <= day &&
-                            schedule.to_date >= day) &&
-                            `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${(isMultipleDays && schedule.from_date !== day) ? "0:00" : schedule.from_time}-${(isMultipleDays && schedule.to_date !== day) ? "23:59" : schedule.to_time} ${schedule.description}`
-                        ))}
-                    </div>
+                <td className="border-b py-1 flex-col justify-center items-center space-x-1">
+                    {schedules.map((schedule, i) => (
+                        (schedule.year === year &&
+                        schedule.month === month &&
+                        schedule.from_date <= day &&
+                        schedule.to_date >= day) &&
+                        <div key={i} className="text-center">
+                            {`${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${(isMultipleDays && schedule.from_date !== day) ? "0:00" : schedule.from_time}-${(isMultipleDays && schedule.to_date !== day) ? "23:59" : schedule.to_time} ${schedule.description}`}
+                        </div>
+                    ))}
                 </td>
             </>
         )
