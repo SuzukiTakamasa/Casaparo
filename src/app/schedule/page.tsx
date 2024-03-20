@@ -93,7 +93,7 @@ const Schedule = () => {
                             schedule.month === month &&
                             schedule.from_date <= day &&
                             schedule.to_date >= day) &&
-                            `${setUser(schedule.created_by)}${schedule.label !== null && schedule.label} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
+                            `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${(isMultipleDays && schedule.from_date !== day) ? "0:00" : schedule.from_time}-${(isMultipleDays && schedule.to_date !== day) ? "23:59" : schedule.to_time} ${schedule.description}`
                         ))}
                     </div>
                 </td>
