@@ -93,7 +93,7 @@ const Schedule = () => {
                             schedule.month === month &&
                             schedule.from_date <= day &&
                             schedule.to_date >= day) &&
-                            `${setUser(schedule.created_by)}${schedule.label} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
+                            `${setUser(schedule.created_by)}${schedule.label !== null && schedule.label} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
                         ))}
                     </div>
                 </td>
