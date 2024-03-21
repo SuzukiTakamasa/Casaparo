@@ -92,9 +92,23 @@ const Schedule = () => {
                         schedule.month === month &&
                         schedule.from_date <= day &&
                         schedule.to_date >= day) &&
-                        <div key={i} className="text-center">
+                        <button 
+                            key={i}
+                            className="bg-blue-600 hover:bg-blue-800 text-white py-1 px-2 rounded-full"
+                            onClick={() => handleOpenUpdateDialog({
+                                id: schedule.id,
+                                description: schedule.description,
+                                from_date: schedule.from_date,
+                                to_date: schedule.to_date,
+                                from_time: schedule.from_time,
+                                to_time: schedule.to_time,
+                                created_by: schedule.created_by,
+                                label_id: schedule.label_id,
+                                version: schedule.version
+                            })}
+                        >
                             {`${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date !== day ? "0:00" : schedule.from_time}-${schedule.to_date !== day ? "23:59" : schedule.to_time} ${schedule.description}`}
-                        </div>
+                        </button>
                     ))}
                 </td>
             </>
@@ -108,6 +122,20 @@ const Schedule = () => {
     }
     const handleUpdateSchedule = () => {
         updateSchedule()
+        handleCloseDialog()
+    }
+    const handleDeleteSchedule = () => {
+        deleteSchedule({
+            id: id,
+            description: description,
+            from_date: fromDate,
+            to_date: toDate,
+            from_time: fromTime,
+            to_time: toTime,
+            created_by: createdBy,
+            label_id: labelId,
+            version: version
+        })
         handleCloseDialog()
     }
     const handleOpenAddDialog = () => {
@@ -187,7 +215,7 @@ const Schedule = () => {
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.post<ScheduleResponse>('/shcedule/delete', deletedScheduleData)
+        const res = await client.post<ScheduleResponse>('/schedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
@@ -360,6 +388,16 @@ const Schedule = () => {
                                 キャンセル
                             </button>
                         </div>
+                        {isUpdate && 
+                        <div className="flex justify-center mt-1">
+                            <button
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-12 rounded"
+                                onClick={handleDeleteSchedule}
+                            >
+                                削除
+                            </button>
+                        </div>
+                        }
                     </div>
                 </div>
             )}
