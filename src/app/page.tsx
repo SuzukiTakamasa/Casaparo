@@ -14,7 +14,7 @@ import { FixedAmount, ScheduleResponse } from '@utils/constants'
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
 import { ArrowRightStartToIcon } from '@components/HeroicIcons'
 
-import { getWeekDay } from './schedule/page'
+import { getWeekDay } from '@utils/utility_function'
 
 
 const client = new  APIClient()

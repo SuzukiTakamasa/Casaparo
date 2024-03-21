@@ -11,9 +11,8 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
 import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
-import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
-import { setUser } from '@utils/utility_function'
+import { setUser, getWeekDay } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -27,15 +26,6 @@ const getTimeArray = () => {
         }
     }
     return timeArray
-}
-
-export const getWeekDay = (year: number, month: number, day: number) => {
-    const monthStr = month < 10 ? `0${month}` : month
-    const dayStr = day < 10 ? `0${day}` : day
-    const dateStr = `${year}-${monthStr}-${dayStr}`
-    const weekDays = ["日", "月", "火", "水", "木", "金", "土"]
-    const weekDayIndex = new Date(dateStr).getDay()
-    return weekDays[weekDayIndex]
 }
 
 
