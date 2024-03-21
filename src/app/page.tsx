@@ -71,7 +71,9 @@ export default function Home() {
           <div className="bg-black text-white p-2">
               <h2 className="text-2xl font-bold mb-4 text-center">今日・明日の予定</h2>
               {schedules.map((schedule, i) => (
-                <div className="text-center text-xl">{`${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date}日(${getWeekDay(year, month, schedule.from_date)}) ${schedule.from_time}-${schedule.to_time} ${schedule.description}`}</div>
+                <div className="text-center text-xl">
+                  {schedules.length > 0 ? `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date}日(${getWeekDay(year, month, schedule.from_date)}) ${schedule.from_time}-${schedule.to_time} ${schedule.description}` : "なし"}
+                </div>
               ))}
               <div className="flex justify-end">
                 <Link href="/schedule" className="flex text-xl text-blue-700 hover:underline">
