@@ -14,6 +14,8 @@ import { FixedAmount, ScheduleResponse } from '@utils/constants'
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
 import { ArrowRightStartToIcon } from '@components/HeroicIcons'
 
+import { getWeekDay } from './schedule/page'
+
 
 const client = new  APIClient()
 
@@ -45,7 +47,8 @@ export default function Home() {
 
    useEffect(() => {
     fetchFixedAmount()
-   }, [fetchFixedAmount])
+    fetchSchedules()
+   }, [fetchFixedAmount, fetchSchedules])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -68,7 +71,7 @@ export default function Home() {
           <div className="bg-black text-white p-2">
               <h2 className="text-2xl font-bold mb-4 text-center">今日・明日の予定</h2>
               {schedules.map((schedule, i) => (
-                `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_time}-${schedule.to_time} ${schedule.description}`
+                <div className="text-center text-xl">{`${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date}日(${getWeekDay(year, month, schedule.from_date)}) ${schedule.from_time}-${schedule.to_time} ${schedule.description}`}</div>
               ))}
               <div className="flex justify-end">
                 <Link href="/schedule" className="flex text-xl text-blue-700 hover:underline">

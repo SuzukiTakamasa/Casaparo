@@ -29,7 +29,7 @@ const getTimeArray = () => {
     return timeArray
 }
 
-const getWeekDay = (year: number, month: number, day: number) => {
+export const getWeekDay = (year: number, month: number, day: number) => {
     const monthStr = month < 10 ? `0${month}` : month
     const dayStr = day < 10 ? `0${day}` : day
     const dateStr = `${year}-${monthStr}-${dayStr}`
