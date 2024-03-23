@@ -11,6 +11,7 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
 import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
+import { TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, getWeekDay } from '@utils/utility_function'
 
@@ -381,10 +382,10 @@ const Schedule = () => {
                         {isUpdate && 
                         <div className="flex justify-center mt-1">
                             <button
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-12 rounded"
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
                                 onClick={handleDeleteSchedule}
                             >
-                                削除
+                                <TrashBoxIcon />
                             </button>
                         </div>
                         }
