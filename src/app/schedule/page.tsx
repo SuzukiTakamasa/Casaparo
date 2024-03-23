@@ -298,7 +298,7 @@ const Schedule = () => {
                                     onChange={e => setToDate(Number(e.target.value))}
                                 >
                                     {monthDaysArray.map((d, i) => (
-                                        <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
+                                        <option key={i} disabled={fromDate >= d} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
                                 ))}
                                 </select>
                             </label>
