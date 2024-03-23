@@ -60,6 +60,10 @@ const Household = () => {
         setIsOwner(intToBool(is_owner))
         setVersion(version)
         setIsUpdate(true)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
     }
     const handleCloseDialog = () => {
         setShowDialog(false)

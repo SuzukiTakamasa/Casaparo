@@ -4,4 +4,4 @@ CREATE TABLE labels (
     name TEXT NOT NULL,
     label TEXT NOT NULL,
     version INTEGER NOT NULL
-)
+);

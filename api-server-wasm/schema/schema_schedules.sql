@@ -9,6 +9,7 @@ CREATE TABLE schedules (
     from_time TEXT NOT NULL,
     to_time TEXT NOT NULL,
     created_by INTEGER NOT NULL,
-    label_id INTEGER NOT NULL,
+    label_id INTEGER NOT NULL DEFAULT 0,
     version INTEGER NOT NULL
-)
+);
+

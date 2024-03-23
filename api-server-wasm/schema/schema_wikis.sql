@@ -6,4 +6,4 @@ CREATE TABLE wikis (
     created_by INTEGER NOT NULL,
     updated_at TEXT NOT NULL,
     version INTEGER NOT NULL
-)
+);

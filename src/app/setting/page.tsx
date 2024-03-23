@@ -40,6 +40,10 @@ const Setting = () => {
         setNewLabel(label)
         setLabelVersion(version)
         setIsUpdateLabel(true)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
     }
     const handleCloseLabelDialog = () => {
         setShowLabelDialog(false)

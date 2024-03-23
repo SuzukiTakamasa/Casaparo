@@ -146,6 +146,11 @@ const Schedule = () => {
         setLabelId(label_id)
         setVersion(version)
         setIsUpdate(true)
+        from_date !== to_date && setIsMultipleDays(true)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
@@ -159,6 +164,7 @@ const Schedule = () => {
         setLabelId(0)
         setVersion(1)
         setIsUpdate(false)
+        setIsMultipleDays(false)
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
