@@ -79,14 +79,14 @@ export default class LINEMessagingAPIHandler {
                       "contents": [
                         {
                           "type": "text",
-                          "text": "【今月の生活費のお知らせ】",
+                          "text": "【🥺今月の生活費のお知らせ🥺ྀི】",
                           "weight": "bold",
                           "align": "center",
                           "contents": []
                         },
                         {
                           "type": "text",
-                          "text": `請求金額: ${responseFixedHousehold.total_amount}`,
+                          "text": `🥺ྀི負担分: ${responseFixedHousehold.total_amount}`,
                           "contents": []
                         },
                         {
@@ -107,7 +107,7 @@ export default class LINEMessagingAPIHandler {
         messages: [
           {
             "type": "text",
-            "text": "【リマインド】\n今月の生活費の入力期限が明日に迫っていますので、まだ入力していないものがある場合は本日中に入力お願いします。"
+            "text": "【🥺リマインド🥺ྀི】\n今月の生活費の入力期限が明日に迫ってるまる。まだ入力していないものがある場合は本日中に入力するまる~。"
           }
         ]
       }
@@ -116,7 +116,7 @@ export default class LINEMessagingAPIHandler {
 
     public async completeHouseHold() {
       const completedHousehold: CompletedHouseholds = {
-        year: this.currentMonth == 1 ? this.currentYear - 1 : this.currentMonth,
+        year: this.currentMonth == 1 ? this.currentYear - 1 : this.currentYear,
         month: this.currentMonth == 1 ? 12 : this.currentMonth - 1
       }
       await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completedHousehold)
