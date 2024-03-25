@@ -60,7 +60,7 @@ export default function Home() {
             <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
             <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
             <div className="flex justify-end">
-              <Link href="/household" className="flex text-xl text-blue-700 hover:underline">
+              <Link href="/household" className="flex text-xl text-blue-500 hover:underline">
                 <ArrowRightStartToIcon />
                 家計簿一覧へ
               </Link>
@@ -76,7 +76,7 @@ export default function Home() {
                 </div>
               ))}
               <div className="flex justify-end">
-                <Link href="/schedule" className="flex text-xl text-blue-700 hover:underline">
+                <Link href="/schedule" className="flex text-xl text-blue-500 hover:underline">
                   <ArrowRightStartToIcon />
                   スケジュール一覧へ
                 </Link>
