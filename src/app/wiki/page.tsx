@@ -211,7 +211,7 @@ const Wiki = () => {
                                 </button>
                             </td>
                             <td className="border-b px-1 py-1 text-center">
-                                <Link href={`/wiki/detail?id=${wiki.id}`} className="text-blue-500 hover:underline">{wiki.title}</Link>
+                                <Link href={`/wiki/detail?id=${wiki.id}`} className="text-blue-500 font-bold hover:underline">{wiki.title}</Link>
                                 <div className="text-xs">{`(最終更新: ${wiki.updated_at})`}</div>
                             </td>
                             <td className="border-b px-1 py-1 text-center">{setUser(wiki.created_by)}</td>
