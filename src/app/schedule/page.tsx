@@ -58,6 +58,9 @@ const Schedule = () => {
     const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
+    const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
+    const today = new Date().getDate()
+
     const getCalendar = (year: number, month: number, day: number) => {
 
         let dateColorStr = ""
@@ -218,7 +221,6 @@ const Schedule = () => {
     const handleGenerateMonthDaysArray = useCallback(() => {
         setMonthDaysArray([])
         const darr = []
-            let numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
             for (let d = 1; d <= numberOfDays; d++) {
                 darr.push(d)
             }
@@ -227,7 +229,7 @@ const Schedule = () => {
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
         const darr = []
-        const startWeekDate = new Date().getDate() - new Date().getDay()
+        const startWeekDate = today - new Date().getDay()
             for (let d = startWeekDate; d <= startWeekDate + 6; d++) {
                 darr.push(d)
             }
@@ -423,12 +425,12 @@ const Schedule = () => {
                     </thead>
                     <tbody>
                         {activeTab === "month" && monthDaysArray.map((d, i) => (
-                            <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && new Date().getDate() === d && "bg-gray-500"}`}>
+                            <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && today === d && "bg-gray-500"}`}>
                                 {getCalendar(scheduleYear, scheduleMonth, d)}
                             </tr>
                         ))}
                         {activeTab === "week" && weekDaysArray.map((d, i) => (
-                            <tr key={i} className={`${new Date().getDate() === d && "bg-gray-500"}`}>
+                            <tr key={i} className={`${today === d && "bg-gray-500"}`}>
                                 {getCalendar(scheduleYear, scheduleMonth, d)}
                             </tr>
                         ))}

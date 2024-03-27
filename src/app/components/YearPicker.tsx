@@ -2,6 +2,8 @@ import {createContext, useContext, ReactNode} from 'react'
 
 export type YearContextType  = {
     year: number,
+    lastYear?: number,
+    nextYear?: number,
     setYear: (year: number) => void
 }
 
@@ -12,10 +14,10 @@ type YearProviderProps = {
 }
 
 const currentYear = new Date().getFullYear()
-const lastYear = currentYear - 1
-const nextYear = currentYear + 1
 const defaultYearContext: YearContextType = {
     year: currentYear,
+    lastYear: currentYear - 1,
+    nextYear: currentYear + 1,
     setYear: () => {}
 }
 
@@ -31,7 +33,7 @@ export const YearProvider = ({ children, year, setYear }: YearProviderProps) => 
 }
 
 const YearPicker = () => {
-    const {year, setYear} = useContext(YearContext) as YearContextType
+    const {year, lastYear, nextYear, setYear} = useContext(YearContext) as YearContextType
 
     return (
         <div className="w-40">
