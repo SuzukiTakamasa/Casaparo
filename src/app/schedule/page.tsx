@@ -35,9 +35,19 @@ const Schedule = () => {
     const [isUpdate, setIsUpdate] = useState(false)
     const [activeTab, setActiveTab] = useState('month')
 
+    const { month } = useContext(MonthContext)
+    const [scheduleMonth, setScheduleMonth] = useState(month)
+
+    const { year } = useContext(YearContext)
+    const [scheduleYear, setScheduleYear] = useState(year)
+
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
     const [description, setDescription] = useState("")
+    const [fromYear, setFromYear] = useState(year)
+    const [toYear, setToYear] = useState(year)
+    const [fromMonth, setFromMonth] = useState(month)
+    const [toMonth, setToMonth] = useState(month)
     const [fromDate, setFromDate] = useState(1)
     const [toDate, setToDate] = useState(1)
     const [fromTime, setFromTime] = useState("0:00")
@@ -51,12 +61,6 @@ const Schedule = () => {
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
     const [isMultipleDays, setIsMultipleDays] = useState(false)
-
-    const { month } = useContext(MonthContext)
-    const [scheduleMonth, setScheduleMonth] = useState(month)
-
-    const { year } = useContext(YearContext)
-    const [scheduleYear, setScheduleYear] = useState(year)
 
     const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
     const today = new Date().getDate()

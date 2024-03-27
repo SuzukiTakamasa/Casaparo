@@ -24,6 +24,12 @@ const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
 
+    const { month } = useContext(MonthContext)
+    const [householdMonth, setHouseholdMonth] = useState(month)
+
+    const { year } = useContext(YearContext)
+    const [householdYear, setHouseholdYear] = useState(year)
+
     const [households, setHouseholds] = useState<HouseholdResponse>([])
     const [id, setId] = useState(0)
     const [newItemName, setNewItemName] = useState("")
@@ -33,12 +39,6 @@ const Household = () => {
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
-
-    const { month } = useContext(MonthContext)
-    const [householdMonth, setHouseholdMonth] = useState(month)
-
-    const { year } = useContext(YearContext)
-    const [householdYear, setHouseholdYear] = useState(year)
 
     const handleAddHousehold = () => {
         addHousehold()
