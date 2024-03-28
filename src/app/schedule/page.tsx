@@ -34,6 +34,10 @@ const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
     const [activeTab, setActiveTab] = useState('month')
+    const [descriptionValidMsg, setDescriptionValidMsg] = useState("")
+    const [yearValidMsg, setYearValidMsg] = useState("")
+    const [monthValidMsg, setMonthValidMsg] = useState("")
+    const [dateValidMsg, setDateValidMsg] = useState("")
 
     const { month } = useContext(MonthContext)
     const [scheduleMonth, setScheduleMonth] = useState(month)
@@ -113,8 +117,20 @@ const Schedule = () => {
         )
     }
 
-
+    const Validate = () => {
+        let isValid = true
+        if (description === "") {
+            isValid = false
+            setDescriptionValidMsg("予定を入力してください。")
+        }
+        if (isMultipleDays && fromDate >= toDate) {
+            isValid = false
+            setDateValidMsg("終了日は開始日より後の日付を選択してください。")
+        }
+        return isValid
+    }
     const handleAddSchedule = () => {
+        if (!Validate()) return
         addSchedule()
         handleCloseDialog()
     }
@@ -172,6 +188,8 @@ const Schedule = () => {
         setVersion(1)
         setIsUpdate(false)
         setIsMultipleDays(false)
+        setDateValidMsg("")
+        setDescriptionValidMsg("")
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
@@ -283,6 +301,7 @@ const Schedule = () => {
                                 value={description}
                                 onChange={e => setDescription(e.target.value)}
                             />
+                            {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
                             <label className="text-black">
                                 <span>日付{isMultipleDays && '(開始日)'}</span>
                                 <select
@@ -309,6 +328,7 @@ const Schedule = () => {
                                 </select>
                             </label>
                             }
+                            {dateValidMsg !== "" && <div className="text-sm text-red-500">{dateValidMsg}</div>}
                             <label className="flex items-center space-x-2 text-black">
                                 <input
                                     type="checkbox"
@@ -380,7 +400,6 @@ const Schedule = () => {
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 onClick={isUpdate ? handleUpdateSchedule : handleAddSchedule}
-                                disabled={description == "" || fromTime == "" || toTime == ""}
                             >
                                 {isUpdate ? "変更" : "登録"}
                             </button>
