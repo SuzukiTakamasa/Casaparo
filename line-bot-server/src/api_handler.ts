@@ -70,33 +70,10 @@ export default class LINEMessagingAPIHandler {
         const responseFixedHousehold = await this._getAPIHandler<FixedAmount>(`${this.backendHost}/household/fixed_amount/${this.currentYear}/${this.currentMonth}`)
         const requestBody = {
             messages: [
-                {
-                    "type": "bubble",
-                    "direction": "ltr",
-                    "body": {
-                      "type": "box",
-                      "layout": "vertical",
-                      "contents": [
-                        {
-                          "type": "text",
-                          "text": "【🥺今月の生活費のお知らせ🥺ྀི】",
-                          "weight": "bold",
-                          "align": "center",
-                          "contents": []
-                        },
-                        {
-                          "type": "text",
-                          "text": `🥺ྀི負担分: ${responseFixedHousehold.total_amount}`,
-                          "contents": []
-                        },
-                        {
-                          "type": "text",
-                          "text": `生活費合計: ${responseFixedHousehold.billing_amount}`,
-                          "contents": []
-                        }
-                      ]
-                    }
-                  }
+              {
+                "type": "text",
+                "text": `【🥺今月の生活費のお知らせ🥺ྀི 】\n🥺ྀི 負担分： ${responseFixedHousehold.billing_amount}\n生活費合計: ${responseFixedHousehold.total_amount}\n来月もよろしくまる🥺`
+              }
             ]
         }
         await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
