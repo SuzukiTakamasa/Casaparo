@@ -97,17 +97,14 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
-        .get_async("/schedule/:year/:month", |req, ctx| async move {
-            let year = ctx.param("year").unwrap();
-            let month = ctx.param("month").unwrap();
+        .get_async("/schedule", |req, ctx| async move {
             let db_str = match get_db_env(&req) {
                 Ok(val) => val,
                 Err(e) => return Response::error(e.to_string(), 400)
             };
             
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where (from_year = ?1 and from_month = ?2) or (to_year = ?1 and to_month = ?2)) as schedules");
-            let query = statement.bind(&[year.into(), month.into()])?;
+            let query = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id) as schedules");
             let result = match query.all().await {
                 Ok(res) => res,
                 Err(e) => {
