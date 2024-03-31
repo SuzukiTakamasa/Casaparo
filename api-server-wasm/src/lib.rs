@@ -106,7 +106,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
             
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where year = ?1 and month = ?2) as schedules");
+            let statement = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where (from_year = ?1 and from_month = ?2) or (to_year = ?1 and to_month = ?2)) as schedules");
             let query = statement.bind(&[year.into(), month.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
@@ -133,7 +133,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
             
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where year = ?1 and month = ?2 and (from_date = ?3 or from_date = ?3 + 1)) as schedules");
+            let statement = d1.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where from_year = ?1 and from_month = ?2 and (from_date = ?3 or from_date = ?3 + 1)) as schedules");
             let query = statement.bind(&[year.into(),
                                                               month.into(),
                                                               day.into()])?;
@@ -382,10 +382,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into schedules (description, year, month, from_date, to_date, from_time, to_time, created_by, label_id, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10)");
+            let statement = d1.prepare("insert into schedules (description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)");
             let query = statement.bind(&[schedule.description.into(),
-                                                              schedule.year.into(),
-                                                              schedule.month.into(),
+                                                              schedule.from_year.into(),
+                                                              schedule.to_year.into(),
+                                                              schedule.from_month.into(),
+                                                              schedule.to_month.into(),
                                                               schedule.from_date.into(),
                                                               schedule.to_date.into(),
                                                               schedule.from_time.into(),
@@ -442,8 +444,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Version is found None", 500);
             }
-            let statement = d1.prepare("update schedules set description = ?1, from_date = ?2, to_date = ?3, from_time = ?4, to_time = ?5, created_by = ?6, label_id = ?7, version = ?8 where id = ?9");
+            let statement = d1.prepare("update schedules set description = ?1, from_year = ?2, to_year = ?3, from_month = ?4, to_month = ?5, from_date = ?6, to_date = ?7, from_time = ?8, to_time = ?9, created_by = ?10, label_id = ?11, version = ?12 where id = ?13");
             let query = statement.bind(&[schedule.description.into(),
+                                                              schedule.from_year.into(),
+                                                              schedule.to_year.into(),
+                                                              schedule.from_month.into(),
+                                                              schedule.to_month.into(),
                                                               schedule.from_date.into(),
                                                               schedule.to_date.into(),
                                                               schedule.from_time.into(),
