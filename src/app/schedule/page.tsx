@@ -93,51 +93,51 @@ const Schedule = () => {
         const isDisplayed = (schedule: ScheduleData) => {
             let isDisplayedFlag = false;
             if (schedule.from_year <= year && year <= schedule.to_year) {
-              if (schedule.from_year === schedule.to_year) {
-                if (schedule.from_month <= month && month <= schedule.to_month) {
-                  if (schedule.from_month === schedule.to_month) {
-                    if (schedule.from_date <= day && day <= schedule.to_date) {
-                      isDisplayedFlag = true;
+                if (schedule.from_year === schedule.to_year) {
+                    if (schedule.from_month <= month && month <= schedule.to_month) {
+                        if (schedule.from_month === schedule.to_month) {
+                            if (schedule.from_date <= day && day <= schedule.to_date) {
+                                isDisplayedFlag = true;
+                            }
+                        } else {
+                            if (schedule.from_month === month) {
+                                if (schedule.from_date <= day && day <= numberOfDays) {
+                                    isDisplayedFlag = true;
+                                }
+                            } else if (schedule.to_month === month) {
+                                if (1 <= day && day <= schedule.to_date) {
+                                    isDisplayedFlag = true;
+                                }
+                            } else {
+                                isDisplayedFlag = true;
+                            }
+                        }
                     }
-                  } else {
-                    if (schedule.from_month === month) {
-                      if (schedule.from_date <= day && day <= numberOfDays) {
-                        isDisplayedFlag = true;
-                      }
-                    } else if (schedule.to_month === month) {
-                      if (1 <= day && day <= schedule.to_date) {
-                        isDisplayedFlag = true;
-                      }
-                    } else {
-                      isDisplayedFlag = true;
-                    }
-                  }
-                }
-              } else {
-                if (schedule.from_year === year) {
-                  if (schedule.from_month <= month) {
-                    if (schedule.from_month === month) {
-                      if (schedule.from_date <= day && day <= numberOfDays) {
-                        isDisplayedFlag = true;
-                      }
-                    } else {
-                      isDisplayedFlag = true;
-                    }
-                  }
-                } else if (schedule.to_year === year) {
-                  if (month <= schedule.to_month) {
-                    if (schedule.to_month === month) {
-                      if (1 <= day && day <= schedule.to_date) {
-                        isDisplayedFlag = true;
-                      }
-                    } else {
-                      isDisplayedFlag = true;
-                    }
-                  }
                 } else {
-                  isDisplayedFlag = true;
+                    if (schedule.from_year === year) {
+                        if (schedule.from_month <= month) {
+                            if (schedule.from_month === month) {
+                                if (schedule.from_date <= day && day <= numberOfDays) {
+                                    isDisplayedFlag = true;
+                                }
+                            } else {
+                                isDisplayedFlag = true;
+                            }
+                        }
+                    } else if (schedule.to_year === year) {
+                        if (month <= schedule.to_month) {
+                            if (schedule.to_month === month) {
+                                if (1 <= day && day <= schedule.to_date) {
+                                    isDisplayedFlag = true;
+                                }
+                            } else {
+                                isDisplayedFlag = true;
+                            }
+                        }
+                    } else {
+                    isDisplayedFlag = true;
+                    }
                 }
-              }
             }
             return isDisplayedFlag;
           };
@@ -152,9 +152,6 @@ const Schedule = () => {
                 </td>
                 <td className="border-b py-1 flex-col justify-center items-center space-x-1">
                     {schedules.map((schedule, i) => (
-                        //((schedule.from_year <= year && schedule.to_year >= year) &&
-                        //(schedule.from_year === schedule.to_year ? (schedule.from_month <= month && schedule.to_month >= month) : (schedule.from_month <= 12 && schedule.to_month >= 1)) &&
-                        //(schedule.from_month === schedule.to_month ? (schedule.from_date <= day && schedule.to_date >= day) : ((schedule.from_month === month && schedule.from_date <= numberOfDays) || (schedule.to_month === month && schedule.to_date >= 1)))) &&
                         isDisplayed(schedule) &&
                         <button 
                             key={i}

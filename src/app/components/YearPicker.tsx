@@ -14,21 +14,19 @@ type YearProviderProps = {
 }
 
 const currentYear = new Date().getFullYear()
-const lastYear = currentYear - 1
-const nextYear = currentYear + 1
 const defaultYearContext: YearContextType = {
     year: currentYear,
-    lastYear: lastYear,
-    nextYear: nextYear,
     setYear: () => {}
 }
 
 export const YearContext = createContext<YearContextType>(defaultYearContext)
 
 export const YearProvider = ({ children, year, setYear }: YearProviderProps) => {
+    const lastYear = year - 1
+    const nextYear = year + 1
 
     return (
-        <YearContext.Provider value={{year, setYear}}>
+        <YearContext.Provider value={{year, lastYear, nextYear, setYear}}>
             {children}
         </YearContext.Provider>
     )
