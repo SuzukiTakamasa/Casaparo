@@ -29,6 +29,14 @@ const getTimeArray = () => {
     return timeArray
 }
 
+const getMonthArray = () => {
+    const monthArray = []
+    for (let m = 0; m <= 12; m++) {
+        monthArray.push(m)
+    }
+    return monthArray
+}
+
 
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
@@ -42,8 +50,11 @@ const Schedule = () => {
     const { month } = useContext(MonthContext)
     const [scheduleMonth, setScheduleMonth] = useState(month)
 
-    const { year } = useContext(YearContext)
+    const { year, lastYear, nextYear } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
+
+    const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
+    const today = new Date().getDate()
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
@@ -52,8 +63,8 @@ const Schedule = () => {
     const [toYear, setToYear] = useState(year)
     const [fromMonth, setFromMonth] = useState(month)
     const [toMonth, setToMonth] = useState(month)
-    const [fromDate, setFromDate] = useState(1)
-    const [toDate, setToDate] = useState(1)
+    const [fromDate, setFromDate] = useState(today)
+    const [toDate, setToDate] = useState(today)
     const [fromTime, setFromTime] = useState("0:00")
     const [toTime, setToTime] = useState("0:00")
     const [createdBy, setCreatedBy] = useState(1)
@@ -66,8 +77,6 @@ const Schedule = () => {
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
     const [isMultipleDays, setIsMultipleDays] = useState(false)
 
-    const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
-    const today = new Date().getDate()
 
     const getCalendar = (year: number, month: number, day: number) => {
 
@@ -80,6 +89,33 @@ const Schedule = () => {
             default:
                 dateColorStr += "text-white font-bold"
         }
+
+        const isDisplayed = (schedule: ScheduleData) => {
+            let isDisplayedFlag = false
+            if (schedule.from_year <= year && schedule.to_year >= year) {
+                if (schedule.from_year === schedule.to_year ? (schedule.from_month <= month && schedule.to_month >= month) : (schedule.from_month <= 12 && schedule.to_month >= 1)) {
+                    if (schedule.from_month === schedule.to_month) {
+                        if (schedule.from_date <= day && schedule.to_date >= day) {
+                            isDisplayedFlag = true
+                        }
+                    } else {
+                        if (schedule.from_month === month) {
+                            if (schedule.from_date <= numberOfDays) {
+                                isDisplayedFlag = true
+                            }
+                        } else if (schedule.to_month === month) {
+                            if (schedule.to_date >= 1) {
+                                isDisplayedFlag = true
+                            }
+                        } else if (schedule.from_month < month && schedule.to_month > month) {
+                            isDisplayedFlag = true
+                        }
+                    }
+                }
+            }
+            return isDisplayedFlag
+        }
+        
     
         return (
             <>
@@ -90,16 +126,20 @@ const Schedule = () => {
                 </td>
                 <td className="border-b py-1 flex-col justify-center items-center space-x-1">
                     {schedules.map((schedule, i) => (
-                        (schedule.year === year &&
-                        schedule.month === month &&
-                        schedule.from_date <= day &&
-                        schedule.to_date >= day) &&
+                        //((schedule.from_year <= year && schedule.to_year >= year) &&
+                        //(schedule.from_year === schedule.to_year ? (schedule.from_month <= month && schedule.to_month >= month) : (schedule.from_month <= 12 && schedule.to_month >= 1)) &&
+                        //(schedule.from_month === schedule.to_month ? (schedule.from_date <= day && schedule.to_date >= day) : ((schedule.from_month === month && schedule.from_date <= numberOfDays) || (schedule.to_month === month && schedule.to_date >= 1)))) &&
+                        isDisplayed(schedule) &&
                         <button 
                             key={i}
                             className="bg-blue-600 hover:bg-blue-800 text-white py-1 px-2 rounded-full"
                             onClick={() => handleOpenUpdateDialog({
                                 id: schedule.id,
                                 description: schedule.description,
+                                from_year: schedule.from_year,
+                                to_year: schedule.to_year,
+                                from_month: schedule.from_month,
+                                to_month: schedule.to_month,
                                 from_date: schedule.from_date,
                                 to_date: schedule.to_date,
                                 from_time: schedule.from_time,
@@ -123,7 +163,15 @@ const Schedule = () => {
             isValid = false
             setDescriptionValidMsg("予定を入力してください。")
         }
-        if (isMultipleDays && fromDate >= toDate) {
+        if (isMultipleDays && fromYear > toYear) {
+            isValid = false
+            setYearValidMsg("開始年より前の終了年は選択できません。")
+        }
+        if (isMultipleDays && (fromYear === toYear && fromMonth > toMonth)) {
+            isValid = false
+            setMonthValidMsg("開始月より前の終了月は選択できません。")
+        }
+        if (isMultipleDays && (fromYear === toYear && fromMonth == toMonth) && fromDate >= toDate) {
             isValid = false
             setDateValidMsg("終了日は開始日より後の日付を選択してください。")
         }
@@ -142,6 +190,10 @@ const Schedule = () => {
         deleteSchedule({
             id: id,
             description: description,
+            from_year: fromYear,
+            to_year: toYear,
+            from_month: fromMonth,
+            to_month: toMonth,
             from_date: fromDate,
             to_date: toDate,
             from_time: fromTime,
@@ -156,11 +208,15 @@ const Schedule = () => {
         fetchLabels()
         setShowDialog(true)
     }
-    const handleOpenUpdateDialog = ({id, description, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
+    const handleOpenUpdateDialog = ({id, description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
         fetchLabels()
         setShowDialog(true)
         setId(id as number)
         setDescription(description)
+        setFromYear(from_year)
+        setToYear(to_year)
+        setFromMonth(from_month)
+        setToMonth(to_month)
         setFromDate(from_date)
         setToDate(to_date)
         setFromTime(from_time)
@@ -179,8 +235,12 @@ const Schedule = () => {
         setShowDialog(false)
         setId(0)
         setDescription("")
-        setFromDate(1)
-        setToDate(1)
+        setFromYear(scheduleYear)
+        setToYear(scheduleYear)
+        setFromMonth(scheduleMonth)
+        setToMonth(scheduleMonth)
+        setFromDate(today)
+        setToDate(today)
         setFromTime("0:00")
         setToTime("0:00")
         setCreatedBy(1)
@@ -188,6 +248,8 @@ const Schedule = () => {
         setVersion(1)
         setIsUpdate(false)
         setIsMultipleDays(false)
+        setYearValidMsg("")
+        setMonthValidMsg("")
         setDateValidMsg("")
         setDescriptionValidMsg("")
     }
@@ -195,14 +257,16 @@ const Schedule = () => {
         setIsMultipleDays(!isMultipleDays)
     }
     const fetchSchedules = useCallback(async () => {
-        const schedules = await client.get<ScheduleResponse>(`/schedule/${scheduleYear}/${scheduleMonth}`)
+        const schedules = await client.get<ScheduleResponse>(`/schedule`)
         setSchedules(schedules || [])
-    }, [scheduleYear, scheduleMonth])
+    }, [])
     const addSchedule = async () => {
         const addScheduleData = {
             description: description,
-            year: scheduleYear,
-            month: scheduleMonth,
+            from_year: fromYear,
+            to_year: isMultipleDays ? toYear : fromYear,
+            from_month: fromMonth,
+            to_month: isMultipleDays ? toMonth : fromMonth,
             from_date: fromDate,
             to_date: isMultipleDays ? toDate : fromDate,
             from_time: fromTime,
@@ -222,8 +286,10 @@ const Schedule = () => {
         const updateSchedule = {
             id: id,
             description: description,
-            year: scheduleYear,
-            month: scheduleMonth,
+            from_year: fromYear,
+            to_year: isMultipleDays ? toYear : fromYear,
+            from_month: fromMonth,
+            to_month: isMultipleDays ? toMonth : fromMonth,
             from_date: fromDate,
             to_date: isMultipleDays ? toDate : fromDate,
             from_time: fromTime,
@@ -254,6 +320,9 @@ const Schedule = () => {
         const startWeekDate = today - new Date().getDay()
             for (let d = startWeekDate; d <= startWeekDate + 6; d++) {
                 darr.push(d)
+                if (d = numberOfDays) {
+                    break
+                }
             }
         setWeekDaysArray(darr)
     }, [activeTab])
@@ -302,6 +371,31 @@ const Schedule = () => {
                                 onChange={e => setDescription(e.target.value)}
                             />
                             {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
+                            <div className="flex justify-center">
+                            <label className="text-black">
+                                <span>年{isMultipleDays && '(開始年)'}</span>
+                                <select
+                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                    value={fromYear}
+                                    onChange={e => setFromYear(Number(e.target.value))}
+                                >
+                                    <option value={lastYear}>{`${lastYear}年`}</option>
+                                    <option value={year}>{`${year}年`}</option>
+                                    <option value={nextYear}>{`${nextYear}年`}</option>
+                                </select>
+                            </label>
+                            <label className="text-black">
+                                <span>月{isMultipleDays && '(開始月)'}</span>
+                                <select
+                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                    value={fromMonth}
+                                    onChange={e => setFromMonth(Number(e.target.value))}
+                                >
+                                    {getMonthArray().map((m, i) => (
+                                        <option key={i} value={m}>{`${m}月`}</option>
+                                ))}
+                                </select>
+                            </label>
                             <label className="text-black">
                                 <span>日付{isMultipleDays && '(開始日)'}</span>
                                 <select
@@ -310,24 +404,53 @@ const Schedule = () => {
                                     onChange={e => setFromDate(Number(e.target.value))}
                                 >
                                     {monthDaysArray.map((d, i) => (
-                                        <option key={i} disabled={isMultipleDays && toDate !== 1 && toDate <= d} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
+                                        <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
                                 ))}
                                 </select>
                             </label>
+                            </div>
                             {isMultipleDays &&
-                            <label className="text-black">
-                                <span>日付(終了日)</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={toDate}
-                                    onChange={e => setToDate(Number(e.target.value))}
-                                >
-                                    {monthDaysArray.map((d, i) => (
-                                        <option key={i} disabled={fromDate >= d} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
-                                ))}
-                                </select>
-                            </label>
+                            <div className="flex justify-center">
+                                <label className="text-black">
+                                    <span>年(終了年)</span>
+                                    <select
+                                        className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                        value={toYear}
+                                        onChange={e => setToYear(Number(e.target.value))}
+                                    >
+                                        <option value={lastYear}>{`${lastYear}年`}</option>
+                                        <option value={year}>{`${year}年`}</option>
+                                        <option value={nextYear}>{`${nextYear}年`}</option>
+                                    </select>
+                                </label>
+                                <label className="text-black">
+                                    <span>月(終了月)</span>
+                                    <select
+                                        className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                        value={toMonth}
+                                        onChange={e => setToMonth(Number(e.target.value))}
+                                    >
+                                        {getMonthArray().map((m, i) => (
+                                            <option key={i} value={m}>{`${m}月`}</option>
+                                    ))}
+                                    </select>
+                                </label>
+                                <label className="text-black">
+                                    <span>日付(終了日)</span>
+                                    <select
+                                        className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                        value={toDate}
+                                        onChange={e => setToDate(Number(e.target.value))}
+                                    >
+                                        {monthDaysArray.map((d, i) => (
+                                            <option key={i} value={d}>{`${d}日(${getWeekDay(scheduleYear, scheduleMonth, d)})`}</option>
+                                    ))}
+                                    </select>
+                                </label>
+                            </div>
                             }
+                            {yearValidMsg !== "" && <div className="text-sm text-red-500">{yearValidMsg}</div>}
+                            {monthValidMsg !== "" && <div className="text-sm text-red-500">{monthValidMsg}</div>}
                             {dateValidMsg !== "" && <div className="text-sm text-red-500">{dateValidMsg}</div>}
                             <label className="flex items-center space-x-2 text-black">
                                 <input

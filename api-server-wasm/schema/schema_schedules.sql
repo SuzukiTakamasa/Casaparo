@@ -14,4 +14,3 @@ CREATE TABLE schedules (
     label_id INTEGER NOT NULL DEFAULT 0,
     version INTEGER NOT NULL
 );
-

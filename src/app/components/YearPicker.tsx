@@ -14,10 +14,12 @@ type YearProviderProps = {
 }
 
 const currentYear = new Date().getFullYear()
+const lastYear = currentYear - 1
+const nextYear = currentYear + 1
 const defaultYearContext: YearContextType = {
     year: currentYear,
-    lastYear: currentYear - 1,
-    nextYear: currentYear + 1,
+    lastYear: lastYear,
+    nextYear: nextYear,
     setYear: () => {}
 }
 
@@ -43,7 +45,7 @@ const YearPicker = () => {
                 className="form-select block w-full px-3 py-2 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-int-out m-0 focs:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
             >
                 <option value={lastYear}>{lastYear}</option>
-                <option value={currentYear}>{currentYear}</option>
+                <option value={year}>{year}</option>
                 <option value={nextYear}>{nextYear}</option>
             </select>
         </div>

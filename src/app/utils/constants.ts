@@ -13,8 +13,10 @@ export interface HouseholdData {
 export interface ScheduleData {
     id?: number,
     description: string,
-    year?: number,
-    month?: number,
+    from_year: number,
+    to_year: number,
+    from_month: number,
+    to_month: number,
     from_date: number,
     to_date: number,
     from_time: string,
