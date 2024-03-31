@@ -31,7 +31,7 @@ const getTimeArray = () => {
 
 const getMonthArray = () => {
     const monthArray = []
-    for (let m = 0; m <= 12; m++) {
+    for (let m = 1; m <= 12; m++) {
         monthArray.push(m)
     }
     return monthArray
