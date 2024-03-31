@@ -83,9 +83,9 @@ const Schedule = () => {
         let dateColorStr = ""
         switch (getWeekDay(year, month, day)) {
             case "土":
-                dateColorStr += "text-blue-700 font-bold"
+                dateColorStr += "text-blue-500 font-bold"
             case "日":
-                dateColorStr += "text-red-700 font-bold"
+                dateColorStr += "text-red-500 font-bold"
             default:
                 dateColorStr += "text-white font-bold"
         }
@@ -230,6 +230,12 @@ const Schedule = () => {
     const handleOpenAddDialog = () => {
         fetchLabels()
         setShowDialog(true)
+        setFromYear(scheduleYear)
+        setToYear(scheduleYear)
+        setFromMonth(scheduleMonth)
+        setToMonth(scheduleMonth)
+        setFromDate(today)
+        setToDate(today)
     }
     const handleOpenUpdateDialog = ({id, description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
         fetchLabels()
@@ -340,10 +346,10 @@ const Schedule = () => {
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
         const darr = []
-        const startWeekDate = today - new Date().getDay()
+        const startWeekDate = today >= 7 ? today - new Date().getDay() : today
             for (let d = startWeekDate; d <= startWeekDate + 6; d++) {
                 darr.push(d)
-                if (d = numberOfDays) {
+                if (d === numberOfDays) {
                     break
                 }
             }
