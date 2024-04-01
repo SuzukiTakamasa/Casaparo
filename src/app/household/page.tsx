@@ -151,14 +151,14 @@ const Household = () => {
 
         <div className="container mx-auto p-4">
             <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                className={`${isCompleted ? "bg-gray-700" : "bg-blue-500 hover:bg-blue-700"} text-white font-bold py-2 px-4 rounded mb-4`}
                 onClick={handleOpenAddDialog}
                 disabled={intToBool(isCompleted)}
             >
                 登録
             </button>
             <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
-            {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900">(請求済み)</div>}
+            {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900 text-center">請求済み</div>}
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -228,7 +228,7 @@ const Household = () => {
                         <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                    className={`${isCompleted ? "bg-gray-700" : "bg-blue-500 hover:bg-blue-700"} text-white font-blod py-1 px-1 rounded`}
                                     onClick={() => handleOpenUpdateDialog({
                                         id: household.id,
                                         name: household.name,
@@ -242,7 +242,7 @@ const Household = () => {
                                     <PencilIcon />
                                 </button>
                                 <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                    className={`${isCompleted ? "bg-gray-700" : "bg-red-500 hover:bg-red-700"} text-white font-bold py-1 px-1 rounded`}
                                     onClick={() => deleteHousehold({
                                         id: household.id,
                                         name: household.name,
