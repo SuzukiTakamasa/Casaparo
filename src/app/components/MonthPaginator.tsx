@@ -11,6 +11,7 @@ type MonthProviderProps = {
     children: ReactNode
     month: number
     setMonth: React.Dispatch<React.SetStateAction<number>>
+    setYear: React.Dispatch<React.SetStateAction<number>>
 }
 
 type MonthStrProps = {
@@ -26,14 +27,24 @@ const defaultMonthContext: MonthContextType = {
 
 export const MonthContext = createContext<MonthContextType>(defaultMonthContext)
 
-export const MonthProvider = ({ children, month, setMonth }: MonthProviderProps) => {
+export const MonthProvider = ({ children, month, setMonth, setYear }: MonthProviderProps) => {
 
     const handleMonthIncrement = () => {
-        setMonth(m => m + 1)
+        if (month === 12) {
+            setMonth(1)
+            setYear(y => y + 1)
+        } else {
+            setMonth(m => m + 1)
+        }
     }
 
     const handleMonthDecrement = () => {
-        setMonth(m => m - 1)
+        if (month === 1) {
+            setMonth(12)
+            setYear(y => y - 1)
+        } else {
+            setMonth(m => m - 1)
+        }
     }
 
     return (
@@ -58,17 +69,15 @@ const MonthPaginator = ({ monthStr, cssStr }: MonthStrProps) => {
     return (
         <div className="flex justify-center space-x-16">
             <button
-                className={`bg-transparent text-white font-bold py-2 px-4 rounded ${month === 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}`}
+                className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
                 onClick={handleMonthDecrement}
-                disabled={month <= 1}
             >
                 <ChevronLeftIcon />
             </button>
             <MonthStrProvider monthStr={monthStr} cssStr={cssStr}/>
             <button
-                className={`bg-transparent text-white font-bold py-2 px-4 rounded ${month === 12 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-700'}`}
+                className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
                 onClick={handleMonthIncrement}
-                disabled={month >= 12}
             >
                 <ChevronRightIcon />
             </button>

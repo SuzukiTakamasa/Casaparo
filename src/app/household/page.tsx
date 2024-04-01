@@ -142,7 +142,7 @@ const Household = () => {
     }, [calculateBillingAmount])
 
     return (
-    <MonthProvider month={householdMonth} setMonth={setHouseholdMonth}>
+    <MonthProvider month={householdMonth} setMonth={setHouseholdMonth} setYear={setHouseholdYear}>
         <h1 className="text-2xl font-bold mc-4">⚪️ 家計簿 ⚪️</h1>
 
         <YearProvider year={householdYear} setYear={setHouseholdYear}>

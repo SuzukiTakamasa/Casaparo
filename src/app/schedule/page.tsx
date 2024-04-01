@@ -372,7 +372,7 @@ const Schedule = () => {
     }, [scheduleYear, scheduleMonth])
 
     return (
-    <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth}>
+    <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth} setYear={setScheduleYear}>
         <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
 
         <YearProvider year={scheduleYear} setYear={setScheduleYear}>
