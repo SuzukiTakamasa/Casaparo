@@ -50,7 +50,7 @@ const Schedule = () => {
     const { month } = useContext(MonthContext)
     const [scheduleMonth, setScheduleMonth] = useState(month)
 
-    const { year, lastYear, nextYear } = useContext(YearContext)
+    const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
     const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
@@ -408,9 +408,9 @@ const Schedule = () => {
                                     value={fromYear}
                                     onChange={e => setFromYear(Number(e.target.value))}
                                 >
-                                    <option value={lastYear}>{`${lastYear}年`}</option>
+                                    <option value={year - 1}>{`${year - 1}年`}</option>
                                     <option value={year}>{`${year}年`}</option>
-                                    <option value={nextYear}>{`${nextYear}年`}</option>
+                                    <option value={year + 1}>{`${year + 1}年`}</option>
                                 </select>
                             </label>
                             <label className="text-black">
@@ -447,9 +447,9 @@ const Schedule = () => {
                                         value={toYear}
                                         onChange={e => setToYear(Number(e.target.value))}
                                     >
-                                        <option value={lastYear}>{`${lastYear}年`}</option>
+                                        <option value={year - 1}>{`${year - 1}年`}</option>
                                         <option value={year}>{`${year}年`}</option>
-                                        <option value={nextYear}>{`${nextYear}年`}</option>
+                                        <option value={year + 1}>{`${year + 1}年`}</option>
                                     </select>
                                 </label>
                                 <label className="text-black">

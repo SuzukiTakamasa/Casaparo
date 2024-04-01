@@ -43,7 +43,7 @@ export default function Home() {
   const fetchSchedules = useCallback(async () => {
     const schedules = await client.get<ScheduleResponse>(`/schedule/today_or_tomorrow/${year}/${month}/${currentDate}`)
     setSchedules(schedules || [])
-  }, [year, month])
+  }, [year, month, currentDate])
 
    useEffect(() => {
     fetchFixedAmount()

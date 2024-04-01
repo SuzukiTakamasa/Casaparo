@@ -1,9 +1,7 @@
-import {createContext, useContext, ReactNode} from 'react'
+import { createContext, useContext, ReactNode } from 'react'
 
 export type YearContextType  = {
     year: number,
-    lastYear?: number,
-    nextYear?: number,
     setYear: (year: number) => void
 }
 
@@ -13,27 +11,24 @@ type YearProviderProps = {
     setYear: React.Dispatch<React.SetStateAction<number>>
 }
 
-const currentYear = new Date().getFullYear()
 const defaultYearContext: YearContextType = {
-    year: currentYear,
+    year: new Date().getFullYear(),
     setYear: () => {}
 }
 
 export const YearContext = createContext<YearContextType>(defaultYearContext)
 
 export const YearProvider = ({ children, year, setYear }: YearProviderProps) => {
-    const lastYear = year - 1
-    const nextYear = year + 1
 
     return (
-        <YearContext.Provider value={{year, lastYear, nextYear, setYear}}>
+        <YearContext.Provider value={{ year, setYear }}>
             {children}
         </YearContext.Provider>
     )
 }
 
 const YearPicker = () => {
-    const {year, lastYear, nextYear, setYear} = useContext(YearContext) as YearContextType
+    const { year, setYear } = useContext(YearContext) as YearContextType
 
     return (
         <div className="w-40">
@@ -42,9 +37,9 @@ const YearPicker = () => {
                 onChange={(e) => {setYear(parseInt(e.target.value, 10))}}
                 className="form-select block w-full px-3 py-2 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-int-out m-0 focs:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
             >
-                <option value={lastYear}>{lastYear}</option>
+                <option value={year - 1}>{year - 1}</option>
                 <option value={year}>{year}</option>
-                <option value={nextYear}>{nextYear}</option>
+                <option value={year + 1}>{year + 1}</option>
             </select>
         </div>
     )

@@ -37,14 +37,14 @@ export const MonthProvider = ({ children, month, setMonth }: MonthProviderProps)
     }
 
     return (
-        <MonthContext.Provider value={{month, handleMonthIncrement, handleMonthDecrement}}>
+        <MonthContext.Provider value={{ month, handleMonthIncrement, handleMonthDecrement }}>
             {children}
         </MonthContext.Provider>
     )
 }
 
-export const MonthStrProvider = ({monthStr, cssStr}: MonthStrProps) => {
-    const {month} = useContext(MonthContext) as MonthContextType
+export const MonthStrProvider = ({ monthStr, cssStr }: MonthStrProps) => {
+    const { month } = useContext(MonthContext) as MonthContextType
     return (
         <div className={`${cssStr}`}>
             {month + `${monthStr}`}
@@ -52,7 +52,7 @@ export const MonthStrProvider = ({monthStr, cssStr}: MonthStrProps) => {
     )
 }
 
-const MonthPaginator = ({monthStr, cssStr}: MonthStrProps) => {
+const MonthPaginator = ({ monthStr, cssStr }: MonthStrProps) => {
     const {month, handleMonthIncrement, handleMonthDecrement} = useContext(MonthContext) as MonthContextType
 
     return (
