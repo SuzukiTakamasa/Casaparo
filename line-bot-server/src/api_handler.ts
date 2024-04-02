@@ -72,7 +72,7 @@ export default class LINEMessagingAPIHandler {
             messages: [
               {
                 "type": "text",
-                "text": `【🥺今月の生活費のお知らせ🥺ྀི 】\n🥺ྀི 負担分： ${responseFixedHousehold.billing_amount}\n生活費合計: ${responseFixedHousehold.total_amount}\n来月もよろしくまる🥺`
+                "text": `【🥺今月の生活費のお知らせ🥺ྀི 】\n🥺ྀི 負担分： ${responseFixedHousehold.billing_amount}\n生活費合計: ${responseFixedHousehold.total_amount}\n来月もよろしくまる🥺\n(※清算が終わったら家計簿を確定するまる)`
               }
             ]
         }
@@ -89,13 +89,5 @@ export default class LINEMessagingAPIHandler {
         ]
       }
       await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
-    }
-
-    public async completeHouseHold() {
-      const completedHousehold: CompletedHouseholds = {
-        year: this.currentMonth == 1 ? this.currentYear - 1 : this.currentYear,
-        month: this.currentMonth == 1 ? 12 : this.currentMonth - 1
-      }
-      await this._postAPIHandler<any>(this.backendHost, "/completed_household/create", completedHousehold)
     }
 }

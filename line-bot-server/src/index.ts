@@ -10,9 +10,6 @@ export default {
         case "0 0 25 * *":
             await apiHandler.broadcastFixedHousehold()
             break
-        case "0 0 1 * *":
-            await apiHandler.completeHouseHold()
-            break
     }
   }
 }

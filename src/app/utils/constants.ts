@@ -36,6 +36,11 @@ export interface FixedAmount {
     total_amount: number
 }
 
+export interface CompletedHouseholdData {
+    year: number
+    month: number
+}
+
 export interface WikiData {
     id?: number,
     title: string,
@@ -60,4 +65,4 @@ export type WikiResponse = WikiData[]
 
 export type LabelResponse = LabelData[]
 
-export type APIRequest = HouseholdData | ScheduleData | WikiData | LabelData
+export type APIRequest = HouseholdData | ScheduleData | CompletedHouseholdData | WikiData | LabelData

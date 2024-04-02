@@ -10,9 +10,9 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
-import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 
@@ -39,6 +39,8 @@ const Household = () => {
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
+
+    const today = new Date().getDate()
 
     const handleAddHousehold = () => {
         addHousehold()
@@ -131,6 +133,15 @@ const Household = () => {
         })
         setBillingAmount(balance)
     }, [households])
+    const handleAddCompletedHousehold = async () => {
+        if (!window.confirm("家計簿を確定しますか？")) return
+        const completedHousehold = {
+            year: householdYear,
+            month: householdMonth
+        }
+        const res = await client.post<CompletedHouseholdData>('/completed_household/create', completedHousehold)
+        await fetchIsCompleted()
+    }
 
     useEffect(() => {
         fetchHouseholds()
@@ -140,6 +151,7 @@ const Household = () => {
     useEffect(() => {
         calculateBillingAmount()
     }, [calculateBillingAmount])
+
 
     return (
     <MonthProvider month={householdMonth} setMonth={setHouseholdMonth} setYear={setHouseholdYear}>
@@ -151,14 +163,34 @@ const Household = () => {
 
         <div className="container mx-auto p-4">
             <button
-                className={`${isCompleted ? "bg-gray-700" : "bg-blue-500 hover:bg-blue-700"} text-white font-bold py-2 px-4 rounded mb-4`}
+                className={`${isCompleted ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-700"} text-white font-bold py-2 px-4 rounded mb-4`}
                 onClick={handleOpenAddDialog}
                 disabled={intToBool(isCompleted)}
             >
                 登録
             </button>
             <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
-            {intToBool(isCompleted) && <div className="text-2xl font-bold mc-4 bg-red-900 text-center">請求済み</div>}
+            {intToBool(isCompleted) &&
+            <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                <div className="mt-1">
+                    <CheckBadgeIcon/>
+                </div>
+                清算済み
+            </div>
+            }
+            {!intToBool(isCompleted) &&
+            (householdYear < year ||
+            (householdYear === year && householdMonth < month) ||
+            (householdYear === year && householdMonth === month && today >= 25)) &&
+            <div className="flex justify-center">
+            <button
+                className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
+                onClick={handleAddCompletedHousehold}
+            >
+                確定
+            </button>
+            </div>
+            }
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -228,7 +260,7 @@ const Household = () => {
                         <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
-                                    className={`${isCompleted ? "bg-gray-700" : "bg-blue-500 hover:bg-blue-700"} text-white font-blod py-1 px-1 rounded`}
+                                    className={`${isCompleted ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-700"} text-white font-blod py-1 px-1 rounded`}
                                     onClick={() => handleOpenUpdateDialog({
                                         id: household.id,
                                         name: household.name,
@@ -242,7 +274,7 @@ const Household = () => {
                                     <PencilIcon />
                                 </button>
                                 <button
-                                    className={`${isCompleted ? "bg-gray-700" : "bg-red-500 hover:bg-red-700"} text-white font-bold py-1 px-1 rounded`}
+                                    className={`${isCompleted ? "bg-gray-600" : "bg-red-500 hover:bg-red-700"} text-white font-bold py-1 px-1 rounded`}
                                     onClick={() => deleteHousehold({
                                         id: household.id,
                                         name: household.name,
