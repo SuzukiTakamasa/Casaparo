@@ -296,7 +296,7 @@ const Household = () => {
                 </tbody>
                 <tfoot>
                     <td className="border-b"></td>
-                    <td className="border-b px-4 py-2 text-xl text-center font-bold">清算金額</td>
+                    <td className="border-b px-2 py-1 text-center font-bold">清算金額</td>
                     <td className="border-b px-4 py-2 text-xl text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
                 </tfoot>
             </table>
