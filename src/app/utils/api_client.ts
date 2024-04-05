@@ -4,10 +4,10 @@ dotenv.config()
 
 
 class APIClient {
-    private host: string
-    private r2Host: string
-    private headers: {[key: string]: string}
-    private r2Headers: {[key: string]: string}
+    private readonly host: string
+    private readonly r2Host: string
+    private readonly headers: {[key: string]: string}
+    private readonly r2Headers: {[key: string]: string}
 
     constructor() {
         this.host = process.env.NEXT_PUBLIC_BACKEND_HOST_NAME as string
@@ -16,6 +16,7 @@ class APIClient {
             'Content-Type': 'application/json',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         }
+        const date = new Date().toISOString().slice(0, 19).replace('T', 'T')
         this.r2Headers = {
             'x-amz-content-sha256': '',
             'Content-Type': 'image/png',
