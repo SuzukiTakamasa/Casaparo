@@ -1,27 +1,20 @@
 import { APIRequest } from './constants'
+import crypto from 'crypto'
+import * as AWS from 'aws-sdk'
+
 import * as dotenv from 'dotenv'
 dotenv.config()
 
 
 class APIClient {
     private readonly host: string
-    private readonly r2Host: string
     private readonly headers: {[key: string]: string}
-    private readonly r2Headers: {[key: string]: string}
 
     constructor() {
         this.host = process.env.NEXT_PUBLIC_BACKEND_HOST_NAME as string
-        this.r2Host = process.env.NEXT_PUBLIC_R2_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
-        }
-        const date = new Date().toISOString().slice(0, 19).replace('T', 'T')
-        this.r2Headers = {
-            'x-amz-content-sha256': '',
-            'Content-Type': 'image/png',
-            'X-Amz-Date': '',
-            'Authorization': `AWS4-HMAC-SHA256 Credential=`
         }
     }
     public async get<T>(endpoint: string, params?: string): Promise<T|null> {
@@ -51,12 +44,31 @@ class APIClient {
             return null
         }
     }
-    public async put(fileName: string): Promise<string|null> {
-        const file = new File([fileName], fileName, {type: 'image/png'})
+    public async put(file: File): Promise<string|null> {
+        const r2Host = process.env.NEXT_PUBLIC_R2_HOST_NAME as string
+
+        const date = new Date().toISOString().slice(0, 19).replace('T', 'T')
+        const contentSha256 = async (file: File) => {
+            const hash = crypto.createHash('sha256');
+            for await (const chunk of file.stream() as any) {
+              hash.update(chunk as Buffer)
+            }
+            return hash.digest('hex')
+          }
+          
+         // to do: implement signature from aws-sdk
+          
+        const r2Headers = {
+            'x-amz-content-sha256': '',
+            'Content-Type': 'image/png',
+            'X-Amz-Date': date,
+            'Authorization': `AWS4-HMAC-SHA256 Credential=`
+        }
+
         try {
-            const res = await fetch(this.r2Host, {
+            const res = await fetch(r2Host, {
                 method: 'PUT',
-                headers: this.r2Headers,
+                headers: r2Headers,
                 body: file,
                 redirect: 'follow'
             })

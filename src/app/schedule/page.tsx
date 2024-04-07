@@ -561,17 +561,15 @@ const Schedule = () => {
                             >
                                 キャンセル
                             </button>
+                            {isUpdate && 
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
+                                    onClick={handleDeleteSchedule}
+                                >
+                                    <TrashBoxIcon />
+                                </button>
+                            }
                         </div>
-                        {isUpdate && 
-                        <div className="flex justify-center mt-1">
-                            <button
-                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
-                                onClick={handleDeleteSchedule}
-                            >
-                                <TrashBoxIcon />
-                            </button>
-                        </div>
-                        }
                     </div>
                 </div>
             )}
