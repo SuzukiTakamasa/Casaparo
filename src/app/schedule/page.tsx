@@ -91,25 +91,25 @@ const Schedule = () => {
         }
 
         const isDisplayed = (schedule: ScheduleData) => {
-            let isDisplayedFlag = false;
+            let isDisplayedFlag = false
             if (schedule.from_year <= year && year <= schedule.to_year) {
                 if (schedule.from_year === schedule.to_year) {
                     if (schedule.from_month <= month && month <= schedule.to_month) {
                         if (schedule.from_month === schedule.to_month) {
                             if (schedule.from_date <= day && day <= schedule.to_date) {
-                                isDisplayedFlag = true;
+                                isDisplayedFlag = true
                             }
                         } else {
                             if (schedule.from_month === month) {
                                 if (schedule.from_date <= day && day <= numberOfDays) {
-                                    isDisplayedFlag = true;
+                                    isDisplayedFlag = true
                                 }
                             } else if (schedule.to_month === month) {
                                 if (1 <= day && day <= schedule.to_date) {
-                                    isDisplayedFlag = true;
+                                    isDisplayedFlag = true
                                 }
                             } else {
-                                isDisplayedFlag = true;
+                                isDisplayedFlag = true
                             }
                         }
                     }
@@ -118,28 +118,28 @@ const Schedule = () => {
                         if (schedule.from_month <= month) {
                             if (schedule.from_month === month) {
                                 if (schedule.from_date <= day && day <= numberOfDays) {
-                                    isDisplayedFlag = true;
+                                    isDisplayedFlag = true
                                 }
                             } else {
-                                isDisplayedFlag = true;
+                                isDisplayedFlag = true
                             }
                         }
                     } else if (schedule.to_year === year) {
                         if (month <= schedule.to_month) {
                             if (schedule.to_month === month) {
                                 if (1 <= day && day <= schedule.to_date) {
-                                    isDisplayedFlag = true;
+                                    isDisplayedFlag = true
                                 }
                             } else {
-                                isDisplayedFlag = true;
+                                isDisplayedFlag = true
                             }
                         }
                     } else {
-                    isDisplayedFlag = true;
+                    isDisplayedFlag = true
                     }
                 }
             }
-            return isDisplayedFlag;
+            return isDisplayedFlag
           };
         
     
