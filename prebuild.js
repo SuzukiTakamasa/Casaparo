@@ -4,7 +4,7 @@ const fs = require('fs-extra')
 const path = require('path')
 
 const lineborServerDirPath = path.join(__dirname, './line-bot-server/src/')
-const r2DirPath = path.join(__dirname, './r2/src/')
+const r2DirPath = path.join(__dirname, './r2/')
 
 fs.remove(lineborServerDirPath, e => {
     if (e) return console.error(e)
