@@ -16,10 +16,11 @@ export interface Env {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		if (request.url.endsWith('/upload') && request.method === 'POST') {
+			const dbEnv = request.headers.get('Environment') === 'DB_DEV' ? env.CASAPARO_DEV : env.CASAPARO
 			try {
 				const body = await request.arrayBuffer()
 				const fileName = `image-${Date.now()}.png`
-				await env.CASAPARO.put(fileName, body)
+				await dbEnv.put(fileName, body)
 				return new Response(JSON.stringify('Upload success'), {
 					status: 200,
 					headers: { 'Content-Type': 'application/json' }
