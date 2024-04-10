@@ -9,7 +9,8 @@ export async function POST(request: Request) {
             method: 'POST',
             body,
             headers: {
-                'Content-Type': 'application/octet-stream'
+                'Content-Type': 'application/octet-stream',
+                'Envionment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
             }
         })
         const data = await response.json()
