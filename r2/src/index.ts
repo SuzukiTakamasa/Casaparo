@@ -9,24 +9,28 @@
  */
 
 export interface Env {
-	// Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-	// MY_KV_NAMESPACE: KVNamespace;
-	//
-	// Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-	// MY_DURABLE_OBJECT: DurableObjectNamespace;
-	//
-	// Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-	// MY_BUCKET: R2Bucket;
-	//
-	// Example binding to a Service. Learn more at https://developers.cloudflare.com/workers/runtime-apis/service-bindings/
-	// MY_SERVICE: Fetcher;
-	//
-	// Example binding to a Queue. Learn more at https://developers.cloudflare.com/queues/javascript-apis/
-	// MY_QUEUE: Queue;
+	CASAPARO: R2Bucket
+	CASAPARO_DEV: R2Bucket
 }
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		return new Response('Hello World!');
+		if (request.url.endsWith('/upload') && request.method === 'POST') {
+			try {
+				const body = await request.arrayBuffer()
+				const fileName = `image-${Date.now()}.png`
+				await env.CASAPARO.put(fileName, body)
+				return new Response(JSON.stringify('Upload success'), {
+					status: 200,
+					headers: { 'Content-Type': 'application/json' }
+				})
+			} catch (e) {
+				return new Response(JSON.stringify({ error: e }), {
+					status: 500,
+					headers: { 'Content-Type': 'application/json' }
+				})
+			}
+		}
+		return new Response('Not Found', { status: 404 })
 	},
 };
