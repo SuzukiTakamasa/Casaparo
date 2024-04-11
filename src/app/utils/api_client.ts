@@ -1,4 +1,4 @@
-import { APIRequest } from './constants'
+import { APIRequest, UploadResponse } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -38,6 +38,18 @@ class APIClient {
             return await res.json()
         } catch(e) {
             console.log(e)
+            return null
+        }
+    }
+    public async upload(file: File): Promise<UploadResponse|null> {
+        try {
+            const response = await fetch('/api/r2/upload', {
+                method: 'POST',
+                body: file,
+            })
+            return await response.json()
+        } catch (e) {
+            console.error(e)
             return null
         }
     }

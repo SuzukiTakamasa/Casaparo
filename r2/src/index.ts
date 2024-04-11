@@ -21,7 +21,7 @@ export default {
 				const body = await request.arrayBuffer()
 				const fileName = `image-${Date.now()}.png`
 				await dbEnv.put(fileName, body)
-				return new Response(JSON.stringify('Upload success'), {
+				return new Response(JSON.stringify({file_name: fileName}), {
 					status: 200,
 					headers: { 'Content-Type': 'application/json' }
 				})

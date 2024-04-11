@@ -57,6 +57,10 @@ export interface LabelData {
     version: number
 }
 
+export interface UploadResponse {
+    image_url: string
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]
@@ -65,4 +69,8 @@ export type WikiResponse = WikiData[]
 
 export type LabelResponse = LabelData[]
 
-export type APIRequest = HouseholdData | ScheduleData | CompletedHouseholdData | WikiData | LabelData
+export type APIRequest = HouseholdData |
+                          ScheduleData |
+                CompletedHouseholdData |
+                              WikiData |
+                             LabelData

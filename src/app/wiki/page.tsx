@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback} from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 
-import { WikiData, WikiResponse } from '@utils/constants'
+import { WikiData, WikiResponse, UploadResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
@@ -23,6 +23,7 @@ const Wiki = () => {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [createdBy, setCreatedBy] = useState(1)
+    const [imageUrl, setImageUrl] = useState("")
     const [version, setVersion] = useState(1)
 
     const handleAddWiki = () => {
@@ -88,6 +89,13 @@ const Wiki = () => {
         if (!window.confirm("削除しますか？")) return
         const res = await client.post<WikiResponse>('/wiki/delete', deleteWikiData)
         await fetchWikis()
+    }
+    const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files![0]
+        const response = await client.upload(file)
+        if (response !== null) {
+            setImageUrl(response.image_url)
+        }
     }
 
     useEffect(() => {
