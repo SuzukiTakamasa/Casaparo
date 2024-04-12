@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback} from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 
-import { WikiData, WikiResponse, UploadResponse } from '@utils/constants'
+import { WikiData, WikiResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
@@ -23,7 +23,7 @@ const Wiki = () => {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [createdBy, setCreatedBy] = useState(1)
-    const [imageUrl, setImageUrl] = useState("")
+    const [imageUrl, setImageUrl] = useState<string | null>(null)
     const [version, setVersion] = useState(1)
 
     const handleAddWiki = () => {
@@ -37,12 +37,13 @@ const Wiki = () => {
     const handleOpenAddDialog = () => {
         setShowDialog(true)
     }
-    const handleOpenUpdateDialog = ({id, title, content, created_by, version}: WikiData) => {
+    const handleOpenUpdateDialog = ({id, title, content, created_by, image_url, version}: WikiData) => {
         setShowDialog(true)
         setId(id as number)
         setTitle(title)
         setContent(content)
         setCreatedBy(created_by)
+        setImageUrl(image_url)
         setVersion(version)
         setIsUpdate(true)
     }
@@ -52,6 +53,7 @@ const Wiki = () => {
         setTitle("")
         setContent("")
         setCreatedBy(1)
+        setImageUrl(null)
         setVersion(1)
         setIsUpdate(false)
     }
@@ -68,6 +70,7 @@ const Wiki = () => {
             content: content,
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
+            image_url: imageUrl,
             version: version
         }
         const res = await client.post<WikiResponse>('/wiki/create', addedWikiData)
@@ -80,6 +83,7 @@ const Wiki = () => {
             content: content,
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
+            image_url: imageUrl,
             version: version
         }
         const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
@@ -199,6 +203,7 @@ const Wiki = () => {
                                         content: wiki.content,
                                         created_by: wiki.created_by,
                                         updated_at: wiki.updated_at,
+                                        image_url: wiki.image_url,
                                         version: wiki.version
                                     })}
                                 >
@@ -212,6 +217,7 @@ const Wiki = () => {
                                         content: wiki.content,
                                         created_by: wiki.created_by,
                                         updated_at: wiki.updated_at,
+                                        image_url: wiki.image_url,
                                         version: wiki.version
                                     })}
                                 >

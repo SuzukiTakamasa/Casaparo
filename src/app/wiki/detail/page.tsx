@@ -19,7 +19,7 @@ const addBreakPoint = (text: string) => {
 
 
 const WikiDetail = () => {
-    const [wikiDetail, setWikiDetail] = useState<WikiData>({id: 0, title: "", content: "", created_by: 0, updated_at: "", version: 0})
+    const [wikiDetail, setWikiDetail] = useState<WikiData>({id: 0, title: "", content: "", created_by: 0, updated_at: "", image_url: null, version: 0})
     const param = useSearchParams()
     const id = param.get("id")
 
