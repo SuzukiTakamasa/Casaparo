@@ -1,3 +1,5 @@
+"use client"
+
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { NextResponse } from 'next/server'
@@ -17,6 +19,7 @@ export async function POST(request: Request): Promise<NextResponse> {
         const data = await response.json()
         return NextResponse.json({ image_url: `${r2BucketHost}/${data.file_name}`})
     } catch (e) {
+        console.log(e)
         return NextResponse.json({ error: (e as Error).message }, { status: 500 })
     }
 }

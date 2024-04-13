@@ -153,6 +153,9 @@ const Wiki = () => {
                                     />
                                     <span>🥺ྀི</span>
                             </div>
+                            <div className="flex justify-center">
+                                <input className="block" type="file" onChange={handleUploadFile} />
+                            </div>
                             <button
                                 className="aria-label text-black text-left"
                                 onClick={handleShowPreview}

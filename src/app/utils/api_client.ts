@@ -36,18 +36,18 @@ class APIClient {
                 body: JSON.stringify(data)
             })
             return await res.json()
-        } catch(e) {
+        } catch (e) {
             console.log(e)
             return null
         }
     }
     public async upload(file: File): Promise<UploadResponse|null> {
         try {
-            const response = await fetch('/api/r2/upload', {
+            const res = await fetch('/api/r2/upload', {
                 method: 'POST',
                 body: file,
             })
-            return await response.json()
+            return await res.json()
         } catch (e) {
             console.error(e)
             return null
