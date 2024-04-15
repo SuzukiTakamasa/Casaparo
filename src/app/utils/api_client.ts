@@ -42,8 +42,12 @@ class APIClient {
         }
     }
     public async upload(file: File): Promise<UploadResponse|null> {
+        const headers = {
+            'Content-Type': 'application/octet-stream',
+            'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
+        }
         try {
-            const res = await fetch('/api/r2/upload', {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/upload`, {
                 method: 'POST',
                 body: file,
             })
