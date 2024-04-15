@@ -36,14 +36,19 @@ export default {
 				await bucketName.put(fileName, body)
 				return new Response(JSON.stringify({image_url: `${bucketUrl}/${fileName}`}), {
 					status: 200,
-					headers: { 'Content-Type': 'application/json' },
-					...corsHeaders
+					headers: {
+						'Content-Type': 'application/json',
+						...corsHeaders
+					},
+					
 				})
 			} catch (e) {
 				return new Response(JSON.stringify({ error: e }), {
 					status: 500,
-					headers: { 'Content-Type': 'application/json' },
-					...corsHeaders
+					headers: {
+						'Content-Type': 'application/json',
+						...corsHeaders
+					},
 				})
 			}
 		}
