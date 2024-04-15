@@ -50,6 +50,7 @@ class APIClient {
             const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/upload`, {
                 method: 'POST',
                 body: file,
+                headers: headers
             })
             return await res.json()
         } catch (e) {

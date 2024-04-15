@@ -156,6 +156,7 @@ const Wiki = () => {
                             <div className="flex justify-center">
                                 <input className="block" type="file" onChange={handleUploadFile} />
                             </div>
+                            {imageUrl && <div className="text-black font-bold">{imageUrl.split('/')[4]}</div>}
                             <button
                                 className="aria-label text-black text-left"
                                 onClick={handleShowPreview}
