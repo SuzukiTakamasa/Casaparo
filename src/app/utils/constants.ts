@@ -62,6 +62,10 @@ export interface UploadResponse {
     image_url: string
 }
 
+export interface DeleteImageRequest {
+    file_name: string
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]

@@ -1,4 +1,4 @@
-import { APIRequest, UploadResponse } from './constants'
+import { APIRequest, UploadResponse, DeleteImageRequest } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -56,6 +56,21 @@ class APIClient {
         } catch (e) {
             console.error(e)
             return null
+        }
+    }
+    public async delete(data: DeleteImageRequest) {
+        const headers = {
+            'Content-Type': 'application/octet-stream',
+            'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
+        }
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/delete`, {
+                method: 'DELETE',
+                body: JSON.stringify(data),
+                headers: headers
+            })
+        } catch (e) {
+            console.error(e)
         }
     }
 }
