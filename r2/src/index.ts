@@ -14,6 +14,10 @@ export interface Env {
 	R2_BUCKET_NAME: string
 }
 
+interface DeleteRequestBody {
+	file_name: string
+}
+
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const corsHeaders = {
@@ -22,14 +26,17 @@ export default {
 			'Access-Control-Allow-Headers': '*',
 			'Access-Control-Max-Age': '86400',
 		}
+
 		if (request.method === 'OPTIONS') {
 			return new Response(null,
 				{ headers: corsHeaders })
 		}
+
+		const isDev = request.headers.get('Environment') === 'DB_DEV' 
+		const bucketName = isDev ? env.CASAPARO_DEV : env.CASAPARO
+		const bucketUrl = `${env.R2_BUCKET_NAME}${isDev ? 'casaparo-dev' : 'casaparo'}`
+
 		if (request.url.endsWith('/upload') && request.method === 'POST') {
-			const isDev = request.headers.get('Environment') === 'DB_DEV' 
-			const bucketName = isDev ? env.CASAPARO_DEV : env.CASAPARO
-			const bucketUrl = `${env.R2_BUCKET_NAME}${isDev ? 'casaparo-dev' : 'casaparo'}`
 			try {
 				const body = await request.arrayBuffer()
 				const fileName = `image-${Date.now()}.png`
@@ -40,7 +47,27 @@ export default {
 						'Content-Type': 'application/json',
 						...corsHeaders
 					},
-					
+				})
+			} catch (e) {
+				return new Response(JSON.stringify({ error: e }), {
+					status: 500,
+					headers: {
+						'Content-Type': 'application/json',
+						...corsHeaders
+					},
+				})
+			}
+		} else if (request.url.endsWith('/delete') && request.method === 'POST') {
+			try {
+				const body = await request.json()
+ 				const { file_name } = body as DeleteRequestBody
+				await bucketName.delete(file_name)
+				return new Response(null, {
+					status: 200,
+					headers: {
+						'Content-Type': 'application/json',
+						...corsHeaders
+					},
 				})
 			} catch (e) {
 				return new Response(JSON.stringify({ error: e }), {

@@ -101,6 +101,11 @@ const Wiki = () => {
             setImageUrl(response.image_url)
         }
     }
+    const handleDeleteFile = async(fileName: string) => {
+        if (!window.confirm("削除しますか？")) return
+        const res = await client.delete(fileName)
+        setImageUrl(null)
+    }
 
     useEffect(() => {
         fetchWikis()
@@ -156,7 +161,17 @@ const Wiki = () => {
                             <div className="flex justify-center">
                                 <input className="block" type="file" onChange={handleUploadFile} />
                             </div>
-                            {imageUrl && <div className="text-black font-bold">{imageUrl.split('/')[4]}</div>}
+                            {imageUrl &&
+                            <div className='flex justify-center'>
+                                <div className="text-black font-bold">{imageUrl.split('/')[4]}</div>
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded ml-2"
+                                    onClick={() => handleDeleteFile(imageUrl.split('/')[4])}
+                                >
+                                    <TrashBoxIcon />
+                                </button>
+                            </div>
+                            }
                             <button
                                 className="aria-label text-black text-left"
                                 onClick={handleShowPreview}
@@ -168,7 +183,7 @@ const Wiki = () => {
                                     <ReactMarkdown>{content}</ReactMarkdown>
                                 </div>
                             }
-                            <div className="flex justify-end space-x-4">
+                            <div className="flex justify-center space-x-4">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdate ? handleUpdateWiki : handleAddWiki}

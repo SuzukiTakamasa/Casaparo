@@ -58,15 +58,15 @@ class APIClient {
             return null
         }
     }
-    public async delete(data: DeleteImageRequest) {
+    public async delete(fileName: string) {
         const headers = {
             'Content-Type': 'application/octet-stream',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         }
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/delete`, {
-                method: 'DELETE',
-                body: JSON.stringify(data),
+                method: 'POST',
+                body: JSON.stringify({file_name: fileName}),
                 headers: headers
             })
         } catch (e) {
