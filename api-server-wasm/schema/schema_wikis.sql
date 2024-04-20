@@ -5,5 +5,6 @@ CREATE TABLE wikis (
     content TEXT NOT NULL,
     created_by INTEGER NOT NULL,
     updated_at TEXT NOT NULL,
+    image_url TEXT DEFAULT NULL,
     version INTEGER NOT NULL
 );
