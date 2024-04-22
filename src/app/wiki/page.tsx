@@ -99,6 +99,8 @@ const Wiki = () => {
         const response = await client.upload(file)
         if (response !== null) {
             setImageUrl(response.image_url)
+        } else {
+            console.log(response)
         }
     }
     const handleDeleteFile = async(fileName: string) => {
@@ -163,10 +165,10 @@ const Wiki = () => {
                             </div>
                             {imageUrl &&
                             <div className='flex justify-center'>
-                                <div className="text-black font-bold">{imageUrl.split('/')[4]}</div>
+                                <div className="text-black font-bold">{imageUrl.split('/')[3]}</div>
                                 <button
                                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded ml-2"
-                                    onClick={() => handleDeleteFile(imageUrl.split('/')[4])}
+                                    onClick={() => handleDeleteFile(imageUrl.split('/')[3])}
                                 >
                                     <TrashBoxIcon />
                                 </button>
