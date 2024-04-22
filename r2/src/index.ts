@@ -11,7 +11,8 @@
 export interface Env {
 	CASAPARO: R2Bucket
 	CASAPARO_DEV: R2Bucket
-	R2_BUCKET_NAME: string
+	R2_ACCOUNT_ID: string
+	R2_ACCESS_TOKEN: string
 }
 
 interface DeleteRequestBody {
@@ -34,7 +35,7 @@ export default {
 
 		const isDev = request.headers.get('Environment') === 'DB_DEV' 
 		const bucketName = isDev ? env.CASAPARO_DEV : env.CASAPARO
-		const bucketUrl = `${env.R2_BUCKET_NAME}${isDev ? 'casaparo-dev' : 'casaparo'}`
+		const bucketUrl = `https://${env.R2_ACCOUNT_ID}:${env.R2_ACCESS_TOKEN}@${isDev ? 'casaparo-dev' : 'casaparo'}.r2.cloudflarestorage.com`
 
 		if (request.url.endsWith('/upload') && request.method === 'POST') {
 			try {
