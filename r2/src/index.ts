@@ -79,6 +79,18 @@ export default {
 					},
 				})
 			}
+		} else {
+			const imageObj = await bucketName.get(new URL(request.url).pathname.slice(1))
+			if (!imageObj) {
+				return new Response("Not found", { status: 404 })
+			}
+			const imageBody = await imageObj.body
+			return new Response(imageBody, {
+				headers: {
+					'Content-Type': imageObj.httpMetadata?.contentType as string,
+					'Cache-Control': 'public, max-age=86400'
+				}
+			})
 		}
 		return new Response('Not Found', { status: 404 })
 	},
