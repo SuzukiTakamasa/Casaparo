@@ -165,10 +165,10 @@ const Wiki = () => {
                             </div>
                             {imageUrl &&
                             <div className='flex justify-center'>
-                                <div className="text-black font-bold">{imageUrl.split('/')[3]}</div>
+                                <div className="text-black font-bold">{new URL(imageUrl).pathname.slice(1)}</div>
                                 <button
                                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded ml-2"
-                                    onClick={() => handleDeleteFile(imageUrl.split('/')[3])}
+                                    onClick={() => handleDeleteFile(new URL(imageUrl).pathname.slice(1))}
                                 >
                                     <TrashBoxIcon />
                                 </button>
