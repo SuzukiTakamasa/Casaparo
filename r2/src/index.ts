@@ -82,17 +82,13 @@ export default {
 			if (!imageObj) {
 				return new Response("Not found", { status: 404 })
 			}
-			try {
-				const imageBody = await imageObj.body
+			const imageBody = await imageObj.body
 			return new Response(imageBody, {
 				headers: {
 					'Content-Type': imageObj.httpMetadata?.contentType as string,
 					'Cache-Control': 'public, max-age=86400'
 				}
 			})
-			} catch (_) {
-				return new Response('Not Found', { status: 404 })
-			}
 		}
 	},
 };
