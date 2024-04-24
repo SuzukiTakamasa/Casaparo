@@ -11,8 +11,7 @@
 export interface Env {
 	CASAPARO: R2Bucket
 	CASAPARO_DEV: R2Bucket
-	R2_ACCOUNT_ID: string
-	R2_ACCESS_TOKEN: string
+	R2_WORKER_HOST: string
 }
 
 interface DeleteRequestBody {
@@ -35,14 +34,13 @@ export default {
 
 		const isDev = request.headers.get('Environment') === 'DB_DEV' 
 		const bucketName = isDev ? env.CASAPARO_DEV : env.CASAPARO
-		const bucketUrl = `https://${env.R2_ACCOUNT_ID}:${env.R2_ACCESS_TOKEN}@${isDev ? 'casaparo-dev' : 'casaparo'}.r2.cloudflarestorage.com`
 
 		if (request.url.endsWith('/upload') && request.method === 'POST') {
 			try {
 				const body = await request.arrayBuffer()
 				const fileName = `image-${Date.now()}.png`
 				await bucketName.put(fileName, body)
-				return new Response(JSON.stringify({image_url: `${bucketUrl}/${fileName}`}), {
+				return new Response(JSON.stringify({image_url: `${env.R2_WORKER_HOST}/${fileName}`}), {
 					status: 200,
 					headers: {
 						'Content-Type': 'application/json',
@@ -84,14 +82,17 @@ export default {
 			if (!imageObj) {
 				return new Response("Not found", { status: 404 })
 			}
-			const imageBody = await imageObj.body
+			try {
+				const imageBody = await imageObj.body
 			return new Response(imageBody, {
 				headers: {
 					'Content-Type': imageObj.httpMetadata?.contentType as string,
 					'Cache-Control': 'public, max-age=86400'
 				}
 			})
+			} catch (_) {
+				return new Response('Not Found', { status: 404 })
+			}
 		}
-		return new Response('Not Found', { status: 404 })
 	},
 };
