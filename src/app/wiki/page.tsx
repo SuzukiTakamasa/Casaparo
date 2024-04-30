@@ -23,7 +23,7 @@ const Wiki = () => {
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [createdBy, setCreatedBy] = useState(1)
-    const [imageUrl, setImageUrl] = useState<string | null>(null)
+    const [imageUrl, setImageUrl] = useState("")
     const [version, setVersion] = useState(1)
 
     const handleAddWiki = () => {
@@ -53,7 +53,7 @@ const Wiki = () => {
         setTitle("")
         setContent("")
         setCreatedBy(1)
-        setImageUrl(null)
+        setImageUrl("")
         setVersion(1)
         setIsUpdate(false)
     }
@@ -106,7 +106,7 @@ const Wiki = () => {
     const handleDeleteFile = async(fileName: string) => {
         if (!window.confirm("削除しますか？")) return
         const res = await client.delete(fileName)
-        setImageUrl(null)
+        setImageUrl("")
     }
 
     useEffect(() => {
