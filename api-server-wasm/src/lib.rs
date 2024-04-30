@@ -571,7 +571,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into wikis (title, content, created_by, updated_at, image_url, version) values (?1, ?2, ?3, ?4, coalesce(?5, null), ?6)");
+            let statement = d1.prepare("insert into wikis (title, content, created_by, updated_at, image_url, version) values (?1, ?2, ?3, ?4, ?5, ?6)");
             let query = statement.bind(&[wiki.title.into(),
                                                               wiki.content.into(),
                                                               wiki.created_by.into(),
@@ -628,7 +628,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Version is found None", 500)
             }
-            let statement = d1.prepare("update wikis set title = ?1, content = ?2, created_by = ?3, updated_at = ?4, image_url = coalesce(?5, null), version = ?6 where id = ?7");
+            let statement = d1.prepare("update wikis set title = ?1, content = ?2, created_by = ?3, updated_at = ?4, image_url = ?5, version = ?6 where id = ?7");
             let query = statement.bind(&[wiki.title.into(),
                                                               wiki.content.into(),
                                                               wiki.created_by.into(),

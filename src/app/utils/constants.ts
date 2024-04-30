@@ -47,7 +47,7 @@ export interface WikiData {
     content: string,
     created_by: number,
     updated_at: string,
-    image_url: string | null,
+    image_url: string,
     version: number
 }
 
