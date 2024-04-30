@@ -37,7 +37,7 @@ const WikiDetail = () => {
         <>
             <div className="container mx-auto p-4 grid place-items-center">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
-                {wikiDetail.image_url !== null && <img src={wikiDetail.image_url} alt={wikiDetail.title} />}
+                {wikiDetail.image_url !== "" && <img src={wikiDetail.image_url} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
                     {wikiDetail.content.includes('\n') ? addBreakPoint(wikiDetail.content) : wikiDetail.content}
                 </div>
