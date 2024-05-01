@@ -2,7 +2,7 @@ import { APIRequest, UploadResponse } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<T|null> => {
+export const execExternalGetAPI = async(url: string, getParams?: string): Promise<any> => {
     if (getParams) url += getParams
     try {
         const res = await fetch(url, {method: 'GET'})

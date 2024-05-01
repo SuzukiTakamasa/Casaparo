@@ -55,7 +55,7 @@ const Schedule = () => {
 
     const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
     const today = new Date().getDate()
-    const [holidays, setHolidays] = useState<JapaneseHolidays|null>(null)
+    const [holidays, setHolidays] = useState<JapaneseHolidays>({})
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
@@ -90,8 +90,8 @@ const Schedule = () => {
             default:
                 dateColorStr += "text-white font-bold"
                 for (var d in holidays) {
-                    if (d === `${year}-${month}-${day}`) {
-                        dateColorStr += "text-red-500 font-bold"
+                    if (d === `${year}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`) {
+                        dateColorStr = "text-red-500 font-bold"
                         break
                     }
                 }
@@ -367,9 +367,8 @@ const Schedule = () => {
         setWeekDaysArray(darr)
     }, [activeTab])
     const handleGetHolidaysList = useCallback(async () => {
-        const holidayList = await execExternalGetAPI<JapaneseHolidays>(`https://holidays-jp.github.io/api/v1/${year}/date.json`)
+        const holidayList = await execExternalGetAPI(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
         setHolidays(holidayList)
-        console.log(`Test log: ${holidayList}`)
     }, [])
 
     useEffect(() => {
