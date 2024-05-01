@@ -94,12 +94,15 @@ const Schedule = () => {
             let isDisplayedFlag = false
             if (schedule.from_year <= year && year <= schedule.to_year) {
                 if (schedule.from_year === schedule.to_year) {
+                    //年を跨がない場合
                     if (schedule.from_month <= month && month <= schedule.to_month) {
                         if (schedule.from_month === schedule.to_month) {
+                            //月を跨がない場合
                             if (schedule.from_date <= day && day <= schedule.to_date) {
                                 isDisplayedFlag = true
                             }
                         } else {
+                            //月を跨ぐ場合
                             if (schedule.from_month === month) {
                                 if (schedule.from_date <= day && day <= numberOfDays) {
                                     isDisplayedFlag = true
@@ -114,6 +117,7 @@ const Schedule = () => {
                         }
                     }
                 } else {
+                    //年を跨ぐ場合
                     if (schedule.from_year === year) {
                         if (schedule.from_month <= month) {
                             if (schedule.from_month === month) {
@@ -140,7 +144,7 @@ const Schedule = () => {
                 }
             }
             return isDisplayedFlag
-          };
+          }
         
     
         return (
