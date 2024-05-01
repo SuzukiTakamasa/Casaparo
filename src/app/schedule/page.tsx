@@ -55,7 +55,7 @@ const Schedule = () => {
 
     const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
     const today = new Date().getDate()
-    const [holidays, setHolidays] = useState<JapaneseHolidays>({})
+    const [holidays, setHolidays] = useState<Array<string>>([])
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
@@ -82,19 +82,15 @@ const Schedule = () => {
     const getCalendar = (year: number, month: number, day: number) => {
 
         let dateColorStr = ""
+        const isHoliday = holidays.includes(`${year}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`)
+
         switch (getWeekDay(year, month, day)) {
             case "土":
-                dateColorStr += "text-blue-500 font-bold"
+                dateColorStr += isHoliday ? "text-red-500 font-bold" : "text-blue-500 font-bold"
             case "日":
                 dateColorStr += "text-red-500 font-bold"
-            default:
-                dateColorStr += "text-white font-bold"
-                for (var d in holidays) {
-                    if (d === `${year}-${month < 10 ? `0${month}` : month}-${day < 10 ? `0${day}` : day}`) {
-                        dateColorStr = "text-red-500 font-bold"
-                        break
-                    }
-                }
+            default: 
+                dateColorStr += isHoliday ? "text-red-500 font-bold" : "text-white font-bold"
         }
 
         const isDisplayed = (schedule: ScheduleData) => {
@@ -368,7 +364,10 @@ const Schedule = () => {
     }, [activeTab])
     const handleGetHolidaysList = useCallback(async () => {
         const holidayList = await execExternalGetAPI(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
-        setHolidays(holidayList)
+        for (var d in holidayList) {
+            holidays.push(d)
+        }
+        setHolidays(holidays)
     }, [])
 
     useEffect(() => {
