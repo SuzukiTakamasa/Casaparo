@@ -1,7 +1,17 @@
-import { APIRequest, UploadResponse, DeleteImageRequest } from './constants'
+import { APIRequest, UploadResponse } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
+export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<T|null> => {
+    if (getParams) url += getParams
+    try {
+        const res = await fetch(url, {method: 'GET'})
+    return res.json()
+    } catch(e) {
+        console.log(e)
+        return null
+    }   
+}
 
 class APIClient {
     private readonly host: string

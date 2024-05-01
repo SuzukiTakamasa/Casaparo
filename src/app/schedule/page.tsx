@@ -10,9 +10,9 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
+import { ScheduleData, ScheduleResponse, LabelResponse, JapaneseHolidays } from '@utils/constants'
 import { TrashBoxIcon } from '@components/HeroicIcons'
-import APIClient from '@utils/api_client'
+import APIClient, {execExternalGetAPI} from '@utils/api_client'
 import { setUser, getWeekDay } from '@utils/utility_function'
 
 
@@ -55,6 +55,7 @@ const Schedule = () => {
 
     const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
     const today = new Date().getDate()
+    const [holidays, setHolidays] = useState<JapaneseHolidays|null>(null)
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
@@ -88,6 +89,12 @@ const Schedule = () => {
                 dateColorStr += "text-red-500 font-bold"
             default:
                 dateColorStr += "text-white font-bold"
+                for (var d in holidays) {
+                    if (d === `${year}-${month}-${day}`) {
+                        dateColorStr += "text-red-500 font-bold"
+                        break
+                    }
+                }
         }
 
         const isDisplayed = (schedule: ScheduleData) => {
@@ -359,10 +366,16 @@ const Schedule = () => {
             }
         setWeekDaysArray(darr)
     }, [activeTab])
+    const handleGetHolidaysList = useCallback(async () => {
+        const holidayList = await execExternalGetAPI<JapaneseHolidays>(`https://holidays-jp.github.io/api/v1/${year}/date.json`)
+        setHolidays(holidayList)
+        console.log(`Test log: ${holidayList}`)
+    }, [])
 
     useEffect(() => {
         fetchSchedules()
-    }, [fetchSchedules])
+        handleGetHolidaysList()
+    }, [fetchSchedules, handleGetHolidaysList])
 
     useEffect(() => {
         handleGenerateMonthDaysArray()
