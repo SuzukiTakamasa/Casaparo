@@ -10,7 +10,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse, LabelResponse, JapaneseHolidays } from '@utils/constants'
+import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
 import { TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
 import { setUser, getWeekDay } from '@utils/utility_function'
@@ -371,9 +371,9 @@ const Schedule = () => {
     }, [])
 
     useEffect(() => {
-        fetchSchedules()
         handleGetHolidaysList()
-    }, [fetchSchedules, handleGetHolidaysList])
+        fetchSchedules()
+    }, [handleGetHolidaysList, fetchSchedules])
 
     useEffect(() => {
         handleGenerateMonthDaysArray()

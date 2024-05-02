@@ -66,10 +66,6 @@ export interface DeleteImageRequest {
     file_name: string
 }
 
-export interface JapaneseHolidays {
-    [key: string]: string
-}
-
 export type HouseholdResponse = HouseholdData[]
 
 export type ScheduleResponse = ScheduleData[]
