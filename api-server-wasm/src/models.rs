@@ -15,7 +15,7 @@ pub struct Households {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct FixedAmount {
-    pub billing_amount: u32,
+    pub billing_amount: i32,
     pub total_amount: u32
 }
 
