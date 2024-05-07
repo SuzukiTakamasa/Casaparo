@@ -55,7 +55,7 @@ const Schedule = () => {
 
     const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
     const today = new Date().getDate()
-    const [holidays, setHolidays] = useState<Array<string>>([])
+    const [holidays, setHolidays] = useState<string[]>([])
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
     const [id, setId] = useState(0)
