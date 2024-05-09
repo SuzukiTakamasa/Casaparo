@@ -72,7 +72,7 @@ export default class LINEMessagingAPIHandler {
             messages: [
               {
                 "type": "text",
-                "text": `【🥺今月の生活費のお知らせ🥺ྀི 】\n🥺ྀི 負担分： ${responseFixedHousehold.billing_amount}\n生活費合計: ${responseFixedHousehold.total_amount}\n来月もよろしくまる🥺\n(※清算が終わったら家計簿を確定するまる)`
+                "text": `【今月の生活費のお知らせ 】\n 負担分： ${responseFixedHousehold.billing_amount}\n生活費合計: ${responseFixedHousehold.total_amount}\n(※清算が終わったら家計簿を確定してください。)`
               }
             ]
         }
@@ -84,7 +84,7 @@ export default class LINEMessagingAPIHandler {
         messages: [
           {
             "type": "text",
-            "text": "【🥺リマインド🥺ྀི】\n今月の生活費の入力期限が明日に迫ってるまる。まだ入力していないものがある場合は本日中に入力するまる~。"
+            "text": "【リマインド】\n今月の生活費の入力期限が明日に迫ってます。まだ入力していないものがある場合は本日中に入力してください。"
           }
         ]
       }
