@@ -1,23 +1,23 @@
 import dayjs from 'dayjs'
 
-export const boolToInt = (flag: boolean) => +flag
-export const intToBool = (bit: number) => !!bit
+export const boolToInt = (flag: boolean): number => +flag
+export const intToBool = (bit: number): boolean => !!bit
 
-export const formatNumberWithCommas = (number: number) => {
+export const formatNumberWithCommas = (number: number): string => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-export const setUser = (userInt: number) => {
+export const setUser = (userInt: number): string => {
     return userInt ? "🥺" : "🥺ྀི"
 }
 
-export const getCurrentDateTime = () => {
+export const getCurrentDateTime = (): string => {
     const now = dayjs()
     const formattedDateTime = now.format('YYYY/MM/DD HH:mm')
     return formattedDateTime
 }
 
-export const getWeekDay = (year: number, month: number, day: number) => {
+export const getWeekDay = (year: number, month: number, day: number): string => {
     const monthStr = month < 10 ? `0${month}` : month
     const dayStr = day < 10 ? `0${day}` : day
     const dateStr = `${year}-${monthStr}-${dayStr}`

@@ -68,7 +68,7 @@ class APIClient {
             return null
         }
     }
-    public async delete(fileName: string) {
+    public async delete(fileName: string): Promise<void> {
         const headers = {
             'Content-Type': 'application/octet-stream',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string

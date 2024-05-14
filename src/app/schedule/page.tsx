@@ -19,8 +19,8 @@ import { setUser, getWeekDay } from '@utils/utility_function'
 const client = new APIClient()
 
 
-const getTimeArray = () => {
-    const timeArray = []
+const getTimeArray = (): string[] => {
+    const timeArray = ["未定"]
     for (let h = 0; h <= 23; h++) {
         for (let m = 0; m <= 30; m += 30) {
             timeArray.push(`${h}:${m === 0 ? '00' : m}`)
@@ -29,7 +29,7 @@ const getTimeArray = () => {
     return timeArray
 }
 
-const getMonthArray = () => {
+const getMonthArray = (): number[] => {
     const monthArray = []
     for (let m = 1; m <= 12; m++) {
         monthArray.push(m)
