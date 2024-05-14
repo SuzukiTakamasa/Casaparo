@@ -32,7 +32,10 @@ const Statistics = () => {
     }, [fetchMonthlyHousehold])
 
     return (
+        <>
         <h1 className="text-2xl font-bold mc-4">🛀 統計 🛀</h1>
+            <LineChartComponent expenses={monthlyHouseholdSummary}/>
+        </>
     )
 }
 
