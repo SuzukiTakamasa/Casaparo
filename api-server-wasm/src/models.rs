@@ -50,6 +50,12 @@ pub struct CompletedHouseholds {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct HouseholdMonthlySummary {
+    pub month: u8,
+    pub total_amount: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct IsCompleted {
     pub is_completed: u8
 }

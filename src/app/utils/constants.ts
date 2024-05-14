@@ -41,6 +41,11 @@ export interface CompletedHouseholdData {
     month: number
 }
 
+export interface HouseholdMonthlySummary {
+    month: number
+    total_amount: number
+}
+
 export interface WikiData {
     id?: number,
     title: string,

@@ -97,6 +97,31 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
+        .get_async("/household/monthly_summary/:year", |req, ctx| async move {
+            let year = ctx.param("year").unwrap();
+            let db_str = match get_db_env(&req) {
+                Ok(val) => val,
+                Err(e) => return Response::error(e.to_string(), 400)
+            };
+
+            let d1 = ctx.env.d1(db_str.as_str())?;
+            let statement = d1.prepare("select month, sum(amount) + coalesce((select sum(amount) from households where is_default = 1 ), 0) as total_amount from households where is_default = 0 and year = 2024 group by month");
+            let query = statement.bind(&[year.into()])?;
+            let result = match query.all().await {
+                Ok(res) => res,
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    return Response::error("Error parsing results", 500)
+                }
+            };
+            match result.results::<models::HouseholdMonthlySummary>() {
+                Ok(monthly_summary) => Response::from_json(&monthly_summary),
+                Err(e) => {
+                    console_log!("{:?}", e);
+                    Response::error("Error parsing results", 500)
+                }
+            }
+        })
         .get_async("/schedule", |req, ctx| async move {
             let db_str = match get_db_env(&req) {
                 Ok(val) => val,

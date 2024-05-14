@@ -2,24 +2,34 @@
 
 //export const runtime = 'edge'
 
-import React, { useState } from 'react'
+import React, { useState, useContext, useCallback, useEffect } from 'react'
 import LineChartComponent from '@components/Chart'
+
+import { YearProvider, YearContext } from '@components/YearPicker'
+import YearPicker from '@components/YearPicker'
+
+import APIClient from '@utils/api_client'
+import { HouseholdMonthlySummary } from "@utils/constants"
+
+
+const client = new APIClient()
+
 
 const Statistics = () => {
 
-    const [monthlyHousehold, setMonthlyHousehold] = useState(0)
+    const [monthlyHouseholdSummary, setMonthlyHouseholdSummary] = useState<HouseholdMonthlySummary[]>([])
 
-    const monthlyHouseholdChartData = {
-        label: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
-        datasets: []
-    }
-    const options = {
-        scales: {
-            y: {
-                beginAtZero: true
-            }
-        }
-    }
+    const { year } = useContext(YearContext)
+    const [statisticsYear, setStatisticsYear] = useState(year)
+
+    const fetchMonthlyHousehold = useCallback(async () => {
+        const res = await client.get<HouseholdMonthlySummary[]>(`/household/monthly_summary/${statisticsYear}`)
+        setMonthlyHouseholdSummary(res || [])
+    }, [statisticsYear])
+
+    useEffect(() => {
+        fetchMonthlyHousehold()
+    }, [fetchMonthlyHousehold])
 
     return (
         <h1 className="text-2xl font-bold mc-4">🛀 統計 🛀</h1>
