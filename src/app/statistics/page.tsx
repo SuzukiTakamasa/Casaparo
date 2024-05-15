@@ -4,12 +4,13 @@
 
 import React, { useState, useContext, useCallback, useEffect } from 'react'
 import LineChartComponent from '@components/Chart'
+import Loader from '@components/Loader'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
 
 import APIClient from '@utils/api_client'
-import { HouseholdMonthlySummary } from "@utils/constants"
+import { Expenses } from "@utils/constants"
 
 
 const client = new APIClient()
@@ -17,14 +18,18 @@ const client = new APIClient()
 
 const Statistics = () => {
 
-    const [monthlyHouseholdSummary, setMonthlyHouseholdSummary] = useState<HouseholdMonthlySummary[]>([])
+    const [monthlyHouseholdSummary, setMonthlyHouseholdSummary] = useState<Expenses>([])
 
     const { year } = useContext(YearContext)
     const [statisticsYear, setStatisticsYear] = useState(year)
+    const [isLoading, setIsLoading] = useState(true)
 
     const fetchMonthlyHousehold = useCallback(async () => {
-        const res = await client.get<HouseholdMonthlySummary[]>(`/household/monthly_summary/${statisticsYear}`)
-        setMonthlyHouseholdSummary(res || [])
+        const res = await client.get<Expenses>(`/household/monthly_summary/${statisticsYear}`)
+        if (res !== null) {
+            setMonthlyHouseholdSummary(res)
+            setIsLoading(false)
+        }
     }, [statisticsYear])
 
     useEffect(() => {
@@ -33,8 +38,14 @@ const Statistics = () => {
 
     return (
         <>
-        <h1 className="text-2xl font-bold mc-4">🛀 統計 🛀</h1>
-            <LineChartComponent expenses={monthlyHouseholdSummary}/>
+            <h1 className="text-2xl font-bold mc-4">🛀 統計 🛀</h1>
+
+            <YearProvider year={statisticsYear} setYear={setStatisticsYear}>
+                <YearPicker/>
+            </YearProvider>
+            <div className="flex justify-center">
+                {isLoading ? <Loader size={100} isLoading={isLoading} /> : <LineChartComponent expenses={monthlyHouseholdSummary}/>}
+            </div>
         </>
     )
 }

@@ -1,8 +1,11 @@
 import { Line } from 'react-chartjs-2'
-import { HouseholdMonthlySummary } from "@utils/constants"
+import { Chart, registerables } from "chart.js"
+import { Expenses } from "@utils/constants"
+
+Chart.register(...registerables)
 
 type LineChartComponentProps = {
-    expenses: HouseholdMonthlySummary[]
+    expenses: Expenses
 }
 
 const LineChartComponent = ({ expenses }: LineChartComponentProps) => {

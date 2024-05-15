@@ -73,6 +73,8 @@ export interface DeleteImageRequest {
 
 export type HouseholdResponse = HouseholdData[]
 
+export type Expenses = HouseholdMonthlySummary[]
+
 export type ScheduleResponse = ScheduleData[]
 
 export type WikiResponse = WikiData[]
