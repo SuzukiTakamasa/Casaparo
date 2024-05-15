@@ -105,7 +105,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select month, sum(amount) + coalesce((select sum(amount) from households where is_default = 1 ), 0) as total_amount from households where is_default = 0 and year = 2024 group by month");
+            let statement = d1.prepare("select month, sum(amount) + coalesce((select sum(amount) from households where is_default = 1 ), 0) as total_amount from households where is_default = 0 and year = ?1 group by month");
             let query = statement.bind(&[year.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
