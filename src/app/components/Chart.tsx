@@ -26,10 +26,32 @@ const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
 
     const options = {
         scales: {
+            x: {
+                grid: {
+                    color: 'rgba(200, 200, 200, 0.2)'
+                  },
+                ticks: {
+                    color: 'white'
+                }
+            },
             y: {
-                beginAtZero: true
+                grid: {
+                    color: 'rgba(200, 200, 200, 0.2)'
+                  },
+                beginAtZero: true,
+                ticks: {
+                    color: 'white'
+                }
             }
-        }
+        },
+        plugins: {
+            legend: {
+              display: true,
+              labels: {
+                color: '#ffffff'
+              }
+            }
+          }
     }
 
     return <Line data={data} options={options} />
