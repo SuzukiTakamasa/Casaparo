@@ -25,7 +25,7 @@ const Statistics = () => {
     const [isLoading, setIsLoading] = useState(true)
 
     const fetchMonthlyHousehold = useCallback(async () => {
-        const res = await client.get<Expenses>(`/household/monthly_summary/${statisticsYear}`)
+        const res = await client.get<Expenses>(`/completed_household/monthly_summary/${statisticsYear}`)
         if (res !== null) {
             setMonthlyHouseholdSummary(res)
             setIsLoading(false)

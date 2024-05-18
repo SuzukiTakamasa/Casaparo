@@ -39,6 +39,8 @@ export interface FixedAmount {
 export interface CompletedHouseholdData {
     year: number
     month: number
+    billing_amount: number
+    total_amount: number
 }
 
 export interface HouseholdMonthlySummary {

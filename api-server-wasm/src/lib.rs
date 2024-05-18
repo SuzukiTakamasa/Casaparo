@@ -97,7 +97,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             }
         })
-        .get_async("/household/monthly_summary/:year", |req, ctx| async move {
+        .get_async("/completed_household/monthly_summary/:year", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let db_str = match get_db_env(&req) {
                 Ok(val) => val,
@@ -105,7 +105,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select month, sum(amount) + coalesce((select sum(amount) from households where is_default = 1 ), 0) as total_amount from households where is_default = 0 and year = ?1 group by month");
+            let statement = d1.prepare("select month, sum(billing_amount), sum(total_amount) from completed_households where year = ?1 group by month");
             let query = statement.bind(&[year.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
@@ -562,9 +562,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into completed_households (year, month) values (?1, ?2)");
+            let statement = d1.prepare("insert into completed_households (year, month, billing_amount, total_amount) values (?1, ?2, ?3, ?4)");
             let query = statement.bind(&[completed_household.year.into(),
-                                                              completed_household.month.into()])?;
+                                                              completed_household.month.into(),
+                                                              completed_household.billing_amount.into(),
+                                                              completed_household.total_amount.into()
+                                                              ])?;
             let result = match query.run().await {
                 Ok(res) => res,
                 Err(e) => {

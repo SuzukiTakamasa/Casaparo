@@ -135,9 +135,13 @@ const Household = () => {
     }, [households])
     const handleAddCompletedHousehold = async () => {
         if (!window.confirm("家計簿を確定しますか？")) return
+        let totalAmount = 0
+        households.forEach(household => totalAmount += household.amount)
         const completedHousehold = {
             year: householdYear,
-            month: householdMonth
+            month: householdMonth,
+            billing_amount: billingAmount,
+            total_amount: totalAmount
         }
         const res = await client.post<CompletedHouseholdData>('/completed_household/create', completedHousehold)
         await fetchIsCompleted()
