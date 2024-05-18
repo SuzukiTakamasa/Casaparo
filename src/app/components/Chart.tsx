@@ -10,16 +10,24 @@ type LineChartComponentProps = {
 
 const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
     const labels: string[] = expenses.map( e => `${e.month}月`)
-    const datasets: number[] = expenses.map( e => e.total_amount)
+    const datasets_total_amount: number[] = expenses.map( e => e.total_amount)
+    const datasets_billing_amount: number[] = expenses.map( e => e.billing_amount)
     const data = {
         labels: labels,
         datasets: [
             {
-                label: "出費",
-                data: datasets,
+                label: "合計金額",
+                data: datasets_total_amount,
                 fill: false,
                 backgroundColor: 'rgb(255, 99, 132)',
                 borderColor: 'rgba(255, 99, 132, 0.2)'
+            },
+            {
+                label: "請求金額",
+                data: datasets_billing_amount,
+                fill: false,
+                backgroundColor: 'rgb(132, 99, 255)',
+                borderColor: 'rgba(132, 99, 255, 0.2)'
             }
         ]
     }
