@@ -105,7 +105,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select month, sum(billing_amount), sum(total_amount) from completed_households where year = ?1 group by month");
+            let statement = d1.prepare("select month, billing_amount, total_amount from completed_households where year = ?1");
             let query = statement.bind(&[year.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
