@@ -11,3 +11,11 @@ provider "cloudflare" {
     email = var.CLOUDFLARE_EMAIL
     api_token = var.CLOUDFLARE_API_TOKEN
 }
+
+resource "cloudflare_access_application" "casaparo-potal" {
+
+}
+
+resource "cloudflare_worker_cron_trigger" "casaparo-potal" {
+
+}
