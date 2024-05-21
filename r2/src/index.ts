@@ -40,7 +40,7 @@ export default {
 				const body = await request.arrayBuffer()
 				const fileName = `image-${Date.now()}.png`
 				await bucketName.put(fileName, body)
-				return new Response(JSON.stringify({image_url: `${env.R2_WORKER_HOST}/${fileName}`}), {
+				return new Response(JSON.stringify({image_url: `${env.R2_WORKER_HOST}/${bucketName}/${fileName}`}), {
 					status: 200,
 					headers: {
 						'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ export default {
 			if (!imageObj) {
 				return new Response(`Not found: ${imageObj}`, { status: 404 })
 			}
-			const imageBody = await imageObj.body
+			const imageBody = await imageObj.arrayBuffer()
 			return new Response(imageBody, {
 				headers: {
 					'Content-Type': imageObj.httpMetadata?.contentType as string,
