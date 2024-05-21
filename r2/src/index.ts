@@ -78,9 +78,10 @@ export default {
 				})
 			}
 		} else {
-			const imageObj = await bucketName.get(new URL(request.url).pathname.slice(1))
+			const objKey = new URL(request.url).pathname.slice(1)
+			const imageObj = await bucketName.get(objKey)
 			if (!imageObj) {
-				return new Response(`Not found: ${imageObj}`, { status: 404 })
+				return new Response(`Not found: ${imageObj}; key name ${objKey}`, { status: 404 })
 			}
 			const imageBody = await imageObj.arrayBuffer()
 			return new Response(imageBody, {
