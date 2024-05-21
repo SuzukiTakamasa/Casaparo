@@ -80,7 +80,7 @@ export default {
 		} else {
 			const imageObj = await bucketName.get(new URL(request.url).pathname.slice(1))
 			if (!imageObj) {
-				return new Response("Not found", { status: 404 })
+				return new Response(`Not found: ${imageObj}`, { status: 404 })
 			}
 			const imageBody = await imageObj.body
 			return new Response(imageBody, {
