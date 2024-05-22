@@ -33,14 +33,14 @@ export default {
 		}
 
 		const isDev = request.headers.get('Environment') === 'DB_DEV' 
-		const bucketName = isDev ? env.CASAPARO_DEV : env.CASAPARO
+		const bucketName: R2Bucket = isDev ? env.CASAPARO_DEV : env.CASAPARO
 
 		if (request.url.endsWith('/upload') && request.method === 'POST') {
 			try {
 				const body = await request.arrayBuffer()
 				const fileName = `image-${Date.now()}.png`
 				await bucketName.put(fileName, body)
-				return new Response(JSON.stringify({image_url: `${env.R2_WORKER_HOST}/${bucketName}/${fileName}`}), {
+				return new Response(JSON.stringify({image_url: `${env.R2_WORKER_HOST}/${fileName}`}), {
 					status: 200,
 					headers: {
 						'Content-Type': 'application/json',
@@ -81,12 +81,12 @@ export default {
 			const objKey = new URL(request.url).pathname.slice(1)
 			const imageObj = await bucketName.get(objKey)
 			if (!imageObj) {
-				return new Response(`Not found: ${imageObj}; key name ${objKey}`, { status: 404 })
+				return new Response(`Not found: ${imageObj}; key name: ${objKey}`, { status: 404 })
 			}
 			const imageBody = await imageObj.arrayBuffer()
 			return new Response(imageBody, {
 				headers: {
-					'Content-Type': imageObj.httpMetadata?.contentType as string,
+					'Content-Type': imageObj.httpMetadata?.contentType || 'image/png',
 					'Cache-Control': 'public, max-age=86400'
 				}
 			})
