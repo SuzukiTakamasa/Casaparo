@@ -1,4 +1,5 @@
-import { APIRequest, UploadResponse } from './constants'
+import { constants } from 'os'
+import { APIRequest,  R2Response, UploadResponse } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -51,37 +52,29 @@ class APIClient {
             return null
         }
     }
-    public async upload(file: File): Promise<UploadResponse|null> {
+    public async upload(file: File): Promise<UploadResponse> {
         const headers = {
             'Content-Type': 'application/octet-stream',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         }
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/upload`, {
-                method: 'POST',
-                body: file,
-                headers: headers
-            })
-            return await res.json()
-        } catch (e) {
-            console.error(e)
-            return null
-        }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/upload`, {
+            method: 'POST',
+            body: file,
+            headers: headers
+        })
+        return await res.json()
     }
-    public async delete(fileName: string): Promise<void> {
+    public async delete(fileName: string): Promise<R2Response> {
         const headers = {
             'Content-Type': 'application/octet-stream',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         }
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/delete`, {
-                method: 'POST',
-                body: JSON.stringify({file_name: fileName}),
-                headers: headers
-            })
-        } catch (e) {
-            console.error(e)
-        }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/delete`, {
+            method: 'POST',
+            body: JSON.stringify({file_name: fileName}),
+            headers: headers
+        })
+        return await res.json()
     }
 }
 

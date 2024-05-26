@@ -97,7 +97,7 @@ const Wiki = () => {
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files![0]
         const response = await client.upload(file)
-        if (response !== null) {
+        if (response.status === 200) {
             setImageUrl(response.image_url)
         } else {
             console.log(response)
@@ -105,8 +105,14 @@ const Wiki = () => {
     }
     const handleDeleteFile = async(fileName: string) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.delete(fileName)
-        setImageUrl("")
+        const response = await client.delete(fileName)
+        if (response.status === 200) {
+            setImageUrl("")
+            updateWiki()
+            handleCloseDialog()
+        } else {
+            console.log(response)
+        }
     }
 
     useEffect(() => {

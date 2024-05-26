@@ -61,7 +61,7 @@ export default {
 				const body = await request.json()
  				const { file_name } = body as DeleteRequestBody
 				await bucketName.delete(file_name)
-				return new Response(null, {
+				return new Response(JSON.stringify({image_url: `${env.R2_WORKER_HOST}/${file_name}`}), {
 					status: 200,
 					headers: {
 						'Content-Type': 'application/json',
