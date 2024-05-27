@@ -110,7 +110,6 @@ const Wiki = () => {
             setImageUrl("")
             if (isUpdate) {
                 await updateWiki()
-                handleCloseDialog()
             }
         } else {
             console.log(response)
