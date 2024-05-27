@@ -1,4 +1,3 @@
-import { constants } from 'os'
 import { APIRequest,  R2Response, UploadResponse } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
