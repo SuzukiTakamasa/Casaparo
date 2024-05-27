@@ -89,6 +89,19 @@ const Wiki = () => {
         const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
         await fetchWikis()
     }
+    const updateImageUrlEmpty = async () => {
+        const updatedWikiData = {
+            id: id,
+            title: title,
+            content: content,
+            created_by: createdBy,
+            updated_at: getCurrentDateTime(),
+            image_url: "",
+            version: version
+        }
+        const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
+        await fetchWikis()
+    }
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
         const res = await client.post<WikiResponse>('/wiki/delete', deleteWikiData)
@@ -109,7 +122,7 @@ const Wiki = () => {
         if (response.hasOwnProperty("image_url")) {
             setImageUrl("")
             if (isUpdate) {
-                await updateWiki()
+                await updateImageUrlEmpty()
             }
         } else {
             console.log(response)
