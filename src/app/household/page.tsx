@@ -42,12 +42,12 @@ const Household = () => {
 
     const today = new Date().getDate()
 
-    const handleAddHousehold = () => {
-        addHousehold()
+    const handleAddHousehold = async () => {
+        await addHousehold()
         handleCloseDialog()
     }
-    const handleUpdateHousehold = () => {
-        updateHousehold()
+    const handleUpdateHousehold = async () => {
+        await updateHousehold()
         handleCloseDialog()
     }
     const handleOpenAddDialog = () => {

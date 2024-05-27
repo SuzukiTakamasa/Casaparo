@@ -66,12 +66,7 @@ export interface LabelData {
     version: number
 }
 
-export interface R2Response {
-    status: number
-    headers: {[key: string]: string}
-}
-
-export interface UploadResponse extends R2Response{
+export interface R2Response extends Response {
     image_url: string
 }
 

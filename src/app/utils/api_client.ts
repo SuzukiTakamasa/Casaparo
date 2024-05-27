@@ -1,4 +1,4 @@
-import { APIRequest,  R2Response, UploadResponse } from './constants'
+import { APIRequest, R2Response } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -51,7 +51,7 @@ class APIClient {
             return null
         }
     }
-    public async upload(file: File): Promise<UploadResponse> {
+    public async upload(file: File): Promise<R2Response> {
         const headers = {
             'Content-Type': 'application/octet-stream',
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string

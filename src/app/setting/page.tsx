@@ -22,12 +22,12 @@ const Setting = () => {
     const [newLabel, setNewLabel] = useState("")
     const [labelVersion, setLabelVersion] = useState(1)
 
-    const handleAddLabel = () => {
-        addlabels()
+    const handleAddLabel = async () => {
+        await addlabels()
         handleCloseLabelDialog()
     }
-    const handleUpdateLabel = () => {
-        updateLabels()
+    const handleUpdateLabel = async () => {
+        await updateLabels()
         handleCloseLabelDialog()
     }
     const handleOpenAddLabelDialog = () => {

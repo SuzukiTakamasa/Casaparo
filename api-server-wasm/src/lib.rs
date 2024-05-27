@@ -26,6 +26,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     headers.set("Access-Control-Allow-Origin", "*")?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
+    headers.set("Access-Control-Max-Age", "86400")?;
 
     if req.method() == Method::Options {
         return Response::empty()

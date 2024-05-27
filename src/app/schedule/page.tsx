@@ -207,13 +207,13 @@ const Schedule = () => {
         }
         return isValid
     }
-    const handleAddSchedule = () => {
+    const handleAddSchedule = async () => {
         if (!Validate()) return
-        addSchedule()
+        await addSchedule()
         handleCloseDialog()
     }
-    const handleUpdateSchedule = () => {
-        updateSchedule()
+    const handleUpdateSchedule = async () => {
+        await updateSchedule()
         handleCloseDialog()
     }
     const handleDeleteSchedule = () => {

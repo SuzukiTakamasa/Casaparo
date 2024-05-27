@@ -26,12 +26,12 @@ const Wiki = () => {
     const [imageUrl, setImageUrl] = useState("")
     const [version, setVersion] = useState(1)
 
-    const handleAddWiki = () => {
-        addWiki()
+    const handleAddWiki = async () => {
+        await addWiki()
         handleCloseDialog()
     }
-    const handleUpdateWiki = () => {
-        updateWiki()
+    const handleUpdateWiki = async () => {
+        await updateWiki()
         handleCloseDialog()
     }
     const handleOpenAddDialog = () => {
@@ -97,7 +97,7 @@ const Wiki = () => {
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files![0]
         const response = await client.upload(file)
-        if (response.status === 200) {
+        if (response.hasOwnProperty("image_url")) {
             setImageUrl(response.image_url)
         } else {
             console.log(response)
@@ -106,7 +106,7 @@ const Wiki = () => {
     const handleDeleteFile = async(fileName: string) => {
         if (!window.confirm("削除しますか？")) return
         const response = await client.delete(fileName)
-        if (response.status === 200) {
+        if (response.hasOwnProperty("image_url")) {
             setImageUrl("")
             if (isUpdate) {
                 updateWiki()
