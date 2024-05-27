@@ -64,7 +64,7 @@ export const MonthStrProvider = ({ monthStr, cssStr }: MonthStrProps) => {
 }
 
 const MonthPaginator = ({ monthStr, cssStr }: MonthStrProps) => {
-    const {month, handleMonthIncrement, handleMonthDecrement} = useContext(MonthContext) as MonthContextType
+    const { handleMonthIncrement, handleMonthDecrement } = useContext(MonthContext) as MonthContextType
 
     return (
         <div className="flex justify-center space-x-16">

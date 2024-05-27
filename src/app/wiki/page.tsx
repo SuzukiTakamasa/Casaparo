@@ -108,8 +108,10 @@ const Wiki = () => {
         const response = await client.delete(fileName)
         if (response.status === 200) {
             setImageUrl("")
-            updateWiki()
-            handleCloseDialog()
+            if (isUpdate) {
+                updateWiki()
+                handleCloseDialog()
+            }
         } else {
             console.log(response)
         }
