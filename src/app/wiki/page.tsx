@@ -109,7 +109,7 @@ const Wiki = () => {
         if (response.hasOwnProperty("image_url")) {
             setImageUrl("")
             if (isUpdate) {
-                updateWiki()
+                await updateWiki()
                 handleCloseDialog()
             }
         } else {
