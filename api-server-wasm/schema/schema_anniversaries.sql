@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS anniversaries;
+CREATE TABLE anniversaries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    month INTEGER NOT NULL,
+    date INTEGER NOT NULL
+);

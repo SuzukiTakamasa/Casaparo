@@ -66,6 +66,12 @@ export interface LabelData {
     version: number
 }
 
+export interface AnniversaryData {
+    id?: number,
+    month: number,
+    date: number
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -83,6 +89,8 @@ export type ScheduleResponse = ScheduleData[]
 export type WikiResponse = WikiData[]
 
 export type LabelResponse = LabelData[]
+
+export type AnniversaryResponse = AnniversaryData[]
 
 export type APIRequest = HouseholdData |
                           ScheduleData |
