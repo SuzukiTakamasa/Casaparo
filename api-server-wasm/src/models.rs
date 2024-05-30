@@ -86,5 +86,6 @@ pub struct Labels {
 pub struct Anniversaries {
     pub id: Option<u32>,
     pub month: u8,
-    pub date: u8
+    pub date: u8,
+    pub version: u32
 }
