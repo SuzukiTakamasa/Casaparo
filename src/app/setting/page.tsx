@@ -2,9 +2,9 @@
 
 //export const runtime = 'edge'
 
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 
-import { LabelData, LabelResponse } from '@utils/constants'
+import { LabelData, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 
@@ -21,6 +21,16 @@ const Setting = () => {
     const [labelName, setLabelName] = useState("")
     const [newLabel, setNewLabel] = useState("")
     const [labelVersion, setLabelVersion] = useState(1)
+
+    const [showAnniversaryDialog, setShowAnniversaryDialog] = useState(false)
+    const [isUpdateAnniversary, setUpdateAnniversary] = useState(false)
+
+    const [anniversary, setAnniversary] = useState<AnniversaryResponse>([])
+    const [anniversaryId, setAnniversaryId] = useState(0)
+    const [anniversaryMonth, setAnniversaryMonth] = useState(0)
+    const [anniversaryDate, setAnniversaryDate] = useState(0)
+    const [anniversaryVersion, setAnniversaryVersion] = useState(1)
+    
 
     const handleAddLabel = async () => {
         await addlabels()
