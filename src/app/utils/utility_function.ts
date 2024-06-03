@@ -25,3 +25,28 @@ export const getWeekDay = (year: number, month: number, day: number): string => 
     const weekDayIndex = new Date(dateStr).getDay()
     return weekDays[weekDayIndex]
 }
+
+export const getMonthArray = (): number[] => {
+    const monthArray = []
+    for (let m = 1; m <= 12; m++) {
+        monthArray.push(m)
+    }
+    return monthArray
+}
+
+export const getDateArray = (month: number): number[] => {
+    const dateArray = []
+    const until30 = [4, 6, 9, 11]
+    let numOfDate: number
+    if (until30.includes(month)) {
+        numOfDate = 30
+    } else if (month === 2) {
+        numOfDate = 29
+    } else {
+        numOfDate = 31
+    }
+    for (let d = 1; d <= numOfDate; d++) {
+        dateArray.push(d)
+    }
+    return dateArray
+}

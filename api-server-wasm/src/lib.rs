@@ -911,9 +911,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into anniversaries (month, date, version) values (?1, ?2, ?3)");
+            let statement = d1.prepare("insert into anniversaries (month, date, description, version) values (?1, ?2, ?3, ?4)");
             let query = statement.bind(&[anniversary.month.into(),
                                                               anniversary.date.into(),
+                                                              anniversary.description.into(),
                                                               anniversary.version.into()])?;
             let result = match query.run().await {
                 Ok(res) => res,
@@ -965,9 +966,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             } else {
                 return Response::error("Version is found None", 500)
             }
-            let statement = d1.prepare("update anniversaries set month = ?1, date = ?2, version = ?3 where id = ?4");
+            let statement = d1.prepare("update anniversaries set month = ?1, date = ?2, description = ?3, version = ?4 where id = ?5");
             let query = statement.bind(&[anniversary.month.into(),
                                                               anniversary.date.into(),
+                                                              anniversary.description.into(),
                                                               anniversary.version.into(),
                                                               anniversary.id.into()])?;
             let result = match query.run().await {

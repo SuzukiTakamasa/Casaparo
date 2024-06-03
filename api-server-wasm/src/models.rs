@@ -87,5 +87,6 @@ pub struct Anniversaries {
     pub id: Option<u32>,
     pub month: u8,
     pub date: u8,
+    pub description: String,
     pub version: u32
 }

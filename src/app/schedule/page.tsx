@@ -13,7 +13,7 @@ import MonthPaginator from '@components/MonthPaginator'
 import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
 import { TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
-import { setUser, getWeekDay } from '@utils/utility_function'
+import { setUser, getWeekDay, getMonthArray } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -27,14 +27,6 @@ const getTimeArray = (): string[] => {
         }
     }
     return timeArray
-}
-
-const getMonthArray = (): number[] => {
-    const monthArray = []
-    for (let m = 1; m <= 12; m++) {
-        monthArray.push(m)
-    }
-    return monthArray
 }
 
 

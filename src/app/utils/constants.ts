@@ -69,7 +69,9 @@ export interface LabelData {
 export interface AnniversaryData {
     id?: number,
     month: number,
-    date: number
+    date: number,
+    description: string,
+    version: number
 }
 
 export interface R2Response extends Response {
@@ -96,4 +98,5 @@ export type APIRequest = HouseholdData |
                           ScheduleData |
                 CompletedHouseholdData |
                               WikiData |
-                             LabelData
+                             LabelData |
+                             AnniversaryData
