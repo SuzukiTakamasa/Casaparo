@@ -10,7 +10,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse, LabelResponse } from '@utils/constants'
+import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/constants'
 import { TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
 import { setUser, getWeekDay, getMonthArray } from '@utils/utility_function'
@@ -65,6 +65,7 @@ const Schedule = () => {
     const [version, setVersion] = useState(1)
 
     const [labels, setLabels] = useState<LabelResponse>([])
+    const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
 
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
@@ -141,6 +142,10 @@ const Schedule = () => {
             return isDisplayedFlag
           }
         
+        const isAnniversary = (anniversary: AnniversaryData) => {
+            return (month === anniversary.month &&
+                    day === anniversary.date)
+        }
     
         return (
             <>
@@ -172,6 +177,15 @@ const Schedule = () => {
                             })}
                         >
                             {`${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date !== day ? "0:00" : schedule.from_time}-${schedule.to_date !== day ? "23:59" : schedule.to_time} ${schedule.description}`}
+                        </button>
+                    ))}
+                    {anniversaries.map((anniversary, i) => (
+                        isAnniversary(anniversary) &&
+                        <button
+                            key={i}
+                            className="bg-orange-600 hover:bg-orange-800 text-white py-1 px-2 rounded-full"
+                        >
+                            {anniversary.description}
                         </button>
                     ))}
                 </td>
