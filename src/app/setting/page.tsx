@@ -28,8 +28,8 @@ const Setting = () => {
 
     const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
     const [anniversaryId, setAnniversaryId] = useState(0)
-    const [anniversaryMonth, setAnniversaryMonth] = useState(0)
-    const [anniversaryDate, setAnniversaryDate] = useState(0)
+    const [anniversaryMonth, setAnniversaryMonth] = useState(1)
+    const [anniversaryDate, setAnniversaryDate] = useState(1)
     const [anniversaryDescription, setAnniversaryDescription] = useState("")
     const [anniversaryVersion, setAnniversaryVersion] = useState(1)
     
@@ -96,11 +96,11 @@ const Setting = () => {
 
     const handleAddAnniversary = async () => {
         await addAnniversary()
-        handleCloseAnniversaryDialog
+        handleCloseAnniversaryDialog()
     }
     const handleUpdateAnniversary = async () => {
         await UpdateAnniversary()
-        handleCloseAnniversaryDialog
+        handleCloseAnniversaryDialog()
     }
     const handleOpenAddAnniversaryDialog = async () => {
         setShowAnniversaryDialog(true)
@@ -121,8 +121,8 @@ const Setting = () => {
     const handleCloseAnniversaryDialog = () => {
         setShowAnniversaryDialog(false)
         setAnniversaryId(0)
-        setAnniversaryMonth(0)
-        setAnniversaryDate(0)
+        setAnniversaryMonth(1)
+        setAnniversaryDate(1)
         setAnniversaryDescription("")
         setAnniversaryVersion(1)
         setIsUpdateAnniversary(false)
@@ -161,7 +161,8 @@ const Setting = () => {
     
     useEffect(() => {
         fetchLabels()
-    }, [fetchLabels])
+        fetchAnniversaries()
+    }, [fetchLabels, fetchAnniversaries])
 
     return (
         <>

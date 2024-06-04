@@ -375,11 +375,16 @@ const Schedule = () => {
         }
         setHolidays(holidays)
     }, [])
+    const fetchAnniversaries = useCallback(async () => {
+        const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
+        setAnniversaries(anniversaries || [])
+    }, [])
 
     useEffect(() => {
         handleGetHolidaysList()
         fetchSchedules()
-    }, [handleGetHolidaysList, fetchSchedules])
+        fetchAnniversaries()
+    }, [handleGetHolidaysList, fetchSchedules, fetchAnniversaries])
 
     useEffect(() => {
         handleGenerateMonthDaysArray()
