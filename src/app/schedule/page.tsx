@@ -359,8 +359,14 @@ const Schedule = () => {
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
         const darr = []
-        const startWeekDate = today >= 7 ? today - new Date().getDay() : today
-            for (let d = startWeekDate; d <= startWeekDate + 6; d++) {
+
+        const dateIndex = new Date().getDay() // 1(SUN) - 6(SAT)
+        const dateIndex1 = new Date(`${year}-${month < 10 ? `0${month}` : month}-01`).getDay() // yyyy-mm-01
+
+        const startWeekDate = today > dateIndex ? today - dateIndex : 1
+        const endWeekDate = today > dateIndex ? startWeekDate + 6 : 7 - new Date(dateIndex1).getDay()
+
+            for (let d = startWeekDate; d <= endWeekDate; d++) {
                 darr.push(d)
                 if (d === numberOfDays) {
                     break
