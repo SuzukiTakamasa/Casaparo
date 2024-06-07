@@ -10,7 +10,7 @@ import Loader from '@components/Loader'
 
 import APIClient from '@utils/api_client'
 
-import { FixedAmount, ScheduleResponse } from '@utils/constants'
+import { FixedAmount, ScheduleResponse, AnniversaryResponse } from '@utils/constants'
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
 import { ArrowRightStartToIcon } from '@components/HeroicIcons'
 
@@ -28,6 +28,7 @@ export default function Home() {
   const [totalAmount, setTotalAmount] = useState(0)
   const [billingAmount, setBillingAmount] = useState(0)
   const [schedules, setSchedules] = useState<ScheduleResponse>([])
+  const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const currentDate = new Date().getDate()
@@ -44,11 +45,16 @@ export default function Home() {
     const schedules = await client.get<ScheduleResponse>(`/schedule/today_or_tomorrow/${year}/${month}/${currentDate}`)
     setSchedules(schedules || [])
   }, [year, month, currentDate])
+  const fetchAnniversaries = useCallback(async() => {
+    const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
+    setAnniversaries(anniversaries || [])
+  }, [])
 
    useEffect(() => {
     fetchFixedAmount()
     fetchSchedules()
-   }, [fetchFixedAmount, fetchSchedules])
+    fetchAnniversaries()
+   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -73,6 +79,11 @@ export default function Home() {
               {schedules.map((schedule, i) => (
                 <div key={i} className="text-center text-xl">
                   {schedules.length > 0 ? `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date}日(${getWeekDay(year, month, schedule.from_date)}) ${schedule.from_time}-${schedule.to_time} ${schedule.description}` : "なし"}
+                </div>
+              ))}
+              {anniversaries.map((anniversary, i) => (
+                <div key={i} className="text-center text-xl">
+                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === currentDate && `${anniversary.description} ${anniversary.date}日(${getWeekDay(year, month, anniversary.date)})`}
                 </div>
               ))}
               <div className="flex justify-end">
