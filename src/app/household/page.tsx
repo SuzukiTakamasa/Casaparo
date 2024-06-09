@@ -10,7 +10,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, Expenses } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -23,6 +23,7 @@ const client = new APIClient()
 const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
+    const [showDetail, setShowDetail] = useState(false)
 
     const { month } = useContext(MonthContext)
     const [householdMonth, setHouseholdMonth] = useState(month)
@@ -39,6 +40,7 @@ const Household = () => {
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
+    const [expense, setExpense] = useState<Expenses>([])
 
     const today = new Date().getDate()
 
@@ -83,6 +85,9 @@ const Household = () => {
     const handleSetIsOwner = () => {
         setIsOwner(!isOwner)
     }
+    const handleSetShowDetail = () => {
+        setShowDetail(!showDetail)
+    }
 
     const fetchHouseholds = useCallback(async () => {
         const households = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
@@ -92,6 +97,10 @@ const Household = () => {
             const res = await client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
             if (res !== null) {
                 setIsCompleted(res.is_completed)
+                if (res.is_completed) {
+                    const expenses = await client.get<Expenses>(`/completed_household/monthly_summary/${householdYear}`)
+                    setExpense(expenses!.filter((expense) => expense.month === householdMonth))
+                }
             }
     }, [householdYear, householdMonth])
     const addHousehold = async () => {
@@ -249,7 +258,20 @@ const Household = () => {
                     </div>
                 </div>
             )}
-
+            {isCompleted ?
+            <div>
+                <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense.map((e, i) => (formatNumberWithCommas(e.billing_amount)))}</div>
+                <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense.map((e, i) => (formatNumberWithCommas(e.total_amount)))}</div>
+                <div className="flex justify-center">
+                    <button
+                        className="text-white"
+                        onClick={handleSetShowDetail}
+                    >
+                        {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
+                    </button>
+                </div>
+            </div>
+            :
             <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>
@@ -304,6 +326,7 @@ const Household = () => {
                     <td className="border-b px-4 py-2 text-xl text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
                 </tfoot>
             </table>
+            }
         </div>
     </MonthProvider>
     )
