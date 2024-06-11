@@ -3,6 +3,8 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
+import Link from 'next/link'
+import { ArrowRightStartToIcon } from '@components/HeroicIcons'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
@@ -269,6 +271,12 @@ const Household = () => {
                     >
                         {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                     </button>
+                </div>
+                <div className="flex justify-center mt-4">
+                    <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
+                        <ArrowRightStartToIcon />
+                        毎月の家計簿の推移はこちら
+                    </Link>
                 </div>
             </div>
             :
