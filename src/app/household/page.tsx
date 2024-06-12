@@ -38,7 +38,7 @@ const Household = () => {
     const [newItemName, setNewItemName] = useState("")
     const [newAmount, setNewAmount] = useState("")
     const [isDefault, setIsDefault] = useState(false)
-    const [isOwner, setIsOwner] = useState(false)
+    const [isOwner, setIsOwner] = useState(1)
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
@@ -63,7 +63,7 @@ const Household = () => {
         setNewItemName(name)
         setNewAmount(String(amount))
         setIsDefault(intToBool(is_default))
-        setIsOwner(intToBool(is_owner))
+        setIsOwner(is_owner)
         setVersion(version)
         setIsUpdate(true)
         window.scrollTo({
@@ -77,15 +77,12 @@ const Household = () => {
         setNewItemName("")
         setNewAmount("")
         setIsDefault(false)
-        setIsOwner(false)
+        setIsOwner(1)
         setVersion(1)
         setIsUpdate(false)
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)
-    }
-    const handleSetIsOwner = () => {
-        setIsOwner(!isOwner)
     }
     const handleSetShowDetail = () => {
         setShowDetail(!showDetail)
@@ -112,7 +109,7 @@ const Household = () => {
             year: householdYear,
             month: householdMonth,
             is_default: boolToInt(isDefault),
-            is_owner: boolToInt(isOwner),
+            is_owner: isOwner,
             version: version
         }
         const res = await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
@@ -126,7 +123,7 @@ const Household = () => {
             year: householdYear,
             month: householdMonth,
             is_default: boolToInt(isDefault),
-            is_owner: boolToInt(isOwner),
+            is_owner: isOwner,
             version: version
         }
         const res = await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
@@ -178,21 +175,21 @@ const Household = () => {
 
         <div className="container mx-auto p-4">
             {!isCompleted &&
-                <button
-                    className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
-                    onClick={handleOpenAddDialog}
-                >
-                    登録
-                </button>
+            <button
+                className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
+                onClick={handleOpenAddDialog}
+            >
+                登録
+            </button>
             }
             <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
             {intToBool(isCompleted) &&
-                <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                    <div className="mt-1">
-                        <CheckBadgeIcon/>
-                    </div>
-                    清算済み
+            <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                <div className="mt-1">
+                    <CheckBadgeIcon/>
                 </div>
+                清算済み
+            </div>
             }
             {!intToBool(isCompleted) &&
             (householdYear < year ||
@@ -234,14 +231,23 @@ const Household = () => {
                                 />
                                 <span>デフォルト値に設定</span>
                             </label>
-                            <label className="flex items-center space-x-2 text-black">
+                            <div className="text-black">登録者</div>
+                            <div className="text-3xl text-center">
                                 <input
-                                    type="checkbox"
-                                    checked={isOwner}
-                                    onChange={handleSetIsOwner}            
-                                />
-                                <span>オーナーとして登録</span>
-                            </label>
+                                    type="radio"
+                                    value="1"
+                                    checked={isOwner === 1}
+                                    onChange={e => setIsOwner(Number(e.target.value))}
+                                    />
+                                    <span className="mr-8">🥺</span>
+                                <input
+                                    type="radio"
+                                    value="0"
+                                    checked={isOwner === 0}
+                                    onChange={e => setIsOwner(Number(e.target.value))}
+                                    />
+                                    <span>🥺ྀི</span>
+                            </div>
                         </div>
                         <div className="flex justify-end space-x-4">
                             <button
