@@ -177,21 +177,22 @@ const Household = () => {
         </YearProvider>
 
         <div className="container mx-auto p-4">
-            <button
-                className={`${isCompleted ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-700"} text-white font-bold py-2 px-4 rounded mb-4`}
-                onClick={handleOpenAddDialog}
-                disabled={intToBool(isCompleted)}
-            >
-                登録
-            </button>
+            {!isCompleted &&
+                <button
+                    className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
+                    onClick={handleOpenAddDialog}
+                >
+                    登録
+                </button>
+            }
             <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
             {intToBool(isCompleted) &&
-            <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                <div className="mt-1">
-                    <CheckBadgeIcon/>
+                <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                    <div className="mt-1">
+                        <CheckBadgeIcon/>
+                    </div>
+                    清算済み
                 </div>
-                清算済み
-            </div>
             }
             {!intToBool(isCompleted) &&
             (householdYear < year ||
@@ -275,7 +276,7 @@ const Household = () => {
                 <div className="flex justify-center mt-4">
                     <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
                         <ArrowRightStartToIcon />
-                        毎月の家計簿の推移はこちら
+                        各月の家計簿の推移
                     </Link>
                 </div>
             </div>
@@ -294,7 +295,7 @@ const Household = () => {
                         <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
-                                    className={`${isCompleted ? "bg-gray-600" : "bg-blue-500 hover:bg-blue-700"} text-white font-blod py-1 px-1 rounded`}
+                                    className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
                                     onClick={() => handleOpenUpdateDialog({
                                         id: household.id,
                                         name: household.name,
@@ -303,12 +304,11 @@ const Household = () => {
                                         is_owner: household.is_owner,
                                         version: household.version
                                     })}
-                                    disabled={intToBool(isCompleted)}
                                 >
                                     <PencilIcon />
                                 </button>
                                 <button
-                                    className={`${isCompleted ? "bg-gray-600" : "bg-red-500 hover:bg-red-700"} text-white font-bold py-1 px-1 rounded`}
+                                    className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
                                     onClick={() => deleteHousehold({
                                         id: household.id,
                                         name: household.name,
@@ -317,7 +317,6 @@ const Household = () => {
                                         is_owner: household.is_owner,
                                         version: household.version
                                     })}
-                                    disabled={intToBool(isCompleted)}
                                 >
                                     <TrashBoxIcon />
                                 </button>
