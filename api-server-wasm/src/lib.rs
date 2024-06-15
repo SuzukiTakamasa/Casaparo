@@ -1,7 +1,7 @@
 use worker::*;
 use serde_json::from_str;
 
-mod models;
+mod entities;
 
 
 fn get_db_env(req: &Request) -> Result<String> {
@@ -52,7 +52,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Query failed", 500)
                 }
             };
-            match result.results::<models::Households>() {
+            match result.results::<entities::Households>() {
                 Ok(households) => Response::from_json(&households),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -71,7 +71,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select sum(case when is_owner = 1 then amount else -amount end) as billing_amount, sum(amount) as total_amount from households where ( year = ?1 and month = ?2 ) or is_default = 1");
             let query = statement.bind(&[year.into(), month.into()])?;
-            match query.first::<models::FixedAmount>(None).await {
+            match query.first::<entities::FixedAmount>(None).await {
                 Ok(fixed_amount) => Response::from_json(&fixed_amount),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -90,7 +90,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select case when exists (select * from completed_households where year = ?1 and month = ?2) then 1 else 0 end as is_completed");
             let query = statement.bind(&[year.into(), month.into()])?;
-            match query.first::<models::IsCompleted>(None).await {
+            match query.first::<entities::IsCompleted>(None).await {
                 Ok(is_completed) => Response::from_json(&is_completed),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -106,7 +106,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("select month, billing_amount, total_amount from completed_households where year = ?1");
+            let statement = d1.prepare("select month, billing_amount, total_amount, detail from completed_households where year = ?1");
             let query = statement.bind(&[year.into()])?;
             let result = match query.all().await {
                 Ok(res) => res,
@@ -115,7 +115,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Error parsing results", 500)
                 }
             };
-            match result.results::<models::HouseholdMonthlySummary>() {
+            match result.results::<entities::HouseholdMonthlySummary>() {
                 Ok(monthly_summary) => Response::from_json(&monthly_summary),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -138,7 +138,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Query failed", 500)
                 }
             };
-            match result.results::<models::Schedules>() {
+            match result.results::<entities::Schedules>() {
                 Ok(schedules) => Response::from_json(&schedules),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -167,7 +167,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Query failed", 500)
                 }
             };
-            match result.results::<models::Schedules>() {
+            match result.results::<entities::Schedules>() {
                 Ok(schedules) => Response::from_json(&schedules),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -189,7 +189,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Query failed", 500)
                 }
             };
-            match result.results::<models::Wikis>() {
+            match result.results::<entities::Wikis>() {
                 Ok(wikis) => Response::from_json(&wikis),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -207,7 +207,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let statement = d1.prepare("select * from wikis where id = ?1");
             let query = statement.bind(&[id.into()])?;
-            match query.first::<models::Wikis>(None).await {
+            match query.first::<entities::Wikis>(None).await {
                 Ok(wiki_detail) => Response::from_json(&wiki_detail),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -230,7 +230,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Query failed", 500)
                 }
             };
-            match result.results::<models::Labels>() {
+            match result.results::<entities::Labels>() {
                 Ok(labels) => Response::from_json(&labels),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -253,7 +253,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Query failed", 500)
                 }
             };
-            match result.results::<models::Anniversaries>() {
+            match result.results::<entities::Anniversaries>() {
                 Ok(anniversaries) => Response::from_json(&anniversaries),
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -273,7 +273,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let household: models::Households = match from_str(json_body.as_str()) {
+            let household: entities::Households = match from_str(json_body.as_str()) {
                 Ok(household) => household,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -312,7 +312,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut household: models::Households = match from_str(json_body.as_str()) {
+            let mut household: entities::Households = match from_str(json_body.as_str()) {
                 Ok(household) => household,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -323,7 +323,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -368,7 +368,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut household: models::Households = match from_str(json_body.as_str()) {
+            let mut household: entities::Households = match from_str(json_body.as_str()) {
                 Ok(household) => household,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -379,7 +379,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from households where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -419,7 +419,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let schedule: models::Schedules = match from_str(json_body.as_str()) {
+            let schedule: entities::Schedules = match from_str(json_body.as_str()) {
                 Ok(schedule) => schedule,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -463,7 +463,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut schedule: models::Schedules = match from_str(json_body.as_str()) {
+            let mut schedule: entities::Schedules = match from_str(json_body.as_str()) {
                 Ok(schedule) => schedule,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -474,7 +474,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -526,7 +526,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut schedule: models::Schedules = match from_str(json_body.as_str()) {
+            let mut schedule: entities::Schedules = match from_str(json_body.as_str()) {
                 Ok(schedule) => schedule,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -537,7 +537,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from schedules where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -577,7 +577,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let completed_household: models::CompletedHouseholds = match from_str(json_body.as_str()) {
+            let completed_household: entities::CompletedHouseholds = match from_str(json_body.as_str()) {
                 Ok(completed_household) => completed_household,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -586,9 +586,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             };
 
             let d1 = ctx.env.d1(db_str.as_str())?;
-            let statement = d1.prepare("insert into completed_households (year, month, billing_amount, total_amount) values (?1, ?2, ?3, ?4)");
+            let statement = d1.prepare("insert into completed_households (year, month, detail, billing_amount, total_amount) values (?1, ?2, ?3, ?4, ?5)");
             let query = statement.bind(&[completed_household.year.into(),
                                                               completed_household.month.into(),
+                                                              completed_household.detail.into(),
                                                               completed_household.billing_amount.into(),
                                                               completed_household.total_amount.into()
                                                               ])?;
@@ -614,7 +615,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let wiki: models::Wikis = match from_str(json_body.as_str()) {
+            let wiki: entities::Wikis = match from_str(json_body.as_str()) {
                 Ok(wiki) => wiki,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -653,7 +654,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 } 
             };
-            let mut wiki: models::Wikis = match from_str(json_body.as_str()) {
+            let mut wiki: entities::Wikis = match from_str(json_body.as_str()) {
                 Ok(wiki) => wiki,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -664,7 +665,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from wikis where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[wiki.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -710,7 +711,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 } 
             };
-            let mut wiki: models::Wikis = match from_str(json_body.as_str()) {
+            let mut wiki: entities::Wikis = match from_str(json_body.as_str()) {
                 Ok(wiki) => wiki,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -721,7 +722,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from wikis where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[wiki.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -761,7 +762,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let label: models::Labels = match from_str(json_body.as_str()) {
+            let label: entities::Labels = match from_str(json_body.as_str()) {
                 Ok(label) => label,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -796,7 +797,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut label: models::Labels = match from_str(json_body.as_str()) {
+            let mut label: entities::Labels = match from_str(json_body.as_str()) {
                 Ok(label) => label,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -807,7 +808,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from labels where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[label.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -850,7 +851,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                     return Response::error("Bad request", 400)
                 }
             };
-            let mut label: models::Labels = match from_str(json_body.as_str()) {
+            let mut label: entities::Labels = match from_str(json_body.as_str()) {
                 Ok(label) => label,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -861,7 +862,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from labels where id  = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[label.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -902,7 +903,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 }
             };
 
-            let anniversary: models::Anniversaries = match from_str(json_body.as_str()) {
+            let anniversary: entities::Anniversaries = match from_str(json_body.as_str()) {
                 Ok(anniversary) => anniversary,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -939,7 +940,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 } 
             };
 
-            let mut anniversary: models::Anniversaries = match from_str(json_body.as_str()) {
+            let mut anniversary: entities::Anniversaries = match from_str(json_body.as_str()) {
                 Ok(anniversary) => anniversary,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -950,7 +951,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from anniversaries where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[anniversary.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -995,7 +996,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
                 } 
             };
 
-            let mut anniversary: models::Anniversaries = match from_str(json_body.as_str()) {
+            let mut anniversary: entities::Anniversaries = match from_str(json_body.as_str()) {
                 Ok(anniversary) => anniversary,
                 Err(e) => {
                     console_log!("{:?}", e);
@@ -1006,7 +1007,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             let d1 = ctx.env.d1(db_str.as_str())?;
             let fetch_version_statement = d1.prepare("select version from anniversaries where id = ?1");
             let fetch_version_query = fetch_version_statement.bind(&[anniversary.id.into()])?;
-            let fetch_version_result = match fetch_version_query.first::<models::LatestVersion>(None).await {
+            let fetch_version_result = match fetch_version_query.first::<entities::LatestVersion>(None).await {
                 Ok(res) => res,
                 Err(e) => {
                     console_log!("{:?}", e);

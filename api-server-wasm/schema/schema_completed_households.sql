@@ -3,6 +3,7 @@ CREATE TABLE completed_households (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     year INTEGER NOT NULL,
     month INTEGER NOT NULL,
+    detail TEXT NOT NULL,
     billing_amount INTEGER NOT NULL,
     total_amount INTEGER NOT NULL
 );
