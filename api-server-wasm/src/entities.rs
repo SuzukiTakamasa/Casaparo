@@ -47,7 +47,7 @@ pub struct CompletedHouseholds {
     pub id: Option<u32>,
     pub year: u16,
     pub month: u8,
-    pub detail: String,
+    pub detail: Option<String>,
     pub billing_amount: u32,
     pub total_amount: u32
 }
@@ -55,7 +55,7 @@ pub struct CompletedHouseholds {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct HouseholdMonthlySummary {
     pub month: u8,
-    pub detail: String,
+    pub detail: Option<String>,
     pub billing_amount: u32,
     pub total_amount: u32
 }

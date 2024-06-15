@@ -98,7 +98,9 @@ const Household = () => {
                 setIsCompleted(res.is_completed)
                 if (res.is_completed) {
                     const expenses = await client.get<Expenses>(`/completed_household/monthly_summary/${householdYear}`)
-                    setExpense(expenses!.filter((expense) => expense.month === householdMonth))
+                    if (expenses !== null) {
+                        setExpense(expenses.filter((expense) => expense.month === householdMonth))
+                    }
                 }
             }
     }, [householdYear, householdMonth])
@@ -146,7 +148,7 @@ const Household = () => {
         let totalAmount = 0
         households.forEach(household => totalAmount += household.amount)
         let detailArray = []
-        const detail = households.forEach(household => detailArray.push({item: household.name, amount: household.amount}))
+        const detail = await Promise.all(households.map(async (household) => (detailArray.push({item: household.name, amount: household.amount}))))
         const completedHousehold = {
             year: householdYear,
             month: householdMonth,
@@ -281,11 +283,6 @@ const Household = () => {
                     >
                         {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                     </button>
-                    {showDetail &&
-                    JSON.parse(expense[0].detail).map((detail: Detail)=> (
-                        `${detail.item}: ${detail.amount}`
-                    ))
-                    }
                 </div>
                 <div className="flex justify-center mt-4">
                     <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
