@@ -39,14 +39,21 @@ export interface FixedAmount {
 export interface CompletedHouseholdData {
     year: number
     month: number
+    detail: string
     billing_amount: number
     total_amount: number
 }
 
 export interface HouseholdMonthlySummary {
     month: number
+    detail: string
     billing_amount: number
     total_amount: number
+}
+
+export interface Detail {
+    item: string,
+    amount: number
 }
 
 export interface WikiData {
@@ -99,4 +106,4 @@ export type APIRequest = HouseholdData |
                 CompletedHouseholdData |
                               WikiData |
                              LabelData |
-                             AnniversaryData
+                       AnniversaryData

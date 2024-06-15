@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, Expenses } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, Expenses, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -145,9 +145,12 @@ const Household = () => {
         if (!window.confirm("家計簿を確定しますか？")) return
         let totalAmount = 0
         households.forEach(household => totalAmount += household.amount)
+        let detailArray = []
+        const detail = households.forEach(household => detailArray.push({item: household.name, amount: household.amount}))
         const completedHousehold = {
             year: householdYear,
             month: householdMonth,
+            detail: JSON.stringify(detail),
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
@@ -278,6 +281,11 @@ const Household = () => {
                     >
                         {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                     </button>
+                    {showDetail &&
+                    JSON.parse(expense[0].detail).map((detail: Detail)=> (
+                        `${detail.item}: ${detail.amount}`
+                    ))
+                    }
                 </div>
                 <div className="flex justify-center mt-4">
                     <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
