@@ -51,11 +51,6 @@ export interface HouseholdMonthlySummary {
     total_amount: number
 }
 
-export interface Detail {
-    item: string,
-    amount: number
-}
-
 export interface WikiData {
     id?: number,
     title: string,

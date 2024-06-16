@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, Expenses, Detail } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, Expenses } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -148,11 +148,12 @@ const Household = () => {
         let totalAmount = 0
         households.forEach(household => totalAmount += household.amount)
         let detailArray = []
-        const detail = await Promise.all(households.map(async (household) => (detailArray.push({item: household.name, amount: household.amount}))))
+        const detailStringArray = await Promise.all(households.map(async (household) => (detailArray.push(`${household.name}/${household.amount}`))))
+        const detail = detailStringArray.join()
         const completedHousehold = {
             year: householdYear,
             month: householdMonth,
-            detail: JSON.stringify(detail),
+            detail: detail,
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
