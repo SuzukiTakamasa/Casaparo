@@ -46,7 +46,7 @@ export interface CompletedHouseholdData {
 
 export interface HouseholdMonthlySummary {
     month: number
-    detail?: string
+    detail: string
     billing_amount: number
     total_amount: number
 }

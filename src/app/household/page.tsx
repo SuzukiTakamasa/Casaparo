@@ -284,6 +284,9 @@ const Household = () => {
                     >
                         {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                     </button>
+                    {expense && expense[0].detail.split(",").map((detail) => (
+                        detail
+                    ))}
                 </div>
                 <div className="flex justify-center mt-4">
                     <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
