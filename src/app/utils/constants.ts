@@ -39,7 +39,7 @@ export interface FixedAmount {
 export interface CompletedHouseholdData {
     year: number
     month: number
-    detail?: string
+    detail: string
     billing_amount: number
     total_amount: number
 }
