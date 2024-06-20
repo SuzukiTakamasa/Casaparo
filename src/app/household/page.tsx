@@ -96,7 +96,7 @@ const Household = () => {
             const res = await client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
             if (res !== null) {
                 setIsCompleted(res.is_completed)
-                if (res.is_completed) {
+                if (res.is_completed === 1) {
                     const expenses = await client.get<Expenses>(`/completed_household/monthly_summary/${householdYear}`)
                     if (expenses !== null) {
                         setExpense(expenses.filter((expense) => expense.month === householdMonth))
@@ -148,8 +148,10 @@ const Household = () => {
         let totalAmount = 0
         households.forEach(household => totalAmount += household.amount)
         let detailArray = []
-        const detailStringArray = await Promise.all(households.map(async (household) => (detailArray.push(`${household.name}/${household.amount}`))))
-        const detail = detailStringArray.join()
+        for await (let household of households) {
+            detailArray.push(`${household.name}/${household.amount}`)
+        }
+        const detail = detailArray.join()
         const completedHousehold = {
             year: householdYear,
             month: householdMonth,
@@ -284,9 +286,6 @@ const Household = () => {
                     >
                         {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                     </button>
-                    {expense && expense[0].detail.split(",").map((detail) => (
-                        detail
-                    ))}
                 </div>
                 <div className="flex justify-center mt-4">
                     <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">

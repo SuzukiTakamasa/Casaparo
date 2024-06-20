@@ -47,7 +47,7 @@ pub struct CompletedHouseholds {
     pub id: Option<u32>,
     pub year: u16,
     pub month: u8,
-    pub detail: Option<String>,
+    pub detail: String,
     pub billing_amount: u32,
     pub total_amount: u32
 }
