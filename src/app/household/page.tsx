@@ -149,13 +149,13 @@ const Household = () => {
         households.forEach(household => totalAmount += household.amount)
         let detailArray = []
         for await (let household of households) {
-            detailArray.push(`${household.name}/${household.amount}`)
+            detailArray.push({ name: household.name, amount: household.amount})
         }
         const detail = detailArray.join()
         const completedHousehold = {
             year: householdYear,
             month: householdMonth,
-            detail: detail,
+            detail: JSON.stringify(detail),
             billing_amount: billingAmount,
             total_amount: totalAmount
         }

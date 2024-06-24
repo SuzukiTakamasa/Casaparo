@@ -61,6 +61,12 @@ pub struct HouseholdMonthlySummary {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct Detail {
+    pub name: String,
+    pub amount: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct IsCompleted {
     pub is_completed: u8
 }
