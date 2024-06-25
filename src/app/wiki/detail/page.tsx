@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback} from 'react'
 import { useSearchParams } from 'next/navigation'
+import Image from 'next/image'
 import APIClient from '@utils/api_client'
 import { WikiData } from '@utils/constants'
 
@@ -37,7 +38,7 @@ const WikiDetail = () => {
         <>
             <div className="container mx-auto p-4 grid place-items-center">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
-                {wikiDetail.image_url !== "" && <img src={wikiDetail.image_url} alt={wikiDetail.title} />}
+                {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
                     {wikiDetail.content.includes('\n') ? addBreakPoint(wikiDetail.content) : wikiDetail.content}
                 </div>

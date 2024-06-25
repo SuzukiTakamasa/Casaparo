@@ -44,7 +44,12 @@ export interface CompletedHouseholdData {
     total_amount: number
 }
 
-export interface HouseholdMonthlySummary {
+export interface Detail {
+    name: string
+    amount: number
+}
+
+export interface HouseholdMonthlySummaryData {
     month: number
     detail: string
     billing_amount: number
@@ -86,7 +91,7 @@ export interface DeleteImageRequest {
 
 export type HouseholdResponse = HouseholdData[]
 
-export type Expenses = HouseholdMonthlySummary[]
+export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]
 
 export type ScheduleResponse = ScheduleData[]
 

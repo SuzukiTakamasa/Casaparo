@@ -10,7 +10,7 @@ import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
 
 import APIClient from '@utils/api_client'
-import { Expenses } from "@utils/constants"
+import { HouseholdMonthlySummaryResponse } from "@utils/constants"
 
 
 const client = new APIClient()
@@ -18,14 +18,14 @@ const client = new APIClient()
 
 const Statistics = () => {
 
-    const [monthlyHouseholdSummary, setMonthlyHouseholdSummary] = useState<Expenses>([])
+    const [monthlyHouseholdSummary, setMonthlyHouseholdSummary] = useState<HouseholdMonthlySummaryResponse>([])
 
     const { year } = useContext(YearContext)
     const [statisticsYear, setStatisticsYear] = useState(year)
     const [isLoading, setIsLoading] = useState(true)
 
     const fetchMonthlyHousehold = useCallback(async () => {
-        const res = await client.get<Expenses>(`/completed_household/monthly_summary/${statisticsYear}`)
+        const res = await client.get<HouseholdMonthlySummaryResponse>(`/completed_household/monthly_summary/${statisticsYear}`)
         if (res !== null) {
             setMonthlyHouseholdSummary(res)
             setIsLoading(false)

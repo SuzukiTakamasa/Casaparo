@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, Expenses } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -42,7 +42,7 @@ const Household = () => {
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
-    const [expense, setExpense] = useState<Expenses>([])
+    const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
 
     const today = new Date().getDate()
 
@@ -97,7 +97,7 @@ const Household = () => {
             if (res !== null) {
                 setIsCompleted(res.is_completed)
                 if (res.is_completed === 1) {
-                    const expenses = await client.get<Expenses>(`/completed_household/monthly_summary/${householdYear}`)
+                    const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/completed_household/monthly_summary/${householdYear}`)
                     if (expenses !== null) {
                         setExpense(expenses.filter((expense) => expense.month === householdMonth))
                     }
