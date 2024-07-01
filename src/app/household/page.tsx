@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -149,13 +149,12 @@ const Household = () => {
         households.forEach(household => totalAmount += household.amount)
         let detailArray = []
         for await (let household of households) {
-            detailArray.push({ name: household.name, amount: household.amount})
+            detailArray.push({ name: household.name, amount: household.amount} as Detail)
         }
-        const detail = detailArray.join()
         const completedHousehold = {
             year: householdYear,
             month: householdMonth,
-            detail: JSON.stringify(detail),
+            detail: JSON.stringify(detailArray),
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
