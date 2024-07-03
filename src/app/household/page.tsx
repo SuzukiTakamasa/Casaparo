@@ -276,8 +276,8 @@ const Household = () => {
             )}
             {isCompleted ?
             <div>
-                <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense.map((e, i) => (formatNumberWithCommas(e.billing_amount)))}</div>
-                <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense.map((e, i) => (formatNumberWithCommas(e.total_amount)))}</div>
+                <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense.map(e => (formatNumberWithCommas(e.billing_amount)))}</div>
+                <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense.map(e => (formatNumberWithCommas(e.total_amount)))}</div>
                 <div className="flex justify-center">
                     <button
                         className="text-white"
