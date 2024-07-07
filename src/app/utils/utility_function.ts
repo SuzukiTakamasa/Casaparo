@@ -50,3 +50,7 @@ export const getDateArray = (month: number): number[] => {
     }
     return dateArray
 }
+
+export const isUnsignedInteger = (intStr: string): boolean => {
+    return /^\d+$/.test(intStr)
+}

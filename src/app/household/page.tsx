@@ -16,7 +16,7 @@ import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, 
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
-import { setUser, boolToInt, intToBool } from '@utils/utility_function'
+import { setUser, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -26,6 +26,8 @@ const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
+    const [newItemNameValidMsg, setNewItemValidMsg] = useState("")
+    const [newAmountValidMsg, setNewAmountValidMsg] = useState("")
 
     const { month } = useContext(MonthContext)
     const [householdMonth, setHouseholdMonth] = useState(month)
@@ -46,7 +48,24 @@ const Household = () => {
 
     const today = new Date().getDate()
 
+    const validate = () => {
+        let isValid = true
+        if (newItemName === "") {
+            isValid = false
+            setNewItemValidMsg("項目名を入力してください。")
+        }
+        if (newAmount === "") {
+            isValid = false
+            setNewAmountValidMsg("金額を入力してください。")
+        }
+        if (isUnsignedInteger(newAmount)) {
+            isValid = false
+            setNewAmountValidMsg("整数値を入力してください。")
+        }
+    }
+
     const handleAddHousehold = async () => {
+        if (!validate) return
         await addHousehold()
         handleCloseDialog()
     }
@@ -223,6 +242,7 @@ const Household = () => {
                                 value={newItemName}
                                 onChange={(e) => setNewItemName(e.target.value)}
                             />
+                            {newItemNameValidMsg !== "" && <div className="text-sm text-red-500">{newItemNameValidMsg}</div>}
                             <input
                                 className="border p-2 text-black"
                                 type="text"
@@ -230,6 +250,7 @@ const Household = () => {
                                 value={newAmount}
                                 onChange={(e) => setNewAmount(e.target.value)}
                             />
+                            {newAmountValidMsg !== "" && <div className="text-sm text-red-500">{newAmountValidMsg}</div>}
                             <label className="flex items-center space-x-2 text-black">
                                 <input
                                     type="checkbox"

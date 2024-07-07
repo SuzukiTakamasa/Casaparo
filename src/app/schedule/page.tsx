@@ -193,7 +193,7 @@ const Schedule = () => {
         )
     }
 
-    const Validate = () => {
+    const validate = () => {
         let isValid = true
         if (description === "") {
             isValid = false
@@ -214,7 +214,7 @@ const Schedule = () => {
         return isValid
     }
     const handleAddSchedule = async () => {
-        if (!Validate()) return
+        if (!validate()) return
         await addSchedule()
         handleCloseDialog()
     }
