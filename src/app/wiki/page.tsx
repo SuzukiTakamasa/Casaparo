@@ -17,6 +17,8 @@ const Wiki = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
     const [showPreview, setShowPreview] = useState(false)
+    const [titleValidMsg, setTitleValidMsg] = useState("")
+    const [contentValidMsg, setContentValidMsg] = useState("")
 
     const [wikis, setWikis] = useState<WikiResponse>([])
     const [id, setId] = useState(0)
@@ -26,7 +28,20 @@ const Wiki = () => {
     const [imageUrl, setImageUrl] = useState("")
     const [version, setVersion] = useState(1)
 
+    const validate = () => {
+        let isValid = true
+        if (title === "") {
+            isValid = false
+            setTitleValidMsg("タイトルを入力してください。")
+        }
+        if (content === "") {
+            isValid = false
+            setContentValidMsg("内容を入力してください。")
+        }
+    }
+
     const handleAddWiki = async () => {
+        if (!validate) return
         await addWiki()
         handleCloseDialog()
     }
@@ -56,6 +71,8 @@ const Wiki = () => {
         setImageUrl("")
         setVersion(1)
         setIsUpdate(false)
+        setTitleValidMsg("")
+        setContentValidMsg("")
     }
     const handleShowPreview = () => {
         setShowPreview(!showPreview)
@@ -156,6 +173,7 @@ const Wiki = () => {
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
                             />
+                            {titleValidMsg !== "" && <div className="text-sm text-red 500">{titleValidMsg}</div>}
                             <textarea
                                 className="border p-2 text-black"
                                 placeholder="内容"
@@ -163,6 +181,7 @@ const Wiki = () => {
                                 onChange={e => setContent(e.target.value)}
                             >
                             </textarea>
+                            {contentValidMsg !== "" && <div className="text-sm text-red 500">{contentValidMsg}</div>}
                             <div className="text-black">作成者</div>
                             <div className="text-3xl text-center">
                                 <input
