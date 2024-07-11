@@ -62,6 +62,7 @@ const Household = () => {
             isValid = false
             setNewAmountValidMsg("整数値を入力してください。")
         }
+        return isValid
     }
 
     const handleAddHousehold = async () => {

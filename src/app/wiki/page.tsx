@@ -38,6 +38,7 @@ const Wiki = () => {
             isValid = false
             setContentValidMsg("内容を入力してください。")
         }
+        return isValid
     }
 
     const handleAddWiki = async () => {

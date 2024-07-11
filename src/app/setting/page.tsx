@@ -16,6 +16,9 @@ const client = new APIClient()
 const Setting = () => {
     const [showLabelDialog, setShowLabelDialog] = useState(false)
     const [isUpdateLabel, setIsUpdateLabel] = useState(false)
+    const [labelNameValidMsg, setLabelNameValidMsg] = useState("")
+    const [newLabelValidMsg, setNewLabelValidMsg] = useState("")
+    const [anniversaryValidMsg, setAnniversaryValidMsg] = useState("")
 
     const [labels, setLabels] = useState<LabelResponse>([])
     const [labelId, setLabelId] = useState(0)
@@ -32,9 +35,32 @@ const Setting = () => {
     const [anniversaryDate, setAnniversaryDate] = useState(1)
     const [anniversaryDescription, setAnniversaryDescription] = useState("")
     const [anniversaryVersion, setAnniversaryVersion] = useState(1)
+
+    const validateLabel = () => {
+        let isValid = true
+        if (labelName === "") {
+            isValid = false
+            setLabelNameValidMsg("ラベル名を入力してください。")
+        }
+        if (newLabel === "" ) {
+            isValid = true
+            setNewLabelValidMsg("ラベルを入力してください。")
+        }
+        return isValid
+    }
+
+    const validateAnniversary = () => {
+        let isValid = true
+        if (anniversaryDescription === "") {
+            isValid = false
+            setAnniversaryValidMsg("記念日名を説明してください。")
+        }
+        return isValid
+    }
     
 
     const handleAddLabel = async () => {
+        if (!validateLabel) return
         await addlabels()
         handleCloseLabelDialog()
     }
@@ -95,6 +121,7 @@ const Setting = () => {
     }
 
     const handleAddAnniversary = async () => {
+        if (!validateAnniversary) return
         await addAnniversary()
         handleCloseAnniversaryDialog()
     }
@@ -187,6 +214,7 @@ const Setting = () => {
                                     value={newLabel}
                                     onChange={(e) => setNewLabel(e.target.value)}
                                 />
+                                {newLabelValidMsg !== "" && <div className="text-sm text-red-500">{newLabelValidMsg}</div>}
                                 <input
                                     className="border p-2 text-black"
                                     type="text"
@@ -194,6 +222,7 @@ const Setting = () => {
                                     value={labelName}
                                     onChange={(e) => setLabelName(e.target.value)}                       
                                 />
+                                {labelNameValidMsg !== "" && <div className="text-sm text-red-500">{labelNameValidMsg}</div>}
                             </div>
                             <div className="flex justify-end space-x-4">
                                 <button
@@ -300,6 +329,7 @@ const Setting = () => {
                                     value={anniversaryDescription}
                                     onChange={e => setAnniversaryDescription(e.target.value)}
                                 />
+                                {anniversaryValidMsg !== "" && <div className="text-sm text-red-500">{anniversaryValidMsg}</div>}
                             </div>
                             <div className="flex justify-end space-x-4">
                                 <button
