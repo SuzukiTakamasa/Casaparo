@@ -26,7 +26,7 @@ const Household = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
     const [showDetail, setShowDetail] = useState(false)
-    const [newItemNameValidMsg, setNewItemValidMsg] = useState("")
+    const [newItemNameValidMsg, setNewItemNameValidMsg] = useState("")
     const [newAmountValidMsg, setNewAmountValidMsg] = useState("")
 
     const { month } = useContext(MonthContext)
@@ -52,7 +52,7 @@ const Household = () => {
         let isValid = true
         if (newItemName === "") {
             isValid = false
-            setNewItemValidMsg("項目名を入力してください。")
+            setNewItemNameValidMsg("項目名を入力してください。")
         }
         if (newAmount === "") {
             isValid = false
@@ -100,6 +100,8 @@ const Household = () => {
         setIsOwner(1)
         setVersion(1)
         setIsUpdate(false)
+        setNewItemNameValidMsg("")
+        setNewAmountValidMsg("")
     }
     const handleSetIsDefault = () => {
         setIsDefault(!isDefault)

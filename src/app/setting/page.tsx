@@ -90,6 +90,8 @@ const Setting = () => {
         setNewLabel("")
         setLabelVersion(1)
         setIsUpdateLabel(false)
+        setLabelNameValidMsg("")
+        setNewLabelValidMsg("")
     }
     const fetchLabels = useCallback(async () => {
         const labels = await client.get<LabelResponse>("/label")
@@ -153,6 +155,7 @@ const Setting = () => {
         setAnniversaryDescription("")
         setAnniversaryVersion(1)
         setIsUpdateAnniversary(false)
+        setAnniversaryValidMsg("")
     }
 
     const fetchAnniversaries = useCallback(async () => {
