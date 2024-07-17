@@ -1,5 +1,7 @@
 {
     "rust-analyzer.linkedProjects": [
         "./api-server-wasm/Cargo.toml"
-    ]
+    ],
+    "rust-analyzer.procMacro.enable": true
+    
 }
