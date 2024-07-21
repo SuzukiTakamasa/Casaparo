@@ -4,9 +4,8 @@ compatibility_date = "2024-02-08"
 
 [triggers]
 crons = [
-    "0 0 24 * *",
-    "0 0 25 * *",
-    "0 0 1 * *"
+    "0 0 1 * *",
+    "0 0 L * *"
 ]
 
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)

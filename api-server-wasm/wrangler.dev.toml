@@ -1,14 +1,9 @@
-name = "worker-rust"
+name = "worker-rust-dev"
 main = "build/worker/shim.mjs"
 compatibility_date = "2023-06-28"
 
 [build]
 command = "cargo install -q worker-build && worker-build --release"
-
-[[d1_databases]]
-binding = "DB" # i.e. available in your Worker on env.DB
-database_name = "casaparo"
-database_id = "9f32bbb8-b727-499f-b323-de1c399466df"
 
 [[d1_databases]]
 binding = "DB_DEV" # i.e. available in your Worker on env.DB
