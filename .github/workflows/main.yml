@@ -28,14 +28,14 @@ jobs:
 
     - name: Publish to Cloudflare Workers (Development)
       if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
-      run: wrangler publish --config wrangler.dev.toml
+      run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/api-server-wasm
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
       if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
-      run: wrangler publish --config wrangler.prod.toml
+      run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/api-server-wasm
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -61,14 +61,14 @@ jobs:
     
     - name: Publish to Cloudflare Workers (Development)
       if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
-      run: wrangler publish --config wrangler.dev.toml
+      run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/line-bot-server
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
       if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
-      run: wrangler publish --config wrangler.prod.toml
+      run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/line-bot-server
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -94,14 +94,14 @@ jobs:
     
     - name: Publish to Cloudflare Workers (Development)
       if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
-      run: wrangler publish --config wrangler.dev.toml
+      run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/r2
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
       if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
-      run: wrangler publish --config wrangler.prod.toml
+      run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/r2
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
