@@ -14,7 +14,7 @@ type MonthProviderProps = {
     setYear: React.Dispatch<React.SetStateAction<number>>
 }
 
-type MonthStrProps = {
+export type MonthStrProps = {
     monthStr: string,
     cssStr: string
 }
