@@ -80,7 +80,7 @@ const Wiki = () => {
     }
     const fetchWikis = useCallback(async () => {
         const wikis = await client.get<WikiResponse>('/wiki')
-        setWikis(wikis || [])
+        setWikis(wikis.data || [])
     }, [])
     const addWiki = async () => {
         const addedWikiData = {
@@ -91,7 +91,7 @@ const Wiki = () => {
             image_url: imageUrl,
             version: version
         }
-        const res = await client.post<WikiResponse>('/wiki/create', addedWikiData)
+        await client.post<WikiResponse>('/wiki/create', addedWikiData)
         await fetchWikis()
     }
     const updateWiki = async () => {
@@ -104,7 +104,7 @@ const Wiki = () => {
             image_url: imageUrl,
             version: version
         }
-        const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
+        await client.post<WikiResponse>('/wiki/update', updatedWikiData)
         await fetchWikis()
     }
     const updateImageUrlEmpty = async () => {
@@ -117,12 +117,12 @@ const Wiki = () => {
             image_url: "",
             version: version
         }
-        const res = await client.post<WikiResponse>('/wiki/update', updatedWikiData)
+        await client.post<WikiResponse>('/wiki/update', updatedWikiData)
         await fetchWikis()
     }
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.post<WikiResponse>('/wiki/delete', deleteWikiData)
+        await client.post<WikiResponse>('/wiki/delete', deleteWikiData)
         await fetchWikis()
     }
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
