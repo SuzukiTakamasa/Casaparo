@@ -1,15 +1,15 @@
-import { APIRequest, R2Response } from './constants'
+import { APIRequest, R2Response, Result } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-export const execExternalGetAPI = async(url: string, getParams?: string): Promise<any> => {
+export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
     if (getParams) url += getParams
     try {
         const res = await fetch(url, {method: 'GET'})
-    return res.json()
+    return { data: res.json() as T, error: null }
     } catch(e) {
         console.log(e)
-        return null
+        return { data: null, error: String(e) }
     }   
 }
 
@@ -24,7 +24,7 @@ class APIClient {
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         }
     }
-    public async get<T>(endpoint: string, params?: string): Promise<T|null> {
+    public async get<T>(endpoint: string, params?: string): Promise<Result<T>> {
         if (params) endpoint += params
 
         try {
@@ -32,23 +32,25 @@ class APIClient {
                 method: 'GET',
                 headers: this.headers
             })
-            return await res.json()
+            const jsonRes = await res.json()
+            return { data: jsonRes as T, error: null }
         } catch (e) {
             console.log(e)
-            return null
+            return { data: null, error: String(e) }
         }
     }
-    public async post<T>(endpoint: string, data: APIRequest): Promise<T|null> {
+    public async post<T>(endpoint: string, data: APIRequest): Promise<Result<T>> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',
                 headers: this.headers,
                 body: JSON.stringify(data)
             })
-            return await res.json()
+            const jsonRes = await res.json()
+            return await { data: jsonRes as T, error: null }
         } catch (e) {
             console.log(e)
-            return null
+            return { data: null, error: String(e) }
         }
     }
     public async upload(file: File): Promise<R2Response> {

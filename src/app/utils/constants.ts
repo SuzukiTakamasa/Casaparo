@@ -1,4 +1,9 @@
 
+export interface Result<T> {
+    data: T | null
+    error: string | null
+}
+
 export interface HouseholdData {
     id?: number,
     name: string,

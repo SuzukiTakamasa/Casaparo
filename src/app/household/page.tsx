@@ -112,16 +112,16 @@ const Household = () => {
 
     const fetchHouseholds = useCallback(async () => {
         const households = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
-        setHouseholds(households || [])
+        setHouseholds(households.data || [])
     }, [householdYear, householdMonth])
     const fetchIsCompleted = useCallback(async () => {
             const res = await client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
-            if (res !== null) {
-                setIsCompleted(res.is_completed)
-                if (res.is_completed === 1) {
+            if (res.data) {
+                setIsCompleted(res.data.is_completed)
+                if (res.data.is_completed === 1) {
                     const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/completed_household/monthly_summary/${householdYear}`)
-                    if (expenses !== null) {
-                        setExpense(expenses.filter((expense) => expense.month === householdMonth))
+                    if (expenses.data) {
+                        setExpense(expenses.data.filter((expense) => expense.month === householdMonth))
                     }
                 }
             }
@@ -136,7 +136,7 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        const res = await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
+        await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
         await fetchHouseholds()
     }
     const updateHousehold = async () => {
@@ -150,12 +150,12 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        const res = await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
+        await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
         await fetchHouseholds()
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
+        await client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
         await fetchHouseholds()
     }
     const calculateBillingAmount = useCallback(() => {
@@ -180,7 +180,7 @@ const Household = () => {
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
-        const res = await client.post<CompletedHouseholdData>('/completed_household/create', completedHousehold)
+        await client.post<CompletedHouseholdData>('/completed_household/create', completedHousehold)
         await fetchIsCompleted()
     }
 
@@ -195,185 +195,185 @@ const Household = () => {
 
 
     return (
-    <MonthProvider month={householdMonth} setMonth={setHouseholdMonth} setYear={setHouseholdYear}>
-        <h1 className="text-2xl font-bold mc-4">⚪️ 家計簿 ⚪️</h1>
+        <MonthProvider month={householdMonth} setMonth={setHouseholdMonth} setYear={setHouseholdYear}>
+            <h1 className="text-2xl font-bold mc-4">⚪️ 家計簿 ⚪️</h1>
 
-        <YearProvider year={householdYear} setYear={setHouseholdYear}>
-            <YearPicker />
-        </YearProvider>
+            <YearProvider year={householdYear} setYear={setHouseholdYear}>
+                <YearPicker />
+            </YearProvider>
 
-        <div className="container mx-auto p-4">
-            {!isCompleted &&
-            <button
-                className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
-                onClick={handleOpenAddDialog}
-            >
-                登録
-            </button>
-            }
-            <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
-            {intToBool(isCompleted) &&
-            <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                <div className="mt-1">
-                    <CheckBadgeIcon/>
+            <div className="container mx-auto p-4">
+                {!isCompleted &&
+                <button
+                    className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
+                    onClick={handleOpenAddDialog}
+                >
+                    登録
+                </button>
+                }
+                <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
+                {intToBool(isCompleted) &&
+                <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                    <div className="mt-1">
+                        <CheckBadgeIcon/>
+                    </div>
+                    清算済み
                 </div>
-                清算済み
-            </div>
-            }
-            {!intToBool(isCompleted) &&
-            (householdYear < year ||
-            (householdYear === year && householdMonth < month) ||
-            (householdYear === year && householdMonth === month && today >= 25)) &&
-            <div className="flex justify-center">
-            <button
-                className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
-                onClick={handleAddCompletedHousehold}
-            >
-                確定
-            </button>
-            </div>
-            }
+                }
+                {!intToBool(isCompleted) &&
+                (householdYear < year ||
+                (householdYear === year && householdMonth < month) ||
+                (householdYear === year && householdMonth === month && today >= 25)) &&
+                <div className="flex justify-center">
+                <button
+                    className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
+                    onClick={handleAddCompletedHousehold}
+                >
+                    確定
+                </button>
+                </div>
+                }
 
-            {showDialog && (
-                <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-4 rounded">
-                        <div className="flex flex-col space-y-4 mb-4">
-                            <input
-                                className="border p-2 text-black"
-                                type="text"
-                                placeholder="項目"
-                                value={newItemName}
-                                onChange={(e) => setNewItemName(e.target.value)}
-                            />
-                            {newItemNameValidMsg !== "" && <div className="text-sm text-red-500">{newItemNameValidMsg}</div>}
-                            <input
-                                className="border p-2 text-black"
-                                type="text"
-                                placeholder="金額"
-                                value={newAmount}
-                                onChange={(e) => setNewAmount(e.target.value)}
-                            />
-                            {newAmountValidMsg !== "" && <div className="text-sm text-red-500">{newAmountValidMsg}</div>}
-                            <label className="flex items-center space-x-2 text-black">
+                {showDialog && (
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-4 rounded">
+                            <div className="flex flex-col space-y-4 mb-4">
                                 <input
-                                    type="checkbox"
-                                    checked={isDefault}
-                                    onChange={handleSetIsDefault}            
+                                    className="border p-2 text-black"
+                                    type="text"
+                                    placeholder="項目"
+                                    value={newItemName}
+                                    onChange={(e) => setNewItemName(e.target.value)}
                                 />
-                                <span>デフォルト値に設定</span>
-                            </label>
-                            <div className="text-black">登録者</div>
-                            <div className="text-3xl text-center">
+                                {newItemNameValidMsg !== "" && <div className="text-sm text-red-500">{newItemNameValidMsg}</div>}
                                 <input
-                                    type="radio"
-                                    value="1"
-                                    checked={isOwner === 1}
-                                    onChange={e => setIsOwner(Number(e.target.value))}
+                                    className="border p-2 text-black"
+                                    type="text"
+                                    placeholder="金額"
+                                    value={newAmount}
+                                    onChange={(e) => setNewAmount(e.target.value)}
+                                />
+                                {newAmountValidMsg !== "" && <div className="text-sm text-red-500">{newAmountValidMsg}</div>}
+                                <label className="flex items-center space-x-2 text-black">
+                                    <input
+                                        type="checkbox"
+                                        checked={isDefault}
+                                        onChange={handleSetIsDefault}            
                                     />
-                                    <span className="mr-8">🥺</span>
-                                <input
-                                    type="radio"
-                                    value="0"
-                                    checked={isOwner === 0}
-                                    onChange={e => setIsOwner(Number(e.target.value))}
-                                    />
-                                    <span>🥺ྀི</span>
+                                    <span>デフォルト値に設定</span>
+                                </label>
+                                <div className="text-black">登録者</div>
+                                <div className="text-3xl text-center">
+                                    <input
+                                        type="radio"
+                                        value="1"
+                                        checked={isOwner === 1}
+                                        onChange={e => setIsOwner(Number(e.target.value))}
+                                        />
+                                        <span className="mr-8">🥺</span>
+                                    <input
+                                        type="radio"
+                                        value="0"
+                                        checked={isOwner === 0}
+                                        onChange={e => setIsOwner(Number(e.target.value))}
+                                        />
+                                        <span>🥺ྀི</span>
+                                </div>
+                            </div>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
+                                    disabled={newItemName == "" || newAmount == ""}
+                                >
+                                    {isUpdate ? "変更" : "登録"}
+                                </button>
+                                <button
+                                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={handleCloseDialog}
+                                >
+                                    キャンセル
+                                </button>
                             </div>
                         </div>
-                        <div className="flex justify-end space-x-4">
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
-                                disabled={newItemName == "" || newAmount == ""}
-                            >
-                                {isUpdate ? "変更" : "登録"}
-                            </button>
-                            <button
-                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={handleCloseDialog}
-                            >
-                                キャンセル
-                            </button>
-                        </div>
+                    </div>
+                )}
+                {isCompleted ?
+                <div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense.map(e => (formatNumberWithCommas(e.billing_amount)))}</div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense.map(e => (formatNumberWithCommas(e.total_amount)))}</div>
+                    <div className="flex justify-center">
+                        <button
+                            className="text-white"
+                            onClick={handleSetShowDetail}
+                        >
+                            {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
+                        </button>
+                    </div>
+                    {showDetail && <div className="text-center">{expense.map(e => `${e.detail?.name}: ${e.detail?.amount}円`)}</div>}
+                    <div className="flex justify-center mt-4">
+                        <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
+                            <ArrowRightStartToIcon />
+                            各月の家計簿の推移
+                        </Link>
                     </div>
                 </div>
-            )}
-            {isCompleted ?
-            <div>
-                <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense.map(e => (formatNumberWithCommas(e.billing_amount)))}</div>
-                <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense.map(e => (formatNumberWithCommas(e.total_amount)))}</div>
-                <div className="flex justify-center">
-                    <button
-                        className="text-white"
-                        onClick={handleSetShowDetail}
-                    >
-                        {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
-                    </button>
-                </div>
-                {showDetail && <div className="text-center">{expense.map(e => `${e.detail?.name}: ${e.detail?.amount}円`)}</div>}
-                <div className="flex justify-center mt-4">
-                    <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
-                        <ArrowRightStartToIcon />
-                        各月の家計簿の推移
-                    </Link>
-                </div>
-            </div>
-            :
-            <table className="table-auto min-w-full mt-4">
-                <thead>
-                    <tr>
-                        <th className="border-b-2 py-1 bg-blue-900"></th>
-                        <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">項目</th>
-                        <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">金額</th>
-                        <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">登録者</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {households.map((household, i) => (
-                        <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
-                            <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                <button
-                                    className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
-                                    onClick={() => handleOpenUpdateDialog({
-                                        id: household.id,
-                                        name: household.name,
-                                        amount: household.amount,
-                                        is_default: household.is_default,
-                                        is_owner: household.is_owner,
-                                        version: household.version
-                                    })}
-                                >
-                                    <PencilIcon />
-                                </button>
-                                <button
-                                    className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
-                                    onClick={() => deleteHousehold({
-                                        id: household.id,
-                                        name: household.name,
-                                        amount: household.amount,
-                                        is_default: household.is_default,
-                                        is_owner: household.is_owner,
-                                        version: household.version
-                                    })}
-                                >
-                                    <TrashBoxIcon />
-                                </button>
-                            </td>
-                            <td className="border-b px-1 py-1 text-center">{household.name}</td>
-                            <td className="border-b px-1 py-1 text-right">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
-                            <td className="border-b px-1 py-1 text-center w-24">{setUser(household.is_owner)}</td>  
+                :
+                <table className="table-auto min-w-full mt-4">
+                    <thead>
+                        <tr>
+                            <th className="border-b-2 py-1 bg-blue-900"></th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">項目</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">金額</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">登録者</th>
                         </tr>
-                    ))}
-                </tbody>
-                <tfoot>
-                    <td className="border-b"></td>
-                    <td className="border-b px-2 py-1 text-center font-bold">清算金額</td>
-                    <td className="border-b px-4 py-2 text-xl text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
-                </tfoot>
-            </table>
-            }
-        </div>
-    </MonthProvider>
+                    </thead>
+                    <tbody>
+                        {households.map((household, i) => (
+                            <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
+                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                    <button
+                                        className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                        onClick={() => handleOpenUpdateDialog({
+                                            id: household.id,
+                                            name: household.name,
+                                            amount: household.amount,
+                                            is_default: household.is_default,
+                                            is_owner: household.is_owner,
+                                            version: household.version
+                                        })}
+                                    >
+                                        <PencilIcon />
+                                    </button>
+                                    <button
+                                        className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
+                                        onClick={() => deleteHousehold({
+                                            id: household.id,
+                                            name: household.name,
+                                            amount: household.amount,
+                                            is_default: household.is_default,
+                                            is_owner: household.is_owner,
+                                            version: household.version
+                                        })}
+                                    >
+                                        <TrashBoxIcon />
+                                    </button>
+                                </td>
+                                <td className="border-b px-1 py-1 text-center">{household.name}</td>
+                                <td className="border-b px-1 py-1 text-right">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
+                                <td className="border-b px-1 py-1 text-center w-24">{setUser(household.is_owner)}</td>  
+                            </tr>
+                        ))}
+                    </tbody>
+                    <tfoot>
+                        <td className="border-b"></td>
+                        <td className="border-b px-2 py-1 text-center font-bold">清算金額</td>
+                        <td className="border-b px-4 py-2 text-xl text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
+                    </tfoot>
+                </table>
+                }
+            </div>
+        </MonthProvider>
     )
 }
 

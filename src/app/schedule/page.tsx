@@ -300,7 +300,7 @@ const Schedule = () => {
     }
     const fetchSchedules = useCallback(async () => {
         const schedules = await client.get<ScheduleResponse>(`/schedule`)
-        setSchedules(schedules || [])
+        setSchedules(schedules.data || [])
     }, [])
     const addSchedule = async () => {
         const addScheduleData = {
@@ -317,12 +317,12 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        const res = await client.post<ScheduleResponse>('/schedule/create', addScheduleData)
+        await client.post<ScheduleResponse>('/schedule/create', addScheduleData)
         await fetchSchedules()
     }
     const fetchLabels = async () => {
         const labels = await client.get<LabelResponse>("/label")
-        setLabels(labels || [])
+        setLabels(labels.data || [])
     }
     const updateSchedule = async () => {
         const updateSchedule = {
@@ -340,12 +340,12 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        const res = await client.post<ScheduleResponse>('/schedule/update', updateSchedule)
+        await client.post<ScheduleResponse>('/schedule/update', updateSchedule)
         await fetchSchedules()
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.post<ScheduleResponse>('/schedule/delete', deletedScheduleData)
+        await client.post<ScheduleResponse>('/schedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
@@ -383,7 +383,7 @@ const Schedule = () => {
     }, [])
     const fetchAnniversaries = useCallback(async () => {
         const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
-        setAnniversaries(anniversaries || [])
+        setAnniversaries(anniversaries.data || [])
     }, [])
 
     useEffect(() => {
@@ -404,80 +404,41 @@ const Schedule = () => {
     }, [scheduleYear, scheduleMonth])
 
     return (
-    <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth} setYear={setScheduleYear}>
-        <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
+        <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth} setYear={setScheduleYear}>
+            <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
 
-        <YearProvider year={scheduleYear} setYear={setScheduleYear}>
-            <YearPicker />
-        </YearProvider>
+            <YearProvider year={scheduleYear} setYear={setScheduleYear}>
+                <YearPicker />
+            </YearProvider>
 
-        <div className="container mx-auto p-4">
-            <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                onClick={handleOpenAddDialog}
-            >
-            登録
-            </button>
-            <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
+            <div className="container mx-auto p-4">
+                <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                    onClick={handleOpenAddDialog}
+                >
+                登録
+                </button>
+                <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
 
-            {showDialog && (
-                <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-4 rounded">
-                        <div className="flex flex-col space-y-4 mb-4">
-                            <input
-                                className="border p-2 text-black"
-                                type="text"
-                                placeholder="予定"
-                                value={description}
-                                onChange={e => setDescription(e.target.value)}
-                            />
-                            {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
-                            <div className="flex justify-center">
-                            <label className="text-black">
-                                <span>年{isMultipleDays && '(開始年)'}</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={fromYear}
-                                    onChange={e => setFromYear(Number(e.target.value))}
-                                >
-                                    <option value={year - 1}>{`${year - 1}年`}</option>
-                                    <option value={year}>{`${year}年`}</option>
-                                    <option value={year + 1}>{`${year + 1}年`}</option>
-                                </select>
-                            </label>
-                            <label className="text-black">
-                                <span>月{isMultipleDays && '(開始月)'}</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={fromMonth}
-                                    onChange={e => setFromMonth(Number(e.target.value))}
-                                >
-                                    {getMonthArray().map((m, i) => (
-                                        <option key={i} value={m}>{`${m}月`}</option>
-                                ))}
-                                </select>
-                            </label>
-                            <label className="text-black">
-                                <span>日付{isMultipleDays && '(開始日)'}</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={fromDate}
-                                    onChange={e => setFromDate(Number(e.target.value))}
-                                >
-                                    {monthDaysArray.map((d, i) => (
-                                        <option key={i} value={d}>{`${d}日(${getWeekDay(fromYear, fromMonth, d)})`}</option>
-                                ))}
-                                </select>
-                            </label>
-                            </div>
-                            {isMultipleDays &&
-                            <div className="flex justify-center">
+                {showDialog && (
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-4 rounded">
+                            <div className="flex flex-col space-y-4 mb-4">
+                                <input
+                                    className="border p-2 text-black"
+                                    type="text"
+                                    placeholder="予定"
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                />
+                                {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
+                                <div className="flex justify-center">
                                 <label className="text-black">
-                                    <span>年(終了年)</span>
+                                    <span>年{isMultipleDays && '(開始年)'}</span>
                                     <select
                                         className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                        value={toYear}
-                                        onChange={e => setToYear(Number(e.target.value))}
+                                        value={fromYear}
+                                        onChange={e => setFromYear(Number(e.target.value))}
                                     >
                                         <option value={year - 1}>{`${year - 1}年`}</option>
                                         <option value={year}>{`${year}年`}</option>
@@ -485,11 +446,11 @@ const Schedule = () => {
                                     </select>
                                 </label>
                                 <label className="text-black">
-                                    <span>月(終了月)</span>
+                                    <span>月{isMultipleDays && '(開始月)'}</span>
                                     <select
                                         className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                        value={toMonth}
-                                        onChange={e => setToMonth(Number(e.target.value))}
+                                        value={fromMonth}
+                                        onChange={e => setFromMonth(Number(e.target.value))}
                                     >
                                         {getMonthArray().map((m, i) => (
                                             <option key={i} value={m}>{`${m}月`}</option>
@@ -497,152 +458,191 @@ const Schedule = () => {
                                     </select>
                                 </label>
                                 <label className="text-black">
-                                    <span>日付(終了日)</span>
+                                    <span>日付{isMultipleDays && '(開始日)'}</span>
                                     <select
                                         className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                        value={toDate}
-                                        onChange={e => setToDate(Number(e.target.value))}
+                                        value={fromDate}
+                                        onChange={e => setFromDate(Number(e.target.value))}
                                     >
                                         {monthDaysArray.map((d, i) => (
-                                            <option key={i} value={d}>{`${d}日(${getWeekDay(toYear, toMonth, d)})`}</option>
+                                            <option key={i} value={d}>{`${d}日(${getWeekDay(fromYear, fromMonth, d)})`}</option>
                                     ))}
                                     </select>
                                 </label>
-                            </div>
-                            }
-                            {yearValidMsg !== "" && <div className="text-sm text-red-500">{yearValidMsg}</div>}
-                            {monthValidMsg !== "" && <div className="text-sm text-red-500">{monthValidMsg}</div>}
-                            {dateValidMsg !== "" && <div className="text-sm text-red-500">{dateValidMsg}</div>}
-                            <label className="flex items-center space-x-2 text-black">
-                                <input
-                                    type="checkbox"
-                                    checked={isMultipleDays}
-                                    onChange={handleIsMultipleDays}
-                                />
-                                <span>複数日付を選択</span>
-                            </label>
-                            <div className="flex justify-center">
-                                <label className="text-black mx-1">
-                                <span>時刻(開始)</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={fromTime}
-                                    onChange={e => setFromTime(e.target.value)}
-                                >
-                                    {getTimeArray().map((t, i) => (
-                                        <option key={i} value={t}>{t}</option>
-                                    ))}
-                                </select>
-                                </label>
-                                <label className="text-black mx-1">
-                                <span>時刻(終了)</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={toTime}
-                                    onChange={e => setToTime(e.target.value)}
-                                >
-                                    {getTimeArray().map((t, i) => (
-                                        <option key={i} value={t}>{t}</option>
-                                    ))}
-                                </select>
-                                </label>
-                            </div>
-                            <div className="text-black">作成者</div>
-                            <div className="text-3xl text-center">
-                                <input
-                                    type="radio"
-                                    value="1"
-                                    checked={createdBy === 1}
-                                    onChange={e => setCreatedBy(Number(e.target.value))}
+                                </div>
+                                {isMultipleDays &&
+                                <div className="flex justify-center">
+                                    <label className="text-black">
+                                        <span>年(終了年)</span>
+                                        <select
+                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                            value={toYear}
+                                            onChange={e => setToYear(Number(e.target.value))}
+                                        >
+                                            <option value={year - 1}>{`${year - 1}年`}</option>
+                                            <option value={year}>{`${year}年`}</option>
+                                            <option value={year + 1}>{`${year + 1}年`}</option>
+                                        </select>
+                                    </label>
+                                    <label className="text-black">
+                                        <span>月(終了月)</span>
+                                        <select
+                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                            value={toMonth}
+                                            onChange={e => setToMonth(Number(e.target.value))}
+                                        >
+                                            {getMonthArray().map((m, i) => (
+                                                <option key={i} value={m}>{`${m}月`}</option>
+                                        ))}
+                                        </select>
+                                    </label>
+                                    <label className="text-black">
+                                        <span>日付(終了日)</span>
+                                        <select
+                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                            value={toDate}
+                                            onChange={e => setToDate(Number(e.target.value))}
+                                        >
+                                            {monthDaysArray.map((d, i) => (
+                                                <option key={i} value={d}>{`${d}日(${getWeekDay(toYear, toMonth, d)})`}</option>
+                                        ))}
+                                        </select>
+                                    </label>
+                                </div>
+                                }
+                                {yearValidMsg !== "" && <div className="text-sm text-red-500">{yearValidMsg}</div>}
+                                {monthValidMsg !== "" && <div className="text-sm text-red-500">{monthValidMsg}</div>}
+                                {dateValidMsg !== "" && <div className="text-sm text-red-500">{dateValidMsg}</div>}
+                                <label className="flex items-center space-x-2 text-black">
+                                    <input
+                                        type="checkbox"
+                                        checked={isMultipleDays}
+                                        onChange={handleIsMultipleDays}
                                     />
-                                    <span className="mr-8">🥺</span>
-                                <input
-                                    type="radio"
-                                    value="0"
-                                    checked={createdBy === 0}
-                                    onChange={e => setCreatedBy(Number(e.target.value))}
-                                    />
-                                    <span>🥺ྀི</span>
-                            </div>
-                            <div>
-                                <label className="text-black">
-                                <span>ラベル(任意)</span>
-                                <select
-                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                    value={labelId}
-                                    onChange={e => setLabelId(Number(e.target.value))}
-                                >
-                                    <option value={0}>ラベルを選択</option>
-                                    {labels.map((l, i) => (
-                                        <option key={i} value={l.id}>{`${l.label} ${l.name}`}</option>
-                                    ))}
-                                </select>
+                                    <span>複数日付を選択</span>
                                 </label>
+                                <div className="flex justify-center">
+                                    <label className="text-black mx-1">
+                                    <span>時刻(開始)</span>
+                                    <select
+                                        className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                        value={fromTime}
+                                        onChange={e => setFromTime(e.target.value)}
+                                    >
+                                        {getTimeArray().map((t, i) => (
+                                            <option key={i} value={t}>{t}</option>
+                                        ))}
+                                    </select>
+                                    </label>
+                                    <label className="text-black mx-1">
+                                    <span>時刻(終了)</span>
+                                    <select
+                                        className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                        value={toTime}
+                                        onChange={e => setToTime(e.target.value)}
+                                    >
+                                        {getTimeArray().map((t, i) => (
+                                            <option key={i} value={t}>{t}</option>
+                                        ))}
+                                    </select>
+                                    </label>
+                                </div>
+                                <div className="text-black">作成者</div>
+                                <div className="text-3xl text-center">
+                                    <input
+                                        type="radio"
+                                        value="1"
+                                        checked={createdBy === 1}
+                                        onChange={e => setCreatedBy(Number(e.target.value))}
+                                        />
+                                        <span className="mr-8">🥺</span>
+                                    <input
+                                        type="radio"
+                                        value="0"
+                                        checked={createdBy === 0}
+                                        onChange={e => setCreatedBy(Number(e.target.value))}
+                                        />
+                                        <span>🥺ྀི</span>
+                                </div>
+                                <div>
+                                    <label className="text-black">
+                                    <span>ラベル(任意)</span>
+                                    <select
+                                        className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                        value={labelId}
+                                        onChange={e => setLabelId(Number(e.target.value))}
+                                    >
+                                        <option value={0}>ラベルを選択</option>
+                                        {labels.map((l, i) => (
+                                            <option key={i} value={l.id}>{`${l.label} ${l.name}`}</option>
+                                        ))}
+                                    </select>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex justify-center space-x-4">
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={isUpdate ? handleUpdateSchedule : handleAddSchedule}
-                            >
-                                {isUpdate ? "変更" : "登録"}
-                            </button>
-                            <button
-                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={handleCloseDialog}
-                            >
-                                キャンセル
-                            </button>
-                            {isUpdate && 
+                            <div className="flex justify-center space-x-4">
                                 <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
-                                    onClick={handleDeleteSchedule}
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={isUpdate ? handleUpdateSchedule : handleAddSchedule}
                                 >
-                                    <TrashBoxIcon />
+                                    {isUpdate ? "変更" : "登録"}
                                 </button>
-                            }
+                                <button
+                                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={handleCloseDialog}
+                                >
+                                    キャンセル
+                                </button>
+                                {isUpdate && 
+                                    <button
+                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
+                                        onClick={handleDeleteSchedule}
+                                    >
+                                        <TrashBoxIcon />
+                                    </button>
+                                }
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            <div className="flex justify-center">
-                <button
-                    className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${activeTab === 'month' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
-                    onClick={() => setActiveTab('month')}
-                >
-                    月
-                </button>
-                <button
-                    className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${!(year === scheduleYear && month === scheduleMonth) && 'opacity-50 cursor-not-allowed'} ${activeTab === 'week' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
-                    onClick={() => setActiveTab('week')}
-                    disabled={!(year === scheduleYear && month === scheduleMonth)}
-                >
-                    週
-                </button>
+                <div className="flex justify-center">
+                    <button
+                        className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${activeTab === 'month' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
+                        onClick={() => setActiveTab('month')}
+                    >
+                        月
+                    </button>
+                    <button
+                        className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${!(year === scheduleYear && month === scheduleMonth) && 'opacity-50 cursor-not-allowed'} ${activeTab === 'week' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
+                        onClick={() => setActiveTab('week')}
+                        disabled={!(year === scheduleYear && month === scheduleMonth)}
+                    >
+                        週
+                    </button>
+                </div>
+                    <table className="table-auto min-w-full mt-4">
+                        <thead>
+                            <tr>
+                                <th className="border-b-2 py-1 bg-blue-900">日付</th>
+                                <th className="border-b-2 py-1 bg-blue-900">予定</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {activeTab === "month" && monthDaysArray.map((d, i) => (
+                                <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && today === d && "bg-gray-500"}`}>
+                                    {getCalendar(scheduleYear, scheduleMonth, d)}
+                                </tr>
+                            ))}
+                            {activeTab === "week" && weekDaysArray.map((d, i) => (
+                                <tr key={i} className={`${today === d && "bg-gray-500"}`}>
+                                    {getCalendar(scheduleYear, scheduleMonth, d)}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
             </div>
-                <table className="table-auto min-w-full mt-4">
-                    <thead>
-                        <tr>
-                            <th className="border-b-2 py-1 bg-blue-900">日付</th>
-                            <th className="border-b-2 py-1 bg-blue-900">予定</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {activeTab === "month" && monthDaysArray.map((d, i) => (
-                            <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && today === d && "bg-gray-500"}`}>
-                                {getCalendar(scheduleYear, scheduleMonth, d)}
-                            </tr>
-                        ))}
-                        {activeTab === "week" && weekDaysArray.map((d, i) => (
-                            <tr key={i} className={`${today === d && "bg-gray-500"}`}>
-                                {getCalendar(scheduleYear, scheduleMonth, d)}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-        </div>
-    </MonthProvider>
+        </MonthProvider>
     )
 }
 
