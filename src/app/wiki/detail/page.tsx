@@ -26,8 +26,8 @@ const WikiDetail = () => {
 
     const fetchWikiDetail = useCallback(async () => {
         const res = await client.get<WikiData>(`/wiki/${id}`)
-        if (res !== null) {
-            setWikiDetail(res)
+        if (res.data) {
+            setWikiDetail(res.data)
         }
     }, [id]) 
 

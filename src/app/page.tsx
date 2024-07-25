@@ -35,19 +35,20 @@ export default function Home() {
 
   const fetchFixedAmount = useCallback(async () => {
       const fixedAmount = await client.get<FixedAmount>(`/household/fixed_amount/${year}/${month}`)
-      if (fixedAmount !== null) {
-        setTotalAmount(fixedAmount.total_amount)
-        setBillingAmount(fixedAmount.billing_amount)
+      if (fixedAmount.data) {
+        console.log(fixedAmount.data)
+        setTotalAmount(fixedAmount.data.total_amount)
+        setBillingAmount(fixedAmount.data.billing_amount)
         setIsLoading(false)
       }
   }, [year, month])
   const fetchSchedules = useCallback(async () => {
     const schedules = await client.get<ScheduleResponse>(`/schedule/today_or_tomorrow/${year}/${month}/${currentDate}`)
-    setSchedules(schedules || [])
+    setSchedules(schedules.data || [])
   }, [year, month, currentDate])
   const fetchAnniversaries = useCallback(async() => {
     const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
-    setAnniversaries(anniversaries || [])
+    setAnniversaries(anniversaries.data || [])
   }, [])
 
    useEffect(() => {

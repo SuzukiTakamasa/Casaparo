@@ -95,7 +95,7 @@ const Setting = () => {
     }
     const fetchLabels = useCallback(async () => {
         const labels = await client.get<LabelResponse>("/label")
-        setLabels(labels || [])
+        setLabels(labels.data || [])
     }, [])
     const addlabels = async () => {
         const addedLabelData = {
@@ -103,7 +103,7 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        const res = await client.post<LabelResponse>('/label/create', addedLabelData)
+        await client.post<LabelResponse>('/label/create', addedLabelData)
         await fetchLabels()
     }
     const updateLabels = async () => {
@@ -113,12 +113,12 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        const res = await client.post<LabelResponse>('/label/update', updatedLabelData)
+        await client.post<LabelResponse>('/label/update', updatedLabelData)
         await fetchLabels()
     }
     const deleteLabel = async (deleteLabelData: LabelData) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.post<LabelResponse>('/label/delete', deleteLabelData)
+        await client.post<LabelResponse>('/label/delete', deleteLabelData)
         await fetchLabels()
     }
 
@@ -160,7 +160,7 @@ const Setting = () => {
 
     const fetchAnniversaries = useCallback(async () => {
         const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
-        setAnniversaries(anniversaries || [])
+        setAnniversaries(anniversaries.data || [])
     }, [])
     const addAnniversary = async () => {
         const addAnniversaryData = {
@@ -169,7 +169,7 @@ const Setting = () => {
             description: anniversaryDescription,
             version: anniversaryVersion
         }
-        const res = await client.post<AnniversaryResponse>('/anniversary/create', addAnniversaryData)
+        await client.post<AnniversaryResponse>('/anniversary/create', addAnniversaryData)
         await fetchAnniversaries()
     }
     const UpdateAnniversary = async () => {
@@ -180,12 +180,12 @@ const Setting = () => {
             description: anniversaryDescription,
             version: anniversaryVersion
         }
-        const res = await client.post<AnniversaryResponse>('/anniversary/update', updateAnniversaryData)
+        await client.post<AnniversaryResponse>('/anniversary/update', updateAnniversaryData)
         await fetchAnniversaries()
     }
     const deleteAnniversary = async (deleteAnniversaryData: AnniversaryData) => {
         if (!window.confirm("削除しますか？")) return
-        const res = await client.post<AnniversaryResponse>('/anniversary/delete', deleteAnniversaryData)
+        await client.post<AnniversaryResponse>('/anniversary/delete', deleteAnniversaryData)
         await fetchAnniversaries()
     }
     
