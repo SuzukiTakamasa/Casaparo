@@ -15,11 +15,24 @@ impl D1WikiRepository {
 #[async_trait]
 impl WikiRepository for D1WikiRepository {
     async fn get_wikis(&self) -> Result<Vec<Wikis>, Error> {
-
+        let query = self.d1.prepare("select * from wikis order by id desc");
+        let result = match query.all().await {
+            Ok(res) => res,
+            Err(e) => e
+        };
+        match result.results::<Wikis>() {
+            Ok(wikis) => wikis,
+            Err(e) => e
+        }
     }
 
     async fn get_wiki_by_id(&self, id: u32) -> Result<Wikis, Error> {
-
+        let statement = self.d1.prepare("select * from wikis where id = ?1");
+        let query = statement.bind(&[id.into()])?;
+        match query.first::<Wikis>(None).await {
+            Ok(wiki_detail) => wiki_detail,
+            Err(e) => e
+        }
     }
 
     async fn create_wiki(&self, wiki: &Wikis) -> Result<(), Error> {
