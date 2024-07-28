@@ -30,7 +30,7 @@ impl WikiRepository for D1WikiRepository {
 
     }
 
-    async fn delete_wiki(&self, wiki: &wiki) -> Result<(), Error> {
+    async fn delete_wiki(&self, wiki: &Wikis) -> Result<(), Error> {
 
     }
 }

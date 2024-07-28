@@ -5,7 +5,7 @@ pub struct WikiUsecases<R: WikiRepository> {
     repository: R,
 }
 
-impl<R: WikiRepository> WikiRrepository<R> {
+impl<R: WikiRepository> WikiRepository<R> {
     pub fn new(repository: R) -> Self {
         Self { repository }
     }
@@ -15,18 +15,18 @@ impl<R: WikiRepository> WikiRrepository<R> {
     }
 
     pub async fn get_wiki_by_id(&self, id: u32) -> Result<Wikis: Error> {
-
+        self.repository.get_wiki_by_id(id).await
     }
 
     pub async fn create_wiki(&self, wiki: &Wikis) -> Result<(), Error> {
         self.repository.create_wiki(wiki).await
     }
 
-    pub async fn update_wiki(&self, wiki: &wasiki) -> Result<(), Error> {
+    pub async fn update_wiki(&self, wiki: &Wikis) -> Result<(), Error> {
         self.repository.updatewiki(wiki).await
     }
 
-    pub async fn delete_wiki(&self, wiki: &Wiki) -> Result<(), Error> {
+    pub async fn delete_wiki(&self, wiki: &Wikis) -> Result<(), Error> {
         self.repository.delte(wiki.id).await
     }
 }
