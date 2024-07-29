@@ -71,6 +71,7 @@ const Household = () => {
         handleCloseDialog()
     }
     const handleUpdateHousehold = async () => {
+        if (!validate) return
         await updateHousehold()
         handleCloseDialog()
     }

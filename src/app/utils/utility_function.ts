@@ -8,7 +8,16 @@ export const formatNumberWithCommas = (number: number): string => {
 }
 
 export const setUser = (userInt: number): string => {
-    return userInt ? "🥺" : "🥺ྀི"
+    switch (userInt) {
+        case 2:
+            return "🥺🥺ྀི"
+        case 1:
+            return "🥺"
+        case 0:
+            return "🥺ྀི"
+        default:
+            return "Invalid user"
+    }
 }
 
 export const getCurrentDateTime = (): string => {

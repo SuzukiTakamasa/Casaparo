@@ -65,6 +65,7 @@ const Setting = () => {
         handleCloseLabelDialog()
     }
     const handleUpdateLabel = async () => {
+        if (!validateLabel) return
         await updateLabels()
         handleCloseLabelDialog()
     }
