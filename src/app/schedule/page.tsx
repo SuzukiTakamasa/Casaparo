@@ -38,6 +38,7 @@ const Schedule = () => {
     const [yearValidMsg, setYearValidMsg] = useState("")
     const [monthValidMsg, setMonthValidMsg] = useState("")
     const [dateValidMsg, setDateValidMsg] = useState("")
+    const [createdByValidMsg, setCreatedByValidMsg] = useState("")
 
     const { month } = useContext(MonthContext)
     const [scheduleMonth, setScheduleMonth] = useState(month)
@@ -60,7 +61,9 @@ const Schedule = () => {
     const [toDate, setToDate] = useState(today)
     const [fromTime, setFromTime] = useState("0:00")
     const [toTime, setToTime] = useState("0:00")
-    const [createdBy, setCreatedBy] = useState(1)
+    const [createdByT, setCreatedByT] = useState(false)
+    const [createdByY, setCreatedByY] = useState(false)
+    const [createdBy, setCreatedBy] = useState<number|null>(null)
     const [labelId, setLabelId] = useState(0)
     const [version, setVersion] = useState(1)
 
@@ -211,7 +214,38 @@ const Schedule = () => {
             isValid = false
             setDateValidMsg("終了日は開始日より後の日付を選択してください。")
         }
+        if (createdBy === null && !createdByT && !createdByY) {
+            isValid = false
+            setCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
+        }
         return isValid
+    }
+    const handleSetCreatedBy = useCallback(() => {
+        if (createdByT && createdByY) {
+            return 2
+        } else if (createdByT && !createdByY) {
+            return 1
+        } else if (!createdByT && createdByY) {
+            return 0
+        }
+        return null
+    }, [createdByT, createdByY])
+    const handleSetCreatedByTAndR = (value: number) => {
+        setCreatedBy(value)
+        switch (value) {
+            case 2:
+                setCreatedByT(true)
+                setCreatedByY(true)
+                break
+            case 1:
+                setCreatedByT(true)
+                setCreatedByY(false)
+                break
+            case 0:
+                setCreatedByT(false)
+                setCreatedByY(true)
+                break
+        }
     }
     const handleAddSchedule = async () => {
         if (!validate()) return
@@ -219,6 +253,7 @@ const Schedule = () => {
         handleCloseDialog()
     }
     const handleUpdateSchedule = async () => {
+        if (!validate()) return
         await updateSchedule()
         handleCloseDialog()
     }
@@ -234,7 +269,7 @@ const Schedule = () => {
             to_date: toDate,
             from_time: fromTime,
             to_time: toTime,
-            created_by: createdBy,
+            created_by: createdBy as number,
             label_id: labelId,
             version: version
         })
@@ -263,7 +298,7 @@ const Schedule = () => {
         setToDate(to_date)
         setFromTime(from_time)
         setToTime(to_time)
-        setCreatedBy(created_by)
+        handleSetCreatedByTAndR(created_by)
         setLabelId(label_id)
         setVersion(version)
         setIsUpdate(true)
@@ -285,7 +320,9 @@ const Schedule = () => {
         setToDate(today)
         setFromTime("0:00")
         setToTime("0:00")
-        setCreatedBy(1)
+        setCreatedByT(false)
+        setCreatedByY(false)
+        setCreatedBy(null)
         setLabelId(0)
         setVersion(1)
         setIsUpdate(false)
@@ -294,6 +331,7 @@ const Schedule = () => {
         setMonthValidMsg("")
         setDateValidMsg("")
         setDescriptionValidMsg("")
+        setCreatedByValidMsg("")
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
@@ -313,7 +351,7 @@ const Schedule = () => {
             to_date: isMultipleDays ? toDate : fromDate,
             from_time: fromTime,
             to_time: toTime,
-            created_by: createdBy,
+            created_by: createdBy as number,
             label_id: labelId,
             version: version
         }
@@ -336,7 +374,7 @@ const Schedule = () => {
             to_date: isMultipleDays ? toDate : fromDate,
             from_time: fromTime,
             to_time: toTime,
-            created_by: createdBy,
+            created_by: createdBy as number,
             label_id: labelId,
             version: version
         }
@@ -396,6 +434,11 @@ const Schedule = () => {
         handleGenerateMonthDaysArray()
         handleGenerateWeekDaysArray()
     }, [handleGenerateMonthDaysArray, handleGenerateWeekDaysArray])
+
+    useEffect(() => {
+        const newCreatedBy = handleSetCreatedBy()
+        setCreatedBy(newCreatedBy)
+    }, [createdByT, createdByY, handleSetCreatedBy])
 
     useEffect(() => {
         if (activeTab === 'week') {
@@ -550,20 +593,19 @@ const Schedule = () => {
                                 <div className="text-black">作成者</div>
                                 <div className="text-3xl text-center">
                                     <input
-                                        type="radio"
-                                        value="1"
-                                        checked={createdBy === 1}
-                                        onChange={e => setCreatedBy(Number(e.target.value))}
+                                        type="checkbox"
+                                        checked={createdByT}
+                                        onClick={() => setCreatedByT(!createdByT)}
                                         />
                                         <span className="mr-8">🥺</span>
                                     <input
-                                        type="radio"
-                                        value="0"
-                                        checked={createdBy === 0}
-                                        onChange={e => setCreatedBy(Number(e.target.value))}
+                                        type="checkbox"
+                                        checked={createdByY}
+                                        onClick={() => setCreatedByY(!createdByY)}
                                         />
                                         <span>🥺ྀི</span>
                                 </div>
+                                {createdByValidMsg !== "" && <div className="text-sm text-red-500">{createdByValidMsg}</div>}
                                 <div>
                                     <label className="text-black">
                                     <span>ラベル(任意)</span>
