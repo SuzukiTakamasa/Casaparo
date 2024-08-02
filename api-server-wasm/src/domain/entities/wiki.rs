@@ -10,3 +10,9 @@ pub struct Wikis {
     pub image_url: Option<String>,
     pub version: u32
 }
+
+impl Wikis {
+    pub fn increment_version(&mut self) {
+        self.version += 1
+    }
+}
