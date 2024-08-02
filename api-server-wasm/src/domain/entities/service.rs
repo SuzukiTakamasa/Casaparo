@@ -4,3 +4,7 @@ use serde::{Deserialize, Serialize};
 pub struct LatestVersion {
     pub version: u32
 }
+
+pub trait EntityManager {
+    fn increment_version(&mut self);
+}

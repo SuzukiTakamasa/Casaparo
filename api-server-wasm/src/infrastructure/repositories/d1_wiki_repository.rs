@@ -1,5 +1,5 @@
 use crate::domain::entities::wiki::Wikis;
-use crate::domain::entities::service::LatestVersion;
+use crate::domain::entities::service::{LatestVersion, EntityManager};
 use crate::domain::repositories::wiki_repository::WikiRepository;
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
