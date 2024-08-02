@@ -3,6 +3,11 @@ use serde_json::from_str;
 
 mod entities;
 
+mod application;
+mod domain;
+mod infrastructure;
+mod interfaces;
+
 
 fn get_db_env(req: &Request) -> Result<String> {
     let header_name = "Environment"; 
