@@ -2,11 +2,14 @@ use worker::*;
 use serde_json::from_str;
 
 mod entities;
-
 mod application;
 mod domain;
 mod infrastructure;
 mod interfaces;
+
+use crate::infrastructure::repositories::d1_wiki_repository::D1WikiRepository;
+use crate::application::usecases::wiki_usecases::WikiUsecases;
+use crate::interfaces::api::wiki_controller::WikiController;
 
 
 fn get_db_env(req: &Request) -> Result<String> {
@@ -37,6 +40,15 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         return Response::empty()
             .map(|resp| resp.with_headers(headers))
     }
+
+    /*
+    For V2
+    let db_str = get_db_env(&req)?;
+    let db = env.d1(db_str.as_str())?;
+    let wiki_repository = D1WikiRepository::new(db);
+    let wiki_usecases = WikiUsecases::new(wiki_repository);
+    let wiki_controller = WikiController::new(wiki_usecases);
+    */
 
     Router::new()
         .get_async("/household/:year/:month", |req, ctx| async move {
