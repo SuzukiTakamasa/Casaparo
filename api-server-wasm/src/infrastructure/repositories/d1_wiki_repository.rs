@@ -61,12 +61,12 @@ impl WikiRepository for D1WikiRepository {
         }
         let statement = self.db.prepare("update wikis set title = ?1, content = ?2, created_by = ?3, updated_at = ?4, image_url = ?5, version = ?6 where id = ?7");
         let query = statement.bind(&[wiki.title.clone().into(),
-                                     wiki.content.clone().into(),
-                                     wiki.created_by.into(),
-                                     wiki.updated_at.clone().into(),
-                                     wiki.image_url.clone().into(),
-                                     wiki.version.into(),
-                                     wiki.id.into()])?;
+                                                          wiki.content.clone().into(),
+                                                          wiki.created_by.into(),
+                                                          wiki.updated_at.clone().into(),
+                                                          wiki.image_url.clone().into(),
+                                                          wiki.version.into(),
+                                                          wiki.id.into()])?;
         query.run().await;
         Ok(())
     }
