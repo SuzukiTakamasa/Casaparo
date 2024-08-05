@@ -15,16 +15,21 @@ impl<R: WikiRepository> WikiController<R> {
     }
 
     pub async fn get_wikis(&self) -> Result<Response> {
-        let result = self.usecases.get_wikis().await?;
+        let result = match self.usecases.get_wikis().await {
+            Ok(wikis) => wikis,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
         return Response::from_json(&result)
     }
 
     pub async fn get_wikis_by_id(&self, ctx: RouteContext<()>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
-        let result = self.usecases.get_wiki_by_id(id_as_u32).await?;
+        let result = match self.usecases.get_wiki_by_id(id_as_u32).await {
+            Ok(wiki) => wiki,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
         return Response::from_json(&result)
-
     }
 
     pub async fn create_wiki(&self, mut req: Request) -> Result<Response> {
