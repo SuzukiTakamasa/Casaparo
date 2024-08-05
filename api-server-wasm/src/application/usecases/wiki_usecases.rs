@@ -2,6 +2,7 @@ use crate::domain::entities::wiki::Wikis;
 use crate::domain::repositories::wiki_repository::WikiRepository;
 use worker::Result;
 
+
 pub struct WikiUsecases<R: WikiRepository> {
     repository: R,
 }
