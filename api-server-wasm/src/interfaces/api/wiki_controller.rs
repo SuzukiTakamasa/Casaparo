@@ -3,7 +3,7 @@ use crate::domain::entities::wiki::Wikis;
 use crate::domain::repositories::wiki_repository::WikiRepository;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
-
+use crate::AppState;
 
 pub struct WikiController<R: WikiRepository> {
     usecases: WikiUsecases<R>,
@@ -22,7 +22,7 @@ impl<R: WikiRepository> WikiController<R> {
         return Response::from_json(&result)
     }
 
-    pub async fn get_wikis_by_id(&self, ctx: RouteContext<()>) -> Result<Response> {
+    pub async fn get_wikis_by_id(&self, ctx: RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
         let result = match self.usecases.get_wiki_by_id(id_as_u32).await {

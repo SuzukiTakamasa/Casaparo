@@ -7,11 +7,10 @@ mod domain;
 mod infrastructure;
 mod interfaces;
 
-/*
+
 use crate::infrastructure::repositories::d1_wiki_repository::D1WikiRepository;
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::interfaces::api::wiki_controller::WikiController;
-*/
 
 
 fn get_db_env(req: &Request) -> Result<String> {
@@ -20,6 +19,10 @@ fn get_db_env(req: &Request) -> Result<String> {
         Some(value) => Ok(value),
         None => Err(worker::Error::RustError(format!("Failed to get {} value", header_name))),
     }
+}
+
+pub struct AppState {
+    wiki_controller: WikiController<D1WikiRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -43,18 +46,22 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             .map(|resp| resp.with_headers(headers))
     }
 
-    /*
-    For V2
-    
     let db_str = get_db_env(&req)?;
     let db = env.d1(db_str.as_str())?;
     let wiki_repository = D1WikiRepository::new(db);
     let wiki_usecases = WikiUsecases::new(wiki_repository);
     let wiki_controller = WikiController::new(wiki_usecases);
-    */
+
+    let app_state = AppState {
+        wiki_controller
+    };
 
 
-    Router::new()
+    Router::with_data(app_state)
+    //v2
+        .get_async("/v2/wiki", |_req, ctx| async move {
+            ctx.data.wiki_controller.get_wikis().await
+        })
         .get_async("/household/:year/:month", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();
