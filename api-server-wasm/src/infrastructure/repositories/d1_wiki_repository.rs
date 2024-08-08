@@ -67,7 +67,7 @@ impl WikiRepository for D1WikiRepository {
                                                           wiki.image_url.clone().into(),
                                                           wiki.version.into(),
                                                           wiki.id.into()])?;
-        query.run().await;
+        query.run().await?;
         Ok(())
     }
 
@@ -86,7 +86,7 @@ impl WikiRepository for D1WikiRepository {
         }
         let statement = self.db.prepare("delete from wikis where id = ?1");
         let query = statement.bind(&[wiki.id.into()])?;
-        query.run().await;
+        query.run().await?;
         Ok(())
     }
 }
