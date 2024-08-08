@@ -62,6 +62,19 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/wiki", |_req, ctx| async move {
             ctx.data.wiki_controller.get_wikis().await
         })
+        .get_async("/v2/wiki/:id", |_req, ctx| async move {
+            ctx.data.wiki_controller.get_wikis_by_id(&ctx).await
+        })
+        .post_async("/v2/wiki/create", |mut req, ctx| async move {
+            ctx.data.wiki_controller.create_wiki(&mut req).await
+        })
+        .post_async("/v2/wiki/update", |mut req, ctx| async move {
+            ctx.data.wiki_controller.update_wiki(&mut req).await
+        })
+        .post_async("/v2/wiki/delete", |mut req, ctx| async move {
+            ctx.data.wiki_controller.delete_wiki(&mut req).await
+        })
+    //v1
         .get_async("/household/:year/:month", |req, ctx| async move {
             let year = ctx.param("year").unwrap();
             let month = ctx.param("month").unwrap();

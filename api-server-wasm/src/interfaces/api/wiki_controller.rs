@@ -22,7 +22,7 @@ impl<R: WikiRepository> WikiController<R> {
         return Response::from_json(&result)
     }
 
-    pub async fn get_wikis_by_id(&self, ctx: RouteContext<AppState>) -> Result<Response> {
+    pub async fn get_wikis_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
         let result = match self.usecases.get_wiki_by_id(id_as_u32).await {
@@ -32,7 +32,7 @@ impl<R: WikiRepository> WikiController<R> {
         return Response::from_json(&result)
     }
 
-    pub async fn create_wiki(&self, mut req: Request) -> Result<Response> {
+    pub async fn create_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
@@ -45,7 +45,7 @@ impl<R: WikiRepository> WikiController<R> {
         return Response::ok("A wiki was created")
     }
 
-    pub async fn update_wiki(&self, mut req: Request) -> Result<Response> {
+    pub async fn update_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
@@ -58,7 +58,7 @@ impl<R: WikiRepository> WikiController<R> {
         return Response::ok("A wiki was updated")
     }
 
-    pub async fn delete_wiki(&self, mut req: Request) -> Result<Response> {
+    pub async fn delete_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
