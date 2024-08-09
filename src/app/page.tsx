@@ -36,7 +36,6 @@ export default function Home() {
   const fetchFixedAmount = useCallback(async () => {
       const fixedAmount = await client.get<FixedAmount>(`/household/fixed_amount/${year}/${month}`)
       if (fixedAmount.data) {
-        console.log(fixedAmount.data)
         setTotalAmount(fixedAmount.data.total_amount)
         setBillingAmount(fixedAmount.data.billing_amount)
         setIsLoading(false)

@@ -25,7 +25,7 @@ const WikiDetail = () => {
     const id = param.get("id")
 
     const fetchWikiDetail = useCallback(async () => {
-        const res = await client.get<WikiData>(`/wiki/${id}`)
+        const res = await client.get<WikiData>(`/v2/wiki/${id}`)
         if (res.data) {
             setWikiDetail(res.data)
         }
