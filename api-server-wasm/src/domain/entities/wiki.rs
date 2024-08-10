@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use crate::domain::entities::service::EntityManager;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Wikis {
@@ -10,10 +9,4 @@ pub struct Wikis {
     pub updated_at: String,
     pub image_url: Option<String>,
     pub version: u32
-}
-
-impl EntityManager for Wikis {
-    fn increment_version(&mut self) {
-        self.version += 1
-    }
 }

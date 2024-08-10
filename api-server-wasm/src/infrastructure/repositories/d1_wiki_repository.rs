@@ -1,5 +1,5 @@
 use crate::domain::entities::wiki::Wikis;
-use crate::domain::entities::service::{LatestVersion, EntityManager};
+use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::wiki_repository::WikiRepository;
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
@@ -52,7 +52,7 @@ impl WikiRepository for D1WikiRepository {
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
             if wiki.version == latest.version {
-                wiki.increment_version();
+                wiki.version += 1;
             } else {
                 return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
             }
@@ -77,7 +77,7 @@ impl WikiRepository for D1WikiRepository {
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
             if wiki.version == latest.version {
-                wiki.increment_version();
+                wiki.version += 1;
             } else {
                 return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
             }

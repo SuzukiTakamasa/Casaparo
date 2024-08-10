@@ -7,7 +7,6 @@ mod domain;
 mod infrastructure;
 mod interfaces;
 
-
 use crate::infrastructure::repositories::d1_wiki_repository::D1WikiRepository;
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::interfaces::api::wiki_controller::WikiController;
