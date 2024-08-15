@@ -6,7 +6,13 @@
 		"deploy-prod": "npx wrangler deploy --config wrangler.prod.toml",
 		"deploy-dev": "npx wrangler deploy --config wrangler.dev.toml",
 		"dev": "wrangler dev",
-		"build": "wasm-pack build --target web"
+		"build": "wasm-pack build --target web",
+		"dump-households": "wrangler d1 execute casaparo --command \"SELECT * FROM households\" > ./dumps/dump_households.json",
+		"dump-schedules": "wrangler d1 execute casaparo --command \"SELECT * FROM schedules\" > ./dumps/dump_schedules.json",
+		"dump-completed_households": "wrangler d1 execute casaparo --command \"SELECT * FROM completed_households\" > ./dumps/dump_completed_households.json",
+		"dump-wikis": "wrangler d1 execute casaparo --command \"SELECT * FROM wikis\" > ./dumps/dump_wikis.json",
+		"dump-labels": "wrangler d1 execute casaparo --command \"SELECT * FROM labels\" > ./dumps/dump_labels.json",
+		"dump-anniversaries": "wrangler d1 execute casaparo --command \"SELECT * FROM anniversaries\" > ./dumps/dump_anniversaries.json"
 	},
 	"devDependencies": {
 		"wrangler": "^3.1.2"
