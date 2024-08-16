@@ -47,12 +47,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     let db_str = get_db_env(&req)?;
     let db = env.d1(db_str.as_str())?;
+
     let wiki_repository = D1WikiRepository::new(db);
     let wiki_usecases = WikiUsecases::new(wiki_repository);
     let wiki_controller = WikiController::new(wiki_usecases);
 
     let app_state = AppState {
-        wiki_controller
+        wiki_controller,
     };
 
 
