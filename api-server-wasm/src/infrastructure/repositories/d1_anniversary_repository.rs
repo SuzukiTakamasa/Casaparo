@@ -46,11 +46,12 @@ impl AnniversaryRepository for D1AnniversaryRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update anniversaries set month = ?1, date = ?2, description = ?3, version = ?4");
+        let statement = self.db.prepare("update anniversaries set month = ?1, date = ?2, description = ?3, version = ?4 where id = ?5");
         let query = statement.bind(&[anniversary.month.into(),
                                                           anniversary.date.into(),
                                                           anniversary.description.clone().into(),
-                                                          anniversary.version.into()])?;
+                                                          anniversary.version.into(),
+                                                          anniversary.id.into()])?;
         query.run().await?;
         Ok(())
     }
