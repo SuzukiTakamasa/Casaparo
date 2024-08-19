@@ -10,8 +10,8 @@ pub struct D1AnniversaryRepository {
 }
 
 impl D1AnniversaryRepository {
-    pub fn new(db: D1Database) -> Self {
-        Self { db: Arc::new(db) }
+    pub fn new(db: Arc<D1Database>) -> Self {
+        Self { db: db }
     }
 }
 

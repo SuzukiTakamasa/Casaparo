@@ -1,5 +1,6 @@
 use worker::*;
 use serde_json::from_str;
+use std::sync::Arc;
 
 mod entities;
 mod application;
@@ -10,6 +11,14 @@ mod interfaces;
 use crate::infrastructure::repositories::d1_wiki_repository::D1WikiRepository;
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::interfaces::api::wiki_controller::WikiController;
+
+use crate::infrastructure::repositories::d1_label_repository::D1LabelRepository;
+use crate::application::usecases::label_usecases::LabelUsecases;
+use crate::interfaces::api::label_controller::LabelController;
+
+use crate::infrastructure::repositories::d1_anniversary_repository::D1AnniversaryRepository;
+use crate::application::usecases::anniversary_usecases::AnniversaryUsecases;
+use crate::interfaces::api::anniversary_controller::AnniversaryController;
 
 
 fn get_db_env(req: &Request) -> Result<String> {
@@ -22,6 +31,8 @@ fn get_db_env(req: &Request) -> Result<String> {
 
 pub struct AppState {
     wiki_controller: WikiController<D1WikiRepository>,
+    label_controller: LabelController<D1LabelRepository>,
+    anniversary_controller: AnniversaryController<D1AnniversaryRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -46,19 +57,30 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     }
 
     let db_str = get_db_env(&req)?;
-    let db = env.d1(db_str.as_str())?;
+    let db = Arc::new(env.d1(db_str.as_str())?);
 
-    let wiki_repository = D1WikiRepository::new(db);
+    let wiki_repository = D1WikiRepository::new(db.clone());
     let wiki_usecases = WikiUsecases::new(wiki_repository);
     let wiki_controller = WikiController::new(wiki_usecases);
 
+    let label_repository = D1LabelRepository::new(db.clone());
+    let label_usecases = LabelUsecases::new(label_repository);
+    let label_controller = LabelController::new(label_usecases);
+
+    let anniversary_repository = D1AnniversaryRepository::new(db);
+    let anniversary_usecases = AnniversaryUsecases::new(anniversary_repository);
+    let anniversary_controller = AnniversaryController::new(anniversary_usecases);
+
     let app_state = AppState {
         wiki_controller,
+        label_controller,
+        anniversary_controller,
     };
 
 
     Router::with_data(app_state)
     //v2
+     //wiki
         .get_async("/v2/wiki", |_req, ctx| async move {
             ctx.data.wiki_controller.get_wikis().await
         })
@@ -73,6 +95,32 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/wiki/delete", |mut req, ctx| async move {
             ctx.data.wiki_controller.delete_wiki(&mut req).await
+        })
+     //label
+        .get_async("/v2/label", |_req, ctx| async move {
+            ctx.data.label_controller.get_labels().await
+        })
+        .post_async("/v2/label/create", |mut req, ctx| async move {
+            ctx.data.label_controller.create_label(&mut req).await
+        })
+        .post_async("/v2/label/update", |mut req, ctx| async move {
+            ctx.data.label_controller.update_label(&mut req).await
+        })
+        .post_async("/v2/label/delete", |mut req, ctx| async move {
+            ctx.data.label_controller.delete_label(&mut req).await
+        })
+     //anniversary
+        .get_async("/v2/anniversary", |_req, ctx| async move {
+            ctx.data.anniversary_controller.get_anniversaries().await
+        })
+        .post_async("/v2/anniversary/create", |mut req, ctx| async move {
+            ctx.data.anniversary_controller.create_anniversary(&mut req).await
+        })
+        .post_async("/v2/anniversary/update", |mut req, ctx| async move {
+            ctx.data.anniversary_controller.update_anniversary(&mut req).await
+        })
+        .post_async("/v2/anniversary/delete", |mut req, ctx| async move {
+            ctx.data.anniversary_controller.delete_anniversary(&mut req).await
         })
     //v1
         .get_async("/household/:year/:month", |req, ctx| async move {
