@@ -10,8 +10,8 @@ pub struct D1AnniversaryRepository {
 }
 
 impl D1AnniversaryRepository {
-    pub fn new(db: D1Database) -> Self {
-        Self { db: Arc::new(db) }
+    pub fn new(db: Arc<D1Database>) -> Self {
+        Self { db: db }
     }
 }
 
@@ -46,11 +46,12 @@ impl AnniversaryRepository for D1AnniversaryRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update anniversaries set month = ?1, date = ?2, description = ?3, version = ?4");
+        let statement = self.db.prepare("update anniversaries set month = ?1, date = ?2, description = ?3, version = ?4 where id = ?5");
         let query = statement.bind(&[anniversary.month.into(),
                                                           anniversary.date.into(),
                                                           anniversary.description.clone().into(),
-                                                          anniversary.version.into()])?;
+                                                          anniversary.version.into(),
+                                                          anniversary.id.into()])?;
         query.run().await?;
         Ok(())
     }

@@ -10,8 +10,8 @@ pub struct D1LabelRepository {
 }
 
 impl D1LabelRepository {
-    pub fn new(db: D1Database) -> Self {
-        Self { db: Arc::new(db) }
+    pub fn new(db: Arc<D1Database>) -> Self {
+        Self { db: db }
     }
 }
 
@@ -45,7 +45,7 @@ impl LabelRepository for D1LabelRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update labels set name = ?1, label = ?2, version where id = ?3");
+        let statement = self.db.prepare("update labels set name = ?1, label = ?2, version = ?3 where id = ?4");
         let query = statement.bind(&[label.name.clone().into(),
                                                           label.label.clone().into(),
                                                           label.version.into(),
