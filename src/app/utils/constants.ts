@@ -78,6 +78,10 @@ export interface LabelData {
     version: number
 }
 
+export interface IsUsed {
+    is_used: boolean
+}
+
 export interface AnniversaryData {
     id?: number,
     month: number,

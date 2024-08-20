@@ -1,4 +1,4 @@
-use crate::domain::entities::setting::Labels;
+use crate::domain::entities::setting::{Labels, CountOfUsedLabel};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::label_repository::LabelRepository;
 use crate::async_trait::async_trait;
@@ -21,6 +21,16 @@ impl LabelRepository for D1LabelRepository {
         let query = self.db.prepare("select * from labels order by id desc");
         let result = query.all().await?;
         result.results::<Labels>()
+    }
+
+    async fn get_the_count_of_used_label(&self, id: u32) -> Result<CountOfUsedLabel> {
+        let statement = self.db.prepare("select count(*) as count_of_used_label from schedules where label_id = ?1");
+        let query = statement.bind(&[id.into()])?;
+        let result = query.first::<CountOfUsedLabel>(None).await?;
+        match result {
+            Some(count_of_used_label) => Ok(count_of_used_label),
+            None => Err(worker::Error::RustError(format!("Failed to get the count of used label")))
+        }
     }
 
     async fn create_label(&self, label: &Labels) -> Result<()> {

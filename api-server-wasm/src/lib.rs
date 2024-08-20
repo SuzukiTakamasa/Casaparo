@@ -100,6 +100,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/label", |_req, ctx| async move {
             ctx.data.label_controller.get_labels().await
         })
+        .get_async("/v2/label/is_used_for_schedule/:id", |_req, ctx| async move {
+            ctx.data.label_controller.is_used_for_schedule(&ctx).await
+        })
         .post_async("/v2/label/create", |mut req, ctx| async move {
             ctx.data.label_controller.create_label(&mut req).await
         })
