@@ -9,6 +9,16 @@ pub struct Labels {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct IsUsed {
+    pub is_used: bool
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CountOfUsedLabel {
+    pub count_of_used_label: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Anniversaries {
     pub id: Option<u32>,
     pub month: u8,

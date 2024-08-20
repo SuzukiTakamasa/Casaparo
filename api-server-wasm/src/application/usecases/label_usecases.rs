@@ -1,4 +1,4 @@
-use crate::domain::entities::setting::Labels;
+use crate::domain::entities::setting::{Labels, IsUsed};
 use crate::domain::repositories::label_repository::LabelRepository;
 use worker::Result;
 
@@ -14,6 +14,11 @@ impl<R: LabelRepository> LabelUsecases<R> {
 
     pub async fn get_labels(&self) -> Result<Vec<Labels>> {
         self.repository.get_labels().await
+    }
+
+    pub async fn is_used_for_schedule(&self, id: u32) -> Result<IsUsed> {
+        let result = self.repository.get_the_count_of_used_label(id).await?;
+        Ok(IsUsed { is_used: result.count_of_used_label > 0})
     }
 
     pub async fn create_label(&self, label: &Labels) -> Result<()> {

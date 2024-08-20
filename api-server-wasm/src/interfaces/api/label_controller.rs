@@ -1,8 +1,9 @@
 use crate::application::usecases::label_usecases::LabelUsecases;
 use crate::domain::entities::setting::Labels;
 use crate::domain::repositories::label_repository::LabelRepository;
-use worker::{Request, Response, Result};
+use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
+use crate::AppState;
 
 pub struct LabelController<R: LabelRepository> {
     usecases: LabelUsecases<R>,
@@ -16,6 +17,16 @@ impl<R: LabelRepository> LabelController<R> {
     pub async fn get_labels(&self) -> Result<Response> {
         let result = match self.usecases.get_labels().await {
             Ok(labels) => labels,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        return Response::from_json(&result)
+    }
+
+    pub async fn is_used_for_schedule(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let id = ctx.param("id").unwrap();
+        let id_as_u32: u32 = id.parse().unwrap();
+        let result = match self.usecases.is_used_for_schedule(id_as_u32).await {
+            Ok(is_used) => is_used,
             Err(e) => return Response::error(e.to_string(), 500)
         };
         return Response::from_json(&result)

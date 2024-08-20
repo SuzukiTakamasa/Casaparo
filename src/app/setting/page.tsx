@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 
-import { LabelData, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/constants'
+import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
@@ -19,6 +19,8 @@ const Setting = () => {
     const [labelNameValidMsg, setLabelNameValidMsg] = useState("")
     const [newLabelValidMsg, setNewLabelValidMsg] = useState("")
     const [anniversaryValidMsg, setAnniversaryValidMsg] = useState("")
+
+    const [isUsedErrMsg, setIsUsedErrMsg] = useState("")
 
     const [labels, setLabels] = useState<LabelResponse>([])
     const [labelId, setLabelId] = useState(0)
@@ -97,6 +99,7 @@ const Setting = () => {
     const fetchLabels = useCallback(async () => {
         const labels = await client.get<LabelResponse>("/v2/label")
         setLabels(labels.data || [])
+        setIsUsedErrMsg("")
     }, [])
     const addlabels = async () => {
         const addedLabelData = {
@@ -119,7 +122,12 @@ const Setting = () => {
     }
     const deleteLabel = async (deleteLabelData: LabelData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<LabelResponse>('/v2/label/delete', deleteLabelData)
+        const isUsed = await client.get<IsUsed>(`/v2/label/is_used_for_schedule/${deleteLabelData.id}`)
+        if (isUsed) {
+            setIsUsedErrMsg("このラベルは使用されています。")
+            return
+        }
+        await client.post<LabelResponse>('/v2/label/delete', deleteLabelData) 
         await fetchLabels()
     }
 
@@ -246,6 +254,7 @@ const Setting = () => {
                     </div>
                 )}
 
+                {isUsedErrMsg !== "" && <div className="text-sm text-red-500">{isUsedErrMsg}</div>}
                 <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
