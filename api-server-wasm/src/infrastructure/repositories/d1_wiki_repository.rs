@@ -11,7 +11,7 @@ pub struct D1WikiRepository {
 
 impl D1WikiRepository {
     pub fn new(db: Arc<D1Database>) -> Self {
-        Self { db: db }
+        Self { db }
     }
 }
 

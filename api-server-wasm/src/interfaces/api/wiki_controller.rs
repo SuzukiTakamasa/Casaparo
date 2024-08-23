@@ -19,7 +19,7 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wikis) => wikis,
             Err(e) => return Response::error(e.to_string(), 500)
         };
-        return Response::from_json(&result)
+        Response::from_json(&result)
     }
 
     pub async fn get_wikis_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
@@ -29,7 +29,7 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(e) => return Response::error(e.to_string(), 500)
         };
-        return Response::from_json(&result)
+        Response::from_json(&result)
     }
 
     pub async fn create_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -42,7 +42,7 @@ impl<R: WikiRepository> WikiController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.create_wiki(&wiki).await?;
-        return Response::ok("A wiki was created")
+        Response::ok("A wiki was created")
     }
 
     pub async fn update_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -55,7 +55,7 @@ impl<R: WikiRepository> WikiController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.update_wiki(&mut wiki).await?;
-        return Response::ok("A wiki was updated")
+        Response::ok("A wiki was updated")
     }
 
     pub async fn delete_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -68,6 +68,6 @@ impl<R: WikiRepository> WikiController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_wiki(&mut wiki).await?;
-        return Response::ok("A wiki was updated")
+        Response::ok("A wiki was updated")
     }
 }

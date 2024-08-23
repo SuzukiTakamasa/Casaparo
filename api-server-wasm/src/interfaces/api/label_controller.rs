@@ -19,7 +19,7 @@ impl<R: LabelRepository> LabelController<R> {
             Ok(labels) => labels,
             Err(e) => return Response::error(e.to_string(), 500)
         };
-        return Response::from_json(&result)
+        Response::from_json(&result)
     }
 
     pub async fn is_used_for_schedule(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
@@ -29,7 +29,7 @@ impl<R: LabelRepository> LabelController<R> {
             Ok(is_used) => is_used,
             Err(e) => return Response::error(e.to_string(), 500)
         };
-        return Response::from_json(&result)
+        Response::from_json(&result)
     }
 
     pub async fn create_label(&self, req: &mut Request) -> Result<Response> {
@@ -42,7 +42,7 @@ impl<R: LabelRepository> LabelController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.create_label(&label).await?;
-        return Response::ok("A label was created")
+        Response::ok("A label was created")
     }
 
     pub async fn update_label(&self, req: &mut Request) -> Result<Response> {
@@ -55,7 +55,7 @@ impl<R: LabelRepository> LabelController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.update_label(&mut label).await?;
-        return Response::ok("A label was updated")
+        Response::ok("A label was updated")
     }
 
     pub async fn delete_label(&self, req: &mut Request) -> Result<Response> {
@@ -68,6 +68,6 @@ impl<R: LabelRepository> LabelController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_label(&mut label).await?;
-        return Response::ok("A label was updated")
+        Response::ok("A label was updated")
     }
 }
