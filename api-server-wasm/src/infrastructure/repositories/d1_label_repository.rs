@@ -11,7 +11,7 @@ pub struct D1LabelRepository {
 
 impl D1LabelRepository {
     pub fn new(db: Arc<D1Database>) -> Self {
-        Self { db: db }
+        Self { db }
     }
 }
 
@@ -29,7 +29,7 @@ impl LabelRepository for D1LabelRepository {
         let result = query.first::<CountOfUsedLabel>(None).await?;
         match result {
             Some(count_of_used_label) => Ok(count_of_used_label),
-            None => Err(worker::Error::RustError(format!("Failed to get the count of used label")))
+            None => Err(worker::Error::RustError("Failed to get the count of used label".to_string()))
         }
     }
 

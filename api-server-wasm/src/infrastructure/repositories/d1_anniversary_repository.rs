@@ -11,7 +11,7 @@ pub struct D1AnniversaryRepository {
 
 impl D1AnniversaryRepository {
     pub fn new(db: Arc<D1Database>) -> Self {
-        Self { db: db }
+        Self { db }
     }
 }
 

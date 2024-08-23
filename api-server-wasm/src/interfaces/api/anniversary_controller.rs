@@ -18,7 +18,7 @@ impl<R: AnniversaryRepository> AnniversaryController<R> {
             Ok(anniversarys) => anniversarys,
             Err(e) => return Response::error(e.to_string(), 500)
         };
-        return Response::from_json(&result)
+        Response::from_json(&result)
     }
 
     pub async fn create_anniversary(&self, req: &mut Request) -> Result<Response> {
@@ -31,7 +31,7 @@ impl<R: AnniversaryRepository> AnniversaryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.create_anniversary(&anniversary).await?;
-        return Response::ok("An anniversary was created")
+        Response::ok("An anniversary was created")
     }
 
     pub async fn update_anniversary(&self, req: &mut Request) -> Result<Response> {
@@ -44,7 +44,7 @@ impl<R: AnniversaryRepository> AnniversaryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.update_anniversary(&mut anniversary).await?;
-        return Response::ok("An anniversary was updated")
+        Response::ok("An anniversary was updated")
     }
 
     pub async fn delete_anniversary(&self, req: &mut Request) -> Result<Response> {
@@ -57,6 +57,6 @@ impl<R: AnniversaryRepository> AnniversaryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_anniversary(&mut anniversary).await?;
-        return Response::ok("An anniversary was updated")
+        Response::ok("An anniversary was updated")
     }
 }
