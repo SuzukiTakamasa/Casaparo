@@ -8,6 +8,10 @@ mod domain;
 mod infrastructure;
 mod interfaces;
 
+use crate::infrastructure::repositories::d1_schedule_repository::D1ScheduleRepository;
+use crate::application::usecases::schedule_usecases::ScheduleUsecases;
+use crate::interfaces::api::schedule_controller::ScheduleController;
+
 use crate::infrastructure::repositories::d1_wiki_repository::D1WikiRepository;
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::interfaces::api::wiki_controller::WikiController;
@@ -30,6 +34,7 @@ fn get_db_env(req: &Request) -> Result<String> {
 }
 
 pub struct AppState {
+    schedule_controller: ScheduleController<D1ScheduleRepository>,
     wiki_controller: WikiController<D1WikiRepository>,
     label_controller: LabelController<D1LabelRepository>,
     anniversary_controller: AnniversaryController<D1AnniversaryRepository>,
@@ -59,6 +64,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let db_str = get_db_env(&req)?;
     let db = Arc::new(env.d1(db_str.as_str())?);
 
+    let schedule_repository = D1ScheduleRepository::new(db.clone());
+    let schedule_usecases = ScheduleUsecases::new(schedule_repository);
+    let schedule_controller = ScheduleController::new(schedule_usecases);
+
     let wiki_repository = D1WikiRepository::new(db.clone());
     let wiki_usecases = WikiUsecases::new(wiki_repository);
     let wiki_controller = WikiController::new(wiki_usecases);
@@ -72,6 +81,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let anniversary_controller = AnniversaryController::new(anniversary_usecases);
 
     let app_state = AppState {
+        schedule_controller,
         wiki_controller,
         label_controller,
         anniversary_controller,
@@ -80,6 +90,21 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     Router::with_data(app_state)
     //v2
+        .get_async("/v2/schedule", |_req, ctx| async move {
+            ctx.data.schedule_controller.get_schedules().await
+        })
+        .get_async("/v2/schedule/today_or_tomorrow", |_req, ctx| async move {
+            ctx.data.schedule_controller.get_today_or_tomorrow_schedules(&ctx).await
+        })
+        .post_async("/v2/schedule/create", |mut req, ctx| async move {
+            ctx.data.schedule_controller.create_schedule(&mut req).await
+        })
+        .post_async("/v2/schedule/update", |mut req, ctx| async move {
+            ctx.data.schedule_controller.update_schedule(&mut req).await
+        })
+        .post_async("/v2/schedule/delete", |mut req, ctx| async move {
+            ctx.data.schedule_controller.delete_schedule(&mut req).await
+        })
      //wiki
         .get_async("/v2/wiki", |_req, ctx| async move {
             ctx.data.wiki_controller.get_wikis().await

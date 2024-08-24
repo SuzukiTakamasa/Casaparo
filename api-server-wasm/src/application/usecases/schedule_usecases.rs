@@ -15,8 +15,8 @@ impl<R: ScheduleRepository> ScheduleUsecases<R> {
         self.repository.get_schedules().await
     }
 
-    pub async fn get_today_or_tomorrow_schedules(&self, year: u16, month: u8, date: u8) -> Result<Vec<Schedules>> {
-        self.repository.get_today_or_tomorrow_schedules(year, month, date).await
+    pub async fn get_today_or_tomorrow_schedules(&self, year: u16, month: u8, day: u8) -> Result<Vec<Schedules>> {
+        self.repository.get_today_or_tomorrow_schedules(year, month, day).await
     }
 
     pub async fn create_schedule(&self, schedule: &Schedules) -> Result<()> {
