@@ -5,7 +5,7 @@ export interface Env {
     DATABASE_ENVIRONMENT: string
 }
 
-interface FixedAmount {
+export interface FixedAmount {
     billing_amount: number
     total_amount: number
 }
@@ -21,8 +21,8 @@ export default class LINEMessagingAPIHandler {
     private readonly accessToken: string
     private readonly lineBotHeaders: {[key: string]: string}
     private readonly backendHeaders: {[key: string]: string}
-    private currentYear: number
-    private currentMonth: number
+    public currentYear: number
+    public currentMonth: number
 
     constructor({WORKER_RS_BACKEND_API_HOST, LINE_BOT_CHANNEL_ACCESS_TOKEN, DATABASE_ENVIRONMENT}: Env) {
         this.lineBotHost = "https://api.line.me/v2/bot/message"
