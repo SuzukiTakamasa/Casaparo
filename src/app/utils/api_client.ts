@@ -6,7 +6,8 @@ export const execExternalGetAPI = async<T>(url: string, getParams?: string): Pro
     if (getParams) url += getParams
     try {
         const res = await fetch(url, {method: 'GET'})
-    return { data: res.json() as T, error: null }
+        const jsonRes = await res.json()
+    return { data: <T>jsonRes, error: null }
     } catch(e) {
         console.log(e)
         return { data: null, error: String(e) }
