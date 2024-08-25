@@ -10,9 +10,9 @@ export interface FixedAmount {
     total_amount: number
 }
 
-interface CompletedHouseholds {
-    year: number
-    month: number
+interface Result<T> {
+    data: T | null,
+    error: string | null
 }
 
 export default class LINEMessagingAPIHandler {
@@ -40,43 +40,54 @@ export default class LINEMessagingAPIHandler {
         this.currentMonth = new Date().getMonth() + 1
     }
 
-    public async _getAPIHandler<T>(url: string, params?: string): Promise<T> {
+    public async _getAPIHandler<T>(url: string, params?: string): Promise<Result<T>> {
         if (params) url += params
         try {
             const response = await fetch(url, {
                 method: 'GET',
                 headers: this.backendHeaders
             })
-            return <T>response.json()
+            const jsonRes = response.json()
+            return { data: <T>jsonRes, error: null }
         } catch (e) {
-            throw new Error(`Failed to get: ${e}`)
+            return { data: null, error: String(e) }
         }
     }
 
-    public async _postAPIHandler<T>(url: string, endpoint: string, data: object): Promise<T> {
+    public async _postAPIHandler<T>(url: string, endpoint: string, data: object): Promise<Result<T>> {
         try {
             const response = await fetch(url + endpoint, {
                 method: 'POST',
                 headers: url === this.lineBotHost ? this.lineBotHeaders : this.backendHeaders,
                 body: JSON.stringify(data)
             })
-            return await <T>response.json()
+            const jsonRes = response.json()
+            return { data: <T>jsonRes, error: null }
         } catch(e) {
-            throw new Error(`Failed to post: ${e}`)
+            return  { data: null, error: String(e)}
         }
     }
 
     public async broadcastFixedHousehold() { 
         const responseFixedHousehold = await this._getAPIHandler<FixedAmount>(`${this.backendHost}/household/fixed_amount/${this.currentYear}/${this.currentMonth}`)
-        const requestBody = {
+        const requestBody = responseFixedHousehold.error != null ? {
             messages: [
               {
                 "type": "text",
-                "text": `【今月の生活費のお知らせ 】\n 負担分： ${responseFixedHousehold.billing_amount}\n生活費合計: ${responseFixedHousehold.total_amount}\n(※清算が終わったら家計簿を確定してください。)`
+                "text": `【今月の生活費のお知らせ 】\n 負担分： ${responseFixedHousehold.data!.billing_amount}\n生活費合計: ${responseFixedHousehold.data!.total_amount}\n(※清算が終わったら家計簿を確定してください。)`
               }
             ]
         }
-        await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
+        :
+        {
+            messages: [
+                {
+                    "type": "text",
+                    "text": `エラーが発生しました。${responseFixedHousehold.error}`
+                }
+            ]
+        }
+       await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
     }
 
     public async remindFixedHousehold() {
