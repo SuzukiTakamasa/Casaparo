@@ -95,7 +95,7 @@ impl ScheduleRepository for D1ScheduleRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("delete frrom schedules where id = ?1");
+        let statement = self.db.prepare("delete from schedules where id = ?1");
         let query = statement.bind(&[schedule.id.into()])?;
         query.run().await?;
         Ok(())
