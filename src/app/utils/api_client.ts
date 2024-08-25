@@ -6,7 +6,8 @@ export const execExternalGetAPI = async<T>(url: string, getParams?: string): Pro
     if (getParams) url += getParams
     try {
         const res = await fetch(url, {method: 'GET'})
-    return { data: res.json() as T, error: null }
+        const jsonRes = await res.json()
+    return { data: <T>jsonRes, error: null }
     } catch(e) {
         console.log(e)
         return { data: null, error: String(e) }
@@ -33,7 +34,7 @@ class APIClient {
                 headers: this.headers
             })
             const jsonRes = await res.json()
-            return { data: jsonRes as T, error: null }
+            return { data: <T>jsonRes, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
@@ -47,7 +48,7 @@ class APIClient {
                 body: JSON.stringify(data)
             })
             const jsonRes = await res.json()
-            return await { data: jsonRes as T, error: null }
+            return await { data: <T>jsonRes, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
