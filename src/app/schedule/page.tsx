@@ -337,7 +337,7 @@ const Schedule = () => {
         setIsMultipleDays(!isMultipleDays)
     }
     const fetchSchedules = useCallback(async () => {
-        const schedules = await client.get<ScheduleResponse>(`/schedule`)
+        const schedules = await client.get<ScheduleResponse>(`/v2/schedule`)
         setSchedules(schedules.data || [])
     }, [])
     const addSchedule = async () => {
@@ -355,11 +355,11 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post<ScheduleResponse>('/schedule/create', addScheduleData)
+        await client.post<ScheduleResponse>('/v2/schedule/create', addScheduleData)
         await fetchSchedules()
     }
     const fetchLabels = async () => {
-        const labels = await client.get<LabelResponse>("/label")
+        const labels = await client.get<LabelResponse>("/v2/label")
         setLabels(labels.data || [])
     }
     const updateSchedule = async () => {
@@ -378,12 +378,12 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post<ScheduleResponse>('/schedule/update', updateSchedule)
+        await client.post<ScheduleResponse>('/v2/schedule/update', updateSchedule)
         await fetchSchedules()
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<ScheduleResponse>('/schedule/delete', deletedScheduleData)
+        await client.post<ScheduleResponse>('/v2/schedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
@@ -420,7 +420,7 @@ const Schedule = () => {
         setHolidays(holidays)
     }, [])
     const fetchAnniversaries = useCallback(async () => {
-        const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
+        const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
         setAnniversaries(anniversaries.data || [])
     }, [])
 

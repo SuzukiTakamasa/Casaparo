@@ -75,6 +75,6 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_schedule(&mut schedule).await?;
-        Response::ok("A schedule was updated")
+        Response::ok("A schedule was deleted")
     }
 }
