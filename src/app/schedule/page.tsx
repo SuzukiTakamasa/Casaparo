@@ -413,8 +413,8 @@ const Schedule = () => {
         setWeekDaysArray(darr)
     }, [activeTab])
     const handleGetHolidaysList = useCallback(async () => {
-        const holidayList = await execExternalGetAPI(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
-        for (var d in holidayList) {
+        const holidayList = await execExternalGetAPI<{[key: string]: string}>(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
+        for (var d in holidayList.data) {
             holidays.push(d)
         }
         setHolidays(holidays)
