@@ -1,3 +1,4 @@
+pub mod household_usecases;
 pub mod schedule_usecases;
 pub mod wiki_usecases;
 pub mod label_usecases;
