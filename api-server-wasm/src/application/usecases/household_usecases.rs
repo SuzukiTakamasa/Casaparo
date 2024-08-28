@@ -1,4 +1,4 @@
-use crate::domain::entities::household::{Households, FixedAmount, HouseholdMonthlySummary, IsCompleted};
+use crate::domain::entities::household::{Households, FixedAmount, HouseholdMonthlySummary, IsCompleted, CompletedHouseholds};
 use crate::domain::repositories::household_repository::HouseholdRepository;
 use worker::Result;
 
@@ -11,15 +11,15 @@ impl<R: HouseholdRepository> HouseholdUsecases<R> {
         Self { repository }
     }
 
-    pub async fn get_households(&self) -> Result<Vec<Households>> {
-        self.repository.get_households().await
+    pub async fn get_households(&self, year: u16, month: u8) -> Result<Vec<Households>> {
+        self.repository.get_households(year, month).await
     }
 
-    pub async fn get_fixed_amount(&self, year: u16, month: u8) -> Result<Vec<FixedAmount>> {
+    pub async fn get_fixed_amount(&self, year: u16, month: u8) -> Result<FixedAmount> {
         self.repository.get_fixed_amount(year, month).await
     }
 
-    pub async fn get_completed_households(&self, year: u16, month: u8) -> Result<Vec<IsCompleted>> {
+    pub async fn get_completed_households(&self, year: u16, month: u8) -> Result<IsCompleted> {
         self.repository.get_completed_households(year, month).await
     }
 
@@ -37,5 +37,9 @@ impl<R: HouseholdRepository> HouseholdUsecases<R> {
 
     pub async fn delete_household(&self, household: &mut Households) -> Result<()> {
         self.repository.delete_household(household).await
+    }
+
+    pub async fn create_completed_household(&self, completed_household: &CompletedHouseholds) -> Result<()> {
+        self.repository.create_completed_household(completed_household).await
     }
  }
