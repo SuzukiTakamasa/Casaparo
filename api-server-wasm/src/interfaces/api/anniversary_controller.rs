@@ -57,6 +57,6 @@ impl<R: AnniversaryRepository> AnniversaryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_anniversary(&mut anniversary).await?;
-        Response::ok("An anniversary was updated")
+        Response::ok("An anniversary was deleted")
     }
 }
