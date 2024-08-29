@@ -8,6 +8,10 @@ mod domain;
 mod infrastructure;
 mod interfaces;
 
+use crate::infrastructure::repositories::d1_household_repository::D1HouseholdRepository;
+use crate::application::usecases::household_usecases::HouseholdUsecases;
+use crate::interfaces::api::household_controller::HouseholdController;
+
 use crate::infrastructure::repositories::d1_schedule_repository::D1ScheduleRepository;
 use crate::application::usecases::schedule_usecases::ScheduleUsecases;
 use crate::interfaces::api::schedule_controller::ScheduleController;
@@ -34,6 +38,7 @@ fn get_db_env(req: &Request) -> Result<String> {
 }
 
 pub struct AppState {
+    household_controller: HouseholdController<D1HouseholdRepository>,
     schedule_controller: ScheduleController<D1ScheduleRepository>,
     wiki_controller: WikiController<D1WikiRepository>,
     label_controller: LabelController<D1LabelRepository>,
@@ -64,6 +69,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let db_str = get_db_env(&req)?;
     let db = Arc::new(env.d1(db_str.as_str())?);
 
+    let household_repository = D1HouseholdRepository::new(db.clone());
+    let household_usecases = HouseholdUsecases::new(household_repository);
+    let household_controller = HouseholdController::new(household_usecases);
+
     let schedule_repository = D1ScheduleRepository::new(db.clone());
     let schedule_usecases = ScheduleUsecases::new(schedule_repository);
     let schedule_controller = ScheduleController::new(schedule_usecases);
@@ -81,6 +90,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let anniversary_controller = AnniversaryController::new(anniversary_usecases);
 
     let app_state = AppState {
+        household_controller,
         schedule_controller,
         wiki_controller,
         label_controller,
@@ -90,6 +100,31 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     Router::with_data(app_state)
     //v2
+        .get_async("/v2/household/:year/:month", |_req, ctx| async move {
+            ctx.data.household_controller.get_households(&ctx).await
+        })
+        .get_async("/v2/household/fixed_amount/:year/:month", |_req, ctx| async move {
+            ctx.data.household_controller.get_fixed_amount(&ctx).await
+        })
+        .get_async("/v2/completed_household/:year/:momth", |_req, ctx| async move {
+            ctx.data.household_controller.get_completed_households(&ctx).await
+        })
+        .get_async("/v2/completed_household/monthly_summary/:year", |_req, ctx| async move {
+            ctx.data.household_controller.get_completed_households_monthly_summary(&ctx).await
+        })
+        .post_async("/v2/household/create", |mut req, ctx| async move {
+            ctx.data.household_controller.create_household(&mut req).await
+        })
+        .post_async("/v2/household/update", |mut req, ctx| async move {
+            ctx.data.household_controller.update_household(&mut req).await
+        })
+        .post_async("/v2/household/delete", |mut req, ctx| async move {
+            ctx.data.household_controller.delete_household(&mut req).await
+        })
+        .post_async("/v2/completed_household/create", |mut req, ctx| async move {
+            ctx.data.household_controller.create_completed_household(&mut req).await
+        })
+     //schedule
         .get_async("/v2/schedule", |_req, ctx| async move {
             ctx.data.schedule_controller.get_schedules().await
         })

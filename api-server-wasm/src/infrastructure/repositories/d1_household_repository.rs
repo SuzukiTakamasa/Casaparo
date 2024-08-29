@@ -60,7 +60,7 @@ impl HouseholdRepository for D1HouseholdRepository {
                                      household.is_default.into(),
                                      household.is_owner.into(),
                                      household.version.into()])?;
-        query.run().await;
+        query.run().await?;
         Ok(())
     }
 
@@ -85,7 +85,7 @@ impl HouseholdRepository for D1HouseholdRepository {
                                      household.is_owner.into(),
                                      household.version.into(),
                                      household.id.into()])?;
-        query.run().await;
+        query.run().await?;
         Ok(())
     }
 
@@ -106,7 +106,7 @@ impl HouseholdRepository for D1HouseholdRepository {
         }
         let statement = self.db.prepare("delete from households where id = ?1");
         let query = statement.bind(&[household.id.into()])?;
-        query.run().await;
+        query.run().await?;
         Ok(())
     }
 
@@ -117,7 +117,7 @@ impl HouseholdRepository for D1HouseholdRepository {
                                      completed_household.detail.clone().into(),
                                      completed_household.billing_amount.into(),
                                      completed_household.total_amount.into()])?;
-        query.run().await;
+        query.run().await?;
         Ok(())
     }
 }

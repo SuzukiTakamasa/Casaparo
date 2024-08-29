@@ -1,3 +1,4 @@
+pub mod household_controller;
 pub mod schedule_controller;
 pub mod wiki_controller;
 pub mod label_controller;

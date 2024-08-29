@@ -68,6 +68,6 @@ impl<R: LabelRepository> LabelController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_label(&mut label).await?;
-        Response::ok("A label was updated")
+        Response::ok("A label was deleted")
     }
 }

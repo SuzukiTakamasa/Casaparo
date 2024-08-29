@@ -68,6 +68,6 @@ impl<R: WikiRepository> WikiController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_wiki(&mut wiki).await?;
-        Response::ok("A wiki was updated")
+        Response::ok("A wiki was deleted")
     }
 }
