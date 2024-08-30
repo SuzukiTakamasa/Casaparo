@@ -34,7 +34,7 @@ export default function Home() {
   const currentDate = new Date().getDate()
 
   const fetchFixedAmount = useCallback(async () => {
-      const fixedAmount = await client.get<FixedAmount>(`/household/fixed_amount/${year}/${month}`)
+      const fixedAmount = await client.get<FixedAmount>(`/v2/household/fixed_amount/${year}/${month}`)
       if (fixedAmount.data) {
         setTotalAmount(fixedAmount.data.total_amount)
         setBillingAmount(fixedAmount.data.billing_amount)
@@ -42,11 +42,11 @@ export default function Home() {
       }
   }, [year, month])
   const fetchSchedules = useCallback(async () => {
-    const schedules = await client.get<ScheduleResponse>(`/schedule/today_or_tomorrow/${year}/${month}/${currentDate}`)
+    const schedules = await client.get<ScheduleResponse>(`/v2/schedule/today_or_tomorrow/${year}/${month}/${currentDate}`)
     setSchedules(schedules.data || [])
   }, [year, month, currentDate])
   const fetchAnniversaries = useCallback(async() => {
-    const anniversaries = await client.get<AnniversaryResponse>('/anniversary')
+    const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
     setAnniversaries(anniversaries.data || [])
   }, [])
 
@@ -83,7 +83,7 @@ export default function Home() {
               ))}
               {anniversaries.map((anniversary, i) => (
                 <div key={i} className="text-center text-xl">
-                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === currentDate && `${anniversary.description} ${anniversary.date}日(${getWeekDay(year, month, anniversary.date)})`}
+                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === currentDate && `${anniversary.date}日(${getWeekDay(year, month, anniversary.date)}) ${anniversary.description}`}
                 </div>
               ))}
               <div className="flex justify-end">

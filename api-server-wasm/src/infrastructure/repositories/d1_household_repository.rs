@@ -54,12 +54,12 @@ impl HouseholdRepository for D1HouseholdRepository {
     async fn create_household(&self, household: &Households) -> Result<()> {
         let statement = self.db.prepare("insert into households (name, amount, year, month, is_default, is_owner, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
         let query = statement.bind(&[household.name.clone().into(),
-                                     household.amount.into(),
-                                     household.year.into(),
-                                     household.month.into(),
-                                     household.is_default.into(),
-                                     household.is_owner.into(),
-                                     household.version.into()])?;
+                                                          household.amount.into(),
+                                                          household.year.into(),
+                                                          household.month.into(),
+                                                          household.is_default.into(),
+                                                          household.is_owner.into(),
+                                                          household.version.into()])?;
         query.run().await?;
         Ok(())
     }
@@ -80,11 +80,11 @@ impl HouseholdRepository for D1HouseholdRepository {
         }
         let statement = self.db.prepare("update households set name = ?1, amount = ?2, is_default = ?3, is_owner = ?4, version = ?5 where id = ?6");
         let query = statement.bind(&[household.name.clone().into(),
-                                     household.amount.into(),
-                                     household.is_default.into(),
-                                     household.is_owner.into(),
-                                     household.version.into(),
-                                     household.id.into()])?;
+                                                          household.amount.into(),
+                                                          household.is_default.into(),
+                                                          household.is_owner.into(),
+                                                          household.version.into(),
+                                                          household.id.into()])?;
         query.run().await?;
         Ok(())
     }
@@ -113,10 +113,10 @@ impl HouseholdRepository for D1HouseholdRepository {
     async fn create_completed_household(&self, completed_household: &CompletedHouseholds) -> Result<()> {
         let statement = self.db.prepare("insert into completed_households (year, month, detail, billing_amount, total_amount) values (?1, ?2, ?3, ?4, ?5)");
         let query = statement.bind(&[completed_household.year.into(),
-                                     completed_household.month.into(),
-                                     completed_household.detail.clone().into(),
-                                     completed_household.billing_amount.into(),
-                                     completed_household.total_amount.into()])?;
+                                                          completed_household.month.into(),
+                                                          completed_household.detail.clone().into(),
+                                                          completed_household.billing_amount.into(),
+                                                          completed_household.total_amount.into()])?;
         query.run().await?;
         Ok(())
     }
