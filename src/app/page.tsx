@@ -83,7 +83,7 @@ export default function Home() {
               ))}
               {anniversaries.map((anniversary, i) => (
                 <div key={i} className="text-center text-xl">
-                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === currentDate && `${anniversary.description} ${anniversary.date}日(${getWeekDay(year, month, anniversary.date)})`}
+                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === currentDate && `${anniversary.date}日(${getWeekDay(year, month, anniversary.date)}) ${anniversary.description}`}
                 </div>
               ))}
               <div className="flex justify-end">
