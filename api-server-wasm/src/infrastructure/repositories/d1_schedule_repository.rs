@@ -26,8 +26,8 @@ impl ScheduleRepository for D1ScheduleRepository {
     async fn get_today_or_tomorrow_schedules(&self, year: u16, month: u8, day: u8) -> Result<Vec<Schedules>> {
         let statement = self.db.prepare("select * from (select schedules.*, case when label_id = 0 then null else labels.label end as label from schedules left join labels on schedules.label_id = labels.id where from_year = ?1 and from_month = ?2 and (from_date = ?3 or from_date = ?3 + 1)) as schedules");
         let query = statement.bind(&[year.into(),
-                                     month.into(),
-                                     day.into()])?;
+                                                          month.into(),
+                                                          day.into()])?;
         let result = query.all().await?;
         result.results::<Schedules>()
     }

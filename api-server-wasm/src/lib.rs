@@ -128,7 +128,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/schedule", |_req, ctx| async move {
             ctx.data.schedule_controller.get_schedules().await
         })
-        .get_async("/v2/schedule/today_or_tomorrow/:year/:month", |_req, ctx| async move {
+        .get_async("/v2/schedule/today_or_tomorrow/:year/:month/:day", |_req, ctx| async move {
             ctx.data.schedule_controller.get_today_or_tomorrow_schedules(&ctx).await
         })
         .post_async("/v2/schedule/create", |mut req, ctx| async move {
