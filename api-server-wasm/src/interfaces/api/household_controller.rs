@@ -17,7 +17,7 @@ impl<R: HouseholdRepository> HouseholdController<R> {
 
     pub async fn get_households(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let year = ctx.param("year").unwrap();
-        let month = ctx.param("momth").unwrap();
+        let month = ctx.param("month").unwrap();
 
         let year_as_u16: u16 = year.parse().unwrap();
         let month_as_u8: u8 = month.parse().unwrap();
@@ -31,7 +31,7 @@ impl<R: HouseholdRepository> HouseholdController<R> {
 
     pub async fn get_fixed_amount(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let year = ctx.param("year").unwrap();
-        let month = ctx.param("momth").unwrap();
+        let month = ctx.param("month").unwrap();
 
         let year_as_u16: u16 = year.parse().unwrap();
         let month_as_u8: u8 = month.parse().unwrap();
@@ -45,7 +45,7 @@ impl<R: HouseholdRepository> HouseholdController<R> {
 
     pub async fn get_completed_households(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let year = ctx.param("year").unwrap();
-        let month = ctx.param("momth").unwrap();
+        let month = ctx.param("month").unwrap();
 
         let year_as_u16: u16 = year.parse().unwrap();
         let month_as_u8: u8 = month.parse().unwrap();

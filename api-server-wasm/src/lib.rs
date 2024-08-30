@@ -106,7 +106,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/household/fixed_amount/:year/:month", |_req, ctx| async move {
             ctx.data.household_controller.get_fixed_amount(&ctx).await
         })
-        .get_async("/v2/completed_household/:year/:momth", |_req, ctx| async move {
+        .get_async("/v2/completed_household/:year/:month", |_req, ctx| async move {
             ctx.data.household_controller.get_completed_households(&ctx).await
         })
         .get_async("/v2/completed_household/monthly_summary/:year", |_req, ctx| async move {

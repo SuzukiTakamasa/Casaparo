@@ -112,15 +112,15 @@ const Household = () => {
     }
 
     const fetchHouseholds = useCallback(async () => {
-        const households = await client.get<HouseholdResponse>(`/household/${householdYear}/${householdMonth}`)
+        const households = await client.get<HouseholdResponse>(`/v2/household/${householdYear}/${householdMonth}`)
         setHouseholds(households.data || [])
     }, [householdYear, householdMonth])
     const fetchIsCompleted = useCallback(async () => {
-            const res = await client.get<IsCompleted>(`/completed_household/${householdYear}/${householdMonth}`)
+            const res = await client.get<IsCompleted>(`/v2/completed_household/${householdYear}/${householdMonth}`)
             if (res.data) {
                 setIsCompleted(res.data.is_completed)
                 if (res.data.is_completed === 1) {
-                    const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/completed_household/monthly_summary/${householdYear}`)
+                    const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/v2/completed_household/monthly_summary/${householdYear}`)
                     if (expenses.data) {
                         setExpense(expenses.data.filter((expense) => expense.month === householdMonth))
                     }
@@ -137,7 +137,7 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post<HouseholdResponse>('/household/create', addedHouseholdData)
+        await client.post<HouseholdResponse>('/v2/household/create', addedHouseholdData)
         await fetchHouseholds()
     }
     const updateHousehold = async () => {
@@ -151,12 +151,12 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post<HouseholdResponse>('/household/update', updatedHouseholdData)
+        await client.post<HouseholdResponse>('/v2/household/update', updatedHouseholdData)
         await fetchHouseholds()
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<HouseholdResponse>('/household/delete', deletedHouseholdData)
+        await client.post<HouseholdResponse>('/v2/household/delete', deletedHouseholdData)
         await fetchHouseholds()
     }
     const calculateBillingAmount = useCallback(() => {
@@ -181,7 +181,7 @@ const Household = () => {
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
-        await client.post<CompletedHouseholdData>('/completed_household/create', completedHousehold)
+        await client.post<CompletedHouseholdData>('/v2/completed_household/create', completedHousehold)
         await fetchIsCompleted()
     }
 
