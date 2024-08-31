@@ -45,7 +45,7 @@ impl HouseholdRepository for D1HouseholdRepository {
     }
 
     async fn get_completed_households_monthly_summary(&self, year: u16) -> Result<Vec<HouseholdMonthlySummary>> {
-        let statement = self.db.prepare("select month, billing_amount, total_amount from completed_households where year = ?1");
+        let statement = self.db.prepare("select month, detail, billing_amount, total_amount from completed_households where year = ?1");
         let query = statement.bind(&[year.into()])?;
         let result = query.all().await?;
         result.results::<HouseholdMonthlySummary>()
