@@ -312,7 +312,7 @@ const Household = () => {
                         </button>
                     </div>
                     {showDetail && expense.map((e, i) => (
-                        <div className="text-center">{e.detail_name}: {String(e.detail_amount)}円</div>)
+                        <div className="text-center" key={i}>{e.detail_name}: {String(e.detail_amount)}円</div>)
                         )}
                     <div className="flex justify-center mt-4">
                         <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
