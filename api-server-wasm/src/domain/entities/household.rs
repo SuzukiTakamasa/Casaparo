@@ -29,9 +29,17 @@ pub struct CompletedHouseholds {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct RawHouseholdMonthlySummary {
+    pub month: u8,
+    pub detail: String,
+    pub billing_amount: u32,
+    pub total_amount: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct HouseholdMonthlySummary {
     pub month: u8,
-    pub detail: Option<Detail>,
+    pub detail: Vec<Detail>,
     pub billing_amount: u32,
     pub total_amount: u32
 }

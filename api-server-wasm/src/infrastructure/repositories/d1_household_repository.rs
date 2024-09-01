@@ -1,9 +1,10 @@
-use crate::domain::entities::household::{Households, FixedAmount, IsCompleted, HouseholdMonthlySummary, CompletedHouseholds};
+use crate::domain::entities::household::{Households, FixedAmount, IsCompleted, RawHouseholdMonthlySummary, HouseholdMonthlySummary, CompletedHouseholds};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::household_repository::HouseholdRepository;
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
+
 
 pub struct D1HouseholdRepository {
     db: Arc<D1Database>
@@ -48,7 +49,16 @@ impl HouseholdRepository for D1HouseholdRepository {
         let statement = self.db.prepare("select month, detail, billing_amount, total_amount from completed_households where year = ?1");
         let query = statement.bind(&[year.into()])?;
         let result = query.all().await?;
-        result.results::<HouseholdMonthlySummary>()
+        let raw_household_monthly_summaries = result.results::<RawHouseholdMonthlySummary>()?;
+
+        raw_household_monthly_summaries.iter().map(|r| {
+            Ok(HouseholdMonthlySummary {
+                month: r.month,
+                detail: serde_json::from_str(&r.detail)?,
+                billing_amount: r.billing_amount,
+                total_amount: r.total_amount,
+            })
+        }).collect()
     }
 
     async fn create_household(&self, household: &Households) -> Result<()> {
