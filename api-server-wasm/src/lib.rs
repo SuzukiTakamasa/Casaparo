@@ -112,6 +112,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/completed_household/monthly_summary/:year", |_req, ctx| async move {
             ctx.data.household_controller.get_completed_households_monthly_summary(&ctx).await
         })
+        .get_async("/v2/completed_household/monthly_summary/:year/:month", |_req, ctx| async move {
+            ctx.data.household_controller.get_completed_households_monthly_summary_by_month(&ctx).await
+        })
         .post_async("/v2/household/create", |mut req, ctx| async move {
             ctx.data.household_controller.create_household(&mut req).await
         })

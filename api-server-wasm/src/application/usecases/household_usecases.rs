@@ -27,6 +27,10 @@ impl<R: HouseholdRepository> HouseholdUsecases<R> {
         self.repository.get_completed_households_monthly_summary(year).await
     }
 
+    pub async fn get_completed_households_monthly_summary_by_month(&self, year: u16, month: u8) -> Result<Vec<HouseholdMonthlySummary>> {
+        self.repository.get_completed_households_monthly_summary_by_month(year, month).await
+    }
+
     pub async fn create_household(&self, household: &Households) -> Result<()> {
         self.repository.create_household(household).await
     }

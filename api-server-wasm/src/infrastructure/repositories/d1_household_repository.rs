@@ -5,6 +5,7 @@ use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
 
+
 pub struct D1HouseholdRepository {
     db: Arc<D1Database>
 }
@@ -47,6 +48,13 @@ impl HouseholdRepository for D1HouseholdRepository {
     async fn get_completed_households_monthly_summary(&self, year: u16) -> Result<Vec<HouseholdMonthlySummary>> {
         let statement = self.db.prepare("select month, billing_amount, total_amount from completed_households where year = ?1");
         let query = statement.bind(&[year.into()])?;
+        let result = query.all().await?;
+        result.results::<HouseholdMonthlySummary>()
+    }
+
+    async fn get_completed_households_monthly_summary_by_month(&self, year: u16, month: u8) -> Result<Vec<HouseholdMonthlySummary>> {
+        let statement = self.db.prepare("select json_extract(value, '$.name') as detail_name, cast(json_extract(value, '$.amount') as integer) as detail_amount, c.billing_amount, c.total_amount from completed_households c, json_each(c.detail) as details where year = ?1 and month = ?2");
+        let query = statement.bind(&[year.into(), month.into()])?;
         let result = query.all().await?;
         result.results::<HouseholdMonthlySummary>()
     }

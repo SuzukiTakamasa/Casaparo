@@ -69,6 +69,20 @@ impl<R: HouseholdRepository> HouseholdController<R> {
         Response::from_json(&result)
     }
 
+    pub async fn get_completed_households_monthly_summary_by_month(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let year = ctx.param("year").unwrap();
+        let month = ctx.param("month").unwrap();
+
+        let year_as_u16: u16 = year.parse().unwrap();
+        let month_as_u8: u8 = month.parse().unwrap();
+
+        let result = match self.usecases.get_completed_households_monthly_summary_by_month(year_as_u16, month_as_u8).await {
+            Ok(household_monthly_summary) => household_monthly_summary,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        Response::from_json(&result)
+    }
+
     pub async fn create_household(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
