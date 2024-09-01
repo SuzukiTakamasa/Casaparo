@@ -1,4 +1,4 @@
-use crate::domain::entities::household::{Households, FixedAmount, IsCompleted, RawHouseholdMonthlySummary, HouseholdMonthlySummary, CompletedHouseholds};
+use crate::domain::entities::household::{Households, FixedAmount, IsCompleted, HouseholdMonthlySummary, CompletedHouseholds};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::household_repository::HouseholdRepository;
 use crate::async_trait::async_trait;
@@ -46,19 +46,20 @@ impl HouseholdRepository for D1HouseholdRepository {
     }
 
     async fn get_completed_households_monthly_summary(&self, year: u16) -> Result<Vec<HouseholdMonthlySummary>> {
-        let statement = self.db.prepare("select month, detail, billing_amount, total_amount from completed_households where year = ?1");
+        let statement = self.db.prepare("select month, billing_amount, total_amount from completed_households where year = ?1");
         let query = statement.bind(&[year.into()])?;
         let result = query.all().await?;
-        let raw_household_monthly_summaries = result.results::<RawHouseholdMonthlySummary>()?;
+        result.results::<HouseholdMonthlySummary>()
+    }
 
-        raw_household_monthly_summaries.iter().map(|r| {
-            Ok(HouseholdMonthlySummary {
-                month: r.month,
-                detail: serde_json::from_str(&r.detail)?,
-                billing_amount: r.billing_amount,
-                total_amount: r.total_amount,
-            })
-        }).collect()
+    async fn get_completed_households_monthly_summary_by_month(&self, year: u16, month: u8) -> Result<HouseholdMonthlySummary> {
+        let statement = self.db.prepare("select month, detail, billing_amount, total_amount from completed_households where year = ?1 and month = ?2");
+        let query = statement.bind(&[year.into(), month.into()])?;
+        let result = query.first::<HouseholdMonthlySummary>(None).await?;
+        match result {
+            Some(household_monthly_summary) => Ok(household_monthly_summary),
+            None => Err(worker::Error::RustError("Failed to fetch household monthly summary".to_string()))
+        }
     }
 
     async fn create_household(&self, household: &Households) -> Result<()> {

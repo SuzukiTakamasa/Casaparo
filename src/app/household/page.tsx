@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryData, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryData, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -120,9 +120,9 @@ const Household = () => {
             if (res.data) {
                 setIsCompleted(res.data.is_completed)
                 if (res.data.is_completed === 1) {
-                    const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/v2/completed_household/monthly_summary/${householdYear}`)
+                    const expenses = await client.get<HouseholdMonthlySummaryData>(`/v2/completed_household/monthly_summary/${householdYear}/${householdMonth}`)
                     if (expenses.data) {
-                        setExpense(expenses.data.filter((expense) => expense.month === householdMonth)[0])
+                        setExpense(expenses.data)
                     }
                 }
             }
@@ -311,7 +311,7 @@ const Household = () => {
                             {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                         </button>
                     </div>
-                    {showDetail && <div className="text-center">{expense?.detail ? expense.detail.map(e => `${e.name}: ${e.amount}円`) : "-"}</div>}
+                    {showDetail && <div className="text-center">{expense?.detail ? JSON.parse(expense.detail).map((e: Detail) => `${e.name}: ${e.amount}円`) : "-"}</div>}
                     <div className="flex justify-center mt-4">
                         <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
                             <ArrowRightStartToIcon />

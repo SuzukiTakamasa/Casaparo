@@ -39,7 +39,7 @@ pub struct RawHouseholdMonthlySummary {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct HouseholdMonthlySummary {
     pub month: u8,
-    pub detail: Vec<Detail>,
+    pub detail: String,
     pub billing_amount: u32,
     pub total_amount: u32
 }
