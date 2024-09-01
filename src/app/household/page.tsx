@@ -301,8 +301,8 @@ const Household = () => {
                 )}
                 {isCompleted ?
                 <div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(expense[0].billing_amount)}</div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(expense[0].total_amount)}</div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense[0]?.billing_amount ? formatNumberWithCommas(expense[0]?.billing_amount) : "-"}</div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense[0]?.total_amount ? formatNumberWithCommas(expense[0]?.total_amount): "-"}</div>
                     <div className="flex justify-center">
                         <button
                             className="text-white"
@@ -311,7 +311,9 @@ const Household = () => {
                             {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                         </button>
                     </div>
-                    {showDetail && <div className="text-center">{expense.map(e => `${e.detail_name}: ${e.detail_amount}円`)}</div>}
+                    {showDetail && expense.map((e, i) => (
+                        <div className="text-center">{e.detail_name}: {String(e.detail_amount)}円</div>)
+                        )}
                     <div className="flex justify-center mt-4">
                         <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
                             <ArrowRightStartToIcon />
