@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryData, Detail } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
@@ -44,7 +44,7 @@ const Household = () => {
     const [version, setVersion] = useState(1)
     const [billingAmount, setBillingAmount] = useState(0)
     const [isCompleted, setIsCompleted] = useState(0)
-    const [expense, setExpense] = useState<HouseholdMonthlySummaryData>()
+    const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
 
     const today = new Date().getDate()
 
@@ -120,7 +120,7 @@ const Household = () => {
             if (res.data) {
                 setIsCompleted(res.data.is_completed)
                 if (res.data.is_completed === 1) {
-                    const expenses = await client.get<HouseholdMonthlySummaryData>(`/v2/completed_household/monthly_summary/${householdYear}/${householdMonth}`)
+                    const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/v2/completed_household/monthly_summary/${householdYear}/${householdMonth}`)
                     if (expenses.data) {
                         setExpense(expenses.data)
                     }
@@ -301,8 +301,8 @@ const Household = () => {
                 )}
                 {isCompleted ?
                 <div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense?.billing_amount ? formatNumberWithCommas(expense.billing_amount) : "-"}</div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense?.total_amount ? formatNumberWithCommas(expense.total_amount) : "-"}</div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(expense[0].billing_amount)}</div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(expense[0].total_amount)}</div>
                     <div className="flex justify-center">
                         <button
                             className="text-white"
@@ -311,7 +311,7 @@ const Household = () => {
                             {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                         </button>
                     </div>
-                    {showDetail && <div className="text-center">{expense?.detail ? JSON.parse(expense.detail).map((e: Detail) => `${e.name}: ${e.amount}円`) : "-"}</div>}
+                    {showDetail && <div className="text-center">{expense.map(e => `${e.detail_name}: ${e.detail_amount}円`)}</div>}
                     <div className="flex justify-center mt-4">
                         <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
                             <ArrowRightStartToIcon />

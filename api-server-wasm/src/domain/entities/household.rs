@@ -29,25 +29,12 @@ pub struct CompletedHouseholds {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct RawHouseholdMonthlySummary {
-    pub month: u8,
-    pub detail: String,
-    pub billing_amount: u32,
-    pub total_amount: u32
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct HouseholdMonthlySummary {
-    pub month: u8,
-    pub detail: String,
+    pub month: Option<u8>,
+    pub detail_name: Option<String>,
+    pub detail_amount: Option<u32>,
     pub billing_amount: u32,
     pub total_amount: u32
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct Detail {
-    pub name: String,
-    pub amount: u32
 }
 
 #[derive(Serialize, Deserialize, Debug)]

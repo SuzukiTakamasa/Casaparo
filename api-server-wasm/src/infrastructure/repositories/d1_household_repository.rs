@@ -52,14 +52,11 @@ impl HouseholdRepository for D1HouseholdRepository {
         result.results::<HouseholdMonthlySummary>()
     }
 
-    async fn get_completed_households_monthly_summary_by_month(&self, year: u16, month: u8) -> Result<HouseholdMonthlySummary> {
-        let statement = self.db.prepare("select month, detail, billing_amount, total_amount from completed_households where year = ?1 and month = ?2");
+    async fn get_completed_households_monthly_summary_by_month(&self, year: u16, month: u8) -> Result<Vec<HouseholdMonthlySummary>> {
+        let statement = self.db.prepare("select json_extract(value, '$.name') as detail_name, json_extract(value, '$.amount') as detail_amount, c.billing_amount, c.total_amount from completed_households c, json_each(c.detail) as details where year = ?1 and month = ?2");
         let query = statement.bind(&[year.into(), month.into()])?;
-        let result = query.first::<HouseholdMonthlySummary>(None).await?;
-        match result {
-            Some(household_monthly_summary) => Ok(household_monthly_summary),
-            None => Err(worker::Error::RustError("Failed to fetch household monthly summary".to_string()))
-        }
+        let result = query.all().await?;
+        result.results::<HouseholdMonthlySummary>()
     }
 
     async fn create_household(&self, household: &Households) -> Result<()> {

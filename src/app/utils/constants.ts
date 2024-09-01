@@ -55,8 +55,9 @@ export interface Detail {
 }
 
 export interface HouseholdMonthlySummaryData {
-    month: number
-    detail?: string
+    month?: number
+    detail_name?: string
+    detail_amount?: Number
     billing_amount: number
     total_amount: number
 }
