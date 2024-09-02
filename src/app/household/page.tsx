@@ -311,9 +311,24 @@ const Household = () => {
                             {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
                         </button>
                     </div>
-                    {showDetail && expense.map((e, i) => (
-                        <div className="text-center" key={i}>{e.detail_name}: {String(e.detail_amount)}円</div>)
-                        )}
+                    {showDetail && 
+                        <table className="table_auto min-w-full mt-4">
+                            <thead>
+                                <tr>
+                                    <th className="border-b-2 py-1 bg-gray-700 text-white">項目</th>
+                                    <th className="border-b-2 py-1 bg-gray-700 text-white">金額</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {expense.map((e, i) => (
+                                <tr key={i}>
+                                    <td className="border-b px-1 py-1 text-center">{e.detail_name}</td>
+                                    <td className="border-b px-1 py-1 text-right">{e?.detail_amount && formatNumberWithCommas(Number(e.detail_amount))}円</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    }
                     <div className="flex justify-center mt-4">
                         <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
                             <ArrowRightStartToIcon />
