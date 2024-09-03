@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS inventories;
+CREATE TABLE inventories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    types INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    amount INTEGER NOT NULL,
+    version INTEGER NOT NULL
+)
