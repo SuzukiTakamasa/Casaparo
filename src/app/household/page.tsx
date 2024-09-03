@@ -323,7 +323,7 @@ const Household = () => {
                             {expense.map((e, i) => (
                                 <tr key={i}>
                                     <td className="border-b px-1 py-1 text-center">{e.detail_name}</td>
-                                    <td className="border-b px-1 py-1 text-right">{e?.detail_amount && formatNumberWithCommas(Number(e.detail_amount))}円</td>
+                                    <td className="border-b px-1 py-1 text-right">¥{e?.detail_amount && formatNumberWithCommas(Number(e.detail_amount))}</td>
                                 </tr>
                             ))}
                             </tbody>
