@@ -127,11 +127,11 @@ impl<R: HouseholdRepository> HouseholdController<R> {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
         };
-        let mut completed_household: CompletedHouseholds = match from_str(json_body.as_str()) {
+        let completed_household: CompletedHouseholds = match from_str(json_body.as_str()) {
             Ok(completed_household) => completed_household,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_completed_household(&mut completed_household).await?;
+        self.usecases.create_completed_household(&completed_household).await?;
         Response::ok("An Completed Household was deleted")
     }
 }
