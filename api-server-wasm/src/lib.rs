@@ -27,6 +27,10 @@ use crate::infrastructure::repositories::d1_anniversary_repository::D1Anniversar
 use crate::application::usecases::anniversary_usecases::AnniversaryUsecases;
 use crate::interfaces::api::anniversary_controller::AnniversaryController;
 
+use crate::infrastructure::repositories::d1_inventory_repository::D1InventoryRepository;
+use crate::application::usecases::inventory_usecases::InventoryUsecases;
+use crate::interfaces::api::inventory_controller::InventoryController;
+
 
 fn get_db_env(req: &Request) -> Result<String> {
     let header_name = "Environment"; 
@@ -42,6 +46,7 @@ pub struct AppState {
     wiki_controller: WikiController<D1WikiRepository>,
     label_controller: LabelController<D1LabelRepository>,
     anniversary_controller: AnniversaryController<D1AnniversaryRepository>,
+    inventory_controller: InventoryController<D1InventoryRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -84,9 +89,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let label_usecases = LabelUsecases::new(label_repository);
     let label_controller = LabelController::new(label_usecases);
 
-    let anniversary_repository = D1AnniversaryRepository::new(db);
+    let anniversary_repository = D1AnniversaryRepository::new(db.clone());
     let anniversary_usecases = AnniversaryUsecases::new(anniversary_repository);
     let anniversary_controller = AnniversaryController::new(anniversary_usecases);
+
+    let inventory_repository = D1InventoryRepository::new(db);
+    let inventory_usecases = InventoryUsecases::new(inventory_repository);
+    let inventory_controller = InventoryController::new(inventory_usecases);
 
     let app_state = AppState {
         household_controller,
@@ -94,6 +103,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         wiki_controller,
         label_controller,
         anniversary_controller,
+        inventory_controller,
     };
 
 
@@ -186,6 +196,19 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/anniversary/delete", |mut req, ctx| async move {
             ctx.data.anniversary_controller.delete_anniversary(&mut req).await
+        })
+     //inventory
+        .get_async("/v2/inventory", |_req, ctx| async move {
+            ctx.data.inventory_controller.get_inventories().await
+        })
+        .post_async("/v2/inventory/create", |mut req, ctx| async move {
+            ctx.data.inventory_controller.create_inventory(&mut req).await
+        })
+        .post_async("/v2/inventory/update", |mut req, ctx| async move {
+            ctx.data.inventory_controller.update_inventory(&mut req).await
+        })
+        .post_async("/v2/inventory/delete", |mut req, ctx| async move {
+            ctx.data.inventory_controller.delete_inventory(&mut req).await
         })
     .run(req, env)
     .await

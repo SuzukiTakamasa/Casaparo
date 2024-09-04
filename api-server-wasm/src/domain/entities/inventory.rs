@@ -9,10 +9,6 @@ pub struct Inventories {
     pub version: u32
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-pub struct AddedAmount {
-    pub amount: u32
-}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ShoppingNotes {
