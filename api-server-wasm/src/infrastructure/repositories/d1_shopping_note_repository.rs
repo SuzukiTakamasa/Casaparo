@@ -24,7 +24,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn create_shopping_note(&self, shopping_note: &ShoppingNotes) -> Result<()> {
-        let statement = self.db.prepare("insert into (notes, is_registered, version) values (?1, ?2, ?3)");
+        let statement = self.db.prepare("insert into (notes, is_registered, created_by, version) values (?1, ?2, ?3, ?4)");
         let query = statement.bind(&[shopping_note.notes.clone().into(),
                                      shopping_note.is_registered.into(),
                                      shopping_note.version.into()])?;
@@ -33,7 +33,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn register_to_inventory(&self, shopping_note: &ShoppingNotes) -> Result<()> {
-        let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.version') as integer) as note_version, from shopping_notes where id = ?1");
+        let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version, from shopping_notes where id = ?1");
         let query = statement.bind(&[shopping_note.id.into()])?;
         let result = query.all().await?;
         let registering_inventories_list = match result.results::<RegisteringInventoriesList>() {
@@ -46,7 +46,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
 
         for r in registering_inventories_list.iter() {
             if r.note_id == 0 {
-                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, version) values ( {}, {}, {}, {});", r.note_types, r.note_name, r.note_amount, 1)))
+                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, created_by, version) values ( {}, {}, {}, {}, {});", r.note_types, r.note_name, r.note_amount, r.note_created_by, 1)))
             } else {
                 update_query_list.push(self.db.prepare(format!("update inventories set amount = amount + {};", r.note_amount)))
             }

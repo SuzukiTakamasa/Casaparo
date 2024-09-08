@@ -91,6 +91,23 @@ export interface AnniversaryData {
     version: number
 }
 
+export interface InventoryData {
+    id?: number,
+    types: number,
+    name: string,
+    amount: number,
+    created_by: number,
+    version: number
+}
+
+export interface ShoppingNoteData {
+    id?: number,
+    notes: string,
+    is_registered: boolean,
+    created_by: number,
+    version: number
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -110,6 +127,10 @@ export type WikiResponse = WikiData[]
 export type LabelResponse = LabelData[]
 
 export type AnniversaryResponse = AnniversaryData[]
+
+export type InventoryResponse = InventoryData[]
+
+export type ShopingNoteData = ShoppingNoteData[]
 
 export type APIRequest = HouseholdData |
                           ScheduleData |
