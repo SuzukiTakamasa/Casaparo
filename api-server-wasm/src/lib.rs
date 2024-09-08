@@ -1,7 +1,6 @@
 use worker::*;
 use std::sync::Arc;
 
-mod entities;
 mod application;
 mod domain;
 mod infrastructure;
@@ -31,6 +30,10 @@ use crate::infrastructure::repositories::d1_inventory_repository::D1InventoryRep
 use crate::application::usecases::inventory_usecases::InventoryUsecases;
 use crate::interfaces::api::inventory_controller::InventoryController;
 
+use crate::infrastructure::repositories::d1_shopping_note_repository::D1ShoppingNoteRepository;
+use crate::application::usecases::shopping_note_usecases::ShoppingNoteUsecases;
+use crate::interfaces::api::shopping_note_controller::ShoppingNoteController;
+
 
 fn get_db_env(req: &Request) -> Result<String> {
     let header_name = "Environment"; 
@@ -47,6 +50,7 @@ pub struct AppState {
     label_controller: LabelController<D1LabelRepository>,
     anniversary_controller: AnniversaryController<D1AnniversaryRepository>,
     inventory_controller: InventoryController<D1InventoryRepository>,
+    shopping_note_controller: ShoppingNoteController<D1ShoppingNoteRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -93,9 +97,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let anniversary_usecases = AnniversaryUsecases::new(anniversary_repository);
     let anniversary_controller = AnniversaryController::new(anniversary_usecases);
 
-    let inventory_repository = D1InventoryRepository::new(db);
+    let inventory_repository = D1InventoryRepository::new(db.clone());
     let inventory_usecases = InventoryUsecases::new(inventory_repository);
     let inventory_controller = InventoryController::new(inventory_usecases);
+
+    let shopping_note_repository = D1ShoppingNoteRepository::new(db);
+    let shopping_note_usecases = ShoppingNoteUsecases::new(shopping_note_repository);
+    let shopping_note_controller = ShoppingNoteController::new(shopping_note_usecases);
 
     let app_state = AppState {
         household_controller,
@@ -104,11 +112,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         label_controller,
         anniversary_controller,
         inventory_controller,
+        shopping_note_controller,
     };
 
 
     Router::with_data(app_state)
-     //hosuehold
+     //household
         .get_async("/v2/household/:year/:month", |_req, ctx| async move {
             ctx.data.household_controller.get_households(&ctx).await
         })
@@ -209,6 +218,22 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/inventory/delete", |mut req, ctx| async move {
             ctx.data.inventory_controller.delete_inventory(&mut req).await
+        })
+     //shopping_note
+        .get_async("/v2/shopping_note", |_req, ctx| async move {
+            ctx.data.shopping_note_controller.get_shopping_notes().await
+        })
+        .post_async("/v2/shopping_note/create", |mut req, ctx| async move {
+            ctx.data.shopping_note_controller.create_shopping_note(&mut req).await
+        })
+        .post_async("/v2/shopping_note/resiger_to_inventory", |mut req, ctx| async move {
+            ctx.data.shopping_note_controller.register_to_inventory(&mut req).await
+        })
+        .post_async("/v2/shopping_note/update", |mut req, ctx| async move {
+            ctx.data.shopping_note_controller.update_shopping_note(&mut req).await
+        })
+        .post_async("/v2/shopping_note/delete", |mut req, ctx| async move {
+            ctx.data.shopping_note_controller.delete_shopping_note(&mut req).await
         })
     .run(req, env)
     .await

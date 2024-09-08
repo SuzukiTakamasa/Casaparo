@@ -1,4 +1,4 @@
-/*v1
+/* v1
 .get_async("/household/:year/:month", |req, ctx| async move {
     let year = ctx.param("year").unwrap();
     let month = ctx.param("month").unwrap();

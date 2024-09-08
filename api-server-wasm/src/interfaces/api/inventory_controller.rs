@@ -31,7 +31,7 @@ impl<R: InventoryRepository> InventoryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.create_inventory(&inventory).await?;
-        Response::ok("A Inventories was created")
+        Response::ok("A inventory was created")
     }
 
     pub async fn update_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -44,7 +44,7 @@ impl<R: InventoryRepository> InventoryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.update_inventory(&mut inventory).await?;
-        Response::ok("A Inventories was updated")
+        Response::ok("A inventory was updated")
     }
 
     pub async fn delete_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -57,6 +57,6 @@ impl<R: InventoryRepository> InventoryController<R> {
             Err(_) => return Response::error("Invalid request body", 400)
         };
         self.usecases.delete_inventory(&mut inventory).await?;
-        Response::ok("A Inventories was deleted")
+        Response::ok("A inventory was deleted")
     }
 }
