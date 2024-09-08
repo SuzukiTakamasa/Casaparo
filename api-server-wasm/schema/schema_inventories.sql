@@ -4,5 +4,6 @@ CREATE TABLE inventories (
     types INTEGER NOT NULL,
     name TEXT NOT NULL,
     amount INTEGER NOT NULL,
+    created_by INTEGER NOT NULL,
     version INTEGER NOT NULL
 )

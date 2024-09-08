@@ -24,10 +24,11 @@ impl InventoryRepository for D1InventoryRepository {
     }
 
     async fn create_inventory(&self, inventory: &Inventories) -> Result<()> {
-        let statement = self.db.prepare("insert into inventories (types, name, amount, version) values (?1, ?2, ?3, ?4)");
+        let statement = self.db.prepare("insert into inventories (types, name, amount, created_by, version) values (?1, ?2, ?3, ?4, ?5)");
         let query = statement.bind(&[inventory.types.into(),
                                                           inventory.name.clone().into(),
                                                           inventory.amount.into(),
+                                                          inventory.created_by.into(),
                                                           inventory.version.into()])?;
         query.run().await?;
         Ok(())
@@ -50,6 +51,7 @@ impl InventoryRepository for D1InventoryRepository {
         let query = statement.bind(&[inventory.types.into(),
                                                           inventory.name.clone().into(),
                                                           inventory.amount.into(),
+                                                          inventory.created_by.into(),
                                                           inventory.version.into()])?;
         query.run().await?;
         Ok(())                             
