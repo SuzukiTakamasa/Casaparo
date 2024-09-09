@@ -130,7 +130,7 @@ export type AnniversaryResponse = AnniversaryData[]
 
 export type InventoryResponse = InventoryData[]
 
-export type ShopingNoteData = ShoppingNoteData[]
+export type ShoppingNoteResponse = ShoppingNoteData[]
 
 export type APIRequest = HouseholdData |
                           ScheduleData |
