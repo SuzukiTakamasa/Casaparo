@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 import { XMarkIcon, HamburgerIcon } from './components/HeroicIcons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faCalendar, faChartBar, faBook, faCog } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt } from '@fortawesome/free-solid-svg-icons'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -43,6 +43,10 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
               <Link href="/household" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
                 <FontAwesomeIcon icon={faHouse} style={{ marginRight: '16px'}} />
                 家計簿
+              </Link>
+              <Link href="/inventory" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
+                <FontAwesomeIcon icon={faReceipt} style={{ marginRight: '16px'}} />
+                在庫・買い物メモ
               </Link>
               <Link href="/schedule" onClick={toggleMenu} className="block px-4 py-2 text-white hover:bg-gray-600">
                 <FontAwesomeIcon icon={faCalendar} style={{ marginRight: '16px'}} />
