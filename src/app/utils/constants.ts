@@ -137,4 +137,6 @@ export type APIRequest = HouseholdData |
                 CompletedHouseholdData |
                               WikiData |
                              LabelData |
-                       AnniversaryData
+                       AnniversaryData |
+                         InventoryData |
+                      ShoppingNoteData
