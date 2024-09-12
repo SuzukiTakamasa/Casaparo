@@ -26,8 +26,8 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     async fn create_shopping_note(&self, shopping_note: &ShoppingNotes) -> Result<()> {
         let statement = self.db.prepare("insert into (notes, is_registered, created_by, version) values (?1, ?2, ?3, ?4)");
         let query = statement.bind(&[shopping_note.notes.clone().into(),
-                                     shopping_note.is_registered.into(),
-                                     shopping_note.version.into()])?;
+                                                          shopping_note.is_registered.into(),
+                                                          shopping_note.version.into()])?;
         query.run().await?;
         Ok(())
     }
@@ -84,8 +84,8 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         }
         let statement = self.db.prepare("update shopping_notes set notes = ?1, is_registered = ?2, version = ?3 where id = ?4");
         let query = statement.bind(&[shopping_note.notes.clone().into(),
-                                     shopping_note.is_registered.into(),
-                                     shopping_note.version.into()])?;
+                                                          shopping_note.is_registered.into(),
+                                                          shopping_note.version.into()])?;
         query.run().await?;
         Ok(())
     }
