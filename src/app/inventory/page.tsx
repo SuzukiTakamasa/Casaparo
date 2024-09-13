@@ -6,8 +6,8 @@ import { useEffect, useState, useCallback, useContext } from 'react'
 import APIClient from '@utils/api_client'
 import { InventoryData, InventoryResponse, ShoppingNoteResponse } from '@utils/constants'
 
-import { formatNumberWithCommas } from '@utils/utility_function'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
+import { formatNumberWithCommas, setUser } from '@utils/utility_function'
+import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
 
 
 const client = new APIClient()
@@ -19,7 +19,7 @@ const Inventory = () => {
     const [showInventoryDialog, setShowInventoryDialog] = useState(false)
     const [showShoppingNoteDialog, setShowShoppingNoteDialog] = useState(false)
 
-    const [typesValisMsg, setTypesValidMsg] = useState("")
+    const [typesValidMsg, setTypesValidMsg] = useState("")
     const [nameValidMsg, setNameValidMsg] = useState("")
     const [inventoryCreatedByValidMsg, setInventoryCreatedByValidMsg] = useState("")
 
@@ -31,18 +31,29 @@ const Inventory = () => {
     const [types, setTypes] = useState(0)
     const [name, setName] = useState("")
     const [amount, setAmount] = useState(0)
-    const [inventoryCreatedBy, setInventoryCreatedBy] = useState<number|null>(null)
+    const [inventoryCreatedBy, setInventoryCreatedBy] = useState<number>(1)
     const [inventoryVersion, setInventoryVersion] = useState(1)
 
     const [shoppingNotes, setShoppingNotes] = useState<ShoppingNoteResponse>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
-    const [notes, setNotes] = useState("")
+    const [notes, setNotes] = useState<InventoryData[]>([])
     const [isRegistered, setIsRegistered] = useState(false)
     const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(0)
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
 
     const [isExisting, setIsExisting] = useState(false)
     const [itemCount, setItemCount] = useState(0)
+
+    const setTypesStr = (types: number) => {
+        switch (types) {
+            case 1:
+                return "食料品"
+            case 2:
+                return "日用品"
+            default:
+                return "-"
+        }
+    }
 
     const validateInventory = () => {
         let isValid = true
@@ -95,7 +106,7 @@ const Inventory = () => {
         setTypes(0)
         setName("")
         setAmount(0)
-        setInventoryCreatedBy(null)
+        setInventoryCreatedBy(1)
         setInventoryVersion(1)
     }
 
@@ -131,7 +142,16 @@ const Inventory = () => {
         await client.post<InventoryResponse>("/v2/inventory/delete", deleteInventoryData)
         await fetchInventories()
     }
-    
+    const handleIncrementAmount = () => {
+        setAmount(amount => amount + 1)
+    }
+    const handleDecrementAmount = () => {
+        setAmount(amount => amount - 1)
+    }
+
+    useEffect(() => {
+        fetchInventories()
+    }, [fetchInventories])
 
     useEffect(() => {
         if (activeTab === 'shopping note') {
@@ -162,14 +182,99 @@ const Inventory = () => {
                 {activeTab === "inventory" &&
                 <>
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 mt-4"
                         onClick={handleOpenInventoryDialog}
                     >
                     在庫を登録
                     </button>
+
+                    {showInventoryDialog && (
+                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                            <div className="bg-white p-4 rounded">
+                                <div className="flex flex-col space-y-4 mb-4">
+                                    <label className="text-black">
+                                        <span>種別</span>
+                                        <select
+                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                            value={types}
+                                            onChange={e => setTypes(Number(e.target.value))}
+                                        >
+                                            <option value="0"></option>
+                                            <option value="1">食料品</option>
+                                            <option value="2">日用品</option>
+                                        </select>
+                                    </label>
+                                    {typesValidMsg !== "" && <div className="text-sm text-red-500">{typesValidMsg}</div>}
+                                    <input
+                                        className="border p-2 text-black"
+                                        type="text"
+                                        placeholder="項目名"
+                                        value={name}
+                                        onChange={e => setName(e.target.value)}
+                                    >
+                                    </input>
+                                    {nameValidMsg !== "" && <div className="text-sm text-red-500">{nameValidMsg}</div>}
+                                    <div className="flex justify-center">
+                                        <button
+                                            className="text-blue-700 mr-1"
+                                            onClick={handleDecrementAmount}
+                                        >
+                                        {<MinusIcon/>}
+                                        </button>
+                                        <input
+                                            className="border p-2 text-black text-right w-1/4"
+                                            type="text"
+                                            placeholder="個数"
+                                            value={amount}
+                                            onChange={e => setAmount(Number(e.target.value))}
+                                        >
+                                        </input>
+                                        <button
+                                            className="text-blue-700 ml-1"
+                                            onClick={handleIncrementAmount}
+                                        >
+                                        {<PlusIcon/>}
+                                        </button>
+                                    </div>
+                                    <div className="text-black">登録者</div>
+                                    <div className="text-3xl text-center">
+                                        <input
+                                            type="radio"
+                                            value="1"
+                                            checked={inventoryCreatedBy === 1}
+                                            onChange={e => setInventoryCreatedBy(Number(e.target.value))}
+                                        />
+                                        <span className="mr-8">🥺</span>
+                                        <input
+                                            type="radio"
+                                            value="0"
+                                            checked={inventoryCreatedBy === 0}
+                                            onChange={e => setInventoryCreatedBy(Number(e.target.value))}
+                                        />
+                                        <span>🥺ྀི</span>
+                                    </div>
+                                </div>
+                                <div className="flex justify-center space-x-4">
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                        onClick={isUpdateInventory ? handleUpdateInventory : handleAddInventory}
+                                    >
+                                        {isUpdateInventory ? "変更" : "登録"}
+                                    </button>
+                                    <button
+                                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={handleCloseInventoryDialog}
+                                >
+                                    キャンセル
+                                </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                     <table className="table-auto min-w-full mt-4">
                         <thead>
                             <tr>
+                                <th className="border-b-2 py-1 bg-blue-900"></th>
                                 <th className="border-b-2 py-1 bg-blue-900">種別</th>
                                 <th className="border-b-2 py-1 bg-blue-900">項目名</th>
                                 <th className="border-b-2 py-1 bg-blue-900">個数</th>
@@ -177,12 +282,40 @@ const Inventory = () => {
                             </tr>
                         </thead>
                         <tbody>
-                        {inventories.map((iv, i) => (
+                        {inventories.map((inventory, i) => (
                             <tr key={i}>
-                                <td className="border-b px-1 py-1 text-center">{iv.types}</td>
-                                <td className="border-b px-1 py-1 text-center">{iv.name}</td>
-                                <td className="border-b px-1 py-1 text-center">{iv.amount}</td>
-                                <td className="border-b px-1 py-1 text-center">{iv.created_by}</td>
+                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                <button
+                                        className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                        onClick={() => handleOpenUpdateInventoryDialog({
+                                            id: inventory.id,
+                                            types: inventory.types,
+                                            name: inventory.name,
+                                            amount: inventory.amount,
+                                            created_by: inventory.created_by,
+                                            version: inventory.version
+                                        })}
+                                    >
+                                        <PencilIcon />
+                                    </button>
+                                    <button
+                                        className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
+                                        onClick={() => deleteInventory({
+                                            id: inventory.id,
+                                            types: inventory.types,
+                                            name: inventory.name,
+                                            amount: inventory.amount,
+                                            created_by: inventory.created_by,
+                                            version: inventory.version
+                                        })}
+                                    >
+                                        <TrashBoxIcon />
+                                    </button>
+                                </td>
+                                <td className="border-b px-1 py-1 text-center">{setTypesStr(inventory.types)}</td>
+                                <td className="border-b px-1 py-1 text-center">{inventory.name}</td>
+                                <td className="border-b px-1 py-1 text-center">{inventory.amount}</td>
+                                <td className="border-b px-1 py-1 text-center">{setUser(inventory.created_by)}</td>
                             </tr>
                         ))}
                         </tbody>
@@ -192,7 +325,7 @@ const Inventory = () => {
                 {activeTab === "shopping note" &&
                 <>
                     <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 mt-4"
                         onClick={handleOpenInventoryDialog}
                     >
                     買い物メモを登録

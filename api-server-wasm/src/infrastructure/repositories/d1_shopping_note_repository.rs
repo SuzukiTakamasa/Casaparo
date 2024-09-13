@@ -85,7 +85,8 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         let statement = self.db.prepare("update shopping_notes set notes = ?1, is_registered = ?2, version = ?3 where id = ?4");
         let query = statement.bind(&[shopping_note.notes.clone().into(),
                                                           shopping_note.is_registered.into(),
-                                                          shopping_note.version.into()])?;
+                                                          shopping_note.version.into(),
+                                                          shopping_note.id.into()])?;
         query.run().await?;
         Ok(())
     }

@@ -47,12 +47,13 @@ impl InventoryRepository for D1InventoryRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update inventories set types = ?1, name = ?2, amount = ?3, version = ?4 where id = ?5");
+        let statement = self.db.prepare("update inventories set types = ?1, name = ?2, amount = ?3, created_by = ?4, version = ?5 where id = ?6");
         let query = statement.bind(&[inventory.types.into(),
                                                           inventory.name.clone().into(),
                                                           inventory.amount.into(),
                                                           inventory.created_by.into(),
-                                                          inventory.version.into()])?;
+                                                          inventory.version.into(),
+                                                          inventory.id.into()])?;
         query.run().await?;
         Ok(())                             
     }
