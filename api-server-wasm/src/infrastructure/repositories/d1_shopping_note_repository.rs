@@ -46,9 +46,9 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
 
         for r in registering_inventories_list.iter() {
             if r.note_id == 0 {
-                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, created_by, version) values ( {}, {}, {}, {}, {});", r.note_types, r.note_name, r.note_amount, r.note_created_by, 1)))
+                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, created_by, version) values ( {}, {}, {}, {}, 1)", r.note_types, r.note_name, r.note_amount, r.note_created_by)))
             } else {
-                update_query_list.push(self.db.prepare(format!("update inventories set amount = amount + {};", r.note_amount)))
+                update_query_list.push(self.db.prepare(format!("update inventories set amount = amount + {} where id = {}", r.note_amount, r.note_id)))
             }
         }
 
@@ -56,6 +56,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         query_list.push(self.db.prepare("begin;"));
         query_list.append(&mut insert_query_list);
         query_list.append(&mut update_query_list);
+        query_list.push(self.db.prepare(format!("update shopping_notes set is_registered = 1 where id = {:?}", shopping_note.id)));
         query_list.push(self.db.prepare("commit;"));
 
         let batch_result = self.db.batch(query_list).await;

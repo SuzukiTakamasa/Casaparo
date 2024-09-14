@@ -1,12 +1,12 @@
 "use client"
 
 //export const runtime = 'edge'
-import { useEffect, useState, useCallback, useContext } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 import APIClient from '@utils/api_client'
-import { InventoryData, InventoryResponse, ShoppingNoteResponse, Result } from '@utils/constants'
+import { InventoryData, InventoryResponse, ShoppingNoteData, ShoppingNoteResponse, Result } from '@utils/constants'
 
-import { formatNumberWithCommas, setUser } from '@utils/utility_function'
+import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
 
 
@@ -29,14 +29,14 @@ const Inventory = () => {
     const [typesForSort, setTypesForSort] = useState(0)
     const [name, setName] = useState("")
     const [amount, setAmount] = useState(0)
-    const [inventoryCreatedBy, setInventoryCreatedBy] = useState<number>(1)
+    const [inventoryCreatedBy, setInventoryCreatedBy] = useState(1)
     const [inventoryVersion, setInventoryVersion] = useState(1)
 
     const [shoppingNotes, setShoppingNotes] = useState<ShoppingNoteResponse>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
     const [notes, setNotes] = useState<InventoryData[]>([])
     const [isRegistered, setIsRegistered] = useState(false)
-    const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(0)
+    const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(1)
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
 
     const [isExisting, setIsExisting] = useState(false)
@@ -141,11 +141,80 @@ const Inventory = () => {
         await client.post<InventoryResponse>("/v2/inventory/delete", deleteInventoryData)
         await fetchInventories()
     }
-    const handleIncrementAmount = () => {
+    const handleInventoryIncrementAmount = () => {
         setAmount(amount => amount + 1)
     }
-    const handleDecrementAmount = () => {
+    const handleInventoryDecrementAmount = () => {
         setAmount(amount => amount - 1)
+    }
+
+    const handleAddShoppingNote = async () => {
+        await addShoppingNote()
+        handleCloseShoppingNoteDialog()
+    }
+    const handleUpdateShoppingNote = async () => {
+        await updateShoppingNote()
+        handleCloseShoppingNoteDialog()
+    }
+    const handleOpenShoppingNoteDialog = () => {
+        setShowShoppingNoteDialog(true)
+    }
+    const handleOpenUpdateShoppingNoteDialog = ({id, notes, is_registered, created_by, version}: ShoppingNoteData) => {
+        setShowShoppingNoteDialog(true)
+        setShoppingNoteId(id as number)
+        setNotes(JSON.parse(notes))
+        setIsRegistered(intToBool(is_registered))
+        setShoppingNoteCreatedBy(created_by)
+        setShoppingNoteVersion(version)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }
+    const handleCloseShoppingNoteDialog = () => {
+        setShowShoppingNoteDialog(false)
+        setShoppingNoteId(0)
+        setNotes([])
+        setIsRegistered(false)
+        setShoppingNoteCreatedBy(0)
+        setShoppingNoteVersion(1)
+        setShoppingNoteVersion(1)
+    }
+
+    const fetchShoppingNotes = useCallback(async () => {
+        const shoppingNote = await client.get<ShoppingNoteResponse>("/v2/shopping_note")
+        setShoppingNotes(shoppingNote.data || [])
+    }, [])
+    const addShoppingNote = async () => {
+        const addShoppingNoteData = {
+            notes: JSON.stringify(notes),
+            is_registered: boolToInt(isRegistered),
+            created_by: shoppingNoteCreatedBy,
+            version: shoppingNoteVersion
+        }
+        await client.post<ShoppingNoteResponse>("/v2/shopping_note/create", addShoppingNoteData)
+        await fetchShoppingNotes()
+    }
+    const updateShoppingNote = async () => {
+        const updateShoppingNoteData = {
+            id: shoppingNoteId,
+            notes: JSON.stringify(notes),
+            is_registered: boolToInt(isRegistered),
+            created_by: shoppingNoteCreatedBy,
+            version: shoppingNoteVersion
+        }
+        await client.post<ShoppingNoteResponse>("/v2/shopping_note/update", updateShoppingNoteData)
+        await fetchShoppingNotes()
+    }
+    const deleteShoppingNote = async (deleteShoppingNoteData: ShoppingNoteData) => {
+        if (!window.confirm("買い物メモを削除しますか？")) return
+        await client.post<ShoppingNoteResponse>("/v2/shopping_note/delete", deleteShoppingNoteData)
+        await fetchShoppingNotes()
+    }
+    const registerToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+        if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
+        await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        await fetchShoppingNotes()
     }
 
     useEffect(() => {
@@ -230,7 +299,7 @@ const Inventory = () => {
                                     <div className="flex justify-center">
                                         <button
                                             className="text-blue-700 mr-1"
-                                            onClick={handleDecrementAmount}
+                                            onClick={handleInventoryDecrementAmount}
                                         >
                                         {<MinusIcon/>}
                                         </button>
@@ -244,7 +313,7 @@ const Inventory = () => {
                                         </input>
                                         <button
                                             className="text-blue-700 ml-1"
-                                            onClick={handleIncrementAmount}
+                                            onClick={handleInventoryIncrementAmount}
                                         >
                                         {<PlusIcon/>}
                                         </button>
