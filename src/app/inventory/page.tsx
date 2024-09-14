@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback, useContext } from 'react'
 
 import APIClient from '@utils/api_client'
-import { InventoryData, InventoryResponse, ShoppingNoteResponse } from '@utils/constants'
+import { InventoryData, InventoryResponse, ShoppingNoteResponse, Result } from '@utils/constants'
 
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
@@ -21,14 +21,12 @@ const Inventory = () => {
 
     const [typesValidMsg, setTypesValidMsg] = useState("")
     const [nameValidMsg, setNameValidMsg] = useState("")
-    const [inventoryCreatedByValidMsg, setInventoryCreatedByValidMsg] = useState("")
-
-    const [shoppingNoteCreatedByValidMsg, setShoppingNoteCreatedByValidMsg] = useState("")
 
     const [inventories, setInventories] = useState<InventoryResponse>([])
     const [inventoryId, setInventoryId] = useState(0)
     const [isUpdateInventory, setIsUpdateInventory] = useState(false)
     const [types, setTypes] = useState(0)
+    const [typesForSort, setTypesForSort] = useState(0)
     const [name, setName] = useState("")
     const [amount, setAmount] = useState(0)
     const [inventoryCreatedBy, setInventoryCreatedBy] = useState<number>(1)
@@ -64,10 +62,6 @@ const Inventory = () => {
         if (name === "") {
             isValid = false
             setNameValidMsg("項目名を入力してください。")
-        }
-        if (inventoryCreatedBy === null) {
-            isValid = false
-            setInventoryCreatedByValidMsg("いずれかの登録者を選択してください。")
         }
         return isValid
     }
@@ -111,9 +105,14 @@ const Inventory = () => {
     }
 
     const fetchInventories = useCallback(async () => {
-        const inventories = await client.get<InventoryResponse>("/v2/inventory")
+        let inventories: Result<InventoryResponse>
+        if (typesForSort === 0) {
+            inventories = await client.get<InventoryResponse>("/v2/inventory")
+        } else {
+            inventories = await client.get<InventoryResponse>(`/v2/inventory/${typesForSort}`)
+        }
         setInventories(inventories.data || [])
-    }, [])
+    }, [typesForSort])
     const addInventory = async () => {
         const addInventoryData = {
             types: types,
@@ -181,12 +180,26 @@ const Inventory = () => {
 
                 {activeTab === "inventory" &&
                 <>
-                    <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 mt-4"
-                        onClick={handleOpenInventoryDialog}
-                    >
-                    在庫を登録
-                    </button>
+                    <div className="flex justify-left">
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 mt-4"
+                            onClick={handleOpenInventoryDialog}
+                        >
+                        在庫を登録
+                        </button>
+
+                        <div className="ml-4 mt-4">
+                            <select
+                                value={typesForSort}
+                                onChange={(e) => {setTypesForSort(Number(e.target.value))}}
+                                className="form-select block w-full px-3 py-2 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-int-out m-0 focs:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                            >
+                                <option value="0">全ての種別を表示</option>
+                                <option value="1">食料品</option>
+                                <option value="2">日用品</option>
+                            </select>
+                        </div>
+                    </div>
 
                     {showInventoryDialog && (
                         <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">

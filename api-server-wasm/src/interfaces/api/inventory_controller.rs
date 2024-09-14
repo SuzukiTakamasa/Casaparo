@@ -1,8 +1,9 @@
 use crate::application::usecases::inventory_usecases::InventoryUsecases;
 use crate::domain::entities::inventory::Inventories;
 use crate::domain::repositories::inventory_repository::InventoryRepository;
-use worker::{Request, Response, Result};
+use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
+use crate::AppState;
 
 pub struct InventoryController<R: InventoryRepository> {
     usecases: InventoryUsecases<R>,
@@ -15,6 +16,17 @@ impl<R: InventoryRepository> InventoryController<R> {
 
     pub async fn get_inventories(&self) -> Result<Response> {
         let result = match self.usecases.get_inventories().await {
+            Ok(inventories) => inventories,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        Response::from_json(&result)
+    }
+
+    pub async fn get_inventories_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let id = ctx.param("id").unwrap();
+        let id_as_u8: u8 = id.parse().unwrap();
+
+        let result = match self.usecases.get_inventories_by_id(id_as_u8).await {
             Ok(inventories) => inventories,
             Err(e) => return Response::error(e.to_string(), 500)
         };
