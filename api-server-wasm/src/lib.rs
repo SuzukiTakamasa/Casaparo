@@ -210,6 +210,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/inventory", |_req, ctx| async move {
             ctx.data.inventory_controller.get_inventories().await
         })
+        .get_async("/v2/inventory/:id", |_req, ctx| async move {
+            ctx.data.inventory_controller.get_inventories_by_id(&ctx).await
+        })
         .post_async("/v2/inventory/create", |mut req, ctx| async move {
             ctx.data.inventory_controller.create_inventory(&mut req).await
         })
