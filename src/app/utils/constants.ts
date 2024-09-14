@@ -103,7 +103,7 @@ export interface InventoryData {
 export interface ShoppingNoteData {
     id?: number,
     notes: string,
-    is_registered: boolean,
+    is_registered: number,
     created_by: number,
     version: number
 }
