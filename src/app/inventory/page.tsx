@@ -34,13 +34,14 @@ const Inventory = () => {
 
     const [shoppingNotes, setShoppingNotes] = useState<ShoppingNoteResponse>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
-    const [notes, setNotes] = useState<InventoryData[]>([])
+    const [isUpdateShoppingNote, setIsUpdateShoppingNote] = useState(false)
+    const [notes, setNotes] = useState<InventoryData[]>([{id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
     const [isRegistered, setIsRegistered] = useState(false)
     const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(1)
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
 
     const [isExisting, setIsExisting] = useState(false)
-    const [itemCount, setItemCount] = useState(0)
+    const [itemCount, setItemCount] = useState(1)
 
     const setTypesStr = (types: number) => {
         switch (types) {
@@ -86,9 +87,8 @@ const Inventory = () => {
         setName(name)
         setAmount(amount)
         setInventoryCreatedBy(created_by)
-        setInventoryVersion(1)
-        setIsUpdateInventory(true)
         setInventoryVersion(version)
+        setIsUpdateInventory(true)
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -102,6 +102,7 @@ const Inventory = () => {
         setAmount(0)
         setInventoryCreatedBy(1)
         setInventoryVersion(1)
+        setIsUpdateInventory(false)
     }
 
     const fetchInventories = useCallback(async () => {
@@ -166,6 +167,7 @@ const Inventory = () => {
         setIsRegistered(intToBool(is_registered))
         setShoppingNoteCreatedBy(created_by)
         setShoppingNoteVersion(version)
+        setIsUpdateShoppingNote(true)
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -176,9 +178,18 @@ const Inventory = () => {
         setShoppingNoteId(0)
         setNotes([])
         setIsRegistered(false)
-        setShoppingNoteCreatedBy(0)
+        setShoppingNoteCreatedBy(1)
         setShoppingNoteVersion(1)
-        setShoppingNoteVersion(1)
+        setIsUpdateShoppingNote(false)
+    }
+    const handleSetIsExisting = () => {
+        setIsExisting(!isExisting)
+    }
+    const handleAddNote = () => {
+        setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
+    }
+    const handleRemoveNote = () => {
+        setNotes(notes.slice(0, -1))
     }
 
     const fetchShoppingNotes = useCallback(async () => {
@@ -301,7 +312,7 @@ const Inventory = () => {
                                             className="text-blue-700 mr-1"
                                             onClick={handleInventoryDecrementAmount}
                                         >
-                                        {<MinusIcon/>}
+                                        <MinusIcon/>
                                         </button>
                                         <input
                                             className="border p-2 text-black text-right w-1/4"
@@ -315,7 +326,7 @@ const Inventory = () => {
                                             className="text-blue-700 ml-1"
                                             onClick={handleInventoryIncrementAmount}
                                         >
-                                        {<PlusIcon/>}
+                                        <PlusIcon/>
                                         </button>
                                     </div>
                                     <div className="text-black">登録者</div>
@@ -346,9 +357,9 @@ const Inventory = () => {
                                     <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={handleCloseInventoryDialog}
-                                >
-                                    キャンセル
-                                </button>
+                                    >
+                                        キャンセル
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -357,10 +368,10 @@ const Inventory = () => {
                         <thead>
                             <tr>
                                 <th className="border-b-2 py-1 bg-blue-900"></th>
-                                <th className="border-b-2 py-1 bg-blue-900">種別</th>
-                                <th className="border-b-2 py-1 bg-blue-900">項目名</th>
-                                <th className="border-b-2 py-1 bg-blue-900">個数</th>
-                                <th className="border-b-2 py-1 bg-blue-900">登録者</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">種別</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">項目名</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">個数</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">登録者</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -408,10 +419,60 @@ const Inventory = () => {
                 <>
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 mt-4"
-                        onClick={handleOpenInventoryDialog}
+                        onClick={handleOpenShoppingNoteDialog}
                     >
                     買い物メモを登録
                     </button>
+
+                    {showShoppingNoteDialog && (
+                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                            <div className="bg-white p-4 rounded">
+                                <div className="flex flex-col space-y-4 mb-4">
+                                    <label className="flex items-center space-x-2 text-black">
+                                        <span>既存在庫の更新</span>
+                                    </label>
+                                     {notes.map((note, i) => (
+                                        <div key={i} className="flex justify-left">
+                                            <input
+                                                type="checkbox"
+                                                checked={isExisting}
+                                                onChange={handleSetIsExisting}            
+                                            />
+                                        </div>
+                                     ))}
+                                    <div className="flex justify-center">
+                                        <button
+                                            className="text-blue-700 mr-1"
+                                            onClick={handleRemoveNote}
+                                        >
+                                        <MinusIcon/>
+                                        </button>
+                                        <button
+                                            className="text-blue-700 ml-1"
+                                            onClick={handleAddNote}
+                                        >
+                                        <PlusIcon/>
+                                        </button>
+                                    </div>
+                                    <div className="flex justify-end space-x-4">
+                                        <button
+                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                            onClick={isUpdateShoppingNote ? handleUpdateShoppingNote : handleAddShoppingNote}
+                                        >
+                                            {isUpdateShoppingNote ? "変更" : "登録"}
+                                        </button>
+                                        <button
+                                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                        onClick={handleCloseShoppingNoteDialog}
+                                        >
+                                            キャンセル
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {shoppingNotes.map((s, i) => (
                         <div key={i}>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">

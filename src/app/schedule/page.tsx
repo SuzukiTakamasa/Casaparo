@@ -152,12 +152,12 @@ const Schedule = () => {
     
         return (
             <>
-                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                <td className="border-b py-1 flex-row justify-center items-center space-x-1 text-sm">
                     <div className={dateColorStr}>
                     {`${day}日(${getWeekDay(year, month, day)})`}
                     </div>
                 </td>
-                <td className="border-b py-1 flex-col justify-center items-center space-x-1">
+                <td className="border-b py-1 flex-col justify-center items-center space-x-1 text-sm">
                     {schedules.map((schedule, i) => (
                         isDisplayed(schedule) &&
                         <button 
@@ -666,8 +666,8 @@ const Schedule = () => {
                     <table className="table-auto min-w-full mt-4">
                         <thead>
                             <tr>
-                                <th className="border-b-2 py-1 bg-blue-900">日付</th>
-                                <th className="border-b-2 py-1 bg-blue-900">予定</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">日付</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">予定</th>
                             </tr>
                         </thead>
                         <tbody>
