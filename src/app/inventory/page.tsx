@@ -432,7 +432,7 @@ const Inventory = () => {
                                         <span>既存在庫の更新</span>
                                     </label>
                                      {notes.map((note, i) => (
-                                        <div className="flex justify-left">
+                                        <div key={i} className="flex justify-left">
                                             <input
                                                 type="checkbox"
                                                 checked={isExisting}
