@@ -341,9 +341,9 @@ const Household = () => {
                     <thead>
                         <tr>
                             <th className="border-b-2 py-1 bg-blue-900"></th>
-                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">項目</th>
-                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">金額</th>
-                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white">登録者</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm">項目</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm">金額</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm">登録者</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -377,9 +377,9 @@ const Household = () => {
                                         <TrashBoxIcon />
                                     </button>
                                 </td>
-                                <td className="border-b px-1 py-1 text-center">{household.name}</td>
-                                <td className="border-b px-1 py-1 text-right">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
-                                <td className="border-b px-1 py-1 text-center w-24">{setUser(household.is_owner)}</td>  
+                                <td className="border-b px-1 py-1 text-center text-sm">{household.name}</td>
+                                <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{setUser(household.is_owner)}</td>  
                             </tr>
                         ))}
                     </tbody>
