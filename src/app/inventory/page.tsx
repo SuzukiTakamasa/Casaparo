@@ -455,7 +455,7 @@ const Inventory = () => {
                                                 value={note.name}
                                             >
                                                 {inventories.map((inventory, i) => (
-                                                    <option value={inventory.name}>{inventory.name}</option>
+                                                    <option key={i} value={inventory.name}>{inventory.name}</option>
                                                 ))}
                                             </select>
                                             :
