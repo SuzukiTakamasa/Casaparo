@@ -247,9 +247,9 @@ const Wiki = () => {
             <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white"></th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white">タイトル</th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white">作成者</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm"></th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">タイトル</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">作成者</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -285,11 +285,11 @@ const Wiki = () => {
                                     <TrashBoxIcon />
                                 </button>
                             </td>
-                            <td className="border-b px-1 py-1 text-center">
+                            <td className="border-b px-1 py-1 text-center text-sm">
                                 <Link href={`/wiki/detail?id=${wiki.id}`} className="text-blue-500 font-bold hover:underline">{wiki.title}</Link>
                                 <div className="text-xs">{`(最終更新: ${wiki.updated_at})`}</div>
                             </td>
-                            <td className="border-b px-1 py-1 text-center">{setUser(wiki.created_by)}</td>
+                            <td className="border-b px-1 py-1 text-center text-sm">{setUser(wiki.created_by)}</td>
                         </tr>
                     ))}
                 </tbody>
