@@ -394,10 +394,10 @@ const Inventory = () => {
                                         <TrashBoxIcon />
                                     </button>
                                 </td>
-                                <td className="border-b px-1 py-1 text-center">{setTypesStr(inventory.types)}</td>
-                                <td className="border-b px-1 py-1 text-center">{inventory.name}</td>
-                                <td className="border-b px-1 py-1 text-center">{inventory.amount}</td>
-                                <td className="border-b px-1 py-1 text-center">{setUser(inventory.created_by)}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{setTypesStr(inventory.types)}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{inventory.name}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{inventory.amount}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{setUser(inventory.created_by)}</td>
                             </tr>
                         ))}
                         </tbody>
