@@ -40,7 +40,7 @@ const Inventory = () => {
     const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(1)
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
 
-    const [isExisting, setIsExisting] = useState(false)
+    const [isExisting, setIsExisting] = useState<boolean[]>([false])
     const [itemCount, setItemCount] = useState(1)
 
     const setTypesStr = (types: number) => {
@@ -176,14 +176,16 @@ const Inventory = () => {
     const handleCloseShoppingNoteDialog = () => {
         setShowShoppingNoteDialog(false)
         setShoppingNoteId(0)
-        setNotes([])
+        setNotes([{id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
         setIsRegistered(false)
         setShoppingNoteCreatedBy(1)
         setShoppingNoteVersion(1)
         setIsUpdateShoppingNote(false)
+        setIsExisting([false])
     }
-    const handleSetIsExisting = () => {
-        setIsExisting(!isExisting)
+    const handleSetIsExisting = (i: number) => {
+        isExisting[i] = !isExisting[i]
+        setIsExisting(isExisting)
     }
     const handleAddNote = () => {
         setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
@@ -292,7 +294,7 @@ const Inventory = () => {
                                             value={types}
                                             onChange={e => setTypes(Number(e.target.value))}
                                         >
-                                            <option value="0"></option>
+                                            <option value="0">種別を選択</option>
                                             <option value="1">食料品</option>
                                             <option value="2">日用品</option>
                                         </select>
@@ -434,10 +436,44 @@ const Inventory = () => {
                                      {notes.map((note, i) => (
                                         <div key={i} className="flex justify-left">
                                             <input
+                                                className="mr-1"
                                                 type="checkbox"
-                                                checked={isExisting}
-                                                onChange={handleSetIsExisting}            
+                                                checked={isExisting[i]}
+                                                onChange={_ => handleSetIsExisting(i)}           
                                             />
+                                            <select
+                                                className="block w-1/4 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                value={note.types}
+                                            >
+                                                <option value="0">種別を選択</option>
+                                                <option value="1">食料品</option>
+                                                <option value="2">日用品</option>
+                                            </select>
+                                            {isExisting[i] ? 
+                                            <select
+                                                className="block w-1/4 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                value={note.name}
+                                            >
+                                                {inventories.map((inventory, i) => (
+                                                    <option value={inventory.name}>{inventory.name}</option>
+                                                ))}
+                                            </select>
+                                            :
+                                            <input
+                                                className="border text-black ml-1"
+                                                type="text"
+                                                placeholder="項目名"
+                                                value={note.name}
+                                            >
+                                            </input>
+                                            }
+                                            <input
+                                                className="border text-black text-right w-1/4 ml-1"
+                                                type="text"
+                                                placeholder="個数"
+                                                value={note.amount}
+                                            >
+                                            </input>
                                         </div>
                                      ))}
                                     <div className="flex justify-center">
@@ -454,6 +490,23 @@ const Inventory = () => {
                                         <PlusIcon/>
                                         </button>
                                     </div>
+                                    <div className="text-black">登録者</div>
+                                        <div className="text-3xl text-center">
+                                            <input
+                                                type="radio"
+                                                value="1"
+                                                checked={shoppingNoteCreatedBy === 1}
+                                                onChange={e => setShoppingNoteCreatedBy(Number(e.target.value))}
+                                            />
+                                            <span className="mr-8">🥺</span>
+                                            <input
+                                                type="radio"
+                                                value="0"
+                                                checked={shoppingNoteCreatedBy === 0}
+                                                onChange={e => setShoppingNoteCreatedBy(Number(e.target.value))}
+                                            />
+                                            <span>🥺ྀི</span>
+                                        </div>
                                     <div className="flex justify-end space-x-4">
                                         <button
                                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
