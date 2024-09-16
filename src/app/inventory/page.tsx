@@ -41,7 +41,6 @@ const Inventory = () => {
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
 
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
-    const [itemCount, setItemCount] = useState(1)
 
     const setTypesStr = (types: number) => {
         switch (types) {
@@ -183,15 +182,67 @@ const Inventory = () => {
         setIsUpdateShoppingNote(false)
         setIsExisting([false])
     }
-    const handleSetIsExisting = (i: number) => {
-        isExisting[i] = !isExisting[i]
-        setIsExisting(isExisting)
+    const handleSetIsExisting = (index: number) => {
+        setIsExisting(prevIsExisting => {
+            const newIsExisting = [...prevIsExisting]
+            newIsExisting[index] = !newIsExisting[index]
+            return newIsExisting
+        })
+    }
+    const handleSetNoteType = (index: number, noteTypes: number) => {
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            newNotes[index].types = noteTypes
+            return newNotes
+        })
+    }
+    const handleSetNoteName = (index: number, noteName: string) => {
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            newNotes[index].name = noteName
+            return newNotes
+        })
+    }
+    const handleSetNoteExistingName = (index: number, id: string) => {
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            const matchedInventory = inventories.filter(i => i.id === Number(id))[0]
+            newNotes[index].name = matchedInventory.name
+            newNotes[index].id = matchedInventory.id
+            newNotes[index].types = matchedInventory.types
+            newNotes[index].created_by = matchedInventory.created_by
+            newNotes[index].version = matchedInventory.version
+            return newNotes
+        })
+    }
+    const handleSetNoteAmount = (index: number, noteAmount: number) => {
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            newNotes[index].amount = noteAmount
+            return newNotes
+        })
+    }
+    const handleShoppingNoteIncrementAmount = (index: number) => {
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            newNotes[index].amount += 1
+            return newNotes
+        })
+    }
+    const handleShoppingNoteDecrementAmount = (index: number) => {
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            newNotes[index].amount -= 1
+            return newNotes
+        })
     }
     const handleAddNote = () => {
         setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
+        setIsExisting([...isExisting, false])
     }
     const handleRemoveNote = () => {
         setNotes(notes.slice(0, -1))
+        setIsExisting(isExisting.slice(0, -1))
     }
 
     const fetchShoppingNotes = useCallback(async () => {
@@ -313,6 +364,7 @@ const Inventory = () => {
                                         <button
                                             className="text-blue-700 mr-1"
                                             onClick={handleInventoryDecrementAmount}
+                                            disabled={amount === 0}
                                         >
                                         <MinusIcon/>
                                         </button>
@@ -380,7 +432,7 @@ const Inventory = () => {
                         {inventories.map((inventory, i) => (
                             <tr key={i}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                <button
+                                    <button
                                         className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
                                         onClick={() => handleOpenUpdateInventoryDialog({
                                             id: inventory.id,
@@ -439,31 +491,40 @@ const Inventory = () => {
                                                 className="mr-1"
                                                 type="checkbox"
                                                 checked={isExisting[i]}
-                                                onChange={_ => handleSetIsExisting(i)}           
+                                                onChange={_ => handleSetIsExisting(i)}
                                             />
-                                            <select
-                                                className="block w-1/4 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={note.types}
-                                            >
-                                                <option value="0">種別を選択</option>
-                                                <option value="1">食料品</option>
-                                                <option value="2">日用品</option>
-                                            </select>
-                                            {isExisting[i] ? 
-                                            <select
-                                                className="block w-1/4 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={note.name}
-                                            >
-                                                {inventories.map((inventory, i) => (
-                                                    <option key={i} value={inventory.name}>{inventory.name}</option>
-                                                ))}
-                                            </select>
+                                            <label className="text-black">
+                                                <select
+                                                    className={`block ${isExisting[i] ? "bg-gray-500" : "bg-white"} border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50`}
+                                                    value={note.types}
+                                                    onChange={(e) => handleSetNoteType(i, Number(e.target.value))}
+                                                    disabled={isExisting[i]}
+                                                >
+                                                    <option value="0">種別を選択</option>
+                                                    <option value="1">食料品</option>
+                                                    <option value="2">日用品</option>
+                                                </select>
+                                            </label>
+                                            {isExisting[i] ?
+                                            <label className="text-black">
+                                                <select
+                                                    className="block bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
+                                                    value={note.id}
+                                                    onChange={(e) => handleSetNoteExistingName(i, e.target.value)}
+                                                >
+                                                    <option value="">項目を選択</option>
+                                                    {inventories.map((inventory, i) => (
+                                                        <option key={i} value={inventory.id}>{inventory.name}</option>
+                                                    ))}
+                                                </select>
+                                            </label>
                                             :
                                             <input
-                                                className="border text-black ml-1"
+                                                className="border ml-1 text-black"
                                                 type="text"
                                                 placeholder="項目名"
                                                 value={note.name}
+                                                onChange={(e) => handleSetNoteName(i, e.target.value)}
                                             >
                                             </input>
                                             }
@@ -472,14 +533,29 @@ const Inventory = () => {
                                                 type="text"
                                                 placeholder="個数"
                                                 value={note.amount}
+                                                onChange={(e) => handleSetNoteAmount(i, Number(e.target.value))}
                                             >
                                             </input>
+                                            <button
+                                                className="text-blue-700 mr-1"
+                                                onClick={() => handleShoppingNoteDecrementAmount(i)}
+                                                disabled={note.amount === 0}
+                                            >
+                                                <MinusIcon/>
+                                            </button>
+                                            <button
+                                                className="text-blue-700 mr-1"
+                                                onClick={() => handleShoppingNoteIncrementAmount(i)}
+                                            >
+                                                <PlusIcon/>
+                                            </button>
                                         </div>
                                      ))}
                                     <div className="flex justify-center">
                                         <button
                                             className="text-blue-700 mr-1"
                                             onClick={handleRemoveNote}
+                                            disabled={notes.length === 1}
                                         >
                                         <MinusIcon/>
                                         </button>
@@ -526,10 +602,54 @@ const Inventory = () => {
                         </div>
                     )}
 
-                    {shoppingNotes.map((s, i) => (
+                    {shoppingNotes.map((shoppingNote, i) => (
                         <div key={i}>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
                                 <div className="bg-black text-white p-2">
+                                    <div className="flex justify-center">
+                                        {!shoppingNote.is_registered ?
+                                        <>
+                                            <button
+                                                className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                                onClick={() => handleOpenUpdateShoppingNoteDialog({
+                                                    id: shoppingNote.id,
+                                                    notes: shoppingNote.notes,
+                                                    is_registered: shoppingNote.is_registered,
+                                                    created_by: shoppingNote.created_by,
+                                                    version: shoppingNote.version
+                                                })}
+                                            >
+                                                <PencilIcon />
+                                            </button>
+                                            <button
+                                                className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
+                                                onClick={() => deleteShoppingNote({
+                                                    id: shoppingNote.id,
+                                                    notes: shoppingNote.notes,
+                                                    is_registered: shoppingNote.is_registered,
+                                                    created_by: shoppingNote.created_by,
+                                                    version: shoppingNote.version
+                                                })}
+                                            >
+                                                <TrashBoxIcon />
+                                            </button>
+                                            <button
+                                                className="bg-green-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                                onClick={() => registerToInventory(shoppingNote)}
+                                            >
+                                                在庫に登録
+                                            </button>
+                                        </>
+                                            :
+                                        <>
+                                            <CheckBadgeIcon/>
+                                            <div>登録済み</div>
+                                        </>
+                                        }
+                                    </div>
+                                    {JSON.parse(shoppingNote.notes).map((note: InventoryData) => {
+                                        `${note.name} x ${note.amount}`
+                                    })}
                                 </div>
                             </div>
                         </div>
