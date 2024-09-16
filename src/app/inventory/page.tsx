@@ -557,7 +557,7 @@ const Inventory = () => {
                                             </div>
                                             <div className="flex flex-row-reverse">
                                                 <button
-                                                    className="text-blue-700"
+                                                    className="text-blue-700 ml-1"
                                                     onClick={() => handleShoppingNoteIncrementAmount(i)}
                                                 >
                                                     <PlusIcon/>
