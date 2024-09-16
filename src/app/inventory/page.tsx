@@ -562,13 +562,6 @@ const Inventory = () => {
                                                 >
                                                     <PlusIcon/>
                                                 </button>
-                                                <button
-                                                    className={`${note.amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
-                                                    onClick={() => handleShoppingNoteDecrementAmount(i)}
-                                                    disabled={note.amount === 0}
-                                                >
-                                                    <MinusIcon/>
-                                                </button>
                                                 <input
                                                     className="border text-black text-right w-1/4"
                                                     type="text"
@@ -577,6 +570,13 @@ const Inventory = () => {
                                                     onChange={(e) => handleSetNoteAmount(i, Number(e.target.value))}
                                                 >
                                                 </input>
+                                                <button
+                                                    className={`${note.amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
+                                                    onClick={() => handleShoppingNoteDecrementAmount(i)}
+                                                    disabled={note.amount === 0}
+                                                >
+                                                    <MinusIcon/>
+                                                </button>
                                             </div>
                                         </>
                                      ))}
