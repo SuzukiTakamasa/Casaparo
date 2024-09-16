@@ -47,17 +47,28 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
 
         for r in registering_inventories_list.iter() {
             if r.note_id == 0 {
-                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, created_by, version) values ({}, {}, {}, {}, {})", r.note_types, r.note_name, r.note_amount, r.note_created_by, r.note_version)))
+                let insert_inventories_statement = self.db.prepare("insert into inventories (types, name, amount, created_by, version) values (?1, ?2, ?3, ?4, ?5)");
+                let insert_inventories_query = insert_inventories_statement.bind(&[r.note_types.into(),
+                                                                                                        r.note_name.clone().into(),
+                                                                                                        r.note_amount.into(),
+                                                                                                        r.note_created_by.into(),
+                                                                                                        r.note_version.into()])?;
+                insert_query_list.push(insert_inventories_query)
             } else {
-                update_query_list.push(self.db.prepare(format!("update inventories set amount = amount + {} where id = {}", r.note_amount, r.note_id)))
+                let update_inventories_statement = self.db.prepare("update inventories set amount = amount + ?1 where id = ?2");
+                let update_inventories_query = update_inventories_statement.bind(&[r.note_amount.into(), r.note_id.into()])?;
+                update_query_list.push(update_inventories_query)
             }
         }
+
+        let update_is_registered_statement = self.db.prepare("update shopping_notes set is_registered = 1 where id = ?1");
+        let update_is_registered_query = update_is_registered_statement.bind(&[shopping_note.id.into()])?;
 
         let mut query_list = Vec::new();
         query_list.push(self.db.prepare("begin;"));
         query_list.append(&mut insert_query_list);
         query_list.append(&mut update_query_list);
-        query_list.push(self.db.prepare(format!("update shopping_notes set is_registered = 1 where id = {:?}", shopping_note.id)));
+        query_list.push(update_is_registered_query);
         query_list.push(self.db.prepare("commit;"));
 
         let batch_result = self.db.batch(query_list).await;
