@@ -225,14 +225,20 @@ const Inventory = () => {
     const handleShoppingNoteIncrementAmount = (index: number) => {
         setNotes(prevNotes => {
             const newNotes = [...prevNotes]
-            newNotes[index].amount += 1
+            newNotes[index] = {
+                ...newNotes[index],
+                amount: newNotes[index].amount + 1
+            }
             return newNotes
         })
     }
     const handleShoppingNoteDecrementAmount = (index: number) => {
         setNotes(prevNotes => {
             const newNotes = [...prevNotes]
-            newNotes[index].amount -= 1
+            newNotes[index] = {
+                ...newNotes[index],
+                amount: newNotes[index].amount - 1
+            }
             return newNotes
         })
     }
@@ -381,7 +387,7 @@ const Inventory = () => {
                                     {nameValidMsg !== "" && <div className="text-sm text-red-500">{nameValidMsg}</div>}
                                     <div className="flex justify-center">
                                         <button
-                                            className="text-blue-700 mr-1"
+                                            className={`${amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
                                             onClick={handleInventoryDecrementAmount}
                                             disabled={amount === 0}
                                         >
@@ -505,84 +511,88 @@ const Inventory = () => {
                                         <span>既存在庫の更新</span>
                                     </label>
                                      {notes.map((note, i) => (
-                                        <div key={i} className="flex justify-left">
-                                            <input
-                                                className="mr-1"
-                                                type="checkbox"
-                                                checked={isExisting[i]}
-                                                onChange={_ => handleSetIsExisting(i)}
-                                            />
-                                            <label className="text-black">
-                                                <select
-                                                    className={`block ${isExisting[i] ? "bg-gray-500" : "bg-white"} border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50`}
-                                                    value={note.types}
-                                                    onChange={(e) => handleSetNoteType(i, Number(e.target.value))}
-                                                    disabled={isExisting[i]}
+                                        <>
+                                            <div key={i} className="flex justify-left">
+                                                <input
+                                                    className="mr-1"
+                                                    type="checkbox"
+                                                    checked={isExisting[i]}
+                                                    onChange={_ => handleSetIsExisting(i)}
+                                                />
+                                                <label className="text-black">
+                                                    <select
+                                                        className={`block ${isExisting[i] ? "bg-gray-500" : "bg-white"} border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50`}
+                                                        value={note.types}
+                                                        onChange={(e) => handleSetNoteType(i, Number(e.target.value))}
+                                                        disabled={isExisting[i]}
+                                                    >
+                                                        <option value="0">種別を選択</option>
+                                                        <option value="1">食料品</option>
+                                                        <option value="2">日用品</option>
+                                                    </select>
+                                                </label>
+                                                {isExisting[i] ?
+                                                <label className="text-black">
+                                                    <select
+                                                        className="block bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
+                                                        value={note.id}
+                                                        onChange={(e) => handleSetNoteExistingName(i, e.target.value)}
+                                                    >
+                                                        <option value="">項目を選択</option>
+                                                        {inventories.map((inventory, i) => (
+                                                            <option key={i} value={inventory.id}>{inventory.name}</option>
+                                                        ))}
+                                                    </select>
+                                                </label>
+                                                :
+                                                <input
+                                                    className="border ml-1 text-black"
+                                                    type="text"
+                                                    placeholder="項目名"
+                                                    value={note.name}
+                                                    onChange={(e) => handleSetNoteName(i, e.target.value)}
                                                 >
-                                                    <option value="0">種別を選択</option>
-                                                    <option value="1">食料品</option>
-                                                    <option value="2">日用品</option>
-                                                </select>
-                                            </label>
-                                            {isExisting[i] ?
-                                            <label className="text-black">
-                                                <select
-                                                    className="block bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
-                                                    value={note.id}
-                                                    onChange={(e) => handleSetNoteExistingName(i, e.target.value)}
+                                                </input>
+                                                }
+                                            </div>
+                                            <div className="flex flex-row-reverse">
+                                                <button
+                                                    className="text-blue-700"
+                                                    onClick={() => handleShoppingNoteIncrementAmount(i)}
                                                 >
-                                                    <option value="">項目を選択</option>
-                                                    {inventories.map((inventory, i) => (
-                                                        <option key={i} value={inventory.id}>{inventory.name}</option>
-                                                    ))}
-                                                </select>
-                                            </label>
-                                            :
-                                            <input
-                                                className="border ml-1 text-black"
-                                                type="text"
-                                                placeholder="項目名"
-                                                value={note.name}
-                                                onChange={(e) => handleSetNoteName(i, e.target.value)}
-                                            >
-                                            </input>
-                                            }
-                                            <input
-                                                className="border text-black text-right w-1/4 ml-1"
-                                                type="text"
-                                                placeholder="個数"
-                                                value={note.amount}
-                                                onChange={(e) => handleSetNoteAmount(i, Number(e.target.value))}
-                                            >
-                                            </input>
-                                            <button
-                                                className="text-blue-700 mr-1"
-                                                onClick={() => handleShoppingNoteDecrementAmount(i)}
-                                                disabled={note.amount === 0}
-                                            >
-                                                <MinusIcon/>
-                                            </button>
-                                            <button
-                                                className="text-blue-700 mr-1"
-                                                onClick={() => handleShoppingNoteIncrementAmount(i)}
-                                            >
-                                                <PlusIcon/>
-                                            </button>
-                                        </div>
+                                                    <PlusIcon/>
+                                                </button>
+                                                <button
+                                                    className={`${note.amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
+                                                    onClick={() => handleShoppingNoteDecrementAmount(i)}
+                                                    disabled={note.amount === 0}
+                                                >
+                                                    <MinusIcon/>
+                                                </button>
+                                                <input
+                                                    className="border text-black text-right w-1/4"
+                                                    type="text"
+                                                    placeholder="個数"
+                                                    value={note.amount}
+                                                    onChange={(e) => handleSetNoteAmount(i, Number(e.target.value))}
+                                                >
+                                                </input>
+                                            </div>
+                                        </>
                                      ))}
                                     <div className="flex justify-center">
                                         <button
-                                            className="text-blue-700 mr-1"
+                                            className="text-blue-700 mr-4"
+                                            onClick={handleAddNote}
+                                        >
+                                        ＋フォームを追加
+                                        </button>
+                                        <button
+                                            className={`${notes.length === 1 ? "text-gray-300" : "text-red-700"}`}
                                             onClick={handleRemoveNote}
                                             disabled={notes.length === 1}
                                         >
-                                        <MinusIcon/>
-                                        </button>
-                                        <button
-                                            className="text-blue-700 ml-1"
-                                            onClick={handleAddNote}
-                                        >
-                                        <PlusIcon/>
+                                        −フォームを削除
                                         </button>
                                     </div>
                                     <div className="text-black">登録者</div>

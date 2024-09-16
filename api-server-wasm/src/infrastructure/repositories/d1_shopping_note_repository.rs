@@ -34,7 +34,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn register_to_inventory(&self, shopping_note: &ShoppingNotes) -> Result<()> {
-        let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version from shopping_notes where id = ?1");
+        let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version from shopping_notes s, json_each(s.notes) as notes where s.id = ?1");
         let query = statement.bind(&[shopping_note.id.into()])?;
         let result = query.all().await?;
         let registering_inventories_list = match result.results::<RegisteringInventoriesList>() {
