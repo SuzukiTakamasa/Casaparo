@@ -702,6 +702,7 @@ const Inventory = () => {
                                             <div>登録済み</div>
                                         </>
                                         }
+                                        <div className="ml-4">登録者：{setUser(shoppingNote[i].created_by)}</div>
                                     </div>
                                     {shoppingNote.map((note, n) => (
                                         <div key={n} className="text-right">{`${note.note_name} x ${note.note_amount}`}</div>
