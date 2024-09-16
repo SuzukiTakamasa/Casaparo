@@ -112,6 +112,7 @@ export interface ExtractedShoppingNoteData {
     id: number,
     note_id: number,
     note_types: number,
+    note_name: string,
     note_amount: number,
     note_created_by: number,
     note_version: number,
