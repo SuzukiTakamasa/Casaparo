@@ -301,7 +301,8 @@ const Inventory = () => {
 
     useEffect(() => {
         fetchInventories()
-    }, [fetchInventories])
+        fetchShoppingNotes()
+    }, [fetchInventories, fetchShoppingNotes])
 
     useEffect(() => {
         if (activeTab === 'shopping note') {

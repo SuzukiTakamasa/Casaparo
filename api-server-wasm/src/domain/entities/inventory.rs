@@ -21,6 +21,20 @@ pub struct ShoppingNotes {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct ExtractedShoppingNotes {
+    pub id: Option<u32>,
+    pub note_id: u32,
+    pub note_types: u8,
+    pub note_name: String,
+    pub note_amount: u32,
+    pub note_created_by: u8,
+    pub note_version: u32,
+    pub is_registered: u8,
+    pub created_by: u8,
+    pub version: u32 
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct RegisteringInventoriesList {
     pub note_id: u32,
     pub note_types: u8,

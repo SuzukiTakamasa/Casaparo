@@ -1,4 +1,4 @@
-use crate::domain::entities::inventory::{ShoppingNotes, RegisteringInventoriesList};
+use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes, RegisteringInventoriesList};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::shopping_note_repository::ShoppingNoteRepository;
 use crate::async_trait::async_trait;
@@ -17,10 +17,10 @@ impl D1ShoppingNoteRepository {
 
 #[async_trait(?Send)]
 impl ShoppingNoteRepository for D1ShoppingNoteRepository {
-    async fn get_shopping_notes(&self) -> Result<Vec<ShoppingNotes>> {
+    async fn get_shopping_notes(&self) -> Result<Vec<ExtractedShoppingNotes>> {
         let query = self.db.prepare("select s.id, cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version, s.is_registered, s.created_by, s.version from shopping_notes s, json_each(s.notes) as notes order by s.is_registered asc, s.id desc");
         let result = query.all().await?;
-        result.results::<ShoppingNotes>()
+        result.results::<ExtractedShoppingNotes>()
     }
 
     async fn create_shopping_note(&self, shopping_note: &ShoppingNotes) -> Result<()> {

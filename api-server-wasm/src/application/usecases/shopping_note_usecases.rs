@@ -1,4 +1,4 @@
-use crate::domain::entities::inventory::ShoppingNotes;
+use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes};
 use crate::domain::repositories::shopping_note_repository::ShoppingNoteRepository;
 use worker::Result;
 
@@ -11,7 +11,7 @@ impl<R: ShoppingNoteRepository> ShoppingNoteUsecases<R> {
         Self { repository }
     }
 
-    pub async fn get_shopping_notes(&self) -> Result<Vec<ShoppingNotes>> {
+    pub async fn get_shopping_notes(&self) -> Result<Vec<ExtractedShoppingNotes>> {
         self.repository.get_shopping_notes().await
     }
 
