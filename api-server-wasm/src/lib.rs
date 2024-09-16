@@ -229,7 +229,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .post_async("/v2/shopping_note/create", |mut req, ctx| async move {
             ctx.data.shopping_note_controller.create_shopping_note(&mut req).await
         })
-        .post_async("/v2/shopping_note/resiger_to_inventory", |mut req, ctx| async move {
+        .post_async("/v2/shopping_note/register_to_inventory", |mut req, ctx| async move {
             ctx.data.shopping_note_controller.register_to_inventory(&mut req).await
         })
         .post_async("/v2/shopping_note/update", |mut req, ctx| async move {

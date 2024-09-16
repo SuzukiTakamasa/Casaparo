@@ -625,7 +625,7 @@ const Inventory = () => {
                         <div key={i}>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
                                 <div className="bg-black text-white p-2">
-                                    <div className="flex justify-center">
+                                    <div className="flex justify-left">
                                         {!shoppingNote[i].is_registered ?
                                         <>
                                             <button
@@ -667,7 +667,7 @@ const Inventory = () => {
                                                 <TrashBoxIcon />
                                             </button>
                                             <button
-                                                className={"bg-green-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                                className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded"}
                                                 onClick={() => registerToInventory({
                                                     id: shoppingNote[i].id,
                                                     notes: JSON.stringify(shoppingNote.map((note) => ({
@@ -694,7 +694,7 @@ const Inventory = () => {
                                         }
                                     </div>
                                     {shoppingNote.map((note, n) => (
-                                        <div key={n}>{`${note.note_name} x ${amount}`}</div>
+                                        <div key={n} className="text-right">{`${note.note_name} x ${note.note_amount}`}</div>
                                     ))}
                                 </div>
                             </div>
