@@ -693,7 +693,7 @@ const Inventory = () => {
                                         }
                                     </div>
                                     {shoppingNote.map((note, i) => (
-                                        <div>{`${note.note_name} x ${amount}`}</div>
+                                        <div key={i}>{`${note.note_name} x ${amount}`}</div>
                                     ))}
                                 </div>
                             </div>
