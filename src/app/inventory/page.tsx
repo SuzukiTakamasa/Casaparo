@@ -631,14 +631,14 @@ const Inventory = () => {
                                                 className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded mr-1"}
                                                 onClick={() => handleOpenUpdateShoppingNoteDialog({
                                                     id: shoppingNote[i].id,
-                                                    notes: JSON.stringify({
-                                                        id: shoppingNote[i].note_id,
-                                                        types: shoppingNote[i].note_types,
-                                                        name: shoppingNote[i].note_name,
-                                                        amount: shoppingNote[i].note_amount,
-                                                        created_by: shoppingNote[i].created_by,
-                                                        version: shoppingNote[i].version
-                                                    }),
+                                                    notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                        id: note.note_id,
+                                                        types: note.note_types,
+                                                        name: note.note_name,
+                                                        amount: note.note_amount,
+                                                        created_by: note.created_by,
+                                                        version: note.version
+                                                }))),
                                                     is_registered: shoppingNote[i].is_registered,
                                                     created_by: shoppingNote[i].created_by,
                                                     version: shoppingNote[i].version
@@ -650,14 +650,14 @@ const Inventory = () => {
                                                 className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded mr-1"}
                                                 onClick={() => deleteShoppingNote({
                                                     id: shoppingNote[i].id,
-                                                    notes: JSON.stringify({
-                                                        id: shoppingNote[i].note_id,
-                                                        types: shoppingNote[i].note_types,
-                                                        name: shoppingNote[i].note_name,
-                                                        amount: shoppingNote[i].note_amount,
-                                                        created_by: shoppingNote[i].created_by,
-                                                        version: shoppingNote[i].version
-                                                    }),
+                                                    notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                        id: note.note_id,
+                                                        types: note.note_types,
+                                                        name: note.note_name,
+                                                        amount: note.note_amount,
+                                                        created_by: note.created_by,
+                                                        version: note.version
+                                                }))),
                                                     is_registered: shoppingNote[i].is_registered,
                                                     created_by: shoppingNote[i].created_by,
                                                     version: shoppingNote[i].version
@@ -669,14 +669,14 @@ const Inventory = () => {
                                                 className={"bg-green-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
                                                 onClick={() => registerToInventory({
                                                     id: shoppingNote[i].id,
-                                                    notes: JSON.stringify({
-                                                        id: shoppingNote[i].note_id,
-                                                        types: shoppingNote[i].note_types,
-                                                        name: shoppingNote[i].note_name,
-                                                        amount: shoppingNote[i].note_amount,
-                                                        created_by: shoppingNote[i].created_by,
-                                                        version: shoppingNote[i].version
-                                                    }),
+                                                    notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                        id: note.note_id,
+                                                        types: note.note_types,
+                                                        name: note.note_name,
+                                                        amount: note.note_amount,
+                                                        created_by: note.created_by,
+                                                        version: note.version
+                                                }))),
                                                     is_registered: shoppingNote[i].is_registered,
                                                     created_by: shoppingNote[i].created_by,
                                                     version: shoppingNote[i].version
@@ -692,8 +692,8 @@ const Inventory = () => {
                                         </>
                                         }
                                     </div>
-                                    {shoppingNote.map((note, i) => (
-                                        <div key={i}>{`${note.note_name} x ${amount}`}</div>
+                                    {shoppingNote.map((note, n) => (
+                                        <div key={n}>{`${note.note_name} x ${amount}`}</div>
                                     ))}
                                 </div>
                             </div>
