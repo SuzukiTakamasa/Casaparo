@@ -108,6 +108,19 @@ export interface ShoppingNoteData {
     version: number
 }
 
+export interface ExtractedShoppingNoteData {
+    id: number,
+    note_id: number,
+    note_types: number,
+    note_name: string,
+    note_amount: number,
+    note_created_by: number,
+    note_version: number,
+    is_registered: number,
+    created_by: number,
+    version: number
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -132,6 +145,8 @@ export type InventoryResponse = InventoryData[]
 
 export type ShoppingNoteResponse = ShoppingNoteData[]
 
+export type ExtractedShoppingNoteResponse = ExtractedShoppingNoteData[]
+
 export type APIRequest = HouseholdData |
                           ScheduleData |
                 CompletedHouseholdData |
@@ -139,4 +154,5 @@ export type APIRequest = HouseholdData |
                              LabelData |
                        AnniversaryData |
                          InventoryData |
-                      ShoppingNoteData
+                      ShoppingNoteData |
+         ExtractedShoppingNoteResponse
