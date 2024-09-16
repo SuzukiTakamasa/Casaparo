@@ -387,7 +387,7 @@ const Inventory = () => {
                                     {nameValidMsg !== "" && <div className="text-sm text-red-500">{nameValidMsg}</div>}
                                     <div className="flex justify-center">
                                         <button
-                                            className="text-blue-700 mr-1"
+                                            className={`${amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
                                             onClick={handleInventoryDecrementAmount}
                                             disabled={amount === 0}
                                         >
