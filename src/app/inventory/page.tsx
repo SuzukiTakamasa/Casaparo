@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback } from 'react'
 
 import APIClient from '@utils/api_client'
-import { InventoryData, InventoryResponse, ShoppingNoteData, ShoppingNoteResponse, Result } from '@utils/constants'
+import { InventoryData, InventoryResponse, ShoppingNoteData, ShoppingNoteResponse, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@utils/constants'
 
 import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
@@ -32,10 +32,10 @@ const Inventory = () => {
     const [inventoryCreatedBy, setInventoryCreatedBy] = useState(1)
     const [inventoryVersion, setInventoryVersion] = useState(1)
 
-    const [shoppingNotes, setShoppingNotes] = useState<ShoppingNoteResponse>([])
+    const [shoppingNotes, setShoppingNotes] = useState<ExtractedShoppingNoteResponse[]>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
     const [isUpdateShoppingNote, setIsUpdateShoppingNote] = useState(false)
-    const [notes, setNotes] = useState<InventoryData[]>([{id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
+    const [notes, setNotes] = useState<InventoryData[]>([{id: 0, types: 0, name: "", amount: 0, created_by: 1, version: 1}])
     const [isRegistered, setIsRegistered] = useState(false)
     const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(1)
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
@@ -236,8 +236,17 @@ const Inventory = () => {
             return newNotes
         })
     }
+    const handleSetShoppingNoteCreatedBy = (createdBy: number) => {
+        setShoppingNoteCreatedBy(createdBy)
+        setNotes(prevNotes => {
+            const newNotes = [...prevNotes]
+            newNotes.filter(n => n.id === 0)
+                    .map(n => n.created_by = createdBy)
+            return newNotes
+        })
+    }
     const handleAddNote = () => {
-        setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
+        setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 1, version: 1}])
         setIsExisting([...isExisting, false])
     }
     const handleRemoveNote = () => {
@@ -246,8 +255,17 @@ const Inventory = () => {
     }
 
     const fetchShoppingNotes = useCallback(async () => {
-        const shoppingNote = await client.get<ShoppingNoteResponse>("/v2/shopping_note")
-        setShoppingNotes(shoppingNote.data || [])
+        const extractedShoppingNotes = await client.get<ExtractedShoppingNoteResponse>("/v2/shopping_note")
+        const reducedShoppingNotes = extractedShoppingNotes.data?.reduce((acc, note) => {
+            if (!acc.has(note.id)) {
+                acc.set(note.id, [])
+            }
+            acc.get(note.id)!.push(note)
+            return acc;
+        }, new Map<number, ExtractedShoppingNoteData[]>())
+        if (reducedShoppingNotes) {
+            setShoppingNotes(Array.from(reducedShoppingNotes.values()))
+        }
     }, [])
     const addShoppingNote = async () => {
         const addShoppingNoteData = {
@@ -572,7 +590,7 @@ const Inventory = () => {
                                                 type="radio"
                                                 value="1"
                                                 checked={shoppingNoteCreatedBy === 1}
-                                                onChange={e => setShoppingNoteCreatedBy(Number(e.target.value))}
+                                                onChange={e => handleSetShoppingNoteCreatedBy(Number(e.target.value))}
                                             />
                                             <span className="mr-8">🥺</span>
                                             <input
@@ -591,8 +609,8 @@ const Inventory = () => {
                                             {isUpdateShoppingNote ? "変更" : "登録"}
                                         </button>
                                         <button
-                                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
-                                        onClick={handleCloseShoppingNoteDialog}
+                                            className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                            onClick={handleCloseShoppingNoteDialog}
                                         >
                                             キャンセル
                                         </button>
@@ -607,35 +625,62 @@ const Inventory = () => {
                             <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
                                 <div className="bg-black text-white p-2">
                                     <div className="flex justify-center">
-                                        {!shoppingNote.is_registered ?
+                                        {!shoppingNote[i].is_registered ?
                                         <>
                                             <button
-                                                className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                                className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded mr-1"}
                                                 onClick={() => handleOpenUpdateShoppingNoteDialog({
-                                                    id: shoppingNote.id,
-                                                    notes: shoppingNote.notes,
-                                                    is_registered: shoppingNote.is_registered,
-                                                    created_by: shoppingNote.created_by,
-                                                    version: shoppingNote.version
+                                                    id: shoppingNote[i].id,
+                                                    notes: JSON.stringify({
+                                                        id: shoppingNote[i].note_id,
+                                                        types: shoppingNote[i].note_types,
+                                                        name: shoppingNote[i].note_name,
+                                                        amount: shoppingNote[i].note_amount,
+                                                        created_by: shoppingNote[i].created_by,
+                                                        version: shoppingNote[i].version
+                                                    }),
+                                                    is_registered: shoppingNote[i].is_registered,
+                                                    created_by: shoppingNote[i].created_by,
+                                                    version: shoppingNote[i].version
                                                 })}
                                             >
                                                 <PencilIcon />
                                             </button>
                                             <button
-                                                className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
+                                                className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded mr-1"}
                                                 onClick={() => deleteShoppingNote({
-                                                    id: shoppingNote.id,
-                                                    notes: shoppingNote.notes,
-                                                    is_registered: shoppingNote.is_registered,
-                                                    created_by: shoppingNote.created_by,
-                                                    version: shoppingNote.version
+                                                    id: shoppingNote[i].id,
+                                                    notes: JSON.stringify({
+                                                        id: shoppingNote[i].note_id,
+                                                        types: shoppingNote[i].note_types,
+                                                        name: shoppingNote[i].note_name,
+                                                        amount: shoppingNote[i].note_amount,
+                                                        created_by: shoppingNote[i].created_by,
+                                                        version: shoppingNote[i].version
+                                                    }),
+                                                    is_registered: shoppingNote[i].is_registered,
+                                                    created_by: shoppingNote[i].created_by,
+                                                    version: shoppingNote[i].version
                                                 })}
                                             >
                                                 <TrashBoxIcon />
                                             </button>
                                             <button
-                                                className="bg-green-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
-                                                onClick={() => registerToInventory(shoppingNote)}
+                                                className={"bg-green-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                                onClick={() => registerToInventory({
+                                                    id: shoppingNote[i].id,
+                                                    notes: JSON.stringify({
+                                                        id: shoppingNote[i].note_id,
+                                                        types: shoppingNote[i].note_types,
+                                                        name: shoppingNote[i].note_name,
+                                                        amount: shoppingNote[i].note_amount,
+                                                        created_by: shoppingNote[i].created_by,
+                                                        version: shoppingNote[i].version
+                                                    }),
+                                                    is_registered: shoppingNote[i].is_registered,
+                                                    created_by: shoppingNote[i].created_by,
+                                                    version: shoppingNote[i].version
+                                                })}
                                             >
                                                 在庫に登録
                                             </button>
@@ -647,9 +692,9 @@ const Inventory = () => {
                                         </>
                                         }
                                     </div>
-                                    {JSON.parse(shoppingNote.notes).map((note: InventoryData) => {
-                                        `${note.name} x ${note.amount}`
-                                    })}
+                                    {shoppingNote.map((note, i) => (
+                                        <div>{`${note.note_name} x ${amount}`}</div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
