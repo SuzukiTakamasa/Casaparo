@@ -24,7 +24,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn create_shopping_note(&self, shopping_note: &ShoppingNotes) -> Result<()> {
-        let statement = self.db.prepare("insert into (notes, is_registered, created_by, version) values (?1, ?2, ?3, ?4)");
+        let statement = self.db.prepare("insert into shopping_notes (notes, is_registered, created_by, version) values (?1, ?2, ?3, ?4)");
         let query = statement.bind(&[shopping_note.notes.clone().into(),
                                                           shopping_note.is_registered.into(),
                                                           shopping_note.created_by.into(),
