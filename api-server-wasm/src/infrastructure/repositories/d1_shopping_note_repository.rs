@@ -47,7 +47,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
 
         for r in registering_inventories_list.iter() {
             if r.note_id == 0 {
-                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, created_by, version) values ( {}, {}, {}, {}, 1)", r.note_types, r.note_name, r.note_amount, r.note_created_by)))
+                insert_query_list.push(self.db.prepare(format!("insert into inventories (types, name, amount, created_by, version) values ({}, {}, {}, {}, {})", r.note_types, r.note_name, r.note_amount, r.note_created_by, r.note_version)))
             } else {
                 update_query_list.push(self.db.prepare(format!("update inventories set amount = amount + {} where id = {}", r.note_amount, r.note_id)))
             }
