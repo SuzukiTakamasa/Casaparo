@@ -557,17 +557,10 @@ const Inventory = () => {
                                             </div>
                                             <div className="flex flex-row-reverse">
                                                 <button
-                                                    className="text-blue-700"
+                                                    className="text-blue-700 ml-1"
                                                     onClick={() => handleShoppingNoteIncrementAmount(i)}
                                                 >
                                                     <PlusIcon/>
-                                                </button>
-                                                <button
-                                                    className={`${note.amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
-                                                    onClick={() => handleShoppingNoteDecrementAmount(i)}
-                                                    disabled={note.amount === 0}
-                                                >
-                                                    <MinusIcon/>
                                                 </button>
                                                 <input
                                                     className="border text-black text-right w-1/4"
@@ -577,6 +570,13 @@ const Inventory = () => {
                                                     onChange={(e) => handleSetNoteAmount(i, Number(e.target.value))}
                                                 >
                                                 </input>
+                                                <button
+                                                    className={`${note.amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
+                                                    onClick={() => handleShoppingNoteDecrementAmount(i)}
+                                                    disabled={note.amount === 0}
+                                                >
+                                                    <MinusIcon/>
+                                                </button>
                                             </div>
                                         </>
                                      ))}
@@ -702,6 +702,7 @@ const Inventory = () => {
                                             <div>登録済み</div>
                                         </>
                                         }
+                                        <div className="ml-4">登録者：{setUser(shoppingNote[i].created_by)}</div>
                                     </div>
                                     {shoppingNote.map((note, n) => (
                                         <div key={n} className="text-right">{`${note.note_name} x ${note.note_amount}`}</div>
