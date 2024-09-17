@@ -32,6 +32,9 @@ const Inventory = () => {
     const [inventoryCreatedBy, setInventoryCreatedBy] = useState(1)
     const [inventoryVersion, setInventoryVersion] = useState(1)
 
+    const [noteTypesValidMsg, setNoteTypesValidMsg] = useState("")
+    const [noteNameValidMsg, setNoteNameValidMsg] = useState("")
+
     const [shoppingNotes, setShoppingNotes] = useState<ExtractedShoppingNoteResponse[]>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
     const [isUpdateShoppingNote, setIsUpdateShoppingNote] = useState(false)
@@ -57,11 +60,26 @@ const Inventory = () => {
         let isValid = true
         if (types === 0) {
             isValid = false
-            setTypesValidMsg("用途を選んでください。")
+            setTypesValidMsg("種別を選択してください。")
         }
         if (name === "") {
             isValid = false
             setNameValidMsg("項目名を入力してください。")
+        }
+        return isValid
+    }
+
+    const validateShoppingNote = () => {
+        let isValid = true
+        for (const note of notes) {
+            if (note.types === 0) {
+                isValid = false
+                setNoteTypesValidMsg("種別を選択してください。")
+            }
+            if (note.name === "") {
+                isValid = false
+                setNoteNameValidMsg("項目名を入力してください。")
+            }
         }
         return isValid
     }
@@ -102,6 +120,8 @@ const Inventory = () => {
         setInventoryCreatedBy(1)
         setInventoryVersion(1)
         setIsUpdateInventory(false)
+        setTypesValidMsg("")
+        setNameValidMsg("")
     }
 
     const fetchInventories = useCallback(async () => {
@@ -149,10 +169,12 @@ const Inventory = () => {
     }
 
     const handleAddShoppingNote = async () => {
+        if (!validateShoppingNote()) return
         await addShoppingNote()
         handleCloseShoppingNoteDialog()
     }
     const handleUpdateShoppingNote = async () => {
+        if (!validateShoppingNote()) return
         await updateShoppingNote()
         handleCloseShoppingNoteDialog()
     }
@@ -160,13 +182,21 @@ const Inventory = () => {
         setShowShoppingNoteDialog(true)
     }
     const handleOpenUpdateShoppingNoteDialog = ({id, notes, is_registered, created_by, version}: ShoppingNoteData) => {
+        const parsed_notes = JSON.parse(notes)
         setShowShoppingNoteDialog(true)
         setShoppingNoteId(id as number)
-        setNotes(JSON.parse(notes))
+        setNotes(parsed_notes)
         setIsRegistered(intToBool(is_registered))
         setShoppingNoteCreatedBy(created_by)
         setShoppingNoteVersion(version)
         setIsUpdateShoppingNote(true)
+        parsed_notes.forEach((note: InventoryData, i: number)  => {
+            setIsExisting(prevIsExisting => {
+                const newIsExisting = [...prevIsExisting]
+                newIsExisting[i] = note.id !== 0
+                return newIsExisting
+            })
+        })
         window.scrollTo({
             top: 0,
             behavior: 'smooth'
@@ -181,6 +211,8 @@ const Inventory = () => {
         setShoppingNoteVersion(1)
         setIsUpdateShoppingNote(false)
         setIsExisting([false])
+        setNoteTypesValidMsg("")
+        setNoteNameValidMsg("")
     }
     const handleSetIsExisting = (index: number) => {
         setIsExisting(prevIsExisting => {
@@ -207,11 +239,11 @@ const Inventory = () => {
         setNotes(prevNotes => {
             const newNotes = [...prevNotes]
             const matchedInventory = inventories.filter(i => i.id === Number(id))[0]
-            newNotes[index].name = matchedInventory.name
-            newNotes[index].id = matchedInventory.id
-            newNotes[index].types = matchedInventory.types
-            newNotes[index].created_by = matchedInventory.created_by
-            newNotes[index].version = matchedInventory.version
+            newNotes[index].name = matchedInventory?.name
+            newNotes[index].id = matchedInventory?.id
+            newNotes[index].types = matchedInventory?.types ?? 0
+            newNotes[index].created_by = matchedInventory?.created_by
+            newNotes[index].version = matchedInventory?.version
             return newNotes
         })
     }
@@ -580,6 +612,8 @@ const Inventory = () => {
                                             </div>
                                         </>
                                      ))}
+                                     {noteTypesValidMsg !== "" && <div className="text-sm text-red-500">{noteTypesValidMsg}</div>}
+                                     {noteNameValidMsg !== "" && <div className="text-sm text-red-500">{noteNameValidMsg}</div>}
                                     <div className="flex justify-center">
                                         <button
                                             className="text-blue-700 mr-4"
