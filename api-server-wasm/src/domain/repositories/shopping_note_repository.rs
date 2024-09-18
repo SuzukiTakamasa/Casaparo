@@ -6,7 +6,7 @@ use worker::Result;
 pub trait ShoppingNoteRepository {
     async fn get_shopping_notes(&self) -> Result<Vec<ExtractedShoppingNotes>>;
     async fn create_shopping_note(&self, shopping_note: &ShoppingNotes) -> Result<()>;
-    async fn register_to_inventory(&self, shopping_note: &ShoppingNotes) -> Result<()>;
+    async fn register_to_inventory(&self, shopping_note: &mut ShoppingNotes) -> Result<()>;
     async fn update_shopping_note(&self, shopping_note: &mut ShoppingNotes) -> Result<()>;
     async fn delete_shopping_note(&self, shopping_note: &mut ShoppingNotes) -> Result<()>;
 }

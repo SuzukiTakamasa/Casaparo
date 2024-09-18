@@ -39,11 +39,11 @@ impl<R: ShoppingNoteRepository> ShoppingNoteController<R> {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
         };
-        let shopping_note: ShoppingNotes = match from_str(json_body.as_str()) {
+        let mut shopping_note: ShoppingNotes = match from_str(json_body.as_str()) {
             Ok(shopping_note) => shopping_note,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.register_to_inventory(&shopping_note).await?;
+        self.usecases.register_to_inventory(&mut shopping_note).await?;
         Response::ok("A shopping note was registered to inventory")
     }
 

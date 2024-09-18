@@ -19,7 +19,7 @@ impl<R: ShoppingNoteRepository> ShoppingNoteUsecases<R> {
         self.repository.create_shopping_note(shopping_notes).await
     }
 
-    pub async fn register_to_inventory(&self, shopping_note: &ShoppingNotes) -> Result<()> {
+    pub async fn register_to_inventory(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {
         self.repository.register_to_inventory(shopping_note).await
     }
 
