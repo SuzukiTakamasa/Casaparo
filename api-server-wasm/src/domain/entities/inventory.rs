@@ -33,7 +33,7 @@ pub struct ExtractedShoppingNotes {
     pub created_by: Option<u8>,
     pub version: Option<u32> 
 }
-/*
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct RegisteringInventoriesList {
     pub note_id: u32,
@@ -43,4 +43,3 @@ pub struct RegisteringInventoriesList {
     pub note_created_by: u8,
     pub note_version: u32
 }
-*/
