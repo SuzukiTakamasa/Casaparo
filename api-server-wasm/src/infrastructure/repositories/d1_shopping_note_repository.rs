@@ -33,19 +33,19 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         Ok(())
     }
 
-    async fn register_to_inventory(&self, shopping_note: &ShoppingNotes) -> Result<()> {
+    async fn register_to_inventory(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {
         let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version from shopping_notes s, json_each(s.notes) as notes where s.id = ?1");
         let query = statement.bind(&[shopping_note.id.into()])?;
         let result = query.all().await?;
-        let registering_inventories_list = match result.results::<ExtractedShoppingNotes>() {
+        let mut registering_inventories_list = match result.results::<ExtractedShoppingNotes>() {
             Ok(r) => r,
             Err(_) => return Err(worker::Error::RustError("Failed to fetch shopping notes detail".to_string()))
         };
 
-        let mut insert_query_list = Vec::new();
-        let mut update_query_list = Vec::new();
+        self.db.exec("begin").await?;
 
-        for r in registering_inventories_list.iter() {
+        let result: Result<()> = async {
+        for r in registering_inventories_list.iter_mut() {
             if r.note_id == 0 {
                 let insert_inventories_statement = self.db.prepare("insert into inventories (types, name, amount, created_by, version) values (?1, ?2, ?3, ?4, ?5)");
                 let insert_inventories_query = insert_inventories_statement.bind(&[r.note_types.into(),
@@ -53,30 +53,51 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                                                                                                         r.note_amount.into(),
                                                                                                         r.note_created_by.into(),
                                                                                                         r.note_version.into()])?;
-                insert_query_list.push(insert_inventories_query)
+                insert_inventories_query.run().await?;
             } else {
+                let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
+                let fetch_version_query = fetch_version_statement.bind(&[r.note_id.into()])?;
+                let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+                if let Some(latest) = fetch_version_result {
+                    if r.note_version == latest.version {
+                        r.note_version += 1;
+                    } else {
+                        return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
+                    }
+                } else {
+                    return Err(worker::Error::RustError("Version is found None".to_string()))
+                }
                 let update_inventories_statement = self.db.prepare("update inventories set amount = amount + ?1 where id = ?2");
                 let update_inventories_query = update_inventories_statement.bind(&[r.note_amount.into(), r.note_id.into()])?;
-                update_query_list.push(update_inventories_query)
+                update_inventories_query.run().await?;
             }
         }
 
+        let fetch_version_statement = self.db.prepare("select version from shopping_notes where id = ?1");
+                let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
+                let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+                if let Some(latest) = fetch_version_result {
+                    if shopping_note.version == latest.version {
+                        shopping_note.version += 1;
+                    } else {
+                        return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
+                    }
+                } else {
+                    return Err(worker::Error::RustError("Version is found None".to_string()))
+                }
         let update_is_registered_statement = self.db.prepare("update shopping_notes set is_registered = 1 where id = ?1");
         let update_is_registered_query = update_is_registered_statement.bind(&[shopping_note.id.into()])?;
+        update_is_registered_query.run().await?;
+        Ok(())
+        }.await;
 
-        let mut query_list = Vec::new();
-        query_list.push(self.db.prepare("begin;"));
-        query_list.append(&mut insert_query_list);
-        query_list.append(&mut update_query_list);
-        query_list.push(update_is_registered_query);
-        query_list.push(self.db.prepare("commit;"));
-
-        let batch_result = self.db.batch(query_list).await;
-
-        match batch_result {
-            Ok(_) => Ok(()),
+        match result {
+            Ok(_) => {
+                self.db.exec("commit").await?;
+                Ok(())
+            }
             Err(_) => {
-                let _ = self.db.exec("rollback;").await;
+                self.db.exec("rollback").await?;
                 return Err(worker::Error::RustError("Transaction rollbacked".to_string()))
             }
         }

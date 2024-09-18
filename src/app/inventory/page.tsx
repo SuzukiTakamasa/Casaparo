@@ -239,11 +239,11 @@ const Inventory = () => {
         setNotes(prevNotes => {
             const newNotes = [...prevNotes]
             const matchedInventory = inventories.filter(i => i.id === Number(id))[0]
-            newNotes[index].name = matchedInventory?.name
-            newNotes[index].id = matchedInventory?.id
+            newNotes[index].name = matchedInventory?.name ?? ""
+            newNotes[index].id = matchedInventory?.id ?? 0
             newNotes[index].types = matchedInventory?.types ?? 0
-            newNotes[index].created_by = matchedInventory?.created_by
-            newNotes[index].version = matchedInventory?.version
+            newNotes[index].created_by = matchedInventory?.created_by ?? 1
+            newNotes[index].version = matchedInventory?.version ?? 1
             return newNotes
         })
     }
