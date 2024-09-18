@@ -1,4 +1,4 @@
-use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes};
+use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes, RegisteringInventoriesList};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::shopping_note_repository::ShoppingNoteRepository;
 use crate::async_trait::async_trait;
@@ -37,7 +37,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version from shopping_notes s, json_each(s.notes) as notes where s.id = ?1");
         let query = statement.bind(&[shopping_note.id.into()])?;
         let result = query.all().await?;
-        let mut registering_inventories_list = match result.results::<ExtractedShoppingNotes>() {
+        let mut registering_inventories_list = match result.results::<RegisteringInventoriesList>() {
             Ok(r) => r,
             Err(_) => return Err(worker::Error::RustError("Failed to fetch shopping notes detail".to_string()))
         };
@@ -67,8 +67,10 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 } else {
                     return Err(worker::Error::RustError("Version is found None".to_string()))
                 }
-                let update_inventories_statement = self.db.prepare("update inventories set amount = amount + ?1 where id = ?2");
-                let update_inventories_query = update_inventories_statement.bind(&[r.note_amount.into(), r.note_id.into()])?;
+                let update_inventories_statement = self.db.prepare("update inventories set amount = amount + ?1, version = ?2 where id = ?3");
+                let update_inventories_query = update_inventories_statement.bind(&[r.note_amount.into(),
+                                                                                                        r.note_version.into(),
+                                                                                                        r.note_id.into()])?;
                 update_inventories_query.run().await?;
             }
         }
@@ -85,8 +87,9 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 } else {
                     return Err(worker::Error::RustError("Version is found None".to_string()))
                 }
-        let update_is_registered_statement = self.db.prepare("update shopping_notes set is_registered = 1 where id = ?1");
-        let update_is_registered_query = update_is_registered_statement.bind(&[shopping_note.id.into()])?;
+        let update_is_registered_statement = self.db.prepare("update shopping_notes set is_registered = 1, version = ?1 where id = ?2");
+        let update_is_registered_query = update_is_registered_statement.bind(&[shopping_note.version.into(),
+                                                                                                    shopping_note.id.into()])?;
         update_is_registered_query.run().await?;
         Ok(())
         }.await;
