@@ -487,7 +487,7 @@ const Inventory = () => {
                         </thead>
                         <tbody>
                         {inventories.map((inventory, i) => (
-                            <tr key={i}>
+                            <tr key={i} className={`${inventory.amount === 0 && "bg-red-900"}`}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                     <button
                                         className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}

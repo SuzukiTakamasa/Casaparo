@@ -22,11 +22,11 @@ impl<R: InventoryRepository> InventoryController<R> {
         Response::from_json(&result)
     }
 
-    pub async fn get_inventories_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
-        let id = ctx.param("id").unwrap();
-        let id_as_u8: u8 = id.parse().unwrap();
+    pub async fn get_inventories_by_types(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let types = ctx.param("id").unwrap();
+        let types_as_u8: u8 = types.parse().unwrap();
 
-        let result = match self.usecases.get_inventories_by_id(id_as_u8).await {
+        let result = match self.usecases.get_inventories_by_types(types_as_u8).await {
             Ok(inventories) => inventories,
             Err(e) => return Response::error(e.to_string(), 500)
         };
