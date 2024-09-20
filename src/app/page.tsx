@@ -10,7 +10,7 @@ import Loader from '@components/Loader'
 
 import APIClient from '@utils/api_client'
 
-import { FixedAmount, ScheduleResponse, AnniversaryResponse } from '@utils/constants'
+import { FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
 import { ArrowRightStartToIcon } from '@components/HeroicIcons'
 
@@ -29,6 +29,7 @@ export default function Home() {
   const [billingAmount, setBillingAmount] = useState(0)
   const [schedules, setSchedules] = useState<ScheduleResponse>([])
   const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
+  const [inventories, setInventories] = useState<InventoryResponse>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const currentDate = new Date().getDate()
@@ -49,12 +50,17 @@ export default function Home() {
     const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
     setAnniversaries(anniversaries.data || [])
   }, [])
+  const fetchInventories = useCallback(async () => {
+    const inventories = await client.get<InventoryResponse>('/v2/inventory')
+    setInventories(inventories.data?.filter(i => i.amount === 0) || [])
+  }, [])
 
    useEffect(() => {
     fetchFixedAmount()
     fetchSchedules()
     fetchAnniversaries()
-   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries])
+    fetchInventories()
+   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -92,6 +98,22 @@ export default function Home() {
                   スケジュール一覧へ
                 </Link>
               </div>
+          </div>
+        </div>
+        <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1">
+          <div className="bg-black text-white p-2">
+            <h2 className="text-2xl font-bold mb-4 text-center">在庫切れ情報</h2>
+            {inventories.map((inventory, i) => (
+              <div key={i} className="text-center text-xl">
+                {inventory.name}
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <Link href="/inventory" className="flex text-xl text-blue-500 font-bold hover:underline">
+                <ArrowRightStartToIcon />
+                在庫一覧へ
+              </Link>
+            </div>
           </div>
         </div>
       </div>
