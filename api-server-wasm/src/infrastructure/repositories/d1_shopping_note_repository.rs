@@ -1,4 +1,4 @@
-use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes, RegisteringInventoriesList};
+use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::shopping_note_repository::ShoppingNoteRepository;
 use crate::async_trait::async_trait;
@@ -34,13 +34,11 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn register_to_inventory(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {
+        /*
         let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version from shopping_notes s, json_each(s.notes) as notes where s.id = ?1");
         let query = statement.bind(&[shopping_note.id.into()])?;
         let result = query.all().await?;
-        //for debug
-        result.results::<RegisteringInventoriesList>()?;
-        Ok(())
-        /*
+
         let mut registering_inventories_list = match result.results::<RegisteringInventoriesList>() {
             Ok(r) => r,
             Err(_) => return Err(worker::Error::RustError("Failed to fetch shopping notes detail".to_string()))
@@ -77,6 +75,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 update_inventories_query.run().await?;
             }
         }
+         */
 
         let fetch_version_statement = self.db.prepare("select version from shopping_notes where id = ?1");
                 let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
@@ -95,6 +94,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                                                                                                     shopping_note.id.into()])?;
         update_is_registered_query.run().await?;
         Ok(())
+        /*
         }.await;
 
         match result {
@@ -107,7 +107,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 return Err(worker::Error::RustError("Transaction rollbacked".to_string()))
             }
         }
-        */
+         */
     }
 
     async fn update_shopping_note(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {

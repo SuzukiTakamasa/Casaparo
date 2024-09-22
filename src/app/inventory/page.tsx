@@ -336,6 +336,18 @@ const Inventory = () => {
         await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
     }
+    const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+        if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
+        for (const sn of JSON.parse(registerToInventoryShoppingNote.notes)) {
+            if (sn.id === 0) {
+                await client.post<InventoryResponse>("/v2/inventory/create", sn)
+            } else {
+                await client.post<InventoryResponse>("/v2/inventory/update", sn)
+            }
+        }
+        await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        await fetchShoppingNotes()
+    }
 
     useEffect(() => {
         fetchInventories()
@@ -712,7 +724,7 @@ const Inventory = () => {
                                             </button>
                                             <button
                                                 className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded"}
-                                                onClick={() => registerToInventory({
+                                                onClick={() => registerToInventoryTemp({
                                                     id: shoppingNote[i].id,
                                                     notes: JSON.stringify(shoppingNote.map((note) => ({
                                                         id: note.note_id,
