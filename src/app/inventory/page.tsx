@@ -294,17 +294,19 @@ const Inventory = () => {
 
     const fetchShoppingNotes = useCallback(async () => {
         const extractedShoppingNotes = await client.get<ExtractedShoppingNoteResponse>("/v2/shopping_note")
-        const reducedShoppingNotes = extractedShoppingNotes.data?.reduce((acc, note) => {
-            if (!acc.has(note.id)) {
-                acc.set(note.id, [])
+        if (extractedShoppingNotes.data) {
+          const groupedNotes = extractedShoppingNotes.data.reduce((acc: { [key: number]: ExtractedShoppingNoteData[] }, note) => {
+            if (!acc[note.id]) {
+              acc[note.id] = []
             }
-            acc.get(note.id)!.push(note)
-            return acc;
-        }, new Map<number, ExtractedShoppingNoteData[]>())
-        if (reducedShoppingNotes) {
-            setShoppingNotes(Array.from(reducedShoppingNotes.values()))
+            acc[note.id].push(note);
+            return acc
+          }, {})
+          
+          setShoppingNotes(Object.values(groupedNotes))
+          console.log(shoppingNotes)
         }
-    }, [])
+      }, [])
     const addShoppingNote = async () => {
         const addShoppingNoteData = {
             notes: JSON.stringify(notes),
@@ -347,7 +349,6 @@ const Inventory = () => {
         }
         await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
-        await fetchInventories()
     }
 
     useEffect(() => {
@@ -678,7 +679,7 @@ const Inventory = () => {
                         </div>
                     )}
 
-                    {shoppingNotes.map((shoppingNote, i) => (
+                    {shoppingNotes.length > 0 && shoppingNotes.map((shoppingNote, i) => (
                         <div key={i}>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
                                 <div className="bg-black text-white p-2">
@@ -744,7 +745,7 @@ const Inventory = () => {
                                             </button>
                                         </>
                                             :
-                                        <div className="bg-green-700 flex justify-left">
+                                        <div className="bg-gray-500 flex justify-left">
                                             <CheckBadgeIcon/>
                                             <div>登録済み</div>
                                         </div>
