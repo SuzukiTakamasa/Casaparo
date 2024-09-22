@@ -56,8 +56,8 @@ impl InventoryRepository for D1InventoryRepository {
         }
         let statement = self.db.prepare("update inventories set amount = amount + ?1, version = ?2 where id = ?3");
         let query = statement.bind(&[inventory.amount.into(),
-                                                                                                inventory.version.into(),
-                                                                                                inventory.id.into()])?;
+                                                          inventory.version.into(),
+                                                          inventory.id.into()])?;
         query.run().await?;
         Ok(())
     }
