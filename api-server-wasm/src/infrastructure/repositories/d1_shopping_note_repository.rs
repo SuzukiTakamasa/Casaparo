@@ -37,11 +37,14 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         let statement = self.db.prepare("select cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version from shopping_notes s, json_each(s.notes) as notes where s.id = ?1");
         let query = statement.bind(&[shopping_note.id.into()])?;
         let result = query.all().await?;
+        //for debug
+        result.results::<RegisteringInventoriesList>()?;
+        Ok(())
+        /*
         let mut registering_inventories_list = match result.results::<RegisteringInventoriesList>() {
             Ok(r) => r,
             Err(_) => return Err(worker::Error::RustError("Failed to fetch shopping notes detail".to_string()))
         };
-
         self.db.exec("begin").await?;
 
         let result: Result<()> = async {
@@ -104,6 +107,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 return Err(worker::Error::RustError("Transaction rollbacked".to_string()))
             }
         }
+        */
     }
 
     async fn update_shopping_note(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {

@@ -18,13 +18,13 @@ impl D1InventoryRepository {
 #[async_trait(?Send)]
 impl InventoryRepository for D1InventoryRepository {
     async fn get_inventories(&self) -> Result<Vec<Inventories>> {
-        let query = self.db.prepare("select * from inventories order by id desc");
+        let query = self.db.prepare("select * from inventories order by amount asc, id desc");
         let result = query.all().await?;
         result.results::<Inventories>()
     }
 
     async fn get_inventories_by_types(&self, types: u8) -> Result<Vec<Inventories>> {
-        let statement = self.db.prepare("select * from inventories where types = ?1 order by id desc");
+        let statement = self.db.prepare("select * from inventories where types = ?1 order by amount asc, id desc");
         let query = statement.bind(&[types.into()])?;
         let result = query.all().await?;
         result.results::<Inventories>()
