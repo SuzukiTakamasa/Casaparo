@@ -59,6 +59,19 @@ impl<R: InventoryRepository> InventoryController<R> {
         Response::ok("A inventory was updated")
     }
 
+    pub async fn update_amount(&self, req: &mut Request) -> Result<Response> {
+        let json_body = match req.text().await {
+            Ok(body) => body,
+            Err(_) => return Response::error("Bad request", 400)
+        };
+        let mut inventory: Inventories = match from_str(json_body.as_str()) {
+            Ok(inventory) => inventory,
+            Err(_) => return Response::error("Invalid request body", 400)
+        };
+        self.usecases.update_amount(&mut inventory).await?;
+        Response::ok("A inventory amount was updated")
+    }
+
     pub async fn delete_inventory(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,

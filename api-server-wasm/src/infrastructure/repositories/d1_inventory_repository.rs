@@ -41,6 +41,27 @@ impl InventoryRepository for D1InventoryRepository {
         Ok(())
     }
 
+    async fn update_amount(&self, inventory: &mut Inventories) -> Result<()> {
+        let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
+        let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
+        let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+        if let Some(latest) = fetch_version_result {
+            if inventory.version == latest.version {
+                inventory.version += 1;
+            } else {
+                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
+            }
+        } else {
+            return Err(worker::Error::RustError("Version is found None".to_string()))
+        }
+        let statement = self.db.prepare("update inventories set amount = amount + ?1, version = ?2 where id = ?3");
+        let query = statement.bind(&[inventory.amount.into(),
+                                                                                                inventory.version.into(),
+                                                                                                inventory.id.into()])?;
+        query.run().await?;
+        Ok(())
+    }
+
     async fn update_inventory(&self, inventory: &mut Inventories) -> Result<()> {
         let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;

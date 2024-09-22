@@ -342,11 +342,12 @@ const Inventory = () => {
             if (sn.id === 0) {
                 await client.post<InventoryResponse>("/v2/inventory/create", sn)
             } else {
-                await client.post<InventoryResponse>("/v2/inventory/update", sn)
+                await client.post<InventoryResponse>("/v2/inventory/update_amount", sn)
             }
         }
         await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
+        await fetchInventories()
     }
 
     useEffect(() => {
@@ -743,10 +744,10 @@ const Inventory = () => {
                                             </button>
                                         </>
                                             :
-                                        <>
+                                        <div className="bg-green-700 flex justify-left">
                                             <CheckBadgeIcon/>
                                             <div>登録済み</div>
-                                        </>
+                                        </div>
                                         }
                                         <div className="ml-4">登録者：{setUser(shoppingNote[i].created_by)}</div>
                                     </div>

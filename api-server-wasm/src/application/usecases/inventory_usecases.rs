@@ -24,6 +24,10 @@ impl<R: InventoryRepository> InventoryUsecases<R> {
         self.repository.create_inventory(inventory).await
     }
 
+    pub async fn update_amount(&self, inventory: &mut Inventories) -> Result<()> {
+        self.repository.update_amount(inventory).await
+    }
+
     pub async fn update_inventory(&self, inventory: &mut Inventories) -> Result<()> {
         self.repository.update_inventory(inventory).await
     }

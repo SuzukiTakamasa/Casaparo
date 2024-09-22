@@ -216,6 +216,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .post_async("/v2/inventory/create", |mut req, ctx| async move {
             ctx.data.inventory_controller.create_inventory(&mut req).await
         })
+        .post_async("/v2/inventory/update_amount", |mut req, ctx| async move {
+            ctx.data.inventory_controller.update_amount(&mut req).await
+        })
         .post_async("/v2/inventory/update", |mut req, ctx| async move {
             ctx.data.inventory_controller.update_inventory(&mut req).await
         })
