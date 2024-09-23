@@ -18,13 +18,13 @@ impl D1InventoryRepository {
 #[async_trait(?Send)]
 impl InventoryRepository for D1InventoryRepository {
     async fn get_inventories(&self) -> Result<Vec<Inventories>> {
-        let query = self.db.prepare("select * from inventories order by id desc");
+        let query = self.db.prepare("select * from inventories order by amount asc, id desc");
         let result = query.all().await?;
         result.results::<Inventories>()
     }
 
     async fn get_inventories_by_types(&self, types: u8) -> Result<Vec<Inventories>> {
-        let statement = self.db.prepare("select * from inventories where types = ?1 order by id desc");
+        let statement = self.db.prepare("select * from inventories where types = ?1 order by amount asc, id desc");
         let query = statement.bind(&[types.into()])?;
         let result = query.all().await?;
         result.results::<Inventories>()
@@ -37,6 +37,27 @@ impl InventoryRepository for D1InventoryRepository {
                                                           inventory.amount.into(),
                                                           inventory.created_by.into(),
                                                           inventory.version.into()])?;
+        query.run().await?;
+        Ok(())
+    }
+
+    async fn update_amount(&self, inventory: &mut Inventories) -> Result<()> {
+        let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
+        let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
+        let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+        if let Some(latest) = fetch_version_result {
+            if inventory.version == latest.version {
+                inventory.version += 1;
+            } else {
+                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
+            }
+        } else {
+            return Err(worker::Error::RustError("Version is found None".to_string()))
+        }
+        let statement = self.db.prepare("update inventories set amount = amount + ?1, version = ?2 where id = ?3");
+        let query = statement.bind(&[inventory.amount.into(),
+                                                          inventory.version.into(),
+                                                          inventory.id.into()])?;
         query.run().await?;
         Ok(())
     }

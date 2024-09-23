@@ -294,17 +294,18 @@ const Inventory = () => {
 
     const fetchShoppingNotes = useCallback(async () => {
         const extractedShoppingNotes = await client.get<ExtractedShoppingNoteResponse>("/v2/shopping_note")
-        const reducedShoppingNotes = extractedShoppingNotes.data?.reduce((acc, note) => {
-            if (!acc.has(note.id)) {
-                acc.set(note.id, [])
+        if (extractedShoppingNotes.data) {
+          const groupedNotes = extractedShoppingNotes.data.reduce((acc: { [key: number]: ExtractedShoppingNoteData[] }, note) => {
+            if (!acc[note.id]) {
+              acc[note.id] = []
             }
-            acc.get(note.id)!.push(note)
-            return acc;
-        }, new Map<number, ExtractedShoppingNoteData[]>())
-        if (reducedShoppingNotes) {
-            setShoppingNotes(Array.from(reducedShoppingNotes.values()))
+            acc[note.id].push(note);
+            return acc
+          }, {})
+          
+          setShoppingNotes(Object.values(groupedNotes))
         }
-    }, [])
+      }, [])
     const addShoppingNote = async () => {
         const addShoppingNoteData = {
             notes: JSON.stringify(notes),
@@ -335,6 +336,19 @@ const Inventory = () => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
         await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
+    }
+    const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+        if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
+        for (const sn of JSON.parse(registerToInventoryShoppingNote.notes)) {
+            if (sn.id === 0) {
+                await client.post<InventoryResponse>("/v2/inventory/create", sn)
+            } else {
+                await client.post<InventoryResponse>("/v2/inventory/update_amount", sn)
+            }
+        }
+        await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        await fetchShoppingNotes()
+        await fetchInventories()
     }
 
     useEffect(() => {
@@ -665,17 +679,19 @@ const Inventory = () => {
                         </div>
                     )}
 
-                    {shoppingNotes.map((shoppingNote, i) => (
+                    {shoppingNotes.map((shoppingNote, i) => {
+                        const firstShoppingNote = shoppingNote[0]
+                        return (
                         <div key={i}>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
                                 <div className="bg-black text-white p-2">
                                     <div className="flex justify-left">
-                                        {!shoppingNote[i].is_registered ?
+                                        {!firstShoppingNote.is_registered ?
                                         <>
                                             <button
                                                 className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded mr-1"}
                                                 onClick={() => handleOpenUpdateShoppingNoteDialog({
-                                                    id: shoppingNote[i].id,
+                                                    id: firstShoppingNote.id,
                                                     notes: JSON.stringify(shoppingNote.map((note) => ({
                                                         id: note.note_id,
                                                         types: note.note_types,
@@ -684,9 +700,9 @@ const Inventory = () => {
                                                         created_by: note.created_by,
                                                         version: note.version
                                                 }))),
-                                                    is_registered: shoppingNote[i].is_registered,
-                                                    created_by: shoppingNote[i].created_by,
-                                                    version: shoppingNote[i].version
+                                                    is_registered: firstShoppingNote.is_registered,
+                                                    created_by: firstShoppingNote.created_by,
+                                                    version: firstShoppingNote.version
                                                 })}
                                             >
                                                 <PencilIcon />
@@ -694,7 +710,7 @@ const Inventory = () => {
                                             <button
                                                 className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded mr-1"}
                                                 onClick={() => deleteShoppingNote({
-                                                    id: shoppingNote[i].id,
+                                                    id: firstShoppingNote.id,
                                                     notes: JSON.stringify(shoppingNote.map((note) => ({
                                                         id: note.note_id,
                                                         types: note.note_types,
@@ -703,17 +719,17 @@ const Inventory = () => {
                                                         created_by: note.created_by,
                                                         version: note.version
                                                 }))),
-                                                    is_registered: shoppingNote[i].is_registered,
-                                                    created_by: shoppingNote[i].created_by,
-                                                    version: shoppingNote[i].version
+                                                    is_registered: firstShoppingNote.is_registered,
+                                                    created_by: firstShoppingNote.created_by,
+                                                    version: firstShoppingNote.version
                                                 })}
                                             >
                                                 <TrashBoxIcon />
                                             </button>
                                             <button
                                                 className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded"}
-                                                onClick={() => registerToInventory({
-                                                    id: shoppingNote[i].id,
+                                                onClick={() => registerToInventoryTemp({
+                                                    id: firstShoppingNote.id,
                                                     notes: JSON.stringify(shoppingNote.map((note) => ({
                                                         id: note.note_id,
                                                         types: note.note_types,
@@ -722,21 +738,21 @@ const Inventory = () => {
                                                         created_by: note.created_by,
                                                         version: note.version
                                                 }))),
-                                                    is_registered: shoppingNote[i].is_registered,
-                                                    created_by: shoppingNote[i].created_by,
-                                                    version: shoppingNote[i].version
+                                                    is_registered: firstShoppingNote.is_registered,
+                                                    created_by: firstShoppingNote.created_by,
+                                                    version: firstShoppingNote.version
                                                 })}
                                             >
                                                 在庫に登録
                                             </button>
                                         </>
                                             :
-                                        <>
+                                        <div className="bg-gray-500 flex justify-left">
                                             <CheckBadgeIcon/>
                                             <div>登録済み</div>
-                                        </>
+                                        </div>
                                         }
-                                        <div className="ml-4">登録者：{setUser(shoppingNote[i].created_by)}</div>
+                                        <div className="ml-4">登録者：{setUser(firstShoppingNote.created_by)}</div>
                                     </div>
                                     {shoppingNote.map((note, n) => (
                                         <div key={n} className="text-right">{`${note.note_name} x ${note.note_amount}`}</div>
@@ -744,7 +760,8 @@ const Inventory = () => {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                        )
+                    })}
                 </>
                 }
             </div>
