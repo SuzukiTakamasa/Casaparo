@@ -26,3 +26,15 @@ pub struct Anniversaries {
     pub description: String,
     pub version: u32
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct InventoryTypes {
+    pub id: Option<u32>,
+    pub types: String,
+    pub version: u32
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CountOfUsedInventoryType {
+    pub count_of_used_inventory_type: u32
+}

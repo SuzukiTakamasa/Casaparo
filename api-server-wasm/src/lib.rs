@@ -34,6 +34,10 @@ use crate::infrastructure::repositories::d1_shopping_note_repository::D1Shopping
 use crate::application::usecases::shopping_note_usecases::ShoppingNoteUsecases;
 use crate::interfaces::api::shopping_note_controller::ShoppingNoteController;
 
+use crate::infrastructure::repositories::d1_inventory_type_repository::D1InventoryTypeRepository;
+use crate::application::usecases::inventory_type_usecases::InventoryTypeUsecases;
+use crate::interfaces::api::inventory_type_controller::InventoryTypeController;
+
 
 fn get_db_env(req: &Request) -> Result<String> {
     let header_name = "Environment"; 
@@ -51,6 +55,7 @@ pub struct AppState {
     anniversary_controller: AnniversaryController<D1AnniversaryRepository>,
     inventory_controller: InventoryController<D1InventoryRepository>,
     shopping_note_controller: ShoppingNoteController<D1ShoppingNoteRepository>,
+    inventory_type_controller: InventoryTypeController<D1InventoryTypeRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -101,9 +106,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let inventory_usecases = InventoryUsecases::new(inventory_repository);
     let inventory_controller = InventoryController::new(inventory_usecases);
 
-    let shopping_note_repository = D1ShoppingNoteRepository::new(db);
+    let shopping_note_repository = D1ShoppingNoteRepository::new(db.clone());
     let shopping_note_usecases = ShoppingNoteUsecases::new(shopping_note_repository);
     let shopping_note_controller = ShoppingNoteController::new(shopping_note_usecases);
+
+    let inventory_type_repository = D1InventoryTypeRepository::new(db);
+    let inventory_type_usecases = InventoryTypeUsecases::new(inventory_type_repository);
+    let inventory_type_controller = InventoryTypeController::new(inventory_type_usecases);
 
     let app_state = AppState {
         household_controller,
@@ -113,6 +122,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         anniversary_controller,
         inventory_controller,
         shopping_note_controller,
+        inventory_type_controller,
     };
 
 
@@ -240,6 +250,22 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/shopping_note/delete", |mut req, ctx| async move {
             ctx.data.shopping_note_controller.delete_shopping_note(&mut req).await
+        })
+     //inventory_type
+        .get_async("/v2/inventory_type", |_req, ctx| async move {
+            ctx.data.inventory_type_controller.get_inventory_types().await
+        })
+        .get_async("/v2/inventory_type/is_used_for_inventory/:id", |_req, ctx| async move {
+            ctx.data.inventory_type_controller.is_used_for_inventory(&ctx).await
+        })
+        .post_async("/v2/inventory_type/create", |mut req, ctx| async move {
+            ctx.data.inventory_type_controller.create_inventory_type(&mut req).await
+        })
+        .post_async("/v2/inventory_type/update", |mut req, ctx| async move {
+            ctx.data.inventory_type_controller.update_inventory_type(&mut req).await
+        })
+        .post_async("/v2/inventory_type/delete", |mut req, ctx| async move {
+            ctx.data.inventory_type_controller.delete_inventory_type(&mut req).await
         })
     .run(req, env)
     .await

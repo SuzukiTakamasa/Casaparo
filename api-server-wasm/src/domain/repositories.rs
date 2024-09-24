@@ -5,3 +5,4 @@ pub mod label_repository;
 pub mod anniversary_repository;
 pub mod inventory_repository;
 pub mod shopping_note_repository;
+pub mod inventory_type_repository;
