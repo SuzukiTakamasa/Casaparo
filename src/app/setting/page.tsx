@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 
-import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse } from '@utils/constants'
+import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
@@ -19,8 +19,10 @@ const Setting = () => {
     const [labelNameValidMsg, setLabelNameValidMsg] = useState("")
     const [newLabelValidMsg, setNewLabelValidMsg] = useState("")
     const [anniversaryValidMsg, setAnniversaryValidMsg] = useState("")
+    const [inventoryTypeValidMsg, setInventoryTypeValidMsg] = useState("")
 
     const [isUsedErrMsg, setIsUsedErrMsg] = useState("")
+    const [IsUsedInventoryTypeErrMsg, setIsUsedInventoryTypeErrMsg] = useState("")
 
     const [labels, setLabels] = useState<LabelResponse>([])
     const [labelId, setLabelId] = useState(0)
@@ -37,6 +39,14 @@ const Setting = () => {
     const [anniversaryDate, setAnniversaryDate] = useState(1)
     const [anniversaryDescription, setAnniversaryDescription] = useState("")
     const [anniversaryVersion, setAnniversaryVersion] = useState(1)
+
+    const [showInventoryTypeDialog, setShowInventoryTypeDialog] = useState(false)
+    const [isUpdateInventoryType, setIsUpdateInventoryType] = useState(false)
+
+    const [inventoryTypes, setInventoryTypes] = useState<InventoryTypeResponse>([])
+    const [inventoryTypeId, setInventoryTypeId] = useState(0)
+    const [inventoryType, setInventoryType] = useState("")
+    const [inventoryTypeVersion, setInventoryTypeVersion] = useState(1)
 
     const validateLabel = () => {
         let isValid = true
@@ -55,9 +65,17 @@ const Setting = () => {
         let isValid = true
         if (anniversaryDescription === "") {
             isValid = false
-            setAnniversaryValidMsg("記念日名を説明してください。")
+            setAnniversaryValidMsg("記念日名を入力してください。")
         }
         return isValid
+    }
+
+    const validateInventoryType = () => {
+        let isValid
+        if (inventoryType === "") {
+            isValid = false
+            setInventoryType("種別を入力してください。")
+        }
     }
     
 
@@ -137,13 +155,14 @@ const Setting = () => {
         handleCloseAnniversaryDialog()
     }
     const handleUpdateAnniversary = async () => {
+        if (!validateAnniversary) return
         await UpdateAnniversary()
         handleCloseAnniversaryDialog()
     }
-    const handleOpenAddAnniversaryDialog = async () => {
+    const handleOpenAddAnniversaryDialog = () => {
         setShowAnniversaryDialog(true)
     }
-    const handleOpenUpdateAnniversaryDialog = async ({id, month, date, description, version}: AnniversaryData) => {
+    const handleOpenUpdateAnniversaryDialog = ({id, month, date, description, version}: AnniversaryData) => {
         setShowAnniversaryDialog(true)
         setAnniversaryId(id as number)
         setAnniversaryMonth(month)
@@ -196,6 +215,65 @@ const Setting = () => {
         if (!window.confirm("削除しますか？")) return
         await client.post<AnniversaryResponse>('/v2/anniversary/delete', deleteAnniversaryData)
         await fetchAnniversaries()
+    }
+
+    const handleAddInventoryType = async () => {
+        if (!validateInventoryType) return
+        await addInventoryType()
+        handleCloseInventoryTypeDialog()
+    }
+    const handleUpdateInventoryType = async () => {
+        if (!validateInventoryType) return
+        await updateInventoryType 
+        handleCloseInventoryTypeDialog()
+    }
+    const handleOpenAddInventoryDialog = () => {
+        setShowInventoryTypeDialog(true)
+    }
+    const handleOpenUpdateInventoryDialog = ({id, type, version}: InventoryTypeData) => {
+        setShowInventoryTypeDialog(true)
+        setInventoryTypeId(id as number)
+        setInventoryType(type)
+        setInventoryTypeVersion(version)
+        setIsUpdateInventoryType(true)
+        window.scroll({
+            top: 0,
+            behavior: 'smooth'
+        })
+    }
+    const handleCloseInventoryTypeDialog = () => {
+        setShowInventoryTypeDialog(false)
+        setInventoryTypeId(0)
+        setInventoryType("")
+        setInventoryTypeVersion(1)
+        setIsUpdateInventoryType(false)
+        setInventoryTypeValidMsg("")
+    }
+    const fetchInventoryTypes = useCallback(async () => {
+        const inventoryTypes = await client.get<InventoryTypeResponse>('/v2/inventory_type')
+        setInventoryTypes(inventoryTypes.data || [])
+    }, [])
+    const addInventoryType = async () => {
+        const addInventoryTypeData = {
+            type: inventoryType,
+            version: inventoryTypeVersion
+        }
+        await client.post<InventoryTypeResponse>('/v2/inventory_type/create', addInventoryTypeData)
+        await fetchInventoryTypes()
+    }
+    const updateInventoryType = async () => {
+        const updateInventoryTypeData = {
+            id: inventoryTypeId,
+            type: inventoryType,
+            version: inventoryTypeVersion
+        }
+        await client.post<InventoryTypeResponse>('/v2/inventory_type/update', updateInventoryTypeData)
+        await fetchInventoryTypes()
+    }
+    const deleteInventoryType = async (deleteInventoryTypeData: InventoryTypeData) => {
+        if (!window.confirm("削除しますか？")) return
+        await client.post<InventoryTypeResponse>('/v2/inventory_type/delete', deleteInventoryTypeData)
+        await fetchInventoryTypes()
     }
     
     useEffect(() => {

@@ -91,6 +91,12 @@ export interface AnniversaryData {
     version: number
 }
 
+export interface InventoryTypeData {
+    id?: number,
+    type: string,
+    version: number
+}
+
 export interface InventoryData {
     id?: number,
     types: number,
@@ -141,6 +147,8 @@ export type LabelResponse = LabelData[]
 
 export type AnniversaryResponse = AnniversaryData[]
 
+export type InventoryTypeResponse = InventoryTypeResponse[]
+
 export type InventoryResponse = InventoryData[]
 
 export type ShoppingNoteResponse = ShoppingNoteData[]
@@ -153,6 +161,7 @@ export type APIRequest = HouseholdData |
                               WikiData |
                              LabelData |
                        AnniversaryData |
+                     InventoryTypeData |
                          InventoryData |
                       ShoppingNoteData |
          ExtractedShoppingNoteResponse
