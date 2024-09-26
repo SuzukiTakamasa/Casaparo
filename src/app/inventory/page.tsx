@@ -581,11 +581,9 @@ const Inventory = () => {
                                                         onChange={(e) => handleSetNoteType(i, Number(e.target.value))}
                                                         disabled={isExisting[i]}
                                                     >
+                                                        <option value={0}>種別を選択</option>
                                                         {inventoryTypes.map((inventoryType, i) => (
-                                                            <>
-                                                                <option key={0} value="0">種別を選択してください。</option>
-                                                                <option key={i} value={inventoryType.id}>{inventoryType.types}</option>
-                                                            </>
+                                                            <option key={i} value={inventoryType.id}>{inventoryType.types}</option>
                                                         ))}
                                                     </select>
                                                 </label>
