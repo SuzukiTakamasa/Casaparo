@@ -93,7 +93,7 @@ export interface AnniversaryData {
 
 export interface InventoryTypeData {
     id?: number,
-    type: string,
+    types: string,
     version: number
 }
 
@@ -147,7 +147,7 @@ export type LabelResponse = LabelData[]
 
 export type AnniversaryResponse = AnniversaryData[]
 
-export type InventoryTypeResponse = InventoryTypeResponse[]
+export type InventoryTypeResponse = InventoryTypeData[]
 
 export type InventoryResponse = InventoryData[]
 

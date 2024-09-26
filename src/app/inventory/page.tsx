@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback } from 'react'
 
 import APIClient from '@utils/api_client'
-import { InventoryData, InventoryResponse, ShoppingNoteData, ShoppingNoteResponse, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@utils/constants'
+import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ShoppingNoteResponse, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@utils/constants'
 
 import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
@@ -31,6 +31,8 @@ const Inventory = () => {
     const [amount, setAmount] = useState(0)
     const [inventoryCreatedBy, setInventoryCreatedBy] = useState(1)
     const [inventoryVersion, setInventoryVersion] = useState(1)
+
+    const [inventoryTypes, setInventoryTypes] = useState<InventoryTypeResponse>([])
 
     const [noteTypesValidMsg, setNoteTypesValidMsg] = useState("")
     const [noteNameValidMsg, setNoteNameValidMsg] = useState("")
@@ -144,6 +146,10 @@ const Inventory = () => {
         await client.post<InventoryResponse>("/v2/inventory/create", addInventoryData)
         await fetchInventories()
     }
+    const fetchInventoryTypes = useCallback(async () => {
+        const inventoryTypes = await client.get<InventoryTypeResponse>("/v2/inventory_type")
+        setInventoryTypes(inventoryTypes.data || [])
+    }, [])
     const updateInventory = async () => {
         const updateInventoryData = {
             id: inventoryId,
@@ -353,8 +359,9 @@ const Inventory = () => {
 
     useEffect(() => {
         fetchInventories()
+        fetchInventoryTypes()
         fetchShoppingNotes()
-    }, [fetchInventories, fetchShoppingNotes])
+    }, [fetchInventories, fetchInventoryTypes, fetchShoppingNotes])
 
     useEffect(() => {
         if (activeTab === 'shopping note') {
@@ -398,9 +405,10 @@ const Inventory = () => {
                                 onChange={(e) => {setTypesForSort(Number(e.target.value))}}
                                 className="form-select block w-full px-3 py-2 text-base font-normal text-gray-700 bg-white bg-clip-padding bg-no-repeat border border-solid border-gray-300 rounded transition ease-int-out m-0 focs:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                             >
-                                <option value="0">全ての種別を表示</option>
-                                <option value="1">食料品</option>
-                                <option value="2">日用品</option>
+                                <option value={0}>種別を選択</option>
+                                {inventoryTypes.map((inventoryType, i) => (
+                                    <option key={i} value={inventoryType.id}>{inventoryType.types}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -416,9 +424,10 @@ const Inventory = () => {
                                             value={types}
                                             onChange={e => setTypes(Number(e.target.value))}
                                         >
-                                            <option value="0">種別を選択</option>
-                                            <option value="1">食料品</option>
-                                            <option value="2">日用品</option>
+                                            <option value={0}>種別を選択</option>
+                                            {inventoryTypes.map((inventoryType, i) => (
+                                                <option key={i} value={inventoryType.id}>{inventoryType.types}</option>
+                                            ))}
                                         </select>
                                     </label>
                                     {typesValidMsg !== "" && <div className="text-sm text-red-500">{typesValidMsg}</div>}
@@ -572,9 +581,10 @@ const Inventory = () => {
                                                         onChange={(e) => handleSetNoteType(i, Number(e.target.value))}
                                                         disabled={isExisting[i]}
                                                     >
-                                                        <option value="0">種別を選択</option>
-                                                        <option value="1">食料品</option>
-                                                        <option value="2">日用品</option>
+                                                        <option value={0}>種別を選択</option>
+                                                        {inventoryTypes.map((inventoryType, i) => (
+                                                            <option key={i} value={inventoryType.id}>{inventoryType.types}</option>
+                                                        ))}
                                                     </select>
                                                 </label>
                                                 {isExisting[i] ?
