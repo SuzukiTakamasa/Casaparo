@@ -22,7 +22,7 @@ const Setting = () => {
     const [inventoryTypeValidMsg, setInventoryTypeValidMsg] = useState("")
 
     const [isUsedErrMsg, setIsUsedErrMsg] = useState("")
-    const [IsUsedInventoryTypeErrMsg, setIsUsedInventoryTypeErrMsg] = useState("")
+    const [isUsedInventoryTypeErrMsg, setIsUsedInventoryTypeErrMsg] = useState("")
 
     const [labels, setLabels] = useState<LabelResponse>([])
     const [labelId, setLabelId] = useState(0)
@@ -227,13 +227,13 @@ const Setting = () => {
         await updateInventoryType 
         handleCloseInventoryTypeDialog()
     }
-    const handleOpenAddInventoryDialog = () => {
+    const handleOpenAddInventoryTypeDialog = () => {
         setShowInventoryTypeDialog(true)
     }
-    const handleOpenUpdateInventoryDialog = ({id, type, version}: InventoryTypeData) => {
+    const handleOpenUpdateInventoryTypeDialog = ({id, types, version}: InventoryTypeData) => {
         setShowInventoryTypeDialog(true)
         setInventoryTypeId(id as number)
-        setInventoryType(type)
+        setInventoryType(types)
         setInventoryTypeVersion(version)
         setIsUpdateInventoryType(true)
         window.scroll({
@@ -252,10 +252,11 @@ const Setting = () => {
     const fetchInventoryTypes = useCallback(async () => {
         const inventoryTypes = await client.get<InventoryTypeResponse>('/v2/inventory_type')
         setInventoryTypes(inventoryTypes.data || [])
+        setIsUsedInventoryTypeErrMsg("")
     }, [])
     const addInventoryType = async () => {
         const addInventoryTypeData = {
-            type: inventoryType,
+            types: inventoryType,
             version: inventoryTypeVersion
         }
         await client.post<InventoryTypeResponse>('/v2/inventory_type/create', addInventoryTypeData)
@@ -264,7 +265,7 @@ const Setting = () => {
     const updateInventoryType = async () => {
         const updateInventoryTypeData = {
             id: inventoryTypeId,
-            type: inventoryType,
+            types: inventoryType,
             version: inventoryTypeVersion
         }
         await client.post<InventoryTypeResponse>('/v2/inventory_type/update', updateInventoryTypeData)
@@ -272,6 +273,11 @@ const Setting = () => {
     }
     const deleteInventoryType = async (deleteInventoryTypeData: InventoryTypeData) => {
         if (!window.confirm("削除しますか？")) return
+        const isUsed = await client.get<IsUsed>(`/v2/inventory_type/is_used_for_inventory/${deleteInventoryTypeData.id}`)
+        if (isUsed) {
+            setIsUsedInventoryTypeErrMsg("この在庫種別は使用されています。")
+            return
+        }
         await client.post<InventoryTypeResponse>('/v2/inventory_type/delete', deleteInventoryTypeData)
         await fetchInventoryTypes()
     }
@@ -375,11 +381,12 @@ const Setting = () => {
                     </tbody>
                 </table>
             </div>
+
             <div className="container mx-auto p-4">
                 <button
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                        onClick={handleOpenAddAnniversaryDialog}
-                    >
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                    onClick={handleOpenAddAnniversaryDialog}
+                >
                 記念日を登録
                 </button>
 
@@ -480,6 +487,85 @@ const Setting = () => {
                             <td className="border-b px-1 py-1 text-center">{`${anniversary.month}/${anniversary.date}`}</td>
                             <td className="border-b px-1 py-1 text-center">{anniversary.description}</td>
                         </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+            <div className="container mx-auto p-4">
+                <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                    onClick={handleOpenAddInventoryTypeDialog}
+                >
+                在庫種別を登録
+                </button>
+
+                {showInventoryTypeDialog && (
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                        <div className="bg-white p-4 rounded">
+                            <div className="flex flex-col space-y-4 mb-4">
+                                <input
+                                    className="border p-2 text-black"
+                                    type="text"
+                                    placeholder="種別"
+                                    value={inventoryType}
+                                    onChange={(e) => setInventoryType(e.target.value)}
+                                />
+                                {inventoryTypeValidMsg !== "" && <div className="text-sm text-red-500">{inventoryTypeValidMsg}</div>}
+                            </div>
+                            <div className="flex justify-end space-x-4">
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={isUpdateLabel ? handleUpdateInventoryType : handleAddInventoryType}
+                                >
+                                    {isUpdateLabel ? "変更" : "登録"}
+                                </button>
+                                <button
+                                    className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                    onClick={handleCloseInventoryTypeDialog}
+                                >
+                                    キャンセル
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {isUsedInventoryTypeErrMsg !== "" && <div className="text-sm text-red-500">{isUsedInventoryTypeErrMsg}</div>}
+                <table className="table-auto min-w-full mt-4">
+                    <thead>
+                        <tr>
+                            <th className="border-b-2 py-1"></th>
+                            <th className="border-b-2 py-1">在庫種別</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {inventoryTypes.map((inventoryType, i) => (
+                            <tr key={i}>
+                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+                                        onClick={() => handleOpenUpdateInventoryTypeDialog({
+                                            id: inventoryType.id,
+                                            types: inventoryType.types,
+                                            version: inventoryType.version
+                                        })}
+                                    >
+                                        <PencilIcon />
+                                    </button>
+                                    <button
+                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                        onClick={() => deleteInventoryType({
+                                            id: inventoryType.id,
+                                            types: inventoryType.types,
+                                            version: inventoryType.version
+                                        })}
+                                    >
+                                        <TrashBoxIcon />
+                                    </button>
+                                </td>
+                                <td className="border-b px-1 py-1 text-center">{inventoryType.types}</td>
+                            </tr>
                         ))}
                     </tbody>
                 </table>
