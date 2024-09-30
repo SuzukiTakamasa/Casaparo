@@ -1,6 +1,7 @@
 "use client"
 
 //export const runtime = 'edge'
+
 import { useEffect, useState, useCallback, useContext } from 'react'
 import Link from 'next/link'
 
@@ -92,7 +93,7 @@ export default function Home() {
             <p>{`${month - 1}月の家計簿がまだ確定されていません。`}</p>
             </div>
             }
-            {isCompletedCurrentMonth === 0 &&
+            {(isCompletedCurrentMonth === 0 && currentDate >= 25) &&
             <div className="flex justify-center bg-yellow-700">
               <ExclamationTriangleIcon/>
               <p>{`${month}月の家計簿を確定してください。`}</p>
