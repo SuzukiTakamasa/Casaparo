@@ -1,6 +1,7 @@
 "use client"
 
 //export const runtime = 'edge'
+
 import { useEffect, useState, useCallback, useContext } from 'react'
 import Link from 'next/link'
 
@@ -10,9 +11,9 @@ import Loader from '@components/Loader'
 
 import APIClient from '@utils/api_client'
 
-import { FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
+import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
-import { ArrowRightStartToIcon } from '@components/HeroicIcons'
+import { ArrowRightStartToIcon, ExclamationTriangleIcon } from '@components/HeroicIcons'
 
 import { getWeekDay } from '@utils/utility_function'
 
@@ -31,6 +32,9 @@ export default function Home() {
   const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
   const [inventories, setInventories] = useState<InventoryResponse>([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const [isCompletedCurrentMonth, setIsCompletedCurrentMonth] = useState(0)
+  const [isCompletedLastMonth, setIsCompletedLastMonth] = useState(0)
 
   const currentDate = new Date().getDate()
 
@@ -54,13 +58,27 @@ export default function Home() {
     const inventories = await client.get<InventoryResponse>('/v2/inventory')
     setInventories(inventories.data?.filter(i => i.amount === 0) || [])
   }, [])
+  const fetchIsCompletedCurrentMonth = useCallback(async () => {
+    const isCompletedCurrentMonth = await client.get<IsCompleted>(`/v2/completed_household/${year}/${month}`)
+    if (isCompletedCurrentMonth.data) {
+      setIsCompletedCurrentMonth(isCompletedCurrentMonth.data.is_completed)
+    }
+  }, [])
+  const fetchIsCompletedLastMonth = useCallback(async () => {
+    const isCompletedLastMonth = await client.get<IsCompleted>(`/v2/completed_household/${year}/${month - 1}`)
+    if (isCompletedLastMonth.data) {
+      setIsCompletedLastMonth(isCompletedLastMonth.data.is_completed)
+    }
+  }, [])
 
    useEffect(() => {
     fetchFixedAmount()
     fetchSchedules()
     fetchAnniversaries()
     fetchInventories()
-   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories])
+    fetchIsCompletedCurrentMonth()
+    fetchIsCompletedLastMonth()
+   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -69,6 +87,18 @@ export default function Home() {
         <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1">
           <div className="bg-black text-white p-2">
             <h2 className="text-2xl font-bold mb-4 text-center">今月の生活費・各負担分</h2>
+            {isCompletedLastMonth === 0 &&
+            <div className="flex justify-center bg-red-700">
+              <ExclamationTriangleIcon/>
+            <p>{`${month - 1}月の家計簿がまだ確定されていません。`}</p>
+            </div>
+            }
+            {(isCompletedCurrentMonth === 0 && currentDate >= 25) &&
+            <div className="flex justify-center bg-yellow-700">
+              <ExclamationTriangleIcon/>
+              <p>{`${month}月の家計簿を確定してください。`}</p>
+            </div>
+            }
             <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
             <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
             <div className="flex justify-end">
