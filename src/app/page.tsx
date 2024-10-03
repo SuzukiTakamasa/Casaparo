@@ -33,8 +33,8 @@ export default function Home() {
   const [inventories, setInventories] = useState<InventoryResponse>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const [isCompletedCurrentMonth, setIsCompletedCurrentMonth] = useState(0)
-  const [isCompletedLastMonth, setIsCompletedLastMonth] = useState(0)
+  const [isCompletedCurrentMonth, setIsCompletedCurrentMonth] = useState(1)
+  const [isCompletedLastMonth, setIsCompletedLastMonth] = useState(1)
 
   const currentDate = new Date().getDate()
 
