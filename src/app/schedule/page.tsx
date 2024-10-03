@@ -398,11 +398,11 @@ const Schedule = () => {
         setWeekDaysArray([])
         const darr = []
 
-        const dateIndex = new Date().getDay() // 1(SUN) - 6(SAT)
+        const dateIndex = new Date().getDay() // 0(SUN) - 6(SAT)
         const dateIndex1 = new Date(`${year}-${month < 10 ? `0${month}` : month}-01`).getDay() // yyyy-mm-01
 
         const startWeekDate = today > dateIndex ? today - dateIndex : 1
-        const endWeekDate = today > dateIndex ? startWeekDate + 6 : 7 - new Date(dateIndex1).getDay()
+        const endWeekDate = today > dateIndex ? startWeekDate + 6 : 7 - dateIndex1
 
             for (let d = startWeekDate; d <= endWeekDate; d++) {
                 darr.push(d)
