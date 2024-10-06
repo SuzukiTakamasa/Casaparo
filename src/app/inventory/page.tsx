@@ -305,11 +305,17 @@ const Inventory = () => {
             if (!acc[note.id]) {
               acc[note.id] = []
             }
-            acc[note.id].push(note);
+            acc[note.id].push(note)
             return acc
           }, {})
-          
-          setShoppingNotes(Object.values(groupedNotes))
+          const sortGroupedNotes = (groupedNotes: ExtractedShoppingNoteData[][], isRegistered: number) => {
+            const newGroupedNotes = groupedNotes.filter(n => n[0].is_registered === isRegistered)
+            return newGroupedNotes.sort((a, b) => b[0].id - a[0].id)
+          }
+          const groupedNotesNotIsRegistered = sortGroupedNotes(Object.values(groupedNotes), 0)
+          const groupedNotesIsRegistered = sortGroupedNotes(Object.values(groupedNotes), 1)
+          const groupedNotesSortedByIsRegistered = groupedNotesNotIsRegistered.concat(groupedNotesIsRegistered)
+          setShoppingNotes(groupedNotesSortedByIsRegistered)
         }
       }, [])
     const addShoppingNote = async () => {
