@@ -31,11 +31,11 @@ export default class LINEMessagingAPIHandler {
         this.lineBotHeaders = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.accessToken}`
-        }
+        } as const
         this.backendHeaders = {
             "Content-Type": "application/json",
             "Environment": DATABASE_ENVIRONMENT
-        }
+        } as const
         this.currentYear = new Date().getFullYear()
         this.currentMonth = new Date().getMonth() + 1
     }

@@ -30,7 +30,7 @@ export const getWeekDay = (year: number, month: number, day: number): string => 
     const monthStr = month < 10 ? `0${month}` : month
     const dayStr = day < 10 ? `0${day}` : day
     const dateStr = `${year}-${monthStr}-${dayStr}`
-    const weekDays = ["日", "月", "火", "水", "木", "金", "土"]
+    const weekDays = ["日", "月", "火", "水", "木", "金", "土"] as const
     const weekDayIndex = new Date(dateStr).getDay()
     return weekDays[weekDayIndex]
 }
