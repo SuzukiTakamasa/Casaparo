@@ -25,7 +25,7 @@ export default {
 			'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 			'Access-Control-Allow-Headers': '*',
 			'Access-Control-Max-Age': '86400',
-		}
+		} as const
 
 		if (request.method === 'OPTIONS') {
 			return new Response(null,
