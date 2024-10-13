@@ -3,18 +3,16 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
-import Link from 'next/link'
-import { ArrowRightStartToIcon } from '@components/HeroicIcons'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
-
+import TextLink from '@components/TextLink'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
+import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 
@@ -330,10 +328,7 @@ const Household = () => {
                         </table>
                     }
                     <div className="flex justify-center mt-4">
-                        <Link href="statistics" className="flex text-xl text-blue-500 font-bold hover:underline">
-                            <ArrowRightStartToIcon />
-                            各月の家計簿の推移
-                        </Link>
+                        <TextLink path="statistics" text="各月の家計簿の推移" />
                     </div>
                 </div>
                 :

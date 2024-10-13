@@ -3,17 +3,17 @@
 //export const runtime = 'edge'
 
 import { useEffect, useState, useCallback, useContext } from 'react'
-import Link from 'next/link'
 
 import { MonthContext } from '@components/MonthPaginator'
 import { YearContext } from '@components/YearPicker'
 import Loader from '@components/Loader'
+import TextLink from '@components/TextLink'
 
 import APIClient from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
 import { formatNumberWithCommas, setUser } from '@utils/utility_function'
-import { ArrowRightStartToIcon, ExclamationTriangleIcon } from '@components/HeroicIcons'
+import { ExclamationTriangleIcon } from '@components/HeroicIcons'
 
 import { getWeekDay } from '@utils/utility_function'
 
@@ -102,10 +102,7 @@ export default function Home() {
             <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
             <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
             <div className="flex justify-end">
-              <Link href="/household" className="flex text-xl text-blue-500 font-bold hover:underline">
-                <ArrowRightStartToIcon />
-                家計簿一覧へ
-              </Link>
+              <TextLink path="household" text="家計簿一覧へ" />
             </div>
           </div>
         </div>
@@ -123,10 +120,7 @@ export default function Home() {
                 </div>
               ))}
               <div className="flex justify-end">
-                <Link href="/schedule" className="flex text-xl text-blue-500 font-bold hover:underline">
-                  <ArrowRightStartToIcon />
-                  スケジュール一覧へ
-                </Link>
+                <TextLink path="schedule" text="スケジュール一覧へ" />
               </div>
           </div>
         </div>
@@ -139,10 +133,7 @@ export default function Home() {
               </div>
             ))}
             <div className="flex justify-end">
-              <Link href="/inventory" className="flex text-xl text-blue-500 font-bold hover:underline">
-                <ArrowRightStartToIcon />
-                在庫一覧へ
-              </Link>
+              <TextLink path="inventory" text="在庫一覧へ" />
             </div>
           </div>
         </div>
