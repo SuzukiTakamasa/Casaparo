@@ -285,7 +285,8 @@ const Setting = () => {
     useEffect(() => {
         fetchLabels()
         fetchAnniversaries()
-    }, [fetchLabels, fetchAnniversaries])
+        fetchInventoryTypes()
+    }, [fetchLabels, fetchAnniversaries, fetchInventoryTypes])
 
     return (
         <>
@@ -516,9 +517,9 @@ const Setting = () => {
                             <div className="flex justify-end space-x-4">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                    onClick={isUpdateLabel ? handleUpdateInventoryType : handleAddInventoryType}
+                                    onClick={isUpdateInventoryType ? handleUpdateInventoryType : handleAddInventoryType}
                                 >
-                                    {isUpdateLabel ? "変更" : "登録"}
+                                    {isUpdateInventoryType ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
