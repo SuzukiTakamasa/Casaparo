@@ -48,7 +48,7 @@ const Inventory = () => {
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
 
     const setTypesStr = (types: number) => {
-        return inventoryTypes.filter(i => i.id === types)[0].types
+        return inventoryTypes.filter(i => i.id === types)[0].types ?? "-"
     }
 
     const validateInventory = () => {
