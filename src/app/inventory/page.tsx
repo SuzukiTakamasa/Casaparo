@@ -48,14 +48,7 @@ const Inventory = () => {
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
 
     const setTypesStr = (types: number) => {
-        switch (types) {
-            case 1:
-                return "食料品"
-            case 2:
-                return "日用品"
-            default:
-                return "-"
-        }
+        return inventoryTypes.filter(i => i.id === types)[0].types
     }
 
     const validateInventory = () => {
