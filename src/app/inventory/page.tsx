@@ -47,8 +47,11 @@ const Inventory = () => {
 
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
 
-    const setTypesStr = (types: number) => {
-        return inventoryTypes.filter(i => i.id === types)[0].types ?? "-"
+    const [pagination, setPagination] = useState(1)
+    const [isHiddenRegisteredShoppingNotes, setIsHiddenRegisteredShoppingNotes] = useState(false)
+
+    const setInventoryTypesStr = (types: number) => {
+        return inventoryTypes.filter(i => i.id === types)[0]?.types ?? "-"
     }
 
     const validateInventory = () => {
@@ -355,6 +358,17 @@ const Inventory = () => {
         await fetchShoppingNotes()
         await fetchInventories()
     }
+    const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
+        if (shoppingNotes.length >= pagination * 5) {
+            return shoppingNotes.slice(pagination, pagination * 5)
+        } else {
+            return shoppingNotes.slice(pagination, shoppingNotes.length)
+        }
+    }
+    const handleIsHiddenRegisteredShoppingNotes = () => {
+        setIsHiddenRegisteredShoppingNotes(!isHiddenRegisteredShoppingNotes)
+        setShoppingNotes(isHiddenRegisteredShoppingNotes ? shoppingNotes.filter(s => s[0].is_registered === 0) : shoppingNotes)
+    }
 
     useEffect(() => {
         fetchInventories()
@@ -538,7 +552,7 @@ const Inventory = () => {
                                         <TrashBoxIcon />
                                     </button>
                                 </td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{setTypesStr(inventory.types)}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{setInventoryTypesStr(inventory.types)}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{inventory.name}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{inventory.amount}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{setUser(inventory.created_by)}</td>
