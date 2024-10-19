@@ -364,7 +364,7 @@ const Inventory = () => {
         } else {
             return shoppingNotes.slice(pagination, shoppingNotes.length)
         }
-        return setIsHiddenRegisteredShoppingNotes.length >= pagination * 5 ? shoppingNotes.slice(pagination, pagination * 5) : shoppingNotes.slice(pagination, shoppingNotes.length)
+        return shoppingNotes.length >= pagination * 5 ? shoppingNotes.slice(pagination, pagination * 5) : shoppingNotes.slice(pagination, shoppingNotes.length)
     }
     const handleIsHiddenRegisteredShoppingNotes = () => {
         setIsHiddenRegisteredShoppingNotes(!isHiddenRegisteredShoppingNotes)
