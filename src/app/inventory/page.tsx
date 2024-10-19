@@ -364,10 +364,13 @@ const Inventory = () => {
         } else {
             return shoppingNotes.slice(pagination, shoppingNotes.length)
         }
+        return shoppingNotes.length >= pagination * 5 ? shoppingNotes.slice(pagination, pagination * 5) : shoppingNotes.slice(pagination, shoppingNotes.length)
     }
     const handleIsHiddenRegisteredShoppingNotes = () => {
         setIsHiddenRegisteredShoppingNotes(!isHiddenRegisteredShoppingNotes)
-        setShoppingNotes(isHiddenRegisteredShoppingNotes ? shoppingNotes.filter(s => s[0].is_registered === 0) : shoppingNotes)
+    }
+    const handleDisplayShoppingNotes = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
+        return isHiddenRegisteredShoppingNotes ? shoppingNotes.filter(s => s[0].is_registered === 0) : shoppingNotes
     }
 
     useEffect(() => {
@@ -570,6 +573,13 @@ const Inventory = () => {
                     >
                     買い物メモを登録
                     </button>
+                    <input
+                        className="ml-8 mr-2"
+                        type="checkbox"
+                        checked={isHiddenRegisteredShoppingNotes}
+                        onChange={handleIsHiddenRegisteredShoppingNotes}
+                    />
+                    <span>登録済みを非表示</span>
 
                     {showShoppingNoteDialog && (
                         <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -702,7 +712,7 @@ const Inventory = () => {
                         </div>
                     )}
 
-                    {shoppingNotes.map((shoppingNote, i) => {
+                    {handleDisplayShoppingNotes(shoppingNotes).map((shoppingNote, i) => {
                         const firstShoppingNote = shoppingNote[0]
                         return (
                         <div key={i}>
