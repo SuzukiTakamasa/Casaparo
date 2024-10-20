@@ -347,23 +347,15 @@ const Inventory = () => {
     }
     const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
-        for (const sn of JSON.parse(registerToInventoryShoppingNote.notes)) {
-            if (sn.id === 0) {
-                await client.post<InventoryResponse>("/v2/inventory/create", sn)
-            } else {
-                await client.post<InventoryResponse>("/v2/inventory/update_amount", sn)
-            }
-        }
+        const promises = JSON.parse(registerToInventoryShoppingNote.notes).map((request: InventoryData) => {
+            client.post<InventoryResponse>(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
+        })
+        await Promise.all(promises)
         await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
         await fetchInventories()
     }
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
-        if (shoppingNotes.length >= pagination * 5) {
-            return shoppingNotes.slice(pagination, pagination * 5)
-        } else {
-            return shoppingNotes.slice(pagination, shoppingNotes.length)
-        }
         return shoppingNotes.length >= pagination * 5 ? shoppingNotes.slice(pagination, pagination * 5) : shoppingNotes.slice(pagination, shoppingNotes.length)
     }
     const handleIsHiddenRegisteredShoppingNotes = () => {
@@ -731,7 +723,7 @@ const Inventory = () => {
                                                         name: note.note_name,
                                                         amount: note.note_amount,
                                                         created_by: note.created_by,
-                                                        version: note.version
+                                                        version: note.note_version
                                                 }))),
                                                     is_registered: firstShoppingNote.is_registered,
                                                     created_by: firstShoppingNote.created_by,
@@ -750,7 +742,7 @@ const Inventory = () => {
                                                         name: note.note_name,
                                                         amount: note.note_amount,
                                                         created_by: note.created_by,
-                                                        version: note.version
+                                                        version: note.note_version
                                                 }))),
                                                     is_registered: firstShoppingNote.is_registered,
                                                     created_by: firstShoppingNote.created_by,
@@ -769,7 +761,7 @@ const Inventory = () => {
                                                         name: note.note_name,
                                                         amount: note.note_amount,
                                                         created_by: note.created_by,
-                                                        version: note.version
+                                                        version: note.note_version
                                                 }))),
                                                     is_registered: firstShoppingNote.is_registered,
                                                     created_by: firstShoppingNote.created_by,
