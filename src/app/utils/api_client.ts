@@ -48,7 +48,7 @@ class APIClient {
                 body: JSON.stringify(data)
             })
             const jsonRes = await res.json()
-            return await { data: <T>jsonRes, error: null }
+            return { data: <T>jsonRes, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
