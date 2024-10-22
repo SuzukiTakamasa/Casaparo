@@ -2,7 +2,7 @@ import { createContext, useContext, ReactNode } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from './HeroicIcons'
 
 export type MonthContextType  = {
-    month: number,
+    month: number
     handleMonthIncrement: () => void
     handleMonthDecrement: () => void
 }
@@ -15,7 +15,7 @@ type MonthProviderProps = {
 }
 
 export type MonthStrProps = {
-    monthStr: string,
+    monthStr: string
     cssStr: string
 }
 
