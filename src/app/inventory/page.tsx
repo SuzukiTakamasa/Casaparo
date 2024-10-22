@@ -356,13 +356,24 @@ const Inventory = () => {
         await fetchInventories()
     }
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
-        return shoppingNotes.length >= pagination * 5 ? shoppingNotes.slice(pagination, pagination * 5) : shoppingNotes.slice(pagination, shoppingNotes.length)
+        const numberOfDataPerPage = 10
+        const firstDataIndexPerPage = (pagination - 1) * numberOfDataPerPage + 1
+        const lastDataIndexPerPage = pagination * numberOfDataPerPage
+        return (
+            shoppingNotes.length >= lastDataIndexPerPage ?
+            shoppingNotes.slice(firstDataIndexPerPage, lastDataIndexPerPage) :
+            shoppingNotes.slice(firstDataIndexPerPage, shoppingNotes.length)
+        )
     }
     const handleIsHiddenRegisteredShoppingNotes = () => {
         setIsHiddenRegisteredShoppingNotes(!isHiddenRegisteredShoppingNotes)
     }
     const handleDisplayShoppingNotes = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
-        return isHiddenRegisteredShoppingNotes ? shoppingNotes.filter(s => s[0].is_registered === 0) : shoppingNotes
+        return (
+            isHiddenRegisteredShoppingNotes ?
+            shoppingNotes.filter(s => s[0].is_registered === 0) :
+            shoppingNotes
+        )
     }
 
     useEffect(() => {
