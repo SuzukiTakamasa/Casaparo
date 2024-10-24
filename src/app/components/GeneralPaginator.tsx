@@ -15,6 +15,7 @@ type GeneralPaginationProviderProps = {
 
 export type GeneralPaginationStrProps = {
     numberOfDataPerPage: number
+    numberOfData: number
     cssStr: string
 }
 
@@ -29,10 +30,10 @@ export const GeneralPaginationContext = createContext<GeneralPaginationContextTy
 export const GeneralPaginationProvider = ({ children, page, setPage}: GeneralPaginationProviderProps) => {
 
     const handlePageIncrement = () => {
-
+        setPage(page => page + 1)
     }
     const handlePageDecrement = () => {
-
+        setPage(page => page - 1)
     }
 
     return (
@@ -42,16 +43,16 @@ export const GeneralPaginationProvider = ({ children, page, setPage}: GeneralPag
     )
 }
 
-export const GeneralPaginationStr = ({ numberOfDataPerPage, cssStr }: GeneralPaginationStrProps) => {
+export const GeneralPaginationStr = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
     const { page } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
     return (
         <div className={`${cssStr}`}>
-            {`${page} - ${page * numberOfDataPerPage}`}
+            {`${page} - ${page * numberOfDataPerPage} / ${numberOfData}`}
         </div>
     )
 }
 
-const GeneralPaginator = ({ numberOfDataPerPage, cssStr }: GeneralPaginationStrProps) => {
+const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
     const { handlePageIncrement, handlePageDecrement } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
 
     return (
@@ -62,7 +63,7 @@ const GeneralPaginator = ({ numberOfDataPerPage, cssStr }: GeneralPaginationStrP
             >
                 <ChevronLeftIcon />
             </button>
-            <GeneralPaginationStr numberOfDataPerPage={numberOfDataPerPage} cssStr={cssStr}/>
+            <GeneralPaginationStr numberOfDataPerPage={numberOfDataPerPage} numberOfData={numberOfData} cssStr={cssStr}/>
             <button
                 className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
                 onClick={handlePageIncrement}
