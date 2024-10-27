@@ -45,9 +45,11 @@ export const GeneralPaginationProvider = ({ children, page, setPage}: GeneralPag
 
 export const GeneralPaginationStr = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
     const { page } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
+    const firstDataIndexPerPage = (page - 1) * numberOfDataPerPage + 1
+    const lastDataIndexPerPage = page * numberOfDataPerPage
     return (
         <div className={`${cssStr}`}>
-            {`${page} - ${page * numberOfDataPerPage <= numberOfData ? page * numberOfDataPerPage : numberOfData} / ${numberOfData}`}
+            {`${firstDataIndexPerPage} - ${lastDataIndexPerPage <= numberOfData ? lastDataIndexPerPage : numberOfData} / ${numberOfData}`}
         </div>
     )
 }
