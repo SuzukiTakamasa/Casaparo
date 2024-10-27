@@ -47,19 +47,20 @@ export const GeneralPaginationStr = ({ numberOfDataPerPage, numberOfData, cssStr
     const { page } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
     return (
         <div className={`${cssStr}`}>
-            {`${page} - ${page * numberOfDataPerPage} / ${numberOfData}`}
+            {`${page} - ${page * numberOfDataPerPage <= numberOfData ? page * numberOfDataPerPage : numberOfData} / ${numberOfData}`}
         </div>
     )
 }
 
 const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
-    const { handlePageIncrement, handlePageDecrement } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
+    const { page, handlePageIncrement, handlePageDecrement } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
 
     return (
         <div className="flex justify-center space-x-16">
             <button
                 className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
                 onClick={handlePageDecrement}
+                disabled={page === 1}
             >
                 <ChevronLeftIcon />
             </button>
@@ -67,6 +68,7 @@ const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, cssStr }: General
             <button
                 className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
                 onClick={handlePageIncrement}
+                disabled={page * numberOfDataPerPage >= numberOfData}
             >
                 <ChevronRightIcon />
             </button>
