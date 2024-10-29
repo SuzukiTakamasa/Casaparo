@@ -27,7 +27,7 @@ const defaultGeneralPagenationContext: GeneralPaginationContextType = {
 
 export const GeneralPaginationContext = createContext<GeneralPaginationContextType>(defaultGeneralPagenationContext)
 
-export const GeneralPaginationProvider = ({ children, page, setPage}: GeneralPaginationProviderProps) => {
+export const GeneralPaginationProvider = ({ children, page, setPage }: GeneralPaginationProviderProps) => {
 
     const handlePageIncrement = () => {
         setPage(page => page + 1)
@@ -56,19 +56,21 @@ export const GeneralPaginationStr = ({ numberOfDataPerPage, numberOfData, cssStr
 
 const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
     const { page, handlePageIncrement, handlePageDecrement } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
+    const isDisabledLeft = page === 1
+    const isDisabledRight = page * numberOfDataPerPage >= numberOfData
 
     return (
         <div className="flex justify-center space-x-16">
             <button
-                className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
+                className={`bg-transparent ${isDisabledLeft ? "text-gray-700" : "text-white"} font-bold py-2 px-4 rounded`}
                 onClick={handlePageDecrement}
-                disabled={page === 1}
+                disabled={isDisabledLeft}
             >
                 <ChevronLeftIcon />
             </button>
             <GeneralPaginationStr numberOfDataPerPage={numberOfDataPerPage} numberOfData={numberOfData} cssStr={cssStr}/>
             <button
-                className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
+                className={`bg-transparent ${isDisabledRight ? "text-gray-700" : "text-white"} font-bold py-2 px-4 rounded`}
                 onClick={handlePageIncrement}
                 disabled={page * numberOfDataPerPage >= numberOfData}
             >

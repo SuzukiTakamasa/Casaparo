@@ -1,13 +1,15 @@
 "use client"
 
 //export const runtime = 'edge'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useContext } from 'react'
 
 import APIClient from '@utils/api_client'
 import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ShoppingNoteResponse, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@utils/constants'
 
 import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
+import { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
+import GeneralPaginator from '@components/GeneralPaginator'
 
 
 const client = new APIClient()
@@ -47,7 +49,13 @@ const Inventory = () => {
 
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
 
-    const [pagination, setPagination] = useState(1)
+    const { page } = useContext(GeneralPaginationContext)
+    const [pagination, setPagination] = useState(page)
+
+    const numberOfDataPerPage = 10
+    const firstDataIndexPerPage = (pagination - 1) * numberOfDataPerPage + 1
+    const lastDataIndexPerPage = pagination * numberOfDataPerPage
+
     const [isHiddenRegisteredShoppingNotes, setIsHiddenRegisteredShoppingNotes] = useState(false)
 
     const setInventoryTypesStr = (types: number) => {
@@ -356,13 +364,10 @@ const Inventory = () => {
         await fetchInventories()
     }
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
-        const numberOfDataPerPage = 10
-        const firstDataIndexPerPage = (pagination - 1) * numberOfDataPerPage + 1
-        const lastDataIndexPerPage = pagination * numberOfDataPerPage
         return (
             shoppingNotes.length >= lastDataIndexPerPage ?
-            shoppingNotes.slice(firstDataIndexPerPage, lastDataIndexPerPage) :
-            shoppingNotes.slice(firstDataIndexPerPage, shoppingNotes.length)
+            shoppingNotes.slice(firstDataIndexPerPage, lastDataIndexPerPage + 1) :
+            shoppingNotes.slice(firstDataIndexPerPage - 1)
         )
     }
     const handleIsHiddenRegisteredShoppingNotes = () => {
@@ -584,6 +589,10 @@ const Inventory = () => {
                     />
                     <span>登録済みを非表示</span>
 
+                    <GeneralPaginationProvider page={pagination} setPage={setPagination}>
+                        <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} cssStr="text-lg font-bold mx-4" />
+                    </GeneralPaginationProvider>
+
                     {showShoppingNoteDialog && (
                         <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
                             <div className="bg-white p-4 rounded">
@@ -715,7 +724,7 @@ const Inventory = () => {
                         </div>
                     )}
 
-                    {handleDisplayShoppingNotes(shoppingNotes).map((shoppingNote, i) => {
+                    {handleFilterShoppingNotesWithPagination(handleDisplayShoppingNotes(shoppingNotes)).map((shoppingNote, i) => {
                         const firstShoppingNote = shoppingNote[0]
                         return (
                         <div key={i}>
