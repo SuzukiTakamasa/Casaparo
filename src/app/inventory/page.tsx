@@ -23,6 +23,7 @@ const Inventory = () => {
 
     const [typesValidMsg, setTypesValidMsg] = useState("")
     const [nameValidMsg, setNameValidMsg] = useState("")
+    const [isIncludedInYetToRegisterShoppingNoteMsg, setIsIncludedInYetToRegisterShoppingNoteMsg] = useState("")
 
     const [inventories, setInventories] = useState<InventoryResponse>([])
     const [inventoryId, setInventoryId] = useState(0)
@@ -71,6 +72,10 @@ const Inventory = () => {
         if (name === "") {
             isValid = false
             setNameValidMsg("項目名を入力してください。")
+        }
+        if (isYetToRegisterToInventory(inventoryId)) {
+            isValid = false
+            setIsIncludedInYetToRegisterShoppingNoteMsg("在庫未登録の買い物メモで選択中のため編集できません。")
         }
         return isValid
     }
@@ -128,6 +133,7 @@ const Inventory = () => {
         setIsUpdateInventory(false)
         setTypesValidMsg("")
         setNameValidMsg("")
+        setIsIncludedInYetToRegisterShoppingNoteMsg("")
     }
 
     const fetchInventories = useCallback(async () => {
@@ -380,6 +386,19 @@ const Inventory = () => {
             shoppingNotes
         )
     }
+    const isYetToRegisterToInventory = (id: number) => {
+        const yetToRegisterToInventory = shoppingNotes.map(s => s.filter(i => i.is_registered === 0))
+        let isIncluded = false
+        for (const y of yetToRegisterToInventory) {
+            for (const i of Object.values(y)) {
+                if (i.note_id === id) {
+                    isIncluded = true
+                    return isIncluded
+                }
+            }
+        }
+        return isIncluded
+    }
 
     useEffect(() => {
         fetchInventories()
@@ -464,6 +483,7 @@ const Inventory = () => {
                                     >
                                     </input>
                                     {nameValidMsg !== "" && <div className="text-sm text-red-500">{nameValidMsg}</div>}
+                                    {isIncludedInYetToRegisterShoppingNoteMsg !== "" && <div className="text-sm text-red-500">{isIncludedInYetToRegisterShoppingNoteMsg}</div>}
                                     <div className="flex justify-center">
                                         <button
                                             className={`${amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
