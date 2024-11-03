@@ -76,16 +76,17 @@ const Setting = () => {
             isValid = false
             setInventoryType("種別を入力してください。")
         }
+        return isValid
     }
     
 
     const handleAddLabel = async () => {
-        if (!validateLabel) return
+        if (!validateLabel()) return
         await addlabels()
         handleCloseLabelDialog()
     }
     const handleUpdateLabel = async () => {
-        if (!validateLabel) return
+        if (!validateLabel()) return
         await updateLabels()
         handleCloseLabelDialog()
     }
@@ -150,12 +151,12 @@ const Setting = () => {
     }
 
     const handleAddAnniversary = async () => {
-        if (!validateAnniversary) return
+        if (!validateAnniversary()) return
         await addAnniversary()
         handleCloseAnniversaryDialog()
     }
     const handleUpdateAnniversary = async () => {
-        if (!validateAnniversary) return
+        if (!validateAnniversary()) return
         await UpdateAnniversary()
         handleCloseAnniversaryDialog()
     }

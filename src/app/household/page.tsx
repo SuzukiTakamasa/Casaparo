@@ -56,7 +56,7 @@ const Household = () => {
             isValid = false
             setNewAmountValidMsg("金額を入力してください。")
         }
-        if (isUnsignedInteger(newAmount)) {
+        if (!isUnsignedInteger(newAmount)) {
             isValid = false
             setNewAmountValidMsg("整数値を入力してください。")
         }
@@ -64,12 +64,12 @@ const Household = () => {
     }
 
     const handleAddHousehold = async () => {
-        if (!validate) return
+        if (!validate()) return
         await addHousehold()
         handleCloseDialog()
     }
     const handleUpdateHousehold = async () => {
-        if (!validate) return
+        if (!validate()) return
         await updateHousehold()
         handleCloseDialog()
     }
