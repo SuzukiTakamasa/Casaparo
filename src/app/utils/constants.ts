@@ -4,6 +4,10 @@ export interface Result<T> {
     error: string | null
 }
 
+export interface IsSuccess {
+    is_success: number
+}
+
 export interface HouseholdData {
     id?: number,
     name: string,
