@@ -1,4 +1,4 @@
-import { APIRequest, R2Response, Result } from './constants'
+import { APIRequest, R2Response, Result , IsSuccess } from './constants'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -40,7 +40,7 @@ class APIClient {
             return { data: null, error: String(e) }
         }
     }
-    public async post<T>(endpoint: string, data: APIRequest): Promise<Result<T>> {
+    public async post(endpoint: string, data: APIRequest): Promise<Result<IsSuccess>> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',
@@ -48,7 +48,7 @@ class APIClient {
                 body: JSON.stringify(data)
             })
             const jsonRes = await res.json()
-            return { data: <T>jsonRes, error: null }
+            return { data: <IsSuccess>jsonRes, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }

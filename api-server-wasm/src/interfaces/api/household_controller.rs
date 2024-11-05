@@ -1,6 +1,7 @@
 use crate::application::usecases::household_usecases::HouseholdUsecases;
 use crate::domain::entities::household::{Households, CompletedHouseholds};
 use crate::domain::repositories::household_repository::HouseholdRepository;
+use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -92,8 +93,11 @@ impl<R: HouseholdRepository> HouseholdController<R> {
             Ok(household) => household,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_household(&household).await?;
-        Response::ok("An household was created")
+        let result = match self.usecases.create_household(&household).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_household(&self, req: &mut Request) -> Result<Response> {
@@ -105,8 +109,11 @@ impl<R: HouseholdRepository> HouseholdController<R> {
             Ok(household) => household,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_household(&mut household).await?;
-        Response::ok("An household was uopdated")
+        let result = match self.usecases.update_household(&mut household).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn delete_household(&self, req: &mut Request) -> Result<Response> {
@@ -118,8 +125,11 @@ impl<R: HouseholdRepository> HouseholdController<R> {
             Ok(household) => household,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.delete_household(&mut household).await?;
-        Response::ok("An household was deleted")
+        let result = match self.usecases.delete_household(&mut household).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn create_completed_household(&self, req: &mut Request) -> Result<Response> {
@@ -131,7 +141,10 @@ impl<R: HouseholdRepository> HouseholdController<R> {
             Ok(completed_household) => completed_household,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_completed_household(&completed_household).await?;
-        Response::ok("An Completed Household was deleted")
+        let result = match self.usecases.create_completed_household(&completed_household).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 }

@@ -355,7 +355,7 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post<ScheduleResponse>('/v2/schedule/create', addScheduleData)
+        await client.post('/v2/schedule/create', addScheduleData)
         await fetchSchedules()
     }
     const fetchLabels = async () => {
@@ -378,12 +378,12 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post<ScheduleResponse>('/v2/schedule/update', updateSchedule)
+        await client.post('/v2/schedule/update', updateSchedule)
         await fetchSchedules()
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<ScheduleResponse>('/v2/schedule/delete', deletedScheduleData)
+        await client.post('/v2/schedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {

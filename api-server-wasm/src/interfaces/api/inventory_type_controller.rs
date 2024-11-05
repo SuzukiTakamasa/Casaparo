@@ -1,6 +1,7 @@
 use crate::application::usecases::inventory_type_usecases::InventoryTypeUsecases;
 use crate::domain::entities::setting::InventoryTypes;
 use crate::domain::repositories::inventory_type_repository::InventoryTypeRepository;
+use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -41,8 +42,11 @@ impl<R: InventoryTypeRepository> InventoryTypeController<R> {
             Ok(inventory_type) => inventory_type,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_inventory_type(&inventory_type).await?;
-        Response::ok("An inventory type was created")
+        let result = match self.usecases.create_inventory_type(&inventory_type).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_inventory_type(&self, req: &mut Request) -> Result<Response> {
@@ -54,8 +58,11 @@ impl<R: InventoryTypeRepository> InventoryTypeController<R> {
             Ok(inventory_type) => inventory_type,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_inventory_type(&mut inventory_type).await?;
-        Response::ok("An inventory type was updated")
+        let result = match self.usecases.update_inventory_type(&mut inventory_type).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn delete_inventory_type(&self, req: &mut Request) -> Result<Response> {
@@ -67,7 +74,10 @@ impl<R: InventoryTypeRepository> InventoryTypeController<R> {
             Ok(inventory_type) => inventory_type,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.delete_inventory_type(&mut inventory_type).await?;
-        Response::ok("An inventory type was deleted")
+        let result = match self.usecases.delete_inventory_type(&mut inventory_type).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 }
