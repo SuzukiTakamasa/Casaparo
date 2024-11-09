@@ -12,10 +12,8 @@ import TextLink from '@components/TextLink'
 import APIClient from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
-import { formatNumberWithCommas, setUser } from '@utils/utility_function'
+import { formatNumberWithCommas, getWeekDay, setUser, sortSchedulesByDateTime } from '@utils/utility_function'
 import { ExclamationTriangleIcon } from '@components/HeroicIcons'
-
-import { getWeekDay } from '@utils/utility_function'
 
 
 const client = new  APIClient()
@@ -109,7 +107,7 @@ export default function Home() {
         <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
           <div className="bg-black text-white p-2">
               <h2 className="text-2xl font-bold mb-4 text-center">今日・明日の予定</h2>
-              {schedules.map((schedule, i) => (
+              {sortSchedulesByDateTime(schedules).map((schedule, i) => (
                 <div key={i} className="text-center text-xl">
                   {schedules.length > 0 ? `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date}日(${getWeekDay(year, month, schedule.from_date)}) ${schedule.from_time}-${schedule.to_time} ${schedule.description}` : "なし"}
                 </div>
