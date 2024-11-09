@@ -29,6 +29,43 @@ const getTimeArray = (): string[] => {
     return timeArray
 }
 
+export const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
+    const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
+    const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
+
+    schedules.sort((a, b) => {
+        if (sliceHour(a.from_time) > sliceHour(b.from_time)) {
+            return 1
+        } else if (sliceHour(a.from_time) < sliceHour(b.from_time)) {
+            return -1
+        } else {
+            if (sliceMinute(a.from_time) > sliceMinute(b.from_time)) {
+                return 1
+            } else if (sliceMinute(a.from_time) < sliceMinute(b.from_time)) {
+                return -1
+            } else {
+                return 0
+            }
+        }
+    })
+    schedules.sort((a, b) => {
+        if (sliceHour(a.to_time) > sliceHour(b.to_time)) {
+            return 1
+        } else if (sliceHour(a.to_time) < sliceHour(b.to_time)) {
+            return -1
+        } else {
+            if (sliceMinute(a.to_time) > sliceMinute(b.to_time)) {
+                return 1
+            } else if (sliceMinute(a.to_time) < sliceMinute(b.to_time)) {
+                return -1
+            } else {
+                return 0
+            }
+        }
+    })
+    return schedules
+}
+
 
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
@@ -148,43 +185,6 @@ const Schedule = () => {
         const isAnniversary = (anniversary: AnniversaryData) => {
             return (month === anniversary.month &&
                     day === anniversary.date)
-        }
-
-        const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
-            const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
-            const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
-    
-            schedules.sort((a, b) => {
-                if (sliceHour(a.from_time) > sliceHour(b.from_time)) {
-                    return 1
-                } else if (sliceHour(a.from_time) < sliceHour(b.from_time)) {
-                    return -1
-                } else {
-                    if (sliceMinute(a.from_time) > sliceMinute(b.from_time)) {
-                        return 1
-                    } else if (sliceMinute(a.from_time) < sliceMinute(b.from_time)) {
-                        return -1
-                    } else {
-                        return 0
-                    }
-                }
-            })
-            schedules.sort((a, b) => {
-                if (sliceHour(a.to_time) > sliceHour(b.to_time)) {
-                    return 1
-                } else if (sliceHour(a.to_time) < sliceHour(b.to_time)) {
-                    return -1
-                } else {
-                    if (sliceMinute(a.to_time) > sliceMinute(b.to_time)) {
-                        return 1
-                    } else if (sliceMinute(a.to_time) < sliceMinute(b.to_time)) {
-                        return -1
-                    } else {
-                        return 0
-                    }
-                }
-            })
-            return schedules
         }
     
         return (
