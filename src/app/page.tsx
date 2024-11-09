@@ -12,11 +12,8 @@ import TextLink from '@components/TextLink'
 import APIClient from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
-import { formatNumberWithCommas, setUser } from '@utils/utility_function'
+import { formatNumberWithCommas, getWeekDay, setUser, sortSchedulesByDateTime } from '@utils/utility_function'
 import { ExclamationTriangleIcon } from '@components/HeroicIcons'
-
-import { getWeekDay } from '@utils/utility_function'
-import { sortSchedulesByDateTime } from './schedule/page'
 
 
 const client = new  APIClient()

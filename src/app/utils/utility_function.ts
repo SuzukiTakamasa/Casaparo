@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import { ScheduleResponse } from "./constants"
 
 export const boolToInt = (flag: boolean): number => +flag
 export const intToBool = (bit: number): boolean => !!bit
@@ -62,4 +63,41 @@ export const getDateArray = (month: number): number[] => {
 
 export const isUnsignedInteger = (intStr: string): boolean => {
     return /^\d+$/.test(intStr)
+}
+
+export const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
+    const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
+    const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
+
+    schedules.sort((a, b) => {
+        if (sliceHour(a.from_time) > sliceHour(b.from_time)) {
+            return 1
+        } else if (sliceHour(a.from_time) < sliceHour(b.from_time)) {
+            return -1
+        } else {
+            if (sliceMinute(a.from_time) > sliceMinute(b.from_time)) {
+                return 1
+            } else if (sliceMinute(a.from_time) < sliceMinute(b.from_time)) {
+                return -1
+            } else {
+                return 0
+            }
+        }
+    })
+    schedules.sort((a, b) => {
+        if (sliceHour(a.to_time) > sliceHour(b.to_time)) {
+            return 1
+        } else if (sliceHour(a.to_time) < sliceHour(b.to_time)) {
+            return -1
+        } else {
+            if (sliceMinute(a.to_time) > sliceMinute(b.to_time)) {
+                return 1
+            } else if (sliceMinute(a.to_time) < sliceMinute(b.to_time)) {
+                return -1
+            } else {
+                return 0
+            }
+        }
+    })
+    return schedules
 }
