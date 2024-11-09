@@ -1,6 +1,7 @@
 use crate::application::usecases::schedule_usecases::ScheduleUsecases;
 use crate::domain::entities::schedule::Schedules;
 use crate::domain::repositories::schedule_repository::ScheduleRepository;
+use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -48,8 +49,11 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Ok(schedule) => schedule,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_schedule(&schedule).await?;
-        Response::ok("A schedule was created")
+        let result = match self.usecases.create_schedule(&schedule).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_schedule(&self, req: &mut Request) -> Result<Response> {
@@ -61,8 +65,11 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Ok(schedule) => schedule,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_schedule(&mut schedule).await?;
-        Response::ok("A schedule was updated")
+        let result = match self.usecases.update_schedule(&mut schedule).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn delete_schedule(&self, req: &mut Request) -> Result<Response> {
@@ -74,7 +81,10 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Ok(schedule) => schedule,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.delete_schedule(&mut schedule).await?;
-        Response::ok("A schedule was deleted")
+        let result = match self.usecases.delete_schedule(&mut schedule).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 }

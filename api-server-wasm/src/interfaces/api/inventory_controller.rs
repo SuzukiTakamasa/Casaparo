@@ -1,6 +1,7 @@
 use crate::application::usecases::inventory_usecases::InventoryUsecases;
 use crate::domain::entities::inventory::Inventories;
 use crate::domain::repositories::inventory_repository::InventoryRepository;
+use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -42,8 +43,11 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_inventory(&inventory).await?;
-        Response::ok("A inventory was created")
+        let result = match self.usecases.create_inventory(&inventory).await {
+            Ok(_) => IsSuccess { is_success: 1},
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -55,8 +59,11 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_inventory(&mut inventory).await?;
-        Response::ok("A inventory was updated")
+        let result = match self.usecases.update_inventory(&mut inventory).await {
+            Ok(_) => IsSuccess { is_success: 1},
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_amount(&self, req: &mut Request) -> Result<Response> {
@@ -68,8 +75,11 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_amount(&mut inventory).await?;
-        Response::ok("A inventory amount was updated")
+        let result = match self.usecases.update_amount(&mut inventory).await {
+            Ok(_) => IsSuccess { is_success: 1},
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn delete_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -81,7 +91,10 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.delete_inventory(&mut inventory).await?;
-        Response::ok("A inventory was deleted")
+        let result = match self.usecases.delete_inventory(&mut inventory).await {
+            Ok(_) => IsSuccess { is_success: 1},
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 }

@@ -153,7 +153,7 @@ const Inventory = () => {
             created_by: inventoryCreatedBy as number,
             version: inventoryVersion
         }
-        await client.post<InventoryResponse>("/v2/inventory/create", addInventoryData)
+        await client.post("/v2/inventory/create", addInventoryData)
         await fetchInventories()
     }
     const fetchInventoryTypes = useCallback(async () => {
@@ -169,12 +169,12 @@ const Inventory = () => {
             created_by: inventoryCreatedBy as number,
             version: inventoryVersion
         }
-        await client.post<InventoryResponse>("/v2/inventory/update", updateInventoryData)
+        await client.post("/v2/inventory/update", updateInventoryData)
         await fetchInventories()
     }
     const deleteInventory = async (deleteInventoryData: InventoryData) => {
         if (!window.confirm("在庫を削除しますか？")) return
-        await client.post<InventoryResponse>("/v2/inventory/delete", deleteInventoryData)
+        await client.post("/v2/inventory/delete", deleteInventoryData)
         await fetchInventories()
     }
     const handleInventoryIncrementAmount = () => {
@@ -335,7 +335,7 @@ const Inventory = () => {
             created_by: shoppingNoteCreatedBy,
             version: shoppingNoteVersion
         }
-        await client.post<ShoppingNoteResponse>("/v2/shopping_note/create", addShoppingNoteData)
+        await client.post("/v2/shopping_note/create", addShoppingNoteData)
         await fetchShoppingNotes()
     }
     const updateShoppingNote = async () => {
@@ -346,26 +346,26 @@ const Inventory = () => {
             created_by: shoppingNoteCreatedBy,
             version: shoppingNoteVersion
         }
-        await client.post<ShoppingNoteResponse>("/v2/shopping_note/update", updateShoppingNoteData)
+        await client.post("/v2/shopping_note/update", updateShoppingNoteData)
         await fetchShoppingNotes()
     }
     const deleteShoppingNote = async (deleteShoppingNoteData: ShoppingNoteData) => {
         if (!window.confirm("買い物メモを削除しますか？")) return
-        await client.post<ShoppingNoteResponse>("/v2/shopping_note/delete", deleteShoppingNoteData)
+        await client.post("/v2/shopping_note/delete", deleteShoppingNoteData)
         await fetchShoppingNotes()
     }
     const registerToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
-        await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        await client.post("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
     }
     const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
         const promises = JSON.parse(registerToInventoryShoppingNote.notes).map((request: InventoryData) => {
-            client.post<InventoryResponse>(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
+            client.post(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
         })
         await Promise.all(promises)
-        await client.post<ShoppingNoteResponse>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        await client.post("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
         await fetchInventories()
     }

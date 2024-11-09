@@ -135,7 +135,7 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post<HouseholdResponse>('/v2/household/create', addedHouseholdData)
+        await client.post('/v2/household/create', addedHouseholdData)
         await fetchHouseholds()
     }
     const updateHousehold = async () => {
@@ -149,12 +149,12 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post<HouseholdResponse>('/v2/household/update', updatedHouseholdData)
+        await client.post('/v2/household/update', updatedHouseholdData)
         await fetchHouseholds()
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<HouseholdResponse>('/v2/household/delete', deletedHouseholdData)
+        await client.post('/v2/household/delete', deletedHouseholdData)
         await fetchHouseholds()
     }
     const calculateBillingAmount = useCallback(() => {
@@ -179,7 +179,7 @@ const Household = () => {
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
-        await client.post<CompletedHouseholdData>('/v2/completed_household/create', completedHousehold)
+        await client.post('/v2/completed_household/create', completedHousehold)
         await fetchIsCompleted()
     }
 

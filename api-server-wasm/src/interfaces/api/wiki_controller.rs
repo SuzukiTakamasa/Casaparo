@@ -1,6 +1,7 @@
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::domain::entities::wiki::Wikis;
 use crate::domain::repositories::wiki_repository::WikiRepository;
+use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -41,8 +42,11 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_wiki(&wiki).await?;
-        Response::ok("A wiki was created")
+        let result = match self.usecases.create_wiki(&wiki).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -54,8 +58,11 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_wiki(&mut wiki).await?;
-        Response::ok("A wiki was updated")
+        let result = match self.usecases.update_wiki(&mut wiki).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn delete_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -67,7 +74,10 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.delete_wiki(&mut wiki).await?;
-        Response::ok("A wiki was deleted")
+        let result = match self.usecases.delete_wiki(&mut wiki).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 }

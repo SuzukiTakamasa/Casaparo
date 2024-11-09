@@ -149,6 +149,43 @@ const Schedule = () => {
             return (month === anniversary.month &&
                     day === anniversary.date)
         }
+
+        const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
+            const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
+            const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
+    
+            schedules.sort((a, b) => {
+                if (sliceHour(a.from_time) > sliceHour(b.from_time)) {
+                    return 1
+                } else if (sliceHour(a.from_time) < sliceHour(b.from_time)) {
+                    return -1
+                } else {
+                    if (sliceMinute(a.from_time) > sliceMinute(b.from_time)) {
+                        return 1
+                    } else if (sliceMinute(a.from_time) < sliceMinute(b.from_time)) {
+                        return -1
+                    } else {
+                        return 0
+                    }
+                }
+            })
+            schedules.sort((a, b) => {
+                if (sliceHour(a.to_time) > sliceHour(b.to_time)) {
+                    return 1
+                } else if (sliceHour(a.to_time) < sliceHour(b.to_time)) {
+                    return -1
+                } else {
+                    if (sliceMinute(a.to_time) > sliceMinute(b.to_time)) {
+                        return 1
+                    } else if (sliceMinute(a.to_time) < sliceMinute(b.to_time)) {
+                        return -1
+                    } else {
+                        return 0
+                    }
+                }
+            })
+            return schedules
+        }
     
         return (
             <>
@@ -158,7 +195,7 @@ const Schedule = () => {
                     </div>
                 </td>
                 <td className="border-b py-1 flex-col justify-center items-center space-x-1 text-sm">
-                    {schedules.map((schedule, i) => (
+                    {sortSchedulesByDateTime(schedules).map((schedule, i) => (
                         isDisplayed(schedule) &&
                         <button 
                             key={i}
@@ -355,7 +392,7 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post<ScheduleResponse>('/v2/schedule/create', addScheduleData)
+        await client.post('/v2/schedule/create', addScheduleData)
         await fetchSchedules()
     }
     const fetchLabels = async () => {
@@ -378,12 +415,12 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post<ScheduleResponse>('/v2/schedule/update', updateSchedule)
+        await client.post('/v2/schedule/update', updateSchedule)
         await fetchSchedules()
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<ScheduleResponse>('/v2/schedule/delete', deletedScheduleData)
+        await client.post('/v2/schedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {

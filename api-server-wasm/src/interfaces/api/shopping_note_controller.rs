@@ -1,6 +1,7 @@
 use crate::application::usecases::shopping_note_usecases::ShoppingNoteUsecases;
 use crate::domain::entities::inventory::ShoppingNotes;
 use crate::domain::repositories::shopping_note_repository::ShoppingNoteRepository;
+use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result};
 use serde_json::from_str;
 
@@ -30,8 +31,11 @@ impl<R: ShoppingNoteRepository> ShoppingNoteController<R> {
             Ok(shopping_note) => shopping_note,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.create_shopping_note(&shopping_note).await?;
-        Response::ok("A shopping note was created")
+        let result = match self.usecases.create_shopping_note(&shopping_note).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn register_to_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -43,8 +47,11 @@ impl<R: ShoppingNoteRepository> ShoppingNoteController<R> {
             Ok(shopping_note) => shopping_note,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.register_to_inventory(&mut shopping_note).await?;
-        Response::ok("A shopping note was registered to inventory")
+        let result = match self.usecases.register_to_inventory(&mut shopping_note).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn update_shopping_note(&self, req: &mut Request) -> Result<Response> {
@@ -56,8 +63,11 @@ impl<R: ShoppingNoteRepository> ShoppingNoteController<R> {
             Ok(shopping_note) => shopping_note,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.update_shopping_note(&mut shopping_note).await?;
-        Response::ok("A shopping note was updated")
+        let result = match self.usecases.update_shopping_note(&mut shopping_note).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 
     pub async fn delete_shopping_note(&self, req: &mut Request) -> Result<Response> {
@@ -69,7 +79,10 @@ impl<R: ShoppingNoteRepository> ShoppingNoteController<R> {
             Ok(shopping_note) => shopping_note,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        self.usecases.delete_shopping_note(&mut shopping_note).await?;
-        Response::ok("A shopping note was deleted")
+        let result = match self.usecases.delete_shopping_note(&mut shopping_note).await {
+            Ok(_) => IsSuccess { is_success: 1 },
+            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        };
+        Response::from_json(&result)
     }
 }
