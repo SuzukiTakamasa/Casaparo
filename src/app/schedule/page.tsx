@@ -11,7 +11,7 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/constants'
-import { TrashBoxIcon } from '@components/HeroicIcons'
+import { TrashBoxIcon, PlusIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
 import { setUser, getWeekDay, getMonthArray, sortSchedulesByDateTime } from '@utils/utility_function'
 
@@ -152,8 +152,16 @@ const Schedule = () => {
         return (
             <>
                 <td className="border-b py-1 flex-row justify-center items-center space-x-1 text-sm">
-                    <div className={dateColorStr}>
-                    {`${day}日(${getWeekDay(year, month, day)})`}
+                    <div className="flex justify-left">
+                        <div className={dateColorStr}>
+                        {`${day}日(${getWeekDay(year, month, day)})`}
+                        </div>
+                        <button
+                            className="text-white ml-2"
+                            onClick={() => handleOpenAddDialogWithPlueIcon(year, month, day)}
+                        >
+                            <PlusIcon/>
+                        </button>
                     </div>
                 </td>
                 <td className="border-b py-1 flex-col justify-center items-center space-x-1 text-sm">
@@ -283,6 +291,16 @@ const Schedule = () => {
         setToMonth(scheduleMonth)
         setFromDate(today)
         setToDate(today)
+    }
+    const handleOpenAddDialogWithPlueIcon = (year: number, month: number, day: number) => {
+        fetchLabels()
+        setShowDialog(true)
+        setFromYear(year)
+        setToYear(year)
+        setFromMonth(month)
+        setToMonth(month)
+        setFromDate(day)
+        setToDate(day)
     }
     const handleOpenUpdateDialog = ({id, description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
         fetchLabels()
