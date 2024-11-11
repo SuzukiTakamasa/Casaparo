@@ -301,6 +301,10 @@ const Schedule = () => {
         setToMonth(month)
         setFromDate(day)
         setToDate(day)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
     }
     const handleOpenUpdateDialog = ({id, description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
         fetchLabels()
