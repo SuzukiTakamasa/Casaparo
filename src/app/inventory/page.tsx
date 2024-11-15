@@ -73,7 +73,7 @@ const Inventory = () => {
             isValid = false
             setNameValidMsg("項目名を入力してください。")
         }
-        if (isYetToRegisterToInventory(inventoryId)) {
+        if (isUpdateInventory && isYetToRegisterToInventory(inventoryId)) {
             isValid = false
             setIsIncludedInYetToRegisterShoppingNoteMsg("在庫未登録の買い物メモで選択中のため編集できません。")
         }
