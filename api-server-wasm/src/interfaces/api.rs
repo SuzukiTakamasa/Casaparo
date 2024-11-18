@@ -6,3 +6,5 @@ pub mod anniversary_controller;
 pub mod inventory_controller;
 pub mod shopping_note_controller;
 pub mod inventory_type_controller;
+pub mod task_controller;
+pub mod task_comment_controller;

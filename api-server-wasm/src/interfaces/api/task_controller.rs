@@ -1,69 +1,69 @@
-use crate::application::usecases::anniversary_usecases::AnniversaryUsecases;
-use crate::domain::entities::setting::Anniversaries;
-use crate::domain::repositories::anniversary_repository::AnniversaryRepository;
+use crate::application::usecases::task_usecases::TaskUsecases;
+use crate::domain::entities::task::Tasks;
+use crate::domain::repositories::task_repository::TaskRepository;
 use crate::domain::entities::service::IsSuccess;
 use worker::{Request, Response, Result};
 use serde_json::from_str;
 
-pub struct AnniversaryController<R: AnniversaryRepository> {
-    usecases: AnniversaryUsecases<R>,
+pub struct TaskController<R: TaskRepository> {
+    usecases: TaskUsecases<R>,
 }
 
-impl<R: AnniversaryRepository> AnniversaryController<R> {
-    pub fn new(usecases: AnniversaryUsecases<R>) -> Self {
+impl<R: TaskRepository> TaskController<R> {
+    pub fn new(usecases: TaskUsecases<R>) -> Self {
         Self { usecases }
     }
 
-    pub async fn get_anniversaries(&self) -> Result<Response> {
-        let result = match self.usecases.get_anniversaries().await {
-            Ok(anniversary) => anniversary,
+    pub async fn get_tasks(&self) -> Result<Response> {
+        let result = match self.usecases.get_tasks().await {
+            Ok(tasks) => tasks,
             Err(e) => return Response::error(e.to_string(), 500)
         };
         Response::from_json(&result)
     }
 
-    pub async fn create_anniversary(&self, req: &mut Request) -> Result<Response> {
+    pub async fn create_task(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
         };
-        let anniversary: Anniversaries = match from_str(json_body.as_str()) {
-            Ok(anniversary) => anniversary,
+        let task: Tasks = match from_str(json_body.as_str()) {
+            Ok(task) => task,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_anniversary(&anniversary).await {
+        let result = match self.usecases.create_task(&task).await {
             Ok(_) => IsSuccess { is_success: 1 },
             Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
         };
         Response::from_json(&result)
     }
 
-    pub async fn update_anniversary(&self, req: &mut Request) -> Result<Response> {
+    pub async fn update_task(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
         };
-        let mut anniversary: Anniversaries = match from_str(json_body.as_str()) {
-            Ok(anniversary) => anniversary,
+        let mut task: Tasks = match from_str(json_body.as_str()) {
+            Ok(task) => task,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_anniversary(&mut anniversary).await {
+        let result = match self.usecases.update_task(&mut task).await {
             Ok(_) => IsSuccess { is_success: 1 },
             Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
         };
         Response::from_json(&result)
     }
 
-    pub async fn delete_anniversary(&self, req: &mut Request) -> Result<Response> {
+    pub async fn delete_task(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
             Err(_) => return Response::error("Bad request", 400)
         };
-        let mut anniversary: Anniversaries = match from_str(json_body.as_str()) {
-            Ok(anniversary) => anniversary,
+        let mut task: Tasks = match from_str(json_body.as_str()) {
+            Ok(task) => task,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_anniversary(&mut anniversary).await {
+        let result = match self.usecases.delete_task(&mut task).await {
             Ok(_) => IsSuccess { is_success: 1 },
             Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
         };

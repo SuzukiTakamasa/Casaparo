@@ -1,0 +1,30 @@
+use crate::domain::entities::task::Tasks;
+use crate::domain::repositories::task_repository::TaskRepository;
+use worker::Result;
+
+
+pub struct TaskUsecases<R: TaskRepository> {
+    repository: R,
+}
+
+impl<R: TaskRepository> TaskUsecases<R> {
+    pub fn new(repository: R) -> Self {
+        Self { repository }
+    }
+
+    pub async fn get_tasks(&self) -> Result<Vec<Tasks>> {
+        self.repository.get_tasks().await
+    }
+
+    pub async fn create_task(&self, label: &Tasks) -> Result<()> {
+        self.repository.create_task(label).await
+    }
+
+    pub async fn update_task(&self, label: &mut Tasks) -> Result<()> {
+        self.repository.update_task(label).await
+    }
+
+    pub async fn delete_task(&self, label: &mut Tasks) -> Result<()> {
+        self.repository.delete_task(label).await
+    }
+}

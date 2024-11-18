@@ -6,3 +6,5 @@ pub mod d1_anniversary_repository;
 pub mod d1_inventory_repository;
 pub mod d1_shopping_note_repository;
 pub mod d1_inventory_type_repository;
+pub mod d1_task_repository;
+pub mod d1_task_comment_repository;
