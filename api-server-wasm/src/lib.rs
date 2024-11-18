@@ -38,6 +38,14 @@ use crate::infrastructure::repositories::d1_inventory_type_repository::D1Invento
 use crate::application::usecases::inventory_type_usecases::InventoryTypeUsecases;
 use crate::interfaces::api::inventory_type_controller::InventoryTypeController;
 
+use crate::infrastructure::repositories::d1_task_repository::D1TaskRepository;
+use crate::application::usecases::task_usecases::TaskUsecases;
+use crate::interfaces::api::task_controller::TaskController;
+
+use crate::infrastructure::repositories::d1_task_comment_repository::D1TaskCommentRepository;
+use crate::application::usecases::task_comment_usecases::TaskCommentUsecases;
+use crate::interfaces::api::task_comment_controller::TaskCommentController;
+
 
 fn get_db_env(req: &Request) -> Result<String> {
     let header_name = "Environment"; 
@@ -56,6 +64,8 @@ pub struct AppState {
     inventory_controller: InventoryController<D1InventoryRepository>,
     shopping_note_controller: ShoppingNoteController<D1ShoppingNoteRepository>,
     inventory_type_controller: InventoryTypeController<D1InventoryTypeRepository>,
+    task_controller: TaskController<D1TaskRepository>,
+    task_comment_controller: TaskCommentController<D1TaskCommentRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -110,9 +120,17 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let shopping_note_usecases = ShoppingNoteUsecases::new(shopping_note_repository);
     let shopping_note_controller = ShoppingNoteController::new(shopping_note_usecases);
 
-    let inventory_type_repository = D1InventoryTypeRepository::new(db);
+    let inventory_type_repository = D1InventoryTypeRepository::new(db.clone());
     let inventory_type_usecases = InventoryTypeUsecases::new(inventory_type_repository);
     let inventory_type_controller = InventoryTypeController::new(inventory_type_usecases);
+
+    let task_repository = D1TaskRepository::new(db.clone());
+    let task_usecases = TaskUsecases::new(task_repository);
+    let task_controller = TaskController::new(task_usecases);
+
+    let task_comment_repository = D1TaskCommentRepository::new(db);
+    let task_comment_usecases = TaskCommentUsecases::new(task_comment_repository);
+    let task_comment_controller = TaskCommentController::new(task_comment_usecases);
 
     let app_state = AppState {
         household_controller,
@@ -123,6 +141,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         inventory_controller,
         shopping_note_controller,
         inventory_type_controller,
+        task_controller,
+        task_comment_controller,
     };
 
 
@@ -266,6 +286,32 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/inventory_type/delete", |mut req, ctx| async move {
             ctx.data.inventory_type_controller.delete_inventory_type(&mut req).await
+        })
+     //task
+        .get_async("/v2/task", |_req, ctx| async move {
+            ctx.data.task_controller.get_tasks().await
+        })
+        .post_async("/v2/task/create", |mut req, ctx| async move {
+            ctx.data.task_controller.create_task(&mut req).await
+        })
+        .post_async("/v2/task/update", |mut req, ctx| async move {
+            ctx.data.task_controller.update_task(&mut req).await
+        })
+        .post_async("/v2/task/delete", |mut req, ctx| async move {
+            ctx.data.task_controller.delete_task(&mut req).await
+        })
+     //task_comment
+        .get_async("/v2/task_comment", |_req, ctx| async move {
+            ctx.data.task_comment_controller.get_task_comments().await
+        })
+        .post_async("/v2/task_comment/create", |mut req, ctx| async move {
+            ctx.data.task_comment_controller.create_task_comment(&mut req).await
+        })
+        .post_async("/v2/task_comment/update", |mut req, ctx| async move {
+            ctx.data.task_comment_controller.update_task_comment(&mut req).await
+        })
+        .post_async("/v2/task_comment/delete", |mut req, ctx| async move {
+            ctx.data.task_comment_controller.delete_task_comment(&mut req).await
         })
     .run(req, env)
     .await

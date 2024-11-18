@@ -6,3 +6,5 @@ pub mod anniversary_usecases;
 pub mod inventory_usecases;
 pub mod shopping_note_usecases;
 pub mod inventory_type_usecases;
+pub mod task_usecases;
+pub mod task_comment_usecases;
