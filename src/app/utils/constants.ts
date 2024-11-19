@@ -131,6 +131,29 @@ export interface ExtractedShoppingNoteData {
     version: number
 }
 
+export interface TaskData {
+    id: number,
+    title: string,
+    status: number,
+    priority: number,
+    description: string,
+    created_by: number,
+    updated_at: string,
+    due_date: string,
+    is_sub_task: number,
+    parent_task_id: number
+    version: number
+}
+
+export interface TaskCommentData {
+    id: number,
+    created_by: number,
+    updated_at: string,
+    comment: string,
+    task_id: number,
+    version: number
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -159,6 +182,10 @@ export type ShoppingNoteResponse = ShoppingNoteData[]
 
 export type ExtractedShoppingNoteResponse = ExtractedShoppingNoteData[]
 
+export type TaskResponse = TaskData[]
+
+export type TaskCommentResponse = TaskCommentData[]
+
 export type APIRequest = HouseholdData |
                           ScheduleData |
                 CompletedHouseholdData |
@@ -168,4 +195,6 @@ export type APIRequest = HouseholdData |
                      InventoryTypeData |
                          InventoryData |
                       ShoppingNoteData |
-         ExtractedShoppingNoteResponse
+         ExtractedShoppingNoteResponse |
+                          TaskResponse |
+                   TaskCommentResponse
