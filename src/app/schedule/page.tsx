@@ -237,7 +237,7 @@ const Schedule = () => {
         }
         return null
     }, [createdByT, createdByY])
-    const handleSetCreatedByTAndR = (value: number) => {
+    const handleSetCreatedByTAndY = (value: number) => {
         setCreatedBy(value)
         switch (value) {
             case 2:
@@ -319,7 +319,7 @@ const Schedule = () => {
         setToDate(to_date)
         setFromTime(from_time)
         setToTime(to_time)
-        handleSetCreatedByTAndR(created_by)
+        handleSetCreatedByTAndY(created_by)
         setLabelId(label_id)
         setVersion(version)
         setIsUpdate(true)

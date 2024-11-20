@@ -132,7 +132,7 @@ export interface ExtractedShoppingNoteData {
 }
 
 export interface TaskData {
-    id: number,
+    id?: number,
     title: string,
     status: number,
     priority: number,
@@ -146,7 +146,7 @@ export interface TaskData {
 }
 
 export interface TaskCommentData {
-    id: number,
+    id?: number,
     created_by: number,
     updated_at: string,
     comment: string,
@@ -196,5 +196,5 @@ export type APIRequest = HouseholdData |
                          InventoryData |
                       ShoppingNoteData |
          ExtractedShoppingNoteResponse |
-                          TaskResponse |
-                   TaskCommentResponse
+                              TaskData |
+                       TaskCommentData

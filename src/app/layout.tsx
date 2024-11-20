@@ -10,7 +10,7 @@ import Link from 'next/link'
 
 import { XMarkIcon, HamburgerIcon } from './components/HeroicIcons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, faTasks, IconDefinition } from '@fortawesome/free-solid-svg-icons'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -60,6 +60,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
               <TextLinkWithIcon path="inventory" icon={faReceipt} text="在庫・買い物メモ" toggleMenuCallback={toggleMenu} />
               <TextLinkWithIcon path="schedule" icon={faCalendar} text="スケジュール" toggleMenuCallback={toggleMenu} />
               <TextLinkWithIcon path="statistics" icon={faChartBar} text="統計" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="task" icon={faTasks} text="タスク" toggleMenuCallback={toggleMenu} />
               <TextLinkWithIcon path="wiki" icon={faBook} text="Wiki" toggleMenuCallback={toggleMenu} />
               <TextLinkWithIcon path="setting" icon={faCog} text="設定" toggleMenuCallback={toggleMenu} />
             </div>
