@@ -11,7 +11,7 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import APIClient from '@utils/api_client'
 import { setUser, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
