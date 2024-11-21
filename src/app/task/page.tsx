@@ -3,6 +3,7 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
+import ReactQuill from 'react-quill'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
@@ -11,9 +12,37 @@ import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcon
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/constants'
 import { setUser, getCurrentDateTime, boolToInt, intToBool } from '@utils/utility_function'
+import { ReactQuillStyles } from '@utils/styles'
 
 
 const client = new APIClient()
+
+const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      ['link', 'image'],
+      ['clean']
+    ]
+  };
+
+  const formats = [
+    'header',
+    'bold', 
+    'italic', 
+    'underline', 
+    'strike',
+    'list', 
+    'bullet',
+    'color',
+    'background',
+    'align',
+    'link',
+    'image'
+  ];
 
 
 const Task = () => {
@@ -75,6 +104,9 @@ const Task = () => {
             setDueDateValidMsg("本日より後の日付を設定してください。")
         }
         return isValid
+    }
+    const handleSetDescription = (value: string) => {
+        setDescription(value)
     }
     const handleSetCreatedBy = useCallback(() => {
         if (createdByT && createdByY) {
@@ -199,7 +231,70 @@ const Task = () => {
     }, [createdByT, createdByY, handleSetCreatedBy])
 
     return (
+    <>
         <h1 className="text-2xl font-bold mc-4">🛏️ タスク 🛏️</h1>
+
+        <div className="container mx-auto p-4">
+            <button
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                onClick={handleOpenAddDialog}
+            >
+            登録
+            </button>
+
+            {showDialog && (
+                <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                    <div className="bg-white p-4 rounded">
+                        <input
+                            className="border p-2 text-black"
+                            type="text"
+                            placeholder="タイトル"
+                            value={title}
+                            onChange={e => setTitle(e.target.value)}
+                        />
+                        {titleValidMsg !== "" && <div className="text-sm text-red 500">{titleValidMsg}</div>}
+                        <ReactQuill
+                            className="my-2 text-black"
+                            value={description}
+                            onChange={handleSetDescription}
+                            modules={ReactQuillStyles.modules}
+                            formats={ReactQuillStyles.formats}
+                        />
+                        {descriptionValidMsg !== "" && <div className="text-sm text-red 500">{descriptionValidMsg}</div>}
+                        <div className="text-black">作成者</div>
+                        <div className="text-3xl text-center">
+                            <input
+                                type="checkbox"
+                                checked={createdByT}
+                                onClick={() => setCreatedByT(!createdByT)}
+                                />
+                            <span className="mr-8">🥺</span>
+                            <input
+                                type="checkbox"
+                                checked={createdByY}
+                                onClick={() => setCreatedByY(!createdByY)}
+                                />
+                            <span>🥺ྀི</span>
+                        </div>
+                        <div className="flex justify-center space-x-4">
+                            <button
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={isUpdate ? handleUpdateTask : handleAddTask}
+                            >
+                            {isUpdate ? "変更" : "登録"}
+                            </button>
+                            <button
+                                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+                                onClick={handleCloseDialog}
+                            >
+                            キャンセル
+                            </button>
+                        </div>  
+                    </div>
+                </div>
+            )}
+        </div>
+    </>
     )
 }
 
