@@ -11,38 +11,11 @@ import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcon
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/constants'
-import { setUser, getCurrentDateTime, boolToInt, intToBool } from '@utils/utility_function'
+import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime, boolToInt, intToBool } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
 const client = new APIClient()
-
-const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'align': [] }],
-      ['link', 'image'],
-      ['clean']
-    ]
-  };
-
-  const formats = [
-    'header',
-    'bold', 
-    'italic', 
-    'underline', 
-    'strike',
-    'list', 
-    'bullet',
-    'color',
-    'background',
-    'align',
-    'link',
-    'image'
-  ];
 
 
 const Task = () => {
@@ -56,9 +29,15 @@ const Task = () => {
     const { month } = useContext(MonthContext)
     const { year } = useContext(YearContext)
 
-    const [dueDateYear, setDueDateYear] = useState(0)
-    const [dueDateMonth, setDueDateMonth] = useState(0)
-    const [dueDateDay, setDueDateDay] = useState(0)
+    const today = getToday()
+
+    const [dueDateYear, setDueDateYear] = useState(year)
+    const [dueDateMonth, setDueDateMonth] = useState(month)
+    const [dueDateDay, setDueDateDay] = useState(today)
+
+    const numberOfDays = getNumberOfDays(dueDateYear, dueDateMonth)
+
+    const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     
     const [tasks, setTasks] = useState<TaskResponse>([])
     const [id, setId] = useState(0)
@@ -73,8 +52,6 @@ const Task = () => {
     const [isSubTask, setIsSubTask] = useState(false)
     const [parentTaskId, setParentTaskId] = useState(0)
     const [version, setVersion] = useState(0)
-
-    const today = new Date().getDate()
 
     const getDate = (year: number, month: number, day: number) => {
         return new Date(year, month, day)
@@ -94,10 +71,6 @@ const Task = () => {
         if (createdBy === null && !createdByT && !createdByY) {
             isValid = false
             setCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
-        }
-        if (dueDateYear === 0 || dueDateMonth === 0 || dueDateDay === 0) {
-            isValid = false
-            setDueDateValidMsg("期限の年月日を正しく設定してください。")
         }
         if (getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
             isValid = false
@@ -177,6 +150,9 @@ const Task = () => {
         setIsSubTask(false)
         setParentTaskId(0)
         setVersion(0)
+        setDescriptionValidMsg("")
+        setCreatedByValidMsg("")
+        setDueDateValidMsg("")
     }
     const fetchTasks = useCallback(async () => {
         const tasks = await client.get<TaskResponse>('/v2/task')
@@ -220,10 +196,26 @@ const Task = () => {
         await client.post('/v2/task/delete', deletedTaskData)
         await fetchTasks
     }
+    const handleGenerateMonthDaysArray = useCallback(() => {
+        setMonthDaysArray([])
+        const darr = []
+            for (let d = 1; d <= numberOfDays; d++) {
+                darr.push(d)
+            }
+        setMonthDaysArray(darr)
+    }, [dueDateYear, dueDateMonth])
+    const handleSetDueDate = useCallback(() => {
+        setDueDate(`${dueDateYear}/${dueDateMonth}/${dueDateDay}`)
+    }, [dueDateYear, dueDateMonth, dueDateDay])
 
     useEffect(() => {
         fetchTasks()
     }, [fetchTasks])
+
+    useEffect(() => {
+        handleGenerateMonthDaysArray()
+        handleSetDueDate()
+    }, [handleGenerateMonthDaysArray, handleSetDueDate])
 
     useEffect(() => {
         const newCreatedBy = handleSetCreatedBy()
@@ -244,7 +236,7 @@ const Task = () => {
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-4 rounded">
+                    <div className="bg-white p-4 rounded flex flex-col">
                         <input
                             className="border p-2 text-black"
                             type="text"
@@ -261,7 +253,59 @@ const Task = () => {
                             formats={ReactQuillStyles.formats}
                         />
                         {descriptionValidMsg !== "" && <div className="text-sm text-red 500">{descriptionValidMsg}</div>}
-                        <div className="text-black">作成者</div>
+                        <div className="text-black">期限</div>
+                        <div className="flex justify-center">
+                        <label className="text-black">
+                            <span>年</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={dueDateYear}
+                                onChange={e => setDueDateYear(Number(e.target.value))}
+                            >
+                                <option value={year - 1}>{`${year - 1}年`}</option>
+                                <option value={year}>{`${year}年`}</option>
+                                <option value={year + 1}>{`${year + 1}年`}</option>
+                            </select>
+                        </label>
+                        <label className="text-black">
+                            <span>月</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={dueDateMonth}
+                                onChange={e => setDueDateMonth(Number(e.target.value))}
+                            >
+                                {getMonthArray().map((m, i) => (
+                                    <option key={i} value={m}>{`${m}月`}</option>
+                            ))}
+                            </select>
+                        </label>
+                        <label className="text-black">
+                            <span>日</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={dueDateDay}
+                                onChange={e => setDueDateDay(Number(e.target.value))}
+                            >
+                                {monthDaysArray.map((d, i) => (
+                                    <option key={i} value={d}>{`${d}日(${getWeekDay(dueDateYear, dueDateMonth, d)})`}</option>
+                                ))}
+                            </select>
+                        </label>
+                        </div>
+                        {dueDateValidMsg !== "" && <div className="text-sm text-red 500">{dueDateValidMsg}</div>}
+                        <label className="text-black">
+                            <span>親チケット</span>
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={parentTaskId}
+                                onChange={e => setParentTaskId(Number(e.target.value))}
+                            >
+                                {tasks.map((t, i) => (
+                                    <option key={i} value={t.id}>{`${t.id}: ${t.title}`}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <div className="text-black my-2">作成者</div>
                         <div className="text-3xl text-center">
                             <input
                                 type="checkbox"
@@ -276,6 +320,7 @@ const Task = () => {
                                 />
                             <span>🥺ྀི</span>
                         </div>
+                        {createdByValidMsg !== "" && <div className="text-sm text-red 500">{createdByValidMsg}</div>}
                         <div className="flex justify-center space-x-4">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

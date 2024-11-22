@@ -13,7 +13,7 @@ import MonthPaginator from '@components/MonthPaginator'
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/constants'
 import { TrashBoxIcon, PlusIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
-import { setUser, getWeekDay, getMonthArray, sortSchedulesByDateTime } from '@utils/utility_function'
+import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -45,8 +45,8 @@ const Schedule = () => {
     const { year } = useContext(YearContext)
     const [scheduleYear, setScheduleYear] = useState(year)
 
-    const numberOfDays = new Date(scheduleYear, scheduleMonth, 0).getDate()
-    const today = new Date().getDate()
+    const numberOfDays = getNumberOfDays(scheduleYear, scheduleMonth)
+    const today = getToday()
     const [holidays, setHolidays] = useState<string[]>([])
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])

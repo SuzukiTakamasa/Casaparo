@@ -21,6 +21,14 @@ export const setUser = (userInt: number): string => {
     }
 }
 
+export const getToday = () => {
+    return new Date().getDate()
+}
+
+export const getNumberOfDays = (year: number, month: number) => {
+    return new Date(year, month, 0).getDate()
+}
+
 export const getCurrentDateTime = (): string => {
     const now = dayjs()
     const formattedDateTime = now.format('YYYY/MM/DD HH:mm')

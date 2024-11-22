@@ -12,7 +12,7 @@ import TextLink from '@components/TextLink'
 import APIClient from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@utils/constants'
-import { formatNumberWithCommas, getWeekDay, setUser, sortSchedulesByDateTime } from '@utils/utility_function'
+import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime } from '@utils/utility_function'
 import { ExclamationTriangleIcon } from '@components/HeroicIcons'
 
 
@@ -34,7 +34,7 @@ export default function Home() {
   const [isCompletedCurrentMonth, setIsCompletedCurrentMonth] = useState(1)
   const [isCompletedLastMonth, setIsCompletedLastMonth] = useState(1)
 
-  const currentDate = new Date().getDate()
+  const today = getToday()
 
   const fetchFixedAmount = useCallback(async () => {
       const fixedAmount = await client.get<FixedAmount>(`/v2/household/fixed_amount/${year}/${month}`)
@@ -45,9 +45,9 @@ export default function Home() {
       }
   }, [year, month])
   const fetchSchedules = useCallback(async () => {
-    const schedules = await client.get<ScheduleResponse>(`/v2/schedule/today_or_tomorrow/${year}/${month}/${currentDate}`)
+    const schedules = await client.get<ScheduleResponse>(`/v2/schedule/today_or_tomorrow/${year}/${month}/${today}`)
     setSchedules(schedules.data || [])
-  }, [year, month, currentDate])
+  }, [year, month, today])
   const fetchAnniversaries = useCallback(async() => {
     const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
     setAnniversaries(anniversaries.data || [])
@@ -91,7 +91,7 @@ export default function Home() {
             <p>{`${month - 1}月の家計簿がまだ確定されていません。`}</p>
             </div>
             }
-            {(isCompletedCurrentMonth === 0 && currentDate >= 25) &&
+            {(isCompletedCurrentMonth === 0 && today >= 25) &&
             <div className="flex justify-center bg-yellow-700">
               <ExclamationTriangleIcon/>
               <p>{`${month}月の家計簿を確定してください。`}</p>
@@ -114,7 +114,7 @@ export default function Home() {
               ))}
               {anniversaries.map((anniversary, i) => (
                 <div key={i} className="text-center text-xl">
-                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === currentDate && `${anniversary.date}日(${getWeekDay(year, month, anniversary.date)}) ${anniversary.description}`}
+                  {anniversaries.length > 0 && anniversary.month === month && anniversary.date === today && `${anniversary.date}日(${getWeekDay(year, month, anniversary.date)}) ${anniversary.description}`}
                 </div>
               ))}
               <div className="flex justify-end">
