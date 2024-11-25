@@ -21,6 +21,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",
     "dayjs-plugin-utc": "^0.1.2",
+    "dompurify": "^3.2.1",
     "dotenv": "^16.4.1",
     "next": "14.0.4",
     "react": "^18",

@@ -3,11 +3,12 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
+import Link from 'next/link'
 import ReactQuill from 'react-quill'
 
-import { YearProvider, YearContext } from '@components/YearPicker'
-import { MonthProvider, MonthContext } from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
+import { YearContext } from '@components/YearPicker'
+import { MonthContext } from '@components/MonthPaginator'
+import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/constants'
@@ -55,6 +56,32 @@ const Task = () => {
 
     const getDate = (year: number, month: number, day: number) => {
         return new Date(year, month, day)
+    }
+
+    const setStatusStr = (status: number) => {
+        switch (status) {
+            case 0:
+                return "未着手"
+            case 1:
+                return "着手中"
+            case 2:
+                return "完了"
+            default:
+                "-"
+        }
+    }
+
+    const setPriorityStr = (priority: number) => {
+        switch (priority) {
+            case 0:
+                return "低"
+            case 1:
+                return "中"
+            case 2:
+                return "高"
+            default:
+                "-"
+        }
     }
 
 
@@ -123,6 +150,7 @@ const Task = () => {
     }
     const handleOpenUpdateDialog = ({id, title, status, priority, description, created_by, due_date, is_sub_task, parent_task_id, version}: TaskData) => {
         setShowDialog(true)
+        setIsUpdate(true)
         setId(id as number)
         setTitle(title)
         setStatus(status)
@@ -140,6 +168,7 @@ const Task = () => {
     }
     const handleCloseDialog = () => {
         setShowDialog(false)
+        setIsUpdate(false)
         setId(0)
         setTitle("")
         setStatus(0)
@@ -244,7 +273,7 @@ const Task = () => {
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                         />
-                        {titleValidMsg !== "" && <div className="text-sm text-red 500">{titleValidMsg}</div>}
+                        {titleValidMsg !== "" && <div className="text-sm text-red-500">{titleValidMsg}</div>}
                         <ReactQuill
                             className="my-2 text-black"
                             value={description}
@@ -252,7 +281,7 @@ const Task = () => {
                             modules={ReactQuillStyles.modules}
                             formats={ReactQuillStyles.formats}
                         />
-                        {descriptionValidMsg !== "" && <div className="text-sm text-red 500">{descriptionValidMsg}</div>}
+                        {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
                         <div className="text-black">期限</div>
                         <div className="flex justify-center">
                         <label className="text-black">
@@ -338,6 +367,71 @@ const Task = () => {
                     </div>
                 </div>
             )}
+
+            <table className="table-auto min-w-full mt-4">
+                <thead>
+                    <tr>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm"></th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">タイトル</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">ステータス</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">優先度</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">作成者</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">期限</th>                  
+                    </tr>
+                </thead>
+                <tbody>
+                    {tasks.map((task, i) => (
+                        <tr key={i}>
+                            <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                <button
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                    onClick={() => handleOpenUpdateDialog({
+                                        id: task.id,
+                                        title: task.title,
+                                        status: task.status,
+                                        priority: task.priority,
+                                        description: task.description,
+                                        created_by: task.created_by,
+                                        updated_at: task.updated_at,
+                                        due_date: task.due_date,
+                                        is_sub_task: task.is_sub_task,
+                                        parent_task_id: task.parent_task_id,
+                                        version:task.version
+                                    })}
+                                >
+                                    <PencilIcon />
+                                </button>
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                    onClick={() => deleteTask({
+                                        id: task.id,
+                                        title: task.title,
+                                        status: task.status,
+                                        priority: task.priority,
+                                        description: task.description,
+                                        created_by: task.created_by,
+                                        updated_at: task.updated_at,
+                                        due_date: task.due_date,
+                                        is_sub_task: task.is_sub_task,
+                                        parent_task_id: task.parent_task_id,
+                                        version:task.version
+                                    })}
+                                >
+                                    <TrashBoxIcon />
+                                </button>
+                            </td>
+                            <td className="border-b px-1 py-1 text-center text-sm">
+                                <Link href={`/wiki/detail?id=${task.id}`} className="text-blue-500 font-bold hover:underline">{task.title}</Link>
+                                <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
+                            </td>
+                            <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
+                            <td className="border-b px-1 py-1 text-center text-sm">{setPriorityStr(task.priority)}</td>
+                            <td className="border-b px-1 py-1 text-center text-sm">{setUser(task.created_by)}</td>
+                            <td className="border-b px-1 py-1 text-center text-xs">{task.due_date}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     </>
     )

@@ -8,8 +8,7 @@ export const ReactQuillStyles = {
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
           [{ 'color': [] }, { 'background': [] }],
           [{ 'align': [] }],
-          ['link', 'image'],
-          ['clean']
+          ['link']
         ]
       },
       formats: [
@@ -23,7 +22,6 @@ export const ReactQuillStyles = {
         'color',
         'background',
         'align',
-        'link',
-        'image'
+        'link'
       ]
 }

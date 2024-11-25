@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useCallback} from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import ReactQuill from 'react-quill'
 
 import { WikiData, WikiResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
+import { ReactQuillStyles } from '@utils/styles'
 
 
 const client = new APIClient()
@@ -40,13 +42,17 @@ const Wiki = () => {
         }
         return isValid
     }
+    const handleSetContent = (value: string) => {
+        setContent(value)
+    }
 
     const handleAddWiki = async () => {
-        if (!validate) return
+        if (!validate()) return
         await addWiki()
         handleCloseDialog()
     }
     const handleUpdateWiki = async () => {
+        if (!validate()) return
         await updateWiki()
         handleCloseDialog()
     }
@@ -174,15 +180,15 @@ const Wiki = () => {
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
                             />
-                            {titleValidMsg !== "" && <div className="text-sm text-red 500">{titleValidMsg}</div>}
-                            <textarea
-                                className="border p-2 text-black"
-                                placeholder="内容"
+                            {titleValidMsg !== "" && <div className="text-sm text-red-500">{titleValidMsg}</div>}
+                            <ReactQuill
+                                className="text-black"
                                 value={content}
-                                onChange={e => setContent(e.target.value)}
-                            >
-                            </textarea>
-                            {contentValidMsg !== "" && <div className="text-sm text-red 500">{contentValidMsg}</div>}
+                                onChange={handleSetContent}
+                                modules={ReactQuillStyles.modules}
+                                formats={ReactQuillStyles.formats}
+                            />
+                            {contentValidMsg !== "" && <div className="text-sm text-red-500">{contentValidMsg}</div>}
                             <div className="text-black">作成者</div>
                             <div className="text-3xl text-center">
                                 <input
