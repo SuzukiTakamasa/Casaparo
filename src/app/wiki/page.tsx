@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import ReactQuill from 'react-quill'
+import dynamic from 'next/dynamic'
 
 import { WikiData, WikiResponse } from '@utils/constants'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
@@ -13,6 +13,8 @@ import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
+
+const ReactQuill = dynamic(() => import('react-quill'))
 
 const client = new APIClient()
 

@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useContext, useCallback } from 'react'
 import Link from 'next/link'
-import ReactQuill from 'react-quill'
+import dynamic from 'next/dynamic'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
@@ -15,6 +15,8 @@ import { TaskData, TaskResponse } from '@utils/constants'
 import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
+
+const ReactQuill = dynamic(() => import('react-quill'))
 
 const client = new APIClient()
 
