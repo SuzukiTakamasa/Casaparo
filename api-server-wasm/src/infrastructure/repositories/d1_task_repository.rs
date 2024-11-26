@@ -23,6 +23,16 @@ impl TaskRepository for D1TaskRepository {
         result.results::<Tasks>()
     }
 
+    async fn get_task_by_id(&self, id: u32) -> Result<Tasks> {
+        let statement = self.db.prepare("select * from tasks where id = ?1");
+        let query = statement.bind(&[id.into()])?;
+        let result = query.first::<Tasks>(None).await?;
+        match result {
+            Some(task) => Ok(task),
+            None => Err(worker::Error::RustError(format!("A task with id {} is not found.", id)))
+        }
+    }
+
     async fn create_task(&self, task: &Tasks) -> Result<()> {
         let statement = self.db.prepare("insert into tasks (title, status, priority, description, created_by, updated_at, due_date, parent_task_id, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)");
         let query = statement.bind(&[task.title.clone().into(),

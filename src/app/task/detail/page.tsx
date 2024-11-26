@@ -1,5 +1,7 @@
 "use client"
 
+//export const runtime = 'edge'
+
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import DOMPurify from 'dompurify'
@@ -16,8 +18,15 @@ const TaskDetail = () => {
     const param = useSearchParams()
     const id = param.get("id")
 
+    const fetchTaskDetail = useCallback(async () => {
+        const res = await client.get<TaskData>(`/v2/task/${id}`)
+        if (res.data) {
+            setTaskDetail(res.data)
+        }
+    }, [id])
+
     return (
-        <></>
+        <div>テスト</div>
     )
 }
 

@@ -12,7 +12,7 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/constants'
-import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime, boolToInt, intToBool } from '@utils/utility_function'
+import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 

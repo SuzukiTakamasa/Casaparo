@@ -1,6 +1,8 @@
 "use client"
 
-import React, { useState, useEffect, useCallback} from 'react'
+//export const runtime = 'edge'
+
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import ReactQuill from 'react-quill'
