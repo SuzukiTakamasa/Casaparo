@@ -25,8 +25,17 @@ const TaskDetail = () => {
         }
     }, [id])
 
+    useEffect(() => {
+        fetchTaskDetail()
+    }, [fetchTaskDetail])
+
     return (
-        <div>テスト</div>
+        <>
+            <div className="container mx-auto p-4 grid place-items-left">
+                <div>{taskDetail.title}</div>
+                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(taskDetail.description)}} />
+            </div>
+        </>
     )
 }
 

@@ -28,6 +28,7 @@ const WikiDetail = () => {
     useEffect(() => {
         fetchWikiDetail()
     }, [fetchWikiDetail])
+    
     return (
         <>
             <div className="container mx-auto p-4 grid place-items-left">
