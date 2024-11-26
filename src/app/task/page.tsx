@@ -50,7 +50,6 @@ const Task = () => {
     const [createdByY, setCreatedByY] = useState(false)
     const [createdBy, setCreatedBy] = useState<number|null>(null)
     const [dueDate, setDueDate] = useState("")
-    const [isSubTask, setIsSubTask] = useState(false)
     const [parentTaskId, setParentTaskId] = useState(0)
     const [version, setVersion] = useState(0)
 
@@ -148,7 +147,7 @@ const Task = () => {
     const handleOpenAddDialog = () => {
         setShowDialog(true)
     }
-    const handleOpenUpdateDialog = ({id, title, status, priority, description, created_by, due_date, is_sub_task, parent_task_id, version}: TaskData) => {
+    const handleOpenUpdateDialog = ({id, title, status, priority, description, created_by, due_date, parent_task_id, version}: TaskData) => {
         setShowDialog(true)
         setIsUpdate(true)
         setId(id as number)
@@ -158,7 +157,6 @@ const Task = () => {
         setDescription(description)
         setCreatedBy(created_by)
         setDueDate(due_date)
-        setIsSubTask(intToBool(is_sub_task))
         setParentTaskId(parent_task_id)
         setVersion(version)
         window.scrollTo({
@@ -176,7 +174,6 @@ const Task = () => {
         setDescription("")
         setCreatedBy(0)
         setDueDate("")
-        setIsSubTask(false)
         setParentTaskId(0)
         setVersion(0)
         setDescriptionValidMsg("")
@@ -196,7 +193,6 @@ const Task = () => {
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
-            is_sub_task: boolToInt(isSubTask),
             parent_task_id: parentTaskId,
             version: version
         } as TaskData
@@ -213,7 +209,6 @@ const Task = () => {
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
-            is_sub_task: boolToInt(isSubTask),
             parent_task_id: parentTaskId,
             version: version
         } as TaskData
@@ -329,6 +324,7 @@ const Task = () => {
                                 value={parentTaskId}
                                 onChange={e => setParentTaskId(Number(e.target.value))}
                             >
+                                <option value="0">なし</option>
                                 {tasks.map((t, i) => (
                                     <option key={i} value={t.id}>{`${t.id}: ${t.title}`}</option>
                                 ))}
@@ -394,7 +390,6 @@ const Task = () => {
                                         created_by: task.created_by,
                                         updated_at: task.updated_at,
                                         due_date: task.due_date,
-                                        is_sub_task: task.is_sub_task,
                                         parent_task_id: task.parent_task_id,
                                         version:task.version
                                     })}
@@ -412,7 +407,6 @@ const Task = () => {
                                         created_by: task.created_by,
                                         updated_at: task.updated_at,
                                         due_date: task.due_date,
-                                        is_sub_task: task.is_sub_task,
                                         parent_task_id: task.parent_task_id,
                                         version:task.version
                                     })}

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState, useCallback} from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import DOMPurify from 'dompurify'
