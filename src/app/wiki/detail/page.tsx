@@ -1,22 +1,16 @@
 "use client"
 
-import React, { useEffect, useState, useCallback} from 'react'
+//export const runtime = 'edge'
+
+import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import DOMPurify from 'dompurify'
 import APIClient from '@utils/api_client'
 import { WikiData } from '@utils/constants'
 
 
 const client = new APIClient()
-
-const addBreakPoint = (text: string) => {
-    return text.split('\n').map((l, i) => (
-        <span key={i}>
-            {l}
-            <br />
-        </span>
-    ))
-}
 
 
 const WikiDetail = () => {
@@ -34,13 +28,14 @@ const WikiDetail = () => {
     useEffect(() => {
         fetchWikiDetail()
     }, [fetchWikiDetail])
+    
     return (
         <>
-            <div className="container mx-auto p-4 grid place-items-center">
+            <div className="container mx-auto p-4 grid place-items-left">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
                 {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
-                    {wikiDetail.content.includes('\n') ? addBreakPoint(wikiDetail.content) : wikiDetail.content}
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(wikiDetail.content)}} />
                 </div>
             </div>
         </>

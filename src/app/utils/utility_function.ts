@@ -21,6 +21,14 @@ export const setUser = (userInt: number): string => {
     }
 }
 
+export const getToday = () => {
+    return new Date().getDate()
+}
+
+export const getNumberOfDays = (year: number, month: number) => {
+    return new Date(year, month, 0).getDate()
+}
+
 export const getCurrentDateTime = (): string => {
     const now = dayjs()
     const formattedDateTime = now.format('YYYY/MM/DD HH:mm')
@@ -100,4 +108,30 @@ export const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
         }
     })
     return schedules
+}
+
+export const setStatusStr = (status: number) => {
+    switch (status) {
+        case 0:
+            return "未着手"
+        case 1:
+            return "着手中"
+        case 2:
+            return "完了"
+        default:
+            return "-"
+    }
+}
+
+export const setPriorityStr = (priority: number) => {
+    switch (priority) {
+        case 0:
+            return "低"
+        case 1:
+            return "中"
+        case 2:
+            return "高"
+        default:
+            return "-"
+    }
 }

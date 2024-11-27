@@ -8,7 +8,6 @@ CREATE TABLE tasks (
     created_by INTEGER NOT NULL,
     updated_at TEXT NOT NULL,
     due_date TEXT NOT NULL,
-    is_sub_task INTEGER NOT NULL,
     parent_task_id INTEGER NOT NULL,
     version INTEGER NOT NULL
 );

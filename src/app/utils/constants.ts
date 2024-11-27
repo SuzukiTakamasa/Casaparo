@@ -140,7 +140,6 @@ export interface TaskData {
     created_by: number,
     updated_at: string,
     due_date: string,
-    is_sub_task: number,
     parent_task_id: number
     version: number
 }

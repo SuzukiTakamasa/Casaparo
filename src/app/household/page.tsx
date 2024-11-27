@@ -14,7 +14,7 @@ import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcon
 import { HouseholdData, HouseholdResponse, IsCompleted, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import APIClient from '@utils/api_client'
-import { setUser, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -44,7 +44,7 @@ const Household = () => {
     const [isCompleted, setIsCompleted] = useState(0)
     const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
 
-    const today = new Date().getDate()
+    const today = getToday()
 
     const validate = () => {
         let isValid = true

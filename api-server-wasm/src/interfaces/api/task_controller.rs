@@ -2,8 +2,9 @@ use crate::application::usecases::task_usecases::TaskUsecases;
 use crate::domain::entities::task::Tasks;
 use crate::domain::repositories::task_repository::TaskRepository;
 use crate::domain::entities::service::IsSuccess;
-use worker::{Request, Response, Result};
+use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
+use crate::AppState;
 
 pub struct TaskController<R: TaskRepository> {
     usecases: TaskUsecases<R>,
@@ -17,6 +18,16 @@ impl<R: TaskRepository> TaskController<R> {
     pub async fn get_tasks(&self) -> Result<Response> {
         let result = match self.usecases.get_tasks().await {
             Ok(tasks) => tasks,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        Response::from_json(&result)
+    }
+
+    pub async fn get_task_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let id = ctx.param("id").unwrap();
+        let id_as_u32: u32 = id.parse().unwrap();
+        let result = match self.usecases.get_task_by_id(id_as_u32).await {
+            Ok(task) => task,
             Err(e) => return Response::error(e.to_string(), 500)
         };
         Response::from_json(&result)

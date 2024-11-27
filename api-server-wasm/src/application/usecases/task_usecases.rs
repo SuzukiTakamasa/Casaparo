@@ -16,15 +16,19 @@ impl<R: TaskRepository> TaskUsecases<R> {
         self.repository.get_tasks().await
     }
 
-    pub async fn create_task(&self, label: &Tasks) -> Result<()> {
-        self.repository.create_task(label).await
+    pub async fn get_task_by_id(&self, id: u32) -> Result<Tasks> {
+        self.repository.get_task_by_id(id).await
     }
 
-    pub async fn update_task(&self, label: &mut Tasks) -> Result<()> {
-        self.repository.update_task(label).await
+    pub async fn create_task(&self, task: &Tasks) -> Result<()> {
+        self.repository.create_task(task).await
     }
 
-    pub async fn delete_task(&self, label: &mut Tasks) -> Result<()> {
-        self.repository.delete_task(label).await
+    pub async fn update_task(&self, task: &mut Tasks) -> Result<()> {
+        self.repository.update_task(task).await
+    }
+
+    pub async fn delete_task(&self, task: &mut Tasks) -> Result<()> {
+        self.repository.delete_task(task).await
     }
 }
