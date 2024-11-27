@@ -12,7 +12,7 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/constants'
-import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+import { setUser, setStatusStr, setPriorityStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -58,33 +58,6 @@ const Task = () => {
     const getDate = (year: number, month: number, day: number) => {
         return new Date(year, month, day)
     }
-
-    const setStatusStr = (status: number) => {
-        switch (status) {
-            case 0:
-                return "未着手"
-            case 1:
-                return "着手中"
-            case 2:
-                return "完了"
-            default:
-                "-"
-        }
-    }
-
-    const setPriorityStr = (priority: number) => {
-        switch (priority) {
-            case 0:
-                return "低"
-            case 1:
-                return "中"
-            case 2:
-                return "高"
-            default:
-                "-"
-        }
-    }
-
 
     const validate = () => {
         let isValid = true
@@ -156,8 +129,8 @@ const Task = () => {
         setTitle(title)
         setStatus(status)
         setPriority(priority)
-        setDescription(description)
-        setCreatedBy(created_by)
+        setDescription(decodeURI(description))
+        handleSetCreatedByTAndY(created_by)
         setDueDate(due_date)
         setParentTaskId(parent_task_id)
         setVersion(version)
@@ -184,14 +157,14 @@ const Task = () => {
     }
     const fetchTasks = useCallback(async () => {
         const tasks = await client.get<TaskResponse>('/v2/task')
-        setTasks(tasks.data || [])
+        setTasks(tasks.data|| [])
     }, [])
     const addTask = async() => {
         const addTaskData = {
             title: title,
             status: status,
             priority: priority,
-            description: description,
+            description: encodeURI(description),
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
@@ -207,7 +180,7 @@ const Task = () => {
             title: title,
             status: status,
             priority: priority,
-            description: description,
+            description: encodeURI(description),
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
@@ -220,7 +193,7 @@ const Task = () => {
     const deleteTask = async (deletedTaskData: TaskData) => {
         if (!window.confirm("削除しますか？")) return
         await client.post('/v2/task/delete', deletedTaskData)
-        await fetchTasks
+        await fetchTasks()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
         setMonthDaysArray([])
@@ -272,14 +245,26 @@ const Task = () => {
                         />
                         {titleValidMsg !== "" && <div className="text-sm text-red-500">{titleValidMsg}</div>}
                         <ReactQuill
-                            className="my-2 text-black"
+                            className="mt-2 text-black"
                             value={description}
                             onChange={handleSetDescription}
                             modules={ReactQuillStyles.modules}
                             formats={ReactQuillStyles.formats}
                         />
                         {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
-                        <div className="text-black">期限</div>
+                        <div className="mt-2 text-black">優先度</div>
+                        <label className="text-black">
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={priority}
+                                onChange={e => setPriority(Number(e.target.value))}
+                            >
+                                <option value="0">低</option>
+                                <option value="1">中</option>
+                                <option value="2">高</option>
+                            </select>
+                        </label>
+                        <div className="mt-2 text-black">期限</div>
                         <div className="flex justify-center">
                         <label className="text-black">
                             <span>年</span>
@@ -417,7 +402,7 @@ const Task = () => {
                                 </button>
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">
-                                <Link href={`/wiki/detail?id=${task.id}`} className="text-blue-500 font-bold hover:underline">{task.title}</Link>
+                                <Link href={`/task/detail?id=${task.id}`} className="text-blue-500 font-bold hover:underline">{task.title}</Link>
                                 <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
