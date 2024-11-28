@@ -16,6 +16,10 @@ impl<R: TaskRepository> TaskUsecases<R> {
         self.repository.get_tasks().await
     }
 
+    pub async fn get_related_sub_tasks(&self, id: u32) -> Result<Vec<Tasks>> {
+        self.repository.get_related_sub_tasks(id).await
+    }
+
     pub async fn get_task_by_id(&self, id: u32) -> Result<Tasks> {
         self.repository.get_task_by_id(id).await
     }

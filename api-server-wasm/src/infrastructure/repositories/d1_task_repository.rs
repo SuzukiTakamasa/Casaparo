@@ -23,6 +23,13 @@ impl TaskRepository for D1TaskRepository {
         result.results::<Tasks>()
     }
 
+    async fn get_related_sub_tasks(&self, id: u32) -> Result<Vec<Tasks>> {
+        let statement = self.db.prepare("select * from tasks where parent_task_id = ?1");
+        let query = statement.bind(&[id.into()])?;
+        let result = query.all().await?;
+        result.results::<Tasks>()
+    }
+
     async fn get_task_by_id(&self, id: u32) -> Result<Tasks> {
         let statement = self.db.prepare("select * from tasks where id = ?1");
         let query = statement.bind(&[id.into()])?;
