@@ -23,6 +23,16 @@ impl<R: TaskRepository> TaskController<R> {
         Response::from_json(&result)
     }
 
+    pub async fn get_related_sub_tasks(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let id = ctx.param("id").unwrap();
+        let id_as_u32: u32 = id.parse().unwrap();
+        let result = match self.usecases.get_related_sub_tasks(id_as_u32).await {
+            Ok(tasks) => tasks,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        Response::from_json(&result)
+    }
+
     pub async fn get_task_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();

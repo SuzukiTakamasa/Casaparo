@@ -291,6 +291,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/task", |_req, ctx| async move {
             ctx.data.task_controller.get_tasks().await
         })
+        .get_async("/v2/task/related_sub_task/:id", |_req, ctx| async move {
+            ctx.data.task_controller.get_related_sub_tasks(&ctx).await
+        })
         .get_async("/v2/task/:id", |_req, ctx| async move {
             ctx.data.task_controller.get_task_by_id(&ctx).await
         })

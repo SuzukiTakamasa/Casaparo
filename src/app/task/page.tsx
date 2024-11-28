@@ -363,7 +363,7 @@ const Task = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {tasks.map((task, i) => (
+                    {tasks.filter(t => t.parent_task_id === 0).map((task, i) => (
                         <tr key={i}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
