@@ -264,6 +264,18 @@ const Task = () => {
                                 <option value="2">高</option>
                             </select>
                         </label>
+                        <div className="mt-2 text-black">ステータス</div>
+                        <label className="text-black">
+                            <select
+                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                value={status}
+                                onChange={e => setStatus(Number(e.target.value))}
+                            >
+                                <option value="0">未着手</option>
+                                <option value="1">着手中</option>
+                                <option value="2">完了</option>
+                            </select>
+                        </label>
                         <div className="mt-2 text-black">期限</div>
                         <div className="flex justify-center">
                         <label className="text-black">
