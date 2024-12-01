@@ -227,7 +227,7 @@ const TaskDetail = () => {
                     </div>
                 )}
                 {taskComments.map((taskComment, i) => (
-                    <div className="flex justify-left">
+                    <div key={i} className="flex justify-left">
                         <div>{taskComment.created_by}</div>
                         <div>{taskComment.comment}</div>
                     </div>
