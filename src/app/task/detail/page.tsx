@@ -159,7 +159,7 @@ const TaskDetail = () => {
                     </div>
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300"></div>
-                        <div className="mt-2 font-bold">関連サブタスク</div>
+                        <div className="mt-2 text-sm font-bold">関連サブタスク</div>
                             {relatedSubTasks.map((relatedSubTask, i) => (
                                 <div key={i} className="flex justify-left">
                                     <Link href={`/task/detail?id=${relatedSubTask.id}`} className="text-sm px-1 py-1 text-blue-500 font-bold hover:underline">
