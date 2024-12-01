@@ -87,10 +87,10 @@ const TaskDetail = () => {
         setComment("")
         setTaskCommentVersion(0)
     }
-    const fetchTaskComments = async () => {
+    const fetchTaskComments = useCallback(async () => {
         const taskComments = await client.get<TaskCommentResponse>(`/v2/task_comment/${id}`)
         setTaskComments(taskComments.data || [])
-    }
+    }, [id])
     const addTaskComment = async () => {
         const addedTaskCommentData = {
             created_by: createdBy,
@@ -123,7 +123,8 @@ const TaskDetail = () => {
     useEffect(() => {
         fetchTaskDetail()
         fetchRelatedSubTasks()
-    }, [fetchTaskDetail, fetchRelatedSubTasks])
+        fetchTaskComments()
+    }, [fetchTaskDetail, fetchRelatedSubTasks, fetchTaskComments])
 
     return (
         <>
@@ -169,13 +170,55 @@ const TaskDetail = () => {
                             ))}
                     </div>
                 </div>
+                <div className="flex justify-left mt-2">
+                <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                    onClick={handleOpenTaskCommentDialog}
+                >
+                コメントを追加
+                </button>
+                </div>
+                {taskComments.map((taskComment, i) => (
+                    <>
+                        <div key={i} className="flex justify-left">
+                            <div>{setUser(taskComment.created_by)}</div>
+                            <div className="ml-2">{"<"}</div>
+                            <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1 ml-4">
+                                <div className="">{taskComment.comment}</div>
+                                <div className="flex justify-right space-x-1">
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                        onClick={() => handleOpenUpdateTaskCommentDialog({
+                                            id: taskComment.id,
+                                            created_by: taskComment.created_by,
+                                            updated_at: taskComment.updated_at,
+                                            comment: taskComment.comment,
+                                            task_id: taskComment.task_id,
+                                            version:taskComment.version
+                                        })}
+                                    >
+                                        <PencilIcon />
+                                    </button>
+                                    <button
+                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                        onClick={() => deleteTaskComment({
+                                            id: taskComment.id,
+                                            created_by: taskComment.created_by,
+                                            updated_at: taskComment.updated_at,
+                                            comment: taskComment.comment,
+                                            task_id: taskComment.task_id,
+                                            version:taskComment.version
+                                        })}
+                                    >
+                                        <TrashBoxIcon />
+                                    </button>
+                                    <div className="text-xs ml-1 mt-2">{`(最終更新: ${taskComment.updated_at})`}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
+                ))}
             </div>
-            <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 ml-32"
-                onClick={handleOpenTaskCommentDialog}
-            >
-            コメントを追加
-            </button>
             {showTaskCommentDialog && (
                     <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded">
@@ -223,46 +266,6 @@ const TaskDetail = () => {
                         </div>
                     </div>
                 )}
-                {taskComments.map((taskComment, i) => (
-                    <>
-                        <div key={i} className="flex justify-left">
-                            <div className="ml-32">{setUser(taskComment.created_by)}</div>
-                            <div className="ml-2">{"<"}</div>
-                            <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1 ml-4">
-                                <div className="">{taskComment.comment}</div>
-                                <div className="flex justify-right space-x-1">
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
-                                        onClick={() => handleOpenUpdateTaskCommentDialog({
-                                            id: taskComment.id,
-                                            created_by: taskComment.created_by,
-                                            updated_at: taskComment.updated_at,
-                                            comment: taskComment.comment,
-                                            task_id: taskComment.task_id,
-                                            version:taskComment.version
-                                        })}
-                                    >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
-                                        onClick={() => deleteTaskComment({
-                                            id: taskComment.id,
-                                            created_by: taskComment.created_by,
-                                            updated_at: taskComment.updated_at,
-                                            comment: taskComment.comment,
-                                            task_id: taskComment.task_id,
-                                            version:taskComment.version
-                                        })}
-                                    >
-                                        <TrashBoxIcon />
-                                    </button>
-                                    <div className="text-xs ml-1 mt-2">{`(最終更新: ${taskComment.updated_at})`}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                ))}
         </>
     )
 }
