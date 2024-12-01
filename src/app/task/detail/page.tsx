@@ -180,10 +180,9 @@ const TaskDetail = () => {
                 </div>
                 {taskComments.map((taskComment, i) => (
                     <>
-                        <div key={i} className="flex justify-left">
+                        <div key={i} className="flex justify-left space-x-2">
                             <div>{setUser(taskComment.created_by)}</div>
-                            <div className="ml-2">{"<"}</div>
-                            <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1 ml-4">
+                            <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
                                 <div className="">{taskComment.comment}</div>
                                 <div className="flex justify-right space-x-1">
                                     <button
