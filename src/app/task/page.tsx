@@ -12,7 +12,7 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/constants'
-import { setUser, setStatusStr, setPriorityStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+import { setStatusStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -58,6 +58,10 @@ const Task = () => {
     const getDate = (year: number, month: number, day: number) => {
         return new Date(year, month, day)
     }
+
+    const isParentTask = (task: TaskData) => {
+        return task.parent_task_id === 0
+    } 
 
     const validate = () => {
         let isValid = true
@@ -157,7 +161,7 @@ const Task = () => {
     }
     const fetchTasks = useCallback(async () => {
         const tasks = await client.get<TaskResponse>('/v2/task')
-        setTasks(tasks.data|| [])
+        setTasks(tasks.data || [])
     }, [])
     const addTask = async() => {
         const addTaskData = {
@@ -369,13 +373,12 @@ const Task = () => {
                         <th className="border-b-2 py-1 bg-blue-900 text-white text-sm"></th>
                         <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">タイトル</th>
                         <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">ステータス</th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">優先度</th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">作成者</th>
                         <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">期限</th>                  
                     </tr>
                 </thead>
                 <tbody>
-                    {tasks.filter(t => t.parent_task_id === 0).map((task, i) => (
+                    {tasks.map((task, i) => (
+                        isParentTask(task) && (
                         <tr key={i}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
@@ -418,10 +421,9 @@ const Task = () => {
                                 <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
-                            <td className="border-b px-1 py-1 text-center text-sm">{setPriorityStr(task.priority)}</td>
-                            <td className="border-b px-1 py-1 text-center text-sm">{setUser(task.created_by)}</td>
                             <td className="border-b px-1 py-1 text-center text-xs">{task.due_date}</td>
                         </tr>
+                        )
                     ))}
                 </tbody>
             </table>
