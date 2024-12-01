@@ -12,8 +12,8 @@ impl<R: TaskCommentRepository> TaskCommentUsecases<R> {
         Self { repository }
     }
 
-    pub async fn get_task_comments(&self) -> Result<Vec<TaskComments>> {
-        self.repository.get_task_comments().await
+    pub async fn get_task_comments_by_task_id(&self, task_id: u32) -> Result<Vec<TaskComments>> {
+        self.repository.get_task_comments_by_task_id(task_id).await
     }
 
     pub async fn create_task_comment(&self, label: &TaskComments) -> Result<()> {

@@ -17,8 +17,9 @@ impl D1TaskCommentRepository {
 
 #[async_trait(?Send)]
 impl TaskCommentRepository for D1TaskCommentRepository {
-    async fn get_task_comments(&self) -> Result<Vec<TaskComments>> {
-        let query = self.db.prepare("select * from tasks");
+    async fn get_task_comments_by_task_id(&self, task_id: u32) -> Result<Vec<TaskComments>> {
+        let statement = self.db.prepare("select * from task_comments where task_id = ?1");
+        let query = statement.bind(&[task_id.into()])?; 
         let result = query.all().await?;
         result.results::<TaskComments>()
     }
@@ -26,10 +27,10 @@ impl TaskCommentRepository for D1TaskCommentRepository {
     async fn create_task_comment(&self, task_comment: &TaskComments) -> Result<()> {
         let statement = self.db.prepare("insert into task_comments (created_by, updated_at, comment, task_id, version) values (?1, ?2, ?3, ?4, ?5)");
         let query = statement.bind(&[task_comment.created_by.into(),
-                                     task_comment.updated_at.clone().into(),
-                                     task_comment.comment.clone().into(),
-                                     task_comment.task_id.into(),
-                                     task_comment.version.into()])?;
+                                                          task_comment.updated_at.clone().into(),
+                                                          task_comment.comment.clone().into(),
+                                                          task_comment.task_id.into(),
+                                                          task_comment.version.into()])?;
         query.run().await?;
         Ok(())
     }
@@ -49,10 +50,11 @@ impl TaskCommentRepository for D1TaskCommentRepository {
         }
         let statement = self.db.prepare("update task_comments set created_by = ?1, updated_at = ?2, comment = ?3, task_id = ?4, version = ?5 where id = ?6");
         let query = statement.bind(&[task_comment.created_by.into(),
-                                     task_comment.updated_at.clone().into(),
-                                     task_comment.comment.clone().into(),
-                                     task_comment.task_id.into(),
-                                     task_comment.version.into()])?;
+                                                          task_comment.updated_at.clone().into(),
+                                                          task_comment.comment.clone().into(),
+                                                          task_comment.task_id.into(),
+                                                          task_comment.version.into(),
+                                                          task_comment.id.into()])?;
         query.run().await?;
         Ok(())
     }
