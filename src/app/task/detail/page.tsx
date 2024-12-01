@@ -83,7 +83,7 @@ const TaskDetail = () => {
     const handleCloseTaskCommentDialog = () => {
         setShowTaskCommentDialog(false)
         setTaskCommentId(0)
-        setCreatedBy(0)
+        setCreatedBy(1)
         setComment("")
         setTaskCommentVersion(0)
     }
