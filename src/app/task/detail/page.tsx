@@ -6,9 +6,12 @@ import React, { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import DOMPurify from 'dompurify'
+
+import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/constants'
-import { setUser, setStatusStr, setPriorityStr } from '@utils/utility_function'
+import { setUser, setStatusStr, setPriorityStr, getCurrentDateTime } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -25,9 +28,7 @@ const TaskDetail = () => {
     const [taskComments, setTaskComments] = useState<TaskCommentResponse>([])
     const [taskCommentId, setTaskCommentId] = useState(0)
     const [createdBy, setCreatedBy] = useState(1)
-    const [updatedAt, setUpdatedAt] = useState("")
     const [comment, setComment] = useState("")
-    const [taskId, setTaskId] = useState(0)
     const [taskCommentVersion, setTaskCommentVersion] = useState(0)
 
     const param = useSearchParams()
@@ -67,13 +68,11 @@ const TaskDetail = () => {
     const handleOpenTaskCommentDialog = () => {
         setShowTaskCommentDialog(true)
     }
-    const handleOpenUpdateTaskCommentDialog = ({id, created_by, updated_at, comment, task_id, version}: TaskCommentData) => {
+    const handleOpenUpdateTaskCommentDialog = ({id, created_by, comment, version}: TaskCommentData) => {
         setShowTaskCommentDialog(true)
         setTaskCommentId(id as number)
         setCreatedBy(created_by)
-        setUpdatedAt(updated_at)
         setComment(comment)
-        setTaskId(task_id)
         setTaskCommentVersion(version)
         setIsUpdateTaskComment(true)
         window.scrollTo({
@@ -85,21 +84,19 @@ const TaskDetail = () => {
         setShowTaskCommentDialog(false)
         setTaskCommentId(0)
         setCreatedBy(0)
-        setUpdatedAt("")
         setComment("")
-        setTaskId(0)
         setTaskCommentVersion(0)
     }
     const fetchTaskComments = async () => {
-        const taskComments = await client.get<TaskCommentResponse>("/v2/task_comment")
+        const taskComments = await client.get<TaskCommentResponse>(`/v2/task_comment/${id}`)
         setTaskComments(taskComments.data || [])
     }
     const addTaskComment = async () => {
         const addedTaskCommentData = {
             created_by: createdBy,
-            updated_at: updatedAt,
+            updated_at: getCurrentDateTime(),
             comment: comment,
-            task_id: taskId,
+            task_id: Number(id),
             version: taskCommentVersion
         }
         await client.post('/v2/task_comment/create', addedTaskCommentData)
@@ -109,9 +106,9 @@ const TaskDetail = () => {
         const updatedTaskCommentData = {
             id: taskCommentId,
             created_by: createdBy,
-            updated_at: updatedAt,
+            updated_at: getCurrentDateTime(),
             comment: comment,
-            task_id: taskId,
+            task_id: Number(id),
             version: taskCommentVersion
         }
         await client.post('/v2/task_comment/update', updatedTaskCommentData)
@@ -227,10 +224,44 @@ const TaskDetail = () => {
                     </div>
                 )}
                 {taskComments.map((taskComment, i) => (
-                    <div key={i} className="flex justify-left">
-                        <div>{taskComment.created_by}</div>
-                        <div>{taskComment.comment}</div>
-                    </div>
+                    <>
+                        <div key={i} className="flex justify-left">
+                            <div className="ml-32">{setUser(taskComment.created_by)}</div>
+                            <div className="ml-2">{"<"}</div>
+                            <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1 ml-4">
+                                <div className="">{taskComment.comment}</div>
+                                <div className="flex justify-right space-x-1">
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                        onClick={() => handleOpenUpdateTaskCommentDialog({
+                                            id: taskComment.id,
+                                            created_by: taskComment.created_by,
+                                            updated_at: taskComment.updated_at,
+                                            comment: taskComment.comment,
+                                            task_id: taskComment.task_id,
+                                            version:taskComment.version
+                                        })}
+                                    >
+                                        <PencilIcon />
+                                    </button>
+                                    <button
+                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                        onClick={() => deleteTaskComment({
+                                            id: taskComment.id,
+                                            created_by: taskComment.created_by,
+                                            updated_at: taskComment.updated_at,
+                                            comment: taskComment.comment,
+                                            task_id: taskComment.task_id,
+                                            version:taskComment.version
+                                        })}
+                                    >
+                                        <TrashBoxIcon />
+                                    </button>
+                                    <div className="text-xs ml-1 mt-2">{`(最終更新: ${taskComment.updated_at})`}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </>
                 ))}
         </>
     )
