@@ -307,8 +307,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             ctx.data.task_controller.delete_task(&mut req).await
         })
      //task_comment
-        .get_async("/v2/task_comment", |_req, ctx| async move {
-            ctx.data.task_comment_controller.get_task_comments().await
+        .get_async("/v2/task_comment/:task_id", |_req, ctx| async move {
+            ctx.data.task_comment_controller.get_task_comments_by_task_id(&ctx).await
         })
         .post_async("/v2/task_comment/create", |mut req, ctx| async move {
             ctx.data.task_comment_controller.create_task_comment(&mut req).await

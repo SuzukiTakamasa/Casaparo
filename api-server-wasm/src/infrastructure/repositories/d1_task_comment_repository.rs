@@ -17,8 +17,9 @@ impl D1TaskCommentRepository {
 
 #[async_trait(?Send)]
 impl TaskCommentRepository for D1TaskCommentRepository {
-    async fn get_task_comments(&self) -> Result<Vec<TaskComments>> {
-        let query = self.db.prepare("select * from tasks");
+    async fn get_task_comments_by_task_id(&self, task_id: u32) -> Result<Vec<TaskComments>> {
+        let statement = self.db.prepare("select * from task_comments where task_id = ?1");
+        let query = statement.bind(&[task_id.into()])?; 
         let result = query.all().await?;
         result.results::<TaskComments>()
     }

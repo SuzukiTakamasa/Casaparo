@@ -2,8 +2,9 @@ use crate::application::usecases::task_comment_usecases::TaskCommentUsecases;
 use crate::domain::entities::task::TaskComments;
 use crate::domain::repositories::task_comment_repository::TaskCommentRepository;
 use crate::domain::entities::service::IsSuccess;
-use worker::{Request, Response, Result};
+use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
+use crate::AppState;
 
 pub struct TaskCommentController<R: TaskCommentRepository> {
     usecases: TaskCommentUsecases<R>,
@@ -14,8 +15,10 @@ impl<R: TaskCommentRepository> TaskCommentController<R> {
         Self { usecases }
     }
 
-    pub async fn get_task_comments(&self) -> Result<Response> {
-        let result = match self.usecases.get_task_comments().await {
+    pub async fn get_task_comments_by_task_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let task_id = ctx.param("task_id").unwrap();
+        let task_id_as_u32: u32 = task_id.parse().unwrap();
+        let result = match self.usecases.get_task_comments_by_task_id(task_id_as_u32).await {
             Ok(task_comment) => task_comment,
             Err(e) => return Response::error(e.to_string(), 500)
         };

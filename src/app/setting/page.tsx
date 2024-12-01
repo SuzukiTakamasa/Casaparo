@@ -55,7 +55,7 @@ const Setting = () => {
             setLabelNameValidMsg("ラベル名を入力してください。")
         }
         if (newLabel === "" ) {
-            isValid = true
+            isValid = false
             setNewLabelValidMsg("ラベルを入力してください。")
         }
         return isValid
@@ -82,12 +82,12 @@ const Setting = () => {
 
     const handleAddLabel = async () => {
         if (!validateLabel()) return
-        await addlabels()
+        await addlabel()
         handleCloseLabelDialog()
     }
     const handleUpdateLabel = async () => {
         if (!validateLabel()) return
-        await updateLabels()
+        await updateLabel()
         handleCloseLabelDialog()
     }
     const handleOpenAddLabelDialog = () => {
@@ -120,7 +120,7 @@ const Setting = () => {
         setLabels(labels.data || [])
         setIsUsedErrMsg("")
     }, [])
-    const addlabels = async () => {
+    const addlabel = async () => {
         const addedLabelData = {
             name: labelName,
             label: newLabel,
@@ -129,7 +129,7 @@ const Setting = () => {
         await client.post('/v2/label/create', addedLabelData)
         await fetchLabels()
     }
-    const updateLabels = async () => {
+    const updateLabel = async () => {
         const updatedLabelData = {
             id: labelId,
             name: labelName,
@@ -157,7 +157,7 @@ const Setting = () => {
     }
     const handleUpdateAnniversary = async () => {
         if (!validateAnniversary()) return
-        await UpdateAnniversary()
+        await updateAnniversary()
         handleCloseAnniversaryDialog()
     }
     const handleOpenAddAnniversaryDialog = () => {
@@ -201,7 +201,7 @@ const Setting = () => {
         await client.post('/v2/anniversary/create', addAnniversaryData)
         await fetchAnniversaries()
     }
-    const UpdateAnniversary = async () => {
+    const updateAnniversary = async () => {
         const updateAnniversaryData = {
             id: anniversaryId,
             month: anniversaryMonth,
