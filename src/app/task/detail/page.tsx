@@ -72,7 +72,7 @@ const TaskDetail = () => {
         setShowTaskCommentDialog(true)
         setTaskCommentId(id as number)
         setCreatedBy(created_by)
-        setComment(comment)
+        setComment(decodeURI(comment))
         setTaskCommentVersion(version)
         setIsUpdateTaskComment(true)
         window.scrollTo({
@@ -95,7 +95,7 @@ const TaskDetail = () => {
         const addedTaskCommentData = {
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
-            comment: comment,
+            comment: encodeURI(comment),
             task_id: Number(id),
             version: taskCommentVersion
         }
@@ -107,7 +107,7 @@ const TaskDetail = () => {
             id: taskCommentId,
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
-            comment: comment,
+            comment: encodeURI(comment),
             task_id: Number(id),
             version: taskCommentVersion
         }
@@ -183,7 +183,7 @@ const TaskDetail = () => {
                         <div key={i} className="flex justify-left space-x-2">
                             <div>{setUser(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
-                                <div className="">{taskComment.comment}</div>
+                                <div className="">{decodeURI(taskComment.comment)}</div>
                                 <div className="flex justify-right space-x-1">
                                     <button
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
