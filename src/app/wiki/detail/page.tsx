@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import DOMPurify from 'dompurify'
 import APIClient from '@utils/api_client'
-import { WikiData } from '@utils/constants'
+import { WikiData } from '@/app/utils/interfaces'
 
 
 const client = new APIClient()

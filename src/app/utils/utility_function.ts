@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { ScheduleResponse } from "./constants"
+import { ScheduleResponse } from "./interfaces"
 
 export const boolToInt = (flag: boolean): number => +flag
 export const intToBool = (bit: number): boolean => !!bit

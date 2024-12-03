@@ -4,7 +4,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 
-import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@utils/constants'
+import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
@@ -126,7 +126,7 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        await client.post('/v2/label/create', addedLabelData)
+        await client.post<LabelData>('/v2/label/create', addedLabelData)
         await fetchLabels()
     }
     const updateLabel = async () => {
@@ -136,7 +136,7 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        await client.post('/v2/label/update', updatedLabelData)
+        await client.post<LabelData>('/v2/label/update', updatedLabelData)
         await fetchLabels()
     }
     const deleteLabel = async (deleteLabelData: LabelData) => {
@@ -146,7 +146,7 @@ const Setting = () => {
             setIsUsedErrMsg("このラベルは使用されています。")
             return
         }
-        await client.post('/v2/label/delete', deleteLabelData) 
+        await client.post<LabelData>('/v2/label/delete', deleteLabelData) 
         await fetchLabels()
     }
 
@@ -198,7 +198,7 @@ const Setting = () => {
             description: anniversaryDescription,
             version: anniversaryVersion
         }
-        await client.post('/v2/anniversary/create', addAnniversaryData)
+        await client.post<AnniversaryData>('/v2/anniversary/create', addAnniversaryData)
         await fetchAnniversaries()
     }
     const updateAnniversary = async () => {
@@ -209,12 +209,12 @@ const Setting = () => {
             description: anniversaryDescription,
             version: anniversaryVersion
         }
-        await client.post('/v2/anniversary/update', updateAnniversaryData)
+        await client.post<AnniversaryData>('/v2/anniversary/update', updateAnniversaryData)
         await fetchAnniversaries()
     }
     const deleteAnniversary = async (deleteAnniversaryData: AnniversaryData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post('/v2/anniversary/delete', deleteAnniversaryData)
+        await client.post<AnniversaryData>('/v2/anniversary/delete', deleteAnniversaryData)
         await fetchAnniversaries()
     }
 
@@ -260,7 +260,7 @@ const Setting = () => {
             types: inventoryType,
             version: inventoryTypeVersion
         }
-        await client.post('/v2/inventory_type/create', addInventoryTypeData)
+        await client.post<InventoryTypeData>('/v2/inventory_type/create', addInventoryTypeData)
         await fetchInventoryTypes()
     }
     const updateInventoryType = async () => {
@@ -269,7 +269,7 @@ const Setting = () => {
             types: inventoryType,
             version: inventoryTypeVersion
         }
-        await client.post('/v2/inventory_type/update', updateInventoryTypeData)
+        await client.post<InventoryTypeData>('/v2/inventory_type/update', updateInventoryTypeData)
         await fetchInventoryTypes()
     }
     const deleteInventoryType = async (deleteInventoryTypeData: InventoryTypeData) => {
@@ -279,7 +279,7 @@ const Setting = () => {
             setIsUsedInventoryTypeErrMsg("この在庫種別は使用されています。")
             return
         }
-        await client.post('/v2/inventory_type/delete', deleteInventoryTypeData)
+        await client.post<InventoryTypeData>('/v2/inventory_type/delete', deleteInventoryTypeData)
         await fetchInventoryTypes()
     }
     

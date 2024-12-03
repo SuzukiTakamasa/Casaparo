@@ -11,7 +11,7 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, HouseholdMonthlySummaryResponse, Detail } from '@utils/constants'
+import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import APIClient from '@utils/api_client'
 import { setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
@@ -135,7 +135,7 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post('/v2/household/create', addedHouseholdData)
+        await client.post<HouseholdData>('/v2/household/create', addedHouseholdData)
         await fetchHouseholds()
     }
     const updateHousehold = async () => {
@@ -149,12 +149,12 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post('/v2/household/update', updatedHouseholdData)
+        await client.post<HouseholdData>('/v2/household/update', updatedHouseholdData)
         await fetchHouseholds()
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post('/v2/household/delete', deletedHouseholdData)
+        await client.post<HouseholdData>('/v2/household/delete', deletedHouseholdData)
         await fetchHouseholds()
     }
     const calculateBillingAmount = useCallback(() => {
@@ -179,7 +179,7 @@ const Household = () => {
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
-        await client.post('/v2/completed_household/create', completedHousehold)
+        await client.post<CompletedHouseholdData>('/v2/completed_household/create', completedHousehold)
         await fetchIsCompleted()
     }
 

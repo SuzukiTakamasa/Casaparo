@@ -10,7 +10,7 @@ import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
 
 import APIClient from '@utils/api_client'
-import { HouseholdMonthlySummaryResponse } from "@utils/constants"
+import { HouseholdMonthlySummaryResponse } from "@/app/utils/interfaces"
 
 
 const client = new APIClient()

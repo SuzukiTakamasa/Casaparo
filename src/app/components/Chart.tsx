@@ -1,6 +1,6 @@
 import { Line } from 'react-chartjs-2'
 import { Chart, registerables } from "chart.js"
-import { HouseholdMonthlySummaryResponse } from "@utils/constants"
+import { HouseholdMonthlySummaryResponse } from "@/app/utils/interfaces"
 
 Chart.register(...registerables)
 

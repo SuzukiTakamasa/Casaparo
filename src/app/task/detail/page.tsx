@@ -10,7 +10,7 @@ import DOMPurify from 'dompurify'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
-import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/constants'
+import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
 import { setUser, setStatusStr, setPriorityStr, getCurrentDateTime } from '@utils/utility_function'
 
 
@@ -99,7 +99,7 @@ const TaskDetail = () => {
             task_id: Number(id),
             version: taskCommentVersion
         }
-        await client.post('/v2/task_comment/create', addedTaskCommentData)
+        await client.post<TaskCommentData>('/v2/task_comment/create', addedTaskCommentData)
         await fetchTaskComments()
     }
     const updateTaskComment = async () => {
@@ -111,12 +111,12 @@ const TaskDetail = () => {
             task_id: Number(id),
             version: taskCommentVersion
         }
-        await client.post('/v2/task_comment/update', updatedTaskCommentData)
+        await client.post<TaskCommentData>('/v2/task_comment/update', updatedTaskCommentData)
         await fetchTaskComments()
     }
     const deleteTaskComment = async (deletedTaskComment: TaskCommentData) => {
         if (!window.confirm("削除しますか?")) return
-        await client.post('/v2/task_comment/delete', deletedTaskComment)
+        await client.post<TaskCommentData>('/v2/task_comment/delete', deletedTaskComment)
         await fetchTaskComments()
     }
 
