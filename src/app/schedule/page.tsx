@@ -10,7 +10,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/constants'
+import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
 import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime } from '@utils/utility_function'
@@ -376,7 +376,7 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post('/v2/schedule/create', addScheduleData)
+        await client.post<ScheduleData>('/v2/schedule/create', addScheduleData)
         await fetchSchedules()
     }
     const fetchLabels = async () => {
@@ -399,12 +399,12 @@ const Schedule = () => {
             label_id: labelId,
             version: version
         }
-        await client.post('/v2/schedule/update', updateSchedule)
+        await client.post<ScheduleData>('/v2/schedule/update', updateSchedule)
         await fetchSchedules()
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post('/v2/schedule/delete', deletedScheduleData)
+        await client.post<ScheduleData>('/v2/schedule/delete', deletedScheduleData)
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {

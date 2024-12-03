@@ -11,7 +11,7 @@ import { MonthContext } from '@components/MonthPaginator'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
-import { TaskData, TaskResponse } from '@utils/constants'
+import { TaskData, TaskResponse } from '@/app/utils/interfaces'
 import { setStatusStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
@@ -169,13 +169,13 @@ const Task = () => {
             status: status,
             priority: priority,
             description: encodeURI(description),
-            created_by: createdBy,
+            created_by: createdBy as number,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
             parent_task_id: parentTaskId,
             version: version
-        } as TaskData
-        await client.post('/v2/task/create', addTaskData)
+        }
+        await client.post<TaskData>('/v2/task/create', addTaskData)
         await fetchTasks()
     }
     const updateTask = async () => {
@@ -185,18 +185,18 @@ const Task = () => {
             status: status,
             priority: priority,
             description: encodeURI(description),
-            created_by: createdBy,
+            created_by: createdBy as number,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
             parent_task_id: parentTaskId,
             version: version
-        } as TaskData
-        await client.post('/v2/task/update', updateTaskData)
+        }
+        await client.post<TaskData>('/v2/task/update', updateTaskData)
         await fetchTasks()
     }
     const deleteTask = async (deletedTaskData: TaskData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post('/v2/task/delete', deletedTaskData)
+        await client.post<TaskData>('/v2/task/delete', deletedTaskData)
         await fetchTasks()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {

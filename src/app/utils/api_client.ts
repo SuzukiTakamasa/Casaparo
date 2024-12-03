@@ -1,4 +1,4 @@
-import { APIRequest, R2Response, Result , IsSuccess } from './constants'
+import { APIRequest, APIResponse, R2Response, Result , IsSuccess } from './interfaces'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -25,7 +25,7 @@ class APIClient {
             'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         } as const
     }
-    public async get<T>(endpoint: string, params?: string): Promise<Result<T>> {
+    public async get<T extends APIRequest | APIResponse>(endpoint: string, params?: string): Promise<Result<T>> {
         if (params) endpoint += params
 
         try {
@@ -40,7 +40,7 @@ class APIClient {
             return { data: null, error: String(e) }
         }
     }
-    public async post(endpoint: string, data: APIRequest): Promise<Result<IsSuccess>> {
+    public async post<T extends APIRequest>(endpoint: string, data: T): Promise<Result<IsSuccess>> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',

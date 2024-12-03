@@ -7,7 +7,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import dynamic from 'next/dynamic'
 
-import { WikiData, WikiResponse } from '@utils/constants'
+import { WikiData, WikiResponse } from '@/app/utils/interfaces'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
@@ -101,7 +101,7 @@ const Wiki = () => {
             image_url: imageUrl,
             version: version
         }
-        await client.post('/v2/wiki/create', addedWikiData)
+        await client.post<WikiData>('/v2/wiki/create', addedWikiData)
         await fetchWikis()
     }
     const updateWiki = async () => {
@@ -114,7 +114,7 @@ const Wiki = () => {
             image_url: imageUrl,
             version: version
         }
-        await client.post('/v2/wiki/update', updatedWikiData)
+        await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
         await fetchWikis()
     }
     const updateImageUrlEmpty = async () => {
@@ -127,12 +127,12 @@ const Wiki = () => {
             image_url: "",
             version: version
         }
-        await client.post('/v2/wiki/update', updatedWikiData)
+        await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
         await fetchWikis()
     }
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post('/v2/wiki/delete', deleteWikiData)
+        await client.post<WikiData>('/v2/wiki/delete', deleteWikiData)
         await fetchWikis()
     }
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
