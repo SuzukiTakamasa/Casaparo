@@ -12,7 +12,7 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@/app/utils/interfaces'
-import { setStatusStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -56,10 +56,6 @@ const Task = () => {
     const [version, setVersion] = useState(0)
 
     const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
-
-    const getDate = (year: number, month: number, day: number) => {
-        return new Date(year, month, day)
-    }
 
     const isParentTask = (task: TaskData) => {
         return task.parent_task_id === 0
@@ -413,7 +409,7 @@ const Task = () => {
                                         updated_at: task.updated_at,
                                         due_date: task.due_date,
                                         parent_task_id: task.parent_task_id,
-                                        version:task.version
+                                        version: task.version
                                     })}
                                 >
                                     <PencilIcon />
@@ -430,7 +426,7 @@ const Task = () => {
                                         updated_at: task.updated_at,
                                         due_date: task.due_date,
                                         parent_task_id: task.parent_task_id,
-                                        version:task.version
+                                        version: task.version
                                     })}
                                 >
                                     <TrashBoxIcon />
