@@ -55,6 +55,8 @@ const Task = () => {
     const [parentTaskId, setParentTaskId] = useState(0)
     const [version, setVersion] = useState(0)
 
+    const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
+
     const getDate = (year: number, month: number, day: number) => {
         return new Date(year, month, day)
     }
@@ -211,6 +213,17 @@ const Task = () => {
         setDueDate(`${dueDateYear}/${dueDateMonth}/${dueDateDay}`)
     }, [dueDateYear, dueDateMonth, dueDateDay])
 
+    const handleIsDisplayedCompletedTask = () => {
+        setIsDisplayedCompletedTask(!isDisplayedCompletedTask)
+    }
+    const handleDisplayTasks = (task: TaskResponse) => {
+        return (
+            isDisplayedCompletedTask ?
+            task :
+            task.filter(t => t.status !== 2)
+        )
+    }
+
     useEffect(() => {
         fetchTasks()
     }, [fetchTasks])
@@ -236,6 +249,13 @@ const Task = () => {
             >
             登録
             </button>
+            <input
+                className="ml-8 mr-2"
+                type="checkbox"
+                checked={isDisplayedCompletedTask}
+                onChange={handleIsDisplayedCompletedTask}
+            />
+            <span>完了したタスクを表示</span>
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -377,9 +397,9 @@ const Task = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {tasks.map((task, i) => (
+                    {handleDisplayTasks(tasks).map((task, i) => (
                         isParentTask(task) && (
-                        <tr key={i}>
+                        <tr key={i} className={`${task.status === 2 && "bg-gray-600"}`}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"

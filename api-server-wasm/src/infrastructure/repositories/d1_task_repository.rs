@@ -18,7 +18,7 @@ impl D1TaskRepository {
 #[async_trait(?Send)]
 impl TaskRepository for D1TaskRepository {
     async fn get_tasks(&self) -> Result<Vec<Tasks>> {
-        let query = self.db.prepare("select * from tasks order by id desc");
+        let query = self.db.prepare("select * from tasks order by status asc, id desc");
         let result = query.all().await?;
         result.results::<Tasks>()
     }
