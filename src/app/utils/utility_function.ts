@@ -25,6 +25,10 @@ export const getToday = () => {
     return new Date().getDate()
 }
 
+export const getDate = (year: number, month: number, day: number) => {
+    return new Date(year, month, day)
+}
+
 export const getNumberOfDays = (year: number, month: number) => {
     return new Date(year, month, 0).getDate()
 }
