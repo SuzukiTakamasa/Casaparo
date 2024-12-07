@@ -11,8 +11,8 @@ import TextLink from '@components/TextLink'
 
 import APIClient from '@utils/api_client'
 
-import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse } from '@/app/utils/interfaces'
-import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime } from '@utils/utility_function'
+import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
+import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ExclamationTriangleIcon } from '@components/HeroicIcons'
 
 
@@ -29,6 +29,7 @@ export default function Home() {
   const [schedules, setSchedules] = useState<ScheduleResponse>([])
   const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
   const [inventories, setInventories] = useState<InventoryResponse>([])
+  const [tasks, setTasks] = useState<TaskResponse>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const [isCompletedCurrentMonth, setIsCompletedCurrentMonth] = useState(1)
@@ -56,6 +57,10 @@ export default function Home() {
     const inventories = await client.get<InventoryResponse>('/v2/inventory')
     setInventories(inventories.data?.filter(i => i.amount === 0) || [])
   }, [])
+  const fetchTasks = useCallback(async () => {
+    const tasks = await client.get<TaskResponse>('/v2/task')
+    setTasks(tasks.data?.filter(t => t.status !== 2) || [])
+  }, [])
   const fetchIsCompletedCurrentMonth = useCallback(async () => {
     const isCompletedCurrentMonth = await client.get<IsCompleted>(`/v2/completed_household/${year}/${month}`)
     if (isCompletedCurrentMonth.data) {
@@ -72,11 +77,13 @@ export default function Home() {
    useEffect(() => {
     fetchFixedAmount()
     fetchSchedules()
+    fetchTasks()
     fetchAnniversaries()
     fetchInventories()
+
     fetchIsCompletedCurrentMonth()
     fetchIsCompletedLastMonth()
-   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
+   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories, fetchTasks, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -122,7 +129,7 @@ export default function Home() {
               </div>
           </div>
         </div>
-        <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1">
+        <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
           <div className="bg-black text-white p-2">
             <h2 className="text-2xl font-bold mb-4 text-center">在庫切れ情報</h2>
             {inventories.map((inventory, i) => (
@@ -132,6 +139,19 @@ export default function Home() {
             ))}
             <div className="flex justify-end">
               <TextLink path="inventory" text="在庫一覧へ" />
+            </div>
+          </div>
+        </div>
+        <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1">
+          <div className="bg-black text-white p-2">
+            <h2 className="text-2xl font-bold mb-4 text-center">期限間近・期限切れのタスク</h2>
+            {tasks.map((task, i) => (
+              <div key={i} className={`flex justify-center text-xl m-1`}>
+                {tasks.length > 0 && (isWithinAWeekFromDueDate(task) || isOverDueDate(task)) && `${task.title} (期限: ${task.due_date})`}
+              </div>
+            ))}
+            <div className="flex justify-end">
+              <TextLink path="task" text="タスク一覧へ" />
             </div>
           </div>
         </div>
