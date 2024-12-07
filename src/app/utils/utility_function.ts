@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-import { ScheduleResponse } from "./interfaces"
+import { ScheduleResponse, TaskData } from "./interfaces"
 
 export const boolToInt = (flag: boolean): number => +flag
 export const intToBool = (bit: number): boolean => !!bit
@@ -21,15 +21,29 @@ export const setUser = (userInt: number): string => {
     }
 }
 
-export const getToday = () => {
+export const getToday = (): number => {
     return new Date().getDate()
 }
 
-export const getDate = (year: number, month: number, day: number) => {
-    return new Date(year, month, day)
+export const getDate = (year: number, month: number, day: number): Date => {
+    return new Date(`${year}-${month}-${day}`)
 }
 
-export const getNumberOfDays = (year: number, month: number) => {
+export const isWithinAWeekFromDueDate = (task: TaskData): boolean => {
+    const [year, month, day] = task.due_date.split("/").map(v => Number(v))
+    const dueDate = getDate(year, month, day)
+    const currentDate = new Date()
+    return currentDate <= dueDate && dueDate <= new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000)
+}
+
+export const isOverDueDate = (task: TaskData): boolean => {
+    const [year, month, day] = task.due_date.split("/").map(v => Number(v))
+    const dueDate = getDate(year, month, day)
+    const currentDate = new Date()
+    return dueDate < currentDate
+}
+
+export const getNumberOfDays = (year: number, month: number): number => {
     return new Date(year, month, 0).getDate()
 }
 
@@ -77,7 +91,7 @@ export const isUnsignedInteger = (intStr: string): boolean => {
     return /^\d+$/.test(intStr)
 }
 
-export const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
+export const sortSchedulesByDateTime = (schedules: ScheduleResponse): ScheduleResponse => {
     const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
     const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
 
@@ -114,7 +128,7 @@ export const sortSchedulesByDateTime = (schedules: ScheduleResponse) => {
     return schedules
 }
 
-export const setStatusStr = (status: number) => {
+export const setStatusStr = (status: number): string => {
     switch (status) {
         case 0:
             return "未着手"
@@ -127,7 +141,7 @@ export const setStatusStr = (status: number) => {
     }
 }
 
-export const setPriorityStr = (priority: number) => {
+export const setPriorityStr = (priority: number): string => {
     switch (priority) {
         case 0:
             return "低"

@@ -12,7 +12,7 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@/app/utils/interfaces'
-import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -125,6 +125,7 @@ const Task = () => {
         setShowDialog(true)
     }
     const handleOpenUpdateDialog = ({id, title, status, priority, description, created_by, due_date, parent_task_id, version}: TaskData) => {
+        const [ddYear, ddMonth, ddDay] = due_date.split("/").map(v => Number(v))
         setShowDialog(true)
         setIsUpdate(true)
         setId(id as number)
@@ -134,6 +135,9 @@ const Task = () => {
         setDescription(decodeURI(description))
         handleSetCreatedByTAndY(created_by)
         setDueDate(due_date)
+        setDueDateYear(ddYear)
+        setDueDateMonth(ddMonth)
+        setDueDateDay(ddDay)
         setParentTaskId(parent_task_id)
         setVersion(version)
         window.scrollTo({
@@ -149,10 +153,16 @@ const Task = () => {
         setStatus(0)
         setPriority(0)
         setDescription("")
-        setCreatedBy(0)
+        setCreatedBy(null)
+        setCreatedByT(false)
+        setCreatedByY(false)
         setDueDate("")
+        setDueDateYear(year)
+        setDueDateMonth(month)
+        setDueDateDay(today)
         setParentTaskId(0)
         setVersion(0)
+        setTitleValidMsg("")
         setDescriptionValidMsg("")
         setCreatedByValidMsg("")
         setDueDateValidMsg("")
@@ -335,7 +345,7 @@ const Task = () => {
                             </select>
                         </label>
                         </div>
-                        {dueDateValidMsg !== "" && <div className="text-sm text-red 500">{dueDateValidMsg}</div>}
+                        {dueDateValidMsg !== "" && <div className="text-sm text-red-500">{dueDateValidMsg}</div>}
                         <label className="text-black">
                             <span>親チケット</span>
                             <select
@@ -364,7 +374,7 @@ const Task = () => {
                                 />
                             <span>🥺ྀི</span>
                         </div>
-                        {createdByValidMsg !== "" && <div className="text-sm text-red 500">{createdByValidMsg}</div>}
+                        {createdByValidMsg !== "" && <div className="text-sm text-red-500">{createdByValidMsg}</div>}
                         <div className="flex justify-center space-x-4">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -437,7 +447,11 @@ const Task = () => {
                                 <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
-                            <td className="border-b px-1 py-1 text-center text-xs">{task.due_date}</td>
+                            <td className="border-b px-1 py-1 text-center text-xs">
+                                {task.due_date}
+                                {task.status !== 2 && isWithinAWeekFromDueDate(task) && <div className="text-yellow-500">期限間近</div>}
+                                {task.status !== 2 && isOverDueDate(task) && <div className="text-red-500">期限切れ</div>}
+                            </td>
                         </tr>
                         )
                     ))}
