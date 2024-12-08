@@ -29,17 +29,28 @@ export const getDate = (year: number, month: number, day: number): Date => {
     return new Date(`${year}-${month}-${day}`)
 }
 
-export const isWithinAWeekFromDueDate = (task: TaskData): boolean => {
-    const [year, month, day] = task.due_date.split("/").map(v => Number(v))
+export const splitYearMonthDayStr = (yyyymmddStr: string): readonly number[] & { length: 3 } => {
+    const [year, month, day] = yyyymmddStr.split("/").map(v => Number(v))
+    return [year, month, day] as const
+}
+
+export const _getCurrentDateAndDueDate = (dueDateStr: string): readonly Date[] & { length: 2} => {
+    const [year, month, day] = splitYearMonthDayStr(dueDateStr)
     const dueDate = getDate(year, month, day)
     const currentDate = new Date()
-    return currentDate <= dueDate && dueDate <= new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000)
+    return [currentDate, dueDate] as const
+} 
+
+export const isWithinAWeekFromDueDate = (task: TaskData): boolean => {
+    const [currentDate, dueDate] = _getCurrentDateAndDueDate(task.due_date)
+    return (
+        currentDate <= dueDate &&
+        dueDate <= new Date(currentDate.getTime() + 7 * 24 * 60 * 60 * 1000)
+    )
 }
 
 export const isOverDueDate = (task: TaskData): boolean => {
-    const [year, month, day] = task.due_date.split("/").map(v => Number(v))
-    const dueDate = getDate(year, month, day)
-    const currentDate = new Date()
+    const [currentDate, dueDate] = _getCurrentDateAndDueDate(task.due_date)
     return dueDate < currentDate
 }
 
@@ -62,12 +73,8 @@ export const getWeekDay = (year: number, month: number, day: number): string => 
     return weekDays[weekDayIndex]
 }
 
-export const getMonthArray = (): number[] => {
-    const monthArray = []
-    for (let m = 1; m <= 12; m++) {
-        monthArray.push(m)
-    }
-    return monthArray
+export const getMonthArray = (): number[] & { length: 12 } => {
+    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
 }
 
 export const getDateArray = (month: number): number[] => {
