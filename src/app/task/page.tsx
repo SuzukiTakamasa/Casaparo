@@ -12,7 +12,8 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse } from '@/app/utils/interfaces'
-import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
+import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
+         splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -125,7 +126,7 @@ const Task = () => {
         setShowDialog(true)
     }
     const handleOpenUpdateDialog = ({id, title, status, priority, description, created_by, due_date, parent_task_id, version}: TaskData) => {
-        const [ddYear, ddMonth, ddDay] = due_date.split("/").map(v => Number(v))
+        const [ddYear, ddMonth, ddDay] = splitYearMonthDayStr(due_date)
         setShowDialog(true)
         setIsUpdate(true)
         setId(id as number)
