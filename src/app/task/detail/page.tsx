@@ -510,8 +510,8 @@ const TaskDetail = () => {
                 </button>
                 </div>
                 {taskComments.map((taskComment, i) => (
-                    <div className="my-1">
-                        <div key={i} className="flex justify-left space-x-2">
+                    <div key={i} className="my-1">
+                        <div className="flex justify-left space-x-2">
                             <div className="text-lg">{setUser(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
                                 <div className="">{decodeURI(taskComment.comment)}</div>
