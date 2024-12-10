@@ -16,10 +16,6 @@ impl<R: InventoryRepository> InventoryUsecases<R> {
         self.repository.get_inventories().await
     }
 
-    pub async fn get_inventories_by_types(&self, types: u8) -> Result<Vec<Inventories>> {
-        self.repository.get_inventories_by_types(types).await
-    }
-
     pub async fn create_inventory(&self, inventory: &Inventories) -> Result<()> {
         self.repository.create_inventory(inventory).await
     }

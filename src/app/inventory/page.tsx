@@ -137,14 +137,9 @@ const Inventory = () => {
     }
 
     const fetchInventories = useCallback(async () => {
-        let inventories: Result<InventoryResponse>
-        if (typesForSort === 0) {
-            inventories = await client.get<InventoryResponse>("/v2/inventory")
-        } else {
-            inventories = await client.get<InventoryResponse>(`/v2/inventory/${typesForSort}`)
-        }
+        const inventories = await client.get<InventoryResponse>("/v2/inventory")
         setInventories(inventories.data || [])
-    }, [typesForSort])
+    }, [])
     const addInventory = async () => {
         const addInventoryData = {
             types: types,
@@ -182,6 +177,13 @@ const Inventory = () => {
     }
     const handleInventoryDecrementAmount = () => {
         setAmount(amount => amount - 1)
+    }
+    const handleDisaplySelectedTypeOfInventories = (inventory: InventoryResponse) => {
+        return (
+            typesForSort === 0 ?
+            inventory :
+            inventory.filter(i => i.types === typesForSort)
+        )
     }
 
     const handleAddShoppingNote = async () => {
@@ -553,7 +555,7 @@ const Inventory = () => {
                             </tr>
                         </thead>
                         <tbody>
-                        {inventories.map((inventory, i) => (
+                        {handleDisaplySelectedTypeOfInventories(inventories).map((inventory, i) => (
                             <tr key={i} className={`${inventory.amount === 0 && "bg-red-900"}`}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                     <button
