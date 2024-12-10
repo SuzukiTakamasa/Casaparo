@@ -23,13 +23,6 @@ impl InventoryRepository for D1InventoryRepository {
         result.results::<Inventories>()
     }
 
-    async fn get_inventories_by_types(&self, types: u8) -> Result<Vec<Inventories>> {
-        let statement = self.db.prepare("select * from inventories where types = ?1 order by amount asc, id desc");
-        let query = statement.bind(&[types.into()])?;
-        let result = query.all().await?;
-        result.results::<Inventories>()
-    }
-
     async fn create_inventory(&self, inventory: &Inventories) -> Result<()> {
         let statement = self.db.prepare("insert into inventories (types, name, amount, created_by, version) values (?1, ?2, ?3, ?4, ?5)");
         let query = statement.bind(&[inventory.types.into(),
