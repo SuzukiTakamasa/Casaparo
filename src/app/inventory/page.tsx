@@ -1,15 +1,15 @@
 "use client"
 
 //export const runtime = 'edge'
+
 import { useEffect, useState, useCallback, useContext } from 'react'
 
 import APIClient from '@utils/api_client'
-import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ShoppingNoteResponse, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@/app/utils/interfaces'
+import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@/app/utils/interfaces'
 
 import { setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
-import { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
-import GeneralPaginator from '@components/GeneralPaginator'
+import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 
 
 const client = new APIClient()
@@ -54,8 +54,7 @@ const Inventory = () => {
     const [pagination, setPagination] = useState(page)
 
     const numberOfDataPerPage = 10
-    const firstDataIndexPerPage = (pagination - 1) * numberOfDataPerPage + 1
-    const lastDataIndexPerPage = pagination * numberOfDataPerPage
+    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
 
     const [isHiddenRegisteredShoppingNotes, setIsHiddenRegisteredShoppingNotes] = useState(false)
 
