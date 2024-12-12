@@ -15,6 +15,7 @@ import { TaskData, TaskResponse } from '@/app/utils/interfaces'
 import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
          splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
+import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 
 
 const ReactQuill = dynamic(() => import('react-quill'))
@@ -57,6 +58,13 @@ const Task = () => {
     const [version, setVersion] = useState(0)
 
     const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
+
+    const { page } = useContext(GeneralPaginationContext)
+    const [pagination, setPagination] = useState(page)
+
+    const numberOfDataPerPage = 10
+    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
+
 
     const isParentTask = (task: TaskData) => {
         return task.parent_task_id === 0
@@ -230,6 +238,13 @@ const Task = () => {
             task.filter(t => t.status !== 2)
         )
     }
+    const handleFilterTasksWithPagination = (tasks: TaskResponse) => {
+        return (
+            tasks.length >= lastDataIndexPerPage ?
+            tasks.slice(firstDataIndexPerPage, lastDataIndexPerPage + 1) :
+            tasks.slice(firstDataIndexPerPage - 1)
+        )
+    }
 
     useEffect(() => {
         fetchTasks()
@@ -263,6 +278,10 @@ const Task = () => {
                 onChange={handleIsDisplayedCompletedTask}
             />
             <span>完了したタスクを表示</span>
+
+            <GeneralPaginationProvider page={pagination} setPage={setPagination}>
+                <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayTasks(tasks).length} cssStr="text-lg font-bold mx-4" />
+            </GeneralPaginationProvider>
 
             {showDialog && (
                 <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -404,7 +423,7 @@ const Task = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {handleDisplayTasks(tasks).map((task, i) => (
+                    {handleFilterTasksWithPagination(handleDisplayTasks(tasks)).map((task, i) => (
                         isParentTask(task) && (
                         <tr key={i} className={`${task.status === 2 && "bg-gray-600"}`}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">

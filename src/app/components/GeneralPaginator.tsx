@@ -25,6 +25,12 @@ const defaultGeneralPagenationContext: GeneralPaginationContextType = {
     handlePageDecrement: () => {}
 }
 
+export const getFirstAndLastDataIndexPerPage = (pagination: number, numberOfDataPerPage: number): readonly number[] & { length: 2 } => {
+    const firstDataIndexPerPage = (pagination - 1) * numberOfDataPerPage + 1
+    const lastDataIndexPerPage = pagination * numberOfDataPerPage
+    return [firstDataIndexPerPage, lastDataIndexPerPage] as const
+}
+
 export const GeneralPaginationContext = createContext<GeneralPaginationContextType>(defaultGeneralPagenationContext)
 
 export const GeneralPaginationProvider = ({ children, page, setPage }: GeneralPaginationProviderProps) => {
