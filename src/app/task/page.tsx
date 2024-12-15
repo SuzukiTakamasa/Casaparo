@@ -238,7 +238,7 @@ const Task = () => {
     const handleFilterTasksWithPagination = (tasks: TaskResponse) => {
         return (
             tasks.length >= lastDataIndexPerPage ?
-            tasks.slice(firstDataIndexPerPage, lastDataIndexPerPage + 1) :
+            tasks.slice(firstDataIndexPerPage - 1, lastDataIndexPerPage) :
             tasks.slice(firstDataIndexPerPage - 1)
         )
     }

@@ -373,7 +373,7 @@ const Inventory = () => {
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
         return (
             shoppingNotes.length >= lastDataIndexPerPage ?
-            shoppingNotes.slice(firstDataIndexPerPage, lastDataIndexPerPage + 1) :
+            shoppingNotes.slice(firstDataIndexPerPage - 1, lastDataIndexPerPage) :
             shoppingNotes.slice(firstDataIndexPerPage - 1)
         )
     }
