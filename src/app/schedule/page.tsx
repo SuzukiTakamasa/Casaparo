@@ -13,19 +13,20 @@ import MonthPaginator from '@components/MonthPaginator'
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@components/HeroicIcons'
 import APIClient, {execExternalGetAPI} from '@utils/api_client'
-import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime } from '@utils/utility_function'
+import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
 
 
 const client = new APIClient()
 
 
 const getTimeArray = (): string[] => {
-    const timeArray = ["未定"]
+    const timeArray = []
     for (let h = 0; h <= 23; h++) {
         for (let m = 0; m <= 30; m += 30) {
             timeArray.push(`${h}:${m === 0 ? '00' : m}`)
         }
     }
+    timeArray.push("未定")
     return timeArray
 }
 
@@ -605,9 +606,15 @@ const Schedule = () => {
                                         value={toTime}
                                         onChange={e => setToTime(e.target.value)}
                                     >
-                                        {getTimeArray().map((t, i) => (
+                                        {isMultipleDays ?
+                                        getTimeArray().map((t, i) => (
                                             <option key={i} value={t}>{t}</option>
-                                        ))}
+                                        ))
+                                        :
+                                        getTimeArray().filter(t => validateFromTimeAndToTime(fromTime, t)).map((t, i) => (
+                                            <option key={i} value={t}>{t}</option>
+                                        ))
+                                        }
                                     </select>
                                     </label>
                                 </div>

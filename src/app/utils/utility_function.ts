@@ -98,10 +98,22 @@ export const isUnsignedInteger = (intStr: string): boolean => {
     return /^\d+$/.test(intStr)
 }
 
-export const sortSchedulesByDateTime = (schedules: ScheduleResponse): ScheduleResponse => {
-    const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
-    const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
+const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
+const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
 
+export const validateFromTimeAndToTime = (fromTimeStr: string, toTimeStr: string) => {
+    let isValid = true
+    if (sliceHour(fromTimeStr) > sliceHour(toTimeStr)) {
+        isValid = false
+    } else if (sliceHour(fromTimeStr) === sliceHour(toTimeStr)) {
+        if (sliceMinute(fromTimeStr) > sliceMinute(toTimeStr)) {
+            isValid = false
+        }
+    }
+    return isValid
+}
+
+export const sortSchedulesByDateTime = (schedules: ScheduleResponse): ScheduleResponse => {
     schedules.sort((a, b) => {
         if (sliceHour(a.from_time) > sliceHour(b.from_time)) {
             return 1
