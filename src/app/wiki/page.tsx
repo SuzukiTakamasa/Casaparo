@@ -95,7 +95,7 @@ const Wiki = () => {
     const addWiki = async () => {
         const addedWikiData = {
             title: title,
-            content: content,
+            content: encodeURI(content),
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             image_url: imageUrl,
@@ -108,7 +108,7 @@ const Wiki = () => {
         const updatedWikiData = {
             id: id,
             title: title,
-            content: content,
+            content: encodeURI(content),
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             image_url: imageUrl,
