@@ -66,10 +66,6 @@ const Task = () => {
     const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
 
 
-    const isParentTask = (task: TaskData) => {
-        return task.parent_task_id === 0
-    } 
-
     const validate = () => {
         let isValid = true
         if (title === "") {
@@ -232,6 +228,7 @@ const Task = () => {
         setIsDisplayedCompletedTask(!isDisplayedCompletedTask)
     }
     const handleDisplayTasks = (task: TaskResponse) => {
+        task = task.filter(t => t.parent_task_id === 0)
         return (
             isDisplayedCompletedTask ?
             task :
@@ -241,7 +238,7 @@ const Task = () => {
     const handleFilterTasksWithPagination = (tasks: TaskResponse) => {
         return (
             tasks.length >= lastDataIndexPerPage ?
-            tasks.slice(firstDataIndexPerPage, lastDataIndexPerPage + 1) :
+            tasks.slice(firstDataIndexPerPage - 1, lastDataIndexPerPage) :
             tasks.slice(firstDataIndexPerPage - 1)
         )
     }
@@ -424,7 +421,6 @@ const Task = () => {
                 </thead>
                 <tbody>
                     {handleFilterTasksWithPagination(handleDisplayTasks(tasks)).map((task, i) => (
-                        isParentTask(task) && (
                         <tr key={i} className={`${task.status === 2 && "bg-gray-600"}`}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
@@ -474,7 +470,7 @@ const Task = () => {
                             </td>
                         </tr>
                         )
-                    ))}
+                    )}
                 </tbody>
             </table>
         </div>
