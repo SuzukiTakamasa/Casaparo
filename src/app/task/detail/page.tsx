@@ -274,6 +274,9 @@ const TaskDetail = () => {
         await client.post<TaskCommentData>('/v2/task_comment/delete', deletedTaskComment)
         await fetchTaskComments()
     }
+    const handleSetComment = (value: string) => {
+        setComment(value)
+    }
 
     useEffect(() => {
         fetchTaskDetail()
@@ -514,7 +517,7 @@ const TaskDetail = () => {
                         <div className="flex justify-left space-x-2">
                             <div className="text-lg">{setUser(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
-                                <div className="">{decodeURI(taskComment.comment)}</div>
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(decodeURI(taskComment.comment))}} />
                                 <div className="flex justify-right space-x-1">
                                     <button
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
@@ -553,13 +556,13 @@ const TaskDetail = () => {
                     <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded">
                             <div className="flex flex-col space-y-4 mb-4">
-                                <textarea
-                                    className="border p-2 text-black"
-                                    placeholder="コメント"
+                                <ReactQuill
+                                    className="text-black"
                                     value={comment}
-                                    onChange={(e) => setComment(e.target.value)}
-                                >
-                                </textarea>
+                                    onChange={handleSetComment}
+                                    modules={ReactQuillStyles.modules}
+                                    formats={ReactQuillStyles.formats}
+                                />
                                 {commentValidMsg !== "" && <div className="text-sm text-red-500">{commentValidMsg}</div>}
                                 <div className="text-black">登録者</div>
                                 <div className="text-3xl text-center">
