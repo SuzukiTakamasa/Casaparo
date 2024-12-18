@@ -297,8 +297,8 @@ const TaskDetail = () => {
     return (
         <>
             {showUpdateRelatedSubTaskDialog && (
-                <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-4 rounded flex flex-col">
+                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                    <div className="bg-white p-4 rounded flex flex-col max-h-[90vh] w-[90%]">
                         <input
                             className="border p-2 text-black"
                             type="text"
@@ -308,7 +308,7 @@ const TaskDetail = () => {
                         />
                         {relatedSubTaskTitleValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskTitleValidMsg}</div>}
                         <ReactQuill
-                            className="mt-2 text-black"
+                            className="mt-2 text-black overflow-y-auto"
                             value={relatedSubTaskDescription}
                             onChange={handleSetRelatedSubTaskDescription}
                             modules={ReactQuillStyles.modules}
@@ -553,8 +553,8 @@ const TaskDetail = () => {
                 ))}
             </div>
             {showTaskCommentDialog && (
-                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                        <div className="bg-white p-4 rounded">
+                    <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                        <div className="bg-white p-4 rounded max-h-[90vh] w-[90%]">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <ReactQuill
                                     className="text-black"

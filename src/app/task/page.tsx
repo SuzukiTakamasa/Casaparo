@@ -281,8 +281,8 @@ const Task = () => {
             </GeneralPaginationProvider>
 
             {showDialog && (
-                <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-                    <div className="bg-white p-4 rounded flex flex-col">
+                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                    <div className="bg-white p-4 rounded flex flex-col max-h-[90vh] w-[90%]">
                         <input
                             className="border p-2 text-black"
                             type="text"
@@ -292,7 +292,7 @@ const Task = () => {
                         />
                         {titleValidMsg !== "" && <div className="text-sm text-red-500">{titleValidMsg}</div>}
                         <ReactQuill
-                            className="mt-2 text-black"
+                            className="mt-2 text-black overflow-y-auto"
                             value={description}
                             onChange={handleSetDescription}
                             modules={ReactQuillStyles.modules}
