@@ -54,7 +54,8 @@ const TaskDetail = () => {
 
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
 
-    const [showUpdateRelatedSubTaskDialog, setShowUpdateRelatedSubTaskDialog] = useState(false)
+    const [showRelatedSubTaskDialog, setShowRelatedSubTaskDialog] = useState(false)
+    const [isUpdateRelatedSubTask, setIsUpdateRelatedSubTask] = useState(false)
     const [relatedSubTasks, setRelatedSubTasks] = useState<TaskResponse>([])
     const [relatedSubTaskId, setRelatedSubTaskId] = useState(0)
     const [relatedSubTaskTitle, setRelatedSubTaskTitle] = useState("")
@@ -65,7 +66,7 @@ const TaskDetail = () => {
     const [relatedSubTaskCreatedByY, setRelatedSubTaskCreatedByY] = useState(false)
     const [relatedSubTaskCreatedBy, setRelatedSubTaskCreatedBy] = useState<number|null>(null)
     const [relatedSubTaskDueDate, setRelatedSubTaskDueDate] = useState("")
-    const [relatedSubTaskParentTaskId, setRelatedSubTaskParentTaskId] = useState(0)
+    const [relatedSubTaskParentTaskId, setRelatedSubTaskParentTaskId] = useState(taskDetail?.id ?? 0)
     const [relatedSubTaskVersion, setRelatedSubTaskVersion] = useState(0)
 
     const param = useSearchParams()
@@ -130,13 +131,22 @@ const TaskDetail = () => {
                 break
         }
     }
+    const handleAddRelatedSubTask = async () => {
+        if (!validateRelatedSubTask()) return
+        await addRelatedSubTask()
+        handleCloseRelatedSubTaskDialog()
+    }
     const handleUpdateRelatedSubTask = async () => {
         if (!validateRelatedSubTask()) return
         await updateRelatedSubTask()
         handleCloseRelatedSubTaskDialog()
     }
+    const handleOpenAddRelatedSubTaskDialog = () => {
+        setShowRelatedSubTaskDialog(true)
+    }
     const handleOpenUpdateRelatedSubTaskDialog = ({id, title, status, priority, description, created_by, due_date, parent_task_id, version}: TaskData) => {
-        setShowUpdateRelatedSubTaskDialog(true)
+        setShowRelatedSubTaskDialog(true)
+        setIsUpdateRelatedSubTask(true)
         setRelatedSubTaskId(id as number)
         setRelatedSubTaskTitle(title)
         setRelatedSubTaskStatus(status)
@@ -152,7 +162,8 @@ const TaskDetail = () => {
         })
     }
     const handleCloseRelatedSubTaskDialog = () => {
-        setShowUpdateRelatedSubTaskDialog(false)
+        setShowRelatedSubTaskDialog(false)
+        setIsUpdateRelatedSubTask(false)
         setRelatedSubTaskId(0)
         setRelatedSubTaskTitle("")
         setRelatedSubTaskStatus(0)
@@ -170,6 +181,21 @@ const TaskDetail = () => {
         const res = await client.get<TaskResponse>(`/v2/task/related_sub_task/${id}`)
         setRelatedSubTasks(res.data || [])
     }, [id])
+    const addRelatedSubTask = async () => {
+        const addRelatedSubTaskData = {
+            title: relatedSubTaskTitle,
+            status: relatedSubTaskStatus,
+            priority: relatedSubTaskPriority,
+            description: encodeURI(relatedSubTaskDescription),
+            created_by: relatedSubTaskCreatedBy as number,
+            updated_at: getCurrentDateTime(),
+            due_date: relatedSubTaskDueDate,
+            parent_task_id: taskDetail?.id as number,
+            version: relatedSubTaskVersion
+        }
+        await client.post<TaskData>('/v2/task/create', addRelatedSubTaskData)
+        await fetchRelatedSubTasks()
+    }
     const updateRelatedSubTask = async () => {
         const updateTaskData = {
             id: relatedSubTaskId,
@@ -296,7 +322,7 @@ const TaskDetail = () => {
 
     return (
         <>
-            {showUpdateRelatedSubTaskDialog && (
+            {showRelatedSubTaskDialog && (
                 <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
                     <div className="bg-white p-4 rounded flex flex-col max-h-[90vh] w-[90%]">
                         <input
@@ -382,14 +408,12 @@ const TaskDetail = () => {
                         <label className="text-black">
                             <span>親チケット</span>
                             <select
-                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                className="block w-full px-4 py-2 mt-2 bg-gray-500 border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
                                 value={relatedSubTaskParentTaskId}
+                                disabled={true}
                                 onChange={e => setRelatedSubTaskParentTaskId(Number(e.target.value))}
                             >
-                                <option value="0">なし</option>
-                                {relatedSubTasks.map((t, i) => (
-                                    <option key={i} value={t.id}>{`${t.id}: ${t.title}`}</option>
-                                ))}
+                                <option value={taskDetail.id}>{`${taskDetail.id}: ${taskDetail.title}`}</option>
                             </select>
                         </label>
                         <div className="text-black my-2">作成者</div>
@@ -411,9 +435,9 @@ const TaskDetail = () => {
                         <div className="flex justify-center space-x-4">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                onClick={handleUpdateRelatedSubTask}
+                                onClick={isUpdateRelatedSubTask ? handleUpdateRelatedSubTask : handleAddRelatedSubTask}
                             >
-                            変更
+                            {isUpdateRelatedSubTask ? "変更" : "登録"}
                             </button>
                             <button
                                 className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -457,12 +481,20 @@ const TaskDetail = () => {
                     </div>
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300"></div>
+                        <div className="flex justify-left">
                         <div className="mt-2 text-sm font-bold">関連サブタスク</div>
+                        <button
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 text-sm rounded mx-2 my-1"
+                            onClick={handleOpenAddRelatedSubTaskDialog}
+                        >
+                            + サブタスクを追加
+                        </button>
+                        </div>
                             {relatedSubTasks.map((relatedSubTask, i) => (
                                 <div key={i} className="flex justify-left">
                                     <div className="space-x-1 mr-4">
                                         <button
-                                            className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
                                             onClick={() => handleOpenUpdateRelatedSubTaskDialog({
                                                 id: relatedSubTask.id,
                                                 title: relatedSubTask.title,
