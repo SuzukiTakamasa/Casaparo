@@ -143,6 +143,10 @@ const TaskDetail = () => {
     }
     const handleOpenAddRelatedSubTaskDialog = () => {
         setShowRelatedSubTaskDialog(true)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
     }
     const handleOpenUpdateRelatedSubTaskDialog = ({id, title, status, priority, description, created_by, due_date, parent_task_id, version}: TaskData) => {
         setShowRelatedSubTaskDialog(true)
@@ -248,6 +252,10 @@ const TaskDetail = () => {
     }
     const handleOpenTaskCommentDialog = () => {
         setShowTaskCommentDialog(true)
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        })
     }
     const handleOpenUpdateTaskCommentDialog = ({id, created_by, comment, version}: TaskCommentData) => {
         setShowTaskCommentDialog(true)
@@ -451,7 +459,11 @@ const TaskDetail = () => {
             )}
 
             <div className="container mx-auto p-4 grid place-items-left">
-                <div className="text-xl font-bold">{taskDetail.title}</div>
+                <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 mt-1">
+                    <div className="bg-black text-white p-2">
+                        <div className="text-xl font-bold">{taskDetail.title}</div>
+                    </div>
+                </div>
                 <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 mt-1">
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300">
