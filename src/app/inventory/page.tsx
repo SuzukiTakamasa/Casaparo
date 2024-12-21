@@ -304,6 +304,19 @@ const Inventory = () => {
         setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 1, version: 1}])
         setIsExisting([...isExisting, false])
     }
+    const handleAddItemsInventoryAmountIsZero = () => {
+        setNotes([])
+        setIsExisting([])
+        const itemsInventoryAmountIsZero = inventories.filter(i => i.amount === 0)
+        if (itemsInventoryAmountIsZero.length !== 0) {
+            setNotes(itemsInventoryAmountIsZero)
+            const newIsExisting: boolean[] = []
+            for (const _ of itemsInventoryAmountIsZero) {
+                newIsExisting.push(true)
+            }
+            setIsExisting(newIsExisting)
+        }
+    }
     const handleRemoveNote = () => {
         setNotes(notes.slice(0, -1))
         setIsExisting(isExisting.slice(0, -1))
@@ -709,6 +722,12 @@ const Inventory = () => {
                                         −フォームを削除
                                         </button>
                                     </div>
+                                    <button
+                                        className="bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-2 rounded"
+                                        onClick={handleAddItemsInventoryAmountIsZero}
+                                    >
+                                    在庫なしアイテムを一括で設定
+                                    </button>
                                     <div className="text-black">登録者</div>
                                         <div className="text-3xl text-center">
                                             <input
