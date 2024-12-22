@@ -14,7 +14,7 @@ import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
-import { setUser, setStatusStr, setPriorityStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+import { convertUrlsToLinks, setUser, setStatusStr, setPriorityStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -467,7 +467,7 @@ const TaskDetail = () => {
                 <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 mt-1">
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300">
-                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(decodeURI(taskDetail.description))}} />
+                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskDetail.description)))}} />
                         </div>
                         <table className="mt-2">
                             <tbody>
@@ -561,7 +561,7 @@ const TaskDetail = () => {
                         <div className="flex justify-left space-x-2">
                             <div className="text-lg">{setUser(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(decodeURI(taskComment.comment))}} />
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskComment.comment)))}} />
                                 <div className="flex justify-right space-x-1">
                                     <button
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
