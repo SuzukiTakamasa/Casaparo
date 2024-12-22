@@ -3,6 +3,7 @@ export interface Env {
     LINE_BOT_CHANNEL_ACCESS_TOKEN: string
     WORKER_RS_BACKEND_API_HOST: string
     DATABASE_ENVIRONMENT: string
+    WORKER_RS: Fetcher
 }
 
 export interface FixedAmount {
@@ -21,29 +22,31 @@ export default class LINEMessagingAPIHandler {
     private readonly accessToken: string
     private readonly lineBotHeaders: {[key: string]: string}
     private readonly backendHeaders: {[key: string]: string}
+    private readonly workerRs
     public currentYear: number
     public currentMonth: number
 
-    constructor({WORKER_RS_BACKEND_API_HOST, LINE_BOT_CHANNEL_ACCESS_TOKEN, DATABASE_ENVIRONMENT}: Env) {
+    constructor(env: Env) {
         this.lineBotHost = "https://api.line.me/v2/bot/message"
-        this.backendHost = WORKER_RS_BACKEND_API_HOST
-        this.accessToken = LINE_BOT_CHANNEL_ACCESS_TOKEN
+        this.backendHost = env.WORKER_RS_BACKEND_API_HOST
+        this.accessToken = env.LINE_BOT_CHANNEL_ACCESS_TOKEN
         this.lineBotHeaders = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.accessToken}`
         } as const
         this.backendHeaders = {
             "Content-Type": "application/json",
-            "Environment": DATABASE_ENVIRONMENT
+            "Environment": env.DATABASE_ENVIRONMENT
         } as const
         this.currentYear = new Date().getFullYear()
         this.currentMonth = new Date().getMonth() + 1
+        this.workerRs = env.WORKER_RS
     }
 
     public async _getAPIHandler<T>(url: string, params?: string): Promise<Result<T>> {
         if (params) url += params
         try {
-            const response = await fetch(url, {
+            const response = await this.workerRs.fetch(url, {
                 method: 'GET',
                 headers: this.backendHeaders
             })
@@ -56,7 +59,7 @@ export default class LINEMessagingAPIHandler {
 
     public async _postAPIHandler<T>(url: string, endpoint: string, data: object): Promise<Result<T>> {
         try {
-            const response = await fetch(url + endpoint, {
+            const response = await this.workerRs.fetch(url + endpoint, {
                 method: 'POST',
                 headers: url === this.lineBotHost ? this.lineBotHeaders : this.backendHeaders,
                 body: JSON.stringify(data)
