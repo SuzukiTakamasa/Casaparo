@@ -168,6 +168,10 @@ const Inventory = () => {
     }
     const deleteInventory = async (deleteInventoryData: InventoryData) => {
         if (!window.confirm("在庫を削除しますか？")) return
+        if (!isUpdateInventory && deleteInventoryData.id && isYetToRegisterToInventory(deleteInventoryData.id)) {
+            setIsIncludedInYetToRegisterShoppingNoteMsg("在庫未登録の買い物メモで選択中のため削除できません。")
+            return
+        }
         await client.post<InventoryData>("/v2/inventory/delete", deleteInventoryData)
         await fetchInventories()
     }
@@ -199,15 +203,15 @@ const Inventory = () => {
         setShowShoppingNoteDialog(true)
     }
     const handleOpenUpdateShoppingNoteDialog = ({id, notes, is_registered, created_by, version}: ShoppingNoteData) => {
-        const parsed_notes = JSON.parse(notes)
+        const parsedNotes = JSON.parse(notes)
         setShowShoppingNoteDialog(true)
         setShoppingNoteId(id as number)
-        setNotes(parsed_notes)
+        setNotes(parsedNotes)
         setIsRegistered(intToBool(is_registered))
         setShoppingNoteCreatedBy(created_by)
         setShoppingNoteVersion(version)
         setIsUpdateShoppingNote(true)
-        parsed_notes.forEach((note: InventoryData, i: number)  => {
+        parsedNotes.forEach((note: InventoryData, i: number)  => {
             setIsExisting(prevIsExisting => {
                 const newIsExisting = [...prevIsExisting]
                 newIsExisting[i] = note.id !== 0
@@ -556,6 +560,7 @@ const Inventory = () => {
                             </div>
                         </div>
                     )}
+                    {!isUpdateInventory && isIncludedInYetToRegisterShoppingNoteMsg !== "" && <div className="text-sm text-red-500 text-left">{isIncludedInYetToRegisterShoppingNoteMsg}</div>}
                     <table className="table-auto min-w-full mt-4">
                         <thead>
                             <tr>

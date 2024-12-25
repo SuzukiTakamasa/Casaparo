@@ -219,13 +219,13 @@ const Setting = () => {
     }
 
     const handleAddInventoryType = async () => {
-        if (!validateInventoryType) return
+        if (!validateInventoryType()) return
         await addInventoryType()
         handleCloseInventoryTypeDialog()
     }
     const handleUpdateInventoryType = async () => {
-        if (!validateInventoryType) return
-        await updateInventoryType 
+        if (!validateInventoryType()) return
+        await updateInventoryType()
         handleCloseInventoryTypeDialog()
     }
     const handleOpenAddInventoryTypeDialog = () => {
