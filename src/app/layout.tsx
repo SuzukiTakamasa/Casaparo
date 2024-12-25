@@ -56,13 +56,13 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
             </div>
             <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 ${menuVisible ? 'block' : 'hidden'}`} onClick={toggleMenu}></div>
             <div className={`absolute inset-y-0 left-0 transform ${menuVisible ? 'translate-x-0' : '-translate-x-full'} w-64 bg-gray-800 transition duration-300 ease-in-out top-16`} style={{zIndex: 1000}}>
-              <TextLinkWithIcon path="household" icon={faHouse} text="家計簿" toggleMenuCallback={toggleMenu} />
-              <TextLinkWithIcon path="inventory" icon={faReceipt} text="在庫・買い物メモ" toggleMenuCallback={toggleMenu} />
-              <TextLinkWithIcon path="schedule" icon={faCalendar} text="スケジュール" toggleMenuCallback={toggleMenu} />
-              <TextLinkWithIcon path="statistics" icon={faChartBar} text="統計" toggleMenuCallback={toggleMenu} />
-              <TextLinkWithIcon path="task" icon={faTasks} text="タスク" toggleMenuCallback={toggleMenu} />
-              <TextLinkWithIcon path="wiki" icon={faBook} text="Wiki" toggleMenuCallback={toggleMenu} />
-              <TextLinkWithIcon path="setting" icon={faCog} text="設定" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/household" icon={faHouse} text="家計簿" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/inventory" icon={faReceipt} text="在庫・買い物メモ" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/schedule" icon={faCalendar} text="スケジュール" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/statistics" icon={faChartBar} text="統計" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/task" icon={faTasks} text="タスク" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/wiki" icon={faBook} text="Wiki" toggleMenuCallback={toggleMenu} />
+              <TextLinkWithIcon path="/setting" icon={faCog} text="設定" toggleMenuCallback={toggleMenu} />
             </div>
           </nav>
         </header>

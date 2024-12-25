@@ -107,7 +107,7 @@ export default function Home() {
             <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
             <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
             <div className="flex justify-end">
-              <TextLink path="household" text="家計簿一覧へ" />
+              <TextLink path="/household" text="家計簿一覧へ" />
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function Home() {
                 </div>
               ))}
               <div className="flex justify-end">
-                <TextLink path="schedule" text="スケジュール一覧へ" />
+                <TextLink path="/schedule" text="スケジュール一覧へ" />
               </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ export default function Home() {
               </div>
             ))}
             <div className="flex justify-end">
-              <TextLink path="inventory" text="在庫一覧へ" />
+              <TextLink path="/inventory" text="在庫一覧へ" />
             </div>
           </div>
         </div>
@@ -151,7 +151,7 @@ export default function Home() {
               </div>
             ))}
             <div className="flex justify-end">
-              <TextLink path="task" text="タスク一覧へ" />
+              <TextLink path="/task" text="タスク一覧へ" />
             </div>
           </div>
         </div>

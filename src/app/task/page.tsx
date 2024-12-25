@@ -57,6 +57,9 @@ const Task = () => {
     const [parentTaskId, setParentTaskId] = useState(0)
     const [version, setVersion] = useState(0)
 
+    const [hasChildTaskErrTxt, setHasChildTaskErrTxt] = useState("")
+    const [hasTaskCommentErrTxt, setTaskCommentErrTxt] = useState("")
+
     const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
 
     const { page } = useContext(GeneralPaginationContext)
@@ -209,6 +212,10 @@ const Task = () => {
     }
     const deleteTask = async (deletedTaskData: TaskData) => {
         if (!window.confirm("削除しますか？")) return
+        if (tasks.some(t => t.parent_task_id === deletedTaskData.id)) {
+            setHasChildTaskErrTxt("子タスクが存在するため削除できません。")
+            return
+        }
         await client.post<TaskData>('/v2/task/delete', deletedTaskData)
         await fetchTasks()
     }
@@ -409,7 +416,7 @@ const Task = () => {
                     </div>
                 </div>
             )}
-
+            {hasChildTaskErrTxt !== "" && <div className="text-sm text-red-500">{hasChildTaskErrTxt}</div>}
             <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>
