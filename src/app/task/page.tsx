@@ -45,6 +45,8 @@ const Task = () => {
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     
     const [tasks, setTasks] = useState<TaskResponse>([])
+    const [subTasks, setSubTasks] = useState<TaskResponse>([])
+
     const [id, setId] = useState(0)
     const [title, setTitle] = useState("")
     const [status, setStatus] = useState(0)
@@ -177,7 +179,8 @@ const Task = () => {
     }
     const fetchTasks = useCallback(async () => {
         const tasks = await client.get<TaskResponse>('/v2/task')
-        setTasks(tasks.data || [])
+        setTasks(tasks.data?.filter(t => t.parent_task_id === 0) || [])
+        setSubTasks(tasks.data?.filter(t => t.parent_task_id !== 0) || [])
     }, [])
     const addTask = async() => {
         const addTaskData = {
@@ -235,7 +238,6 @@ const Task = () => {
         setIsDisplayedCompletedTask(!isDisplayedCompletedTask)
     }
     const handleDisplayTasks = (task: TaskResponse) => {
-        task = task.filter(t => t.parent_task_id === 0)
         return (
             isDisplayedCompletedTask ?
             task :
@@ -428,7 +430,7 @@ const Task = () => {
                 </thead>
                 <tbody>
                     {handleFilterTasksWithPagination(handleDisplayTasks(tasks)).map((task, i) => (
-                        <tr key={i} className={`${task.status === 2 && "bg-gray-600"}`}>
+                        <tr key={i}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
@@ -466,8 +468,19 @@ const Task = () => {
                                 </button>
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">
-                                <Link href={`/task/detail?id=${task.id}`} className="text-blue-500 font-bold hover:underline">{task.title}</Link>
+                                <Link href={`/task/detail?id=${task.id}`} className={`${task.status === 2 ? "text-gray-500" : "text-blue-500"} font-bold hover:underline`}>{task.title}</Link>
                                 <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
+                                <div className="flex justify-center">
+                                    <div className="text-left">
+                                        {handleDisplayTasks(subTasks).map((subTask, i) => (
+                                            subTask.parent_task_id === task.id && (
+                                            <div key={i} className="text-sm">
+                                                └ <Link href={`/task/detail?id=${subTask.id}`} className={`${subTask.status === 2 ? "text-gray-500" : "text-blue-500"}  font-bold hover:underline`}>{`${subTask.title}`}</Link>
+                                            </div>
+                                        )
+                                        ))}
+                                    </div>
+                                </div>
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
                             <td className="border-b px-1 py-1 text-center text-xs">

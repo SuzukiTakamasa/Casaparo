@@ -540,7 +540,7 @@ const TaskDetail = () => {
                                             <TrashBoxIcon />
                                         </button>
                                     </div>
-                                    <Link href={`/task/detail?id=${relatedSubTask.id}`} className="text-sm px-1 py-1 text-blue-500 font-bold hover:underline">
+                                    <Link href={`/task/detail?id=${relatedSubTask.id}`} className={`${relatedSubTask.status === 2 ? "text-gray-500" : "text-blue-500"} text-sm px-1 py-1 font-bold hover:underline`}>
                                         {relatedSubTask.title}
                                     </Link>
                                     <div className="ml-4 text-sm px-1 py-1">{setStatusStr(relatedSubTask.status)}</div>
