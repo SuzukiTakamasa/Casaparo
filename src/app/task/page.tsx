@@ -70,6 +70,20 @@ const Task = () => {
     const numberOfDataPerPage = 10
     const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
 
+    const displaySubTasks = (subTasks: TaskResponse, parentTaskId: number) => {
+        return (
+            <>
+                {handleDisplayTasks(subTasks).map((subTask, i) => (
+                    subTask.parent_task_id === parentTaskId && (
+                    <div key={i} className="text-sm ml-4">
+                        └ <Link href={`/task/detail?id=${subTask.id}`} className={`${subTask.status === 2 ? "text-gray-500" : "text-blue-500"}  font-bold hover:underline`}>{`${subTask.title}`}</Link>
+                        {subTask.parent_task_id !== 0 && displaySubTasks(subTasks, subTask.id as number)}
+                    </div>
+                )
+                ))}
+            </>
+        )
+    }
 
     const validate = () => {
         let isValid = true
@@ -472,13 +486,7 @@ const Task = () => {
                                 <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
                                 <div className="flex justify-center">
                                     <div className="text-left">
-                                        {handleDisplayTasks(subTasks).map((subTask, i) => (
-                                            subTask.parent_task_id === task.id && (
-                                            <div key={i} className="text-sm">
-                                                └ <Link href={`/task/detail?id=${subTask.id}`} className={`${subTask.status === 2 ? "text-gray-500" : "text-blue-500"}  font-bold hover:underline`}>{`${subTask.title}`}</Link>
-                                            </div>
-                                        )
-                                        ))}
+                                        {displaySubTasks(subTasks, task.id as number)}
                                     </div>
                                 </div>
                             </td>
