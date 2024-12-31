@@ -77,7 +77,7 @@ const Task = () => {
                     subTask.parent_task_id === parentTaskId && (
                     <div key={i} className="text-sm ml-4">
                         └ <Link href={`/task/detail?id=${subTask.id}`} className={`${subTask.status === 2 ? "text-gray-500" : "text-blue-500"}  font-bold hover:underline`}>{`${subTask.title}`}</Link>
-                        {subTask.parent_task_id !== 0 && displaySubTasks(subTasks, subTask.id as number)}
+                        {displaySubTasks(subTasks, subTask.id as number)}
                     </div>
                 )
                 ))}
