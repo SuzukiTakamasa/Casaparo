@@ -307,6 +307,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/task_comment/:task_id", |_req, ctx| async move {
             ctx.data.task_comment_controller.get_task_comments_by_task_id(&ctx).await
         })
+        .get_async("/v2/task_comment/has_comments/:task_id", |_req, ctx| async move {
+            ctx.data.task_comment_controller.has_comments(&ctx).await
+        })
         .post_async("/v2/task_comment/create", |mut req, ctx| async move {
             ctx.data.task_comment_controller.create_task_comment(&mut req).await
         })

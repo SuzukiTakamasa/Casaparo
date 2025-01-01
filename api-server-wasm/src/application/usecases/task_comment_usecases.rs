@@ -1,4 +1,4 @@
-use crate::domain::entities::task::TaskComments;
+use crate::domain::entities::task::{TaskComments, HasTaskComments};
 use crate::domain::repositories::task_comment_repository::TaskCommentRepository;
 use worker::Result;
 
@@ -16,15 +16,26 @@ impl<R: TaskCommentRepository> TaskCommentUsecases<R> {
         self.repository.get_task_comments_by_task_id(task_id).await
     }
 
-    pub async fn create_task_comment(&self, label: &TaskComments) -> Result<()> {
-        self.repository.create_task_comment(label).await
+    pub async fn has_comments(&self, id: u32) -> Result<HasTaskComments> {
+        match self.repository.get_task_comments_by_task_id(id).await {
+            Ok(comments) => {
+                Ok(HasTaskComments { has_comments: !comments.is_empty() })
+            }
+            Err(_) => {
+                Ok(HasTaskComments { has_comments: false })
+            }
+        }
     }
 
-    pub async fn update_task_comment(&self, label: &mut TaskComments) -> Result<()> {
-        self.repository.update_task_comment(label).await
+    pub async fn create_task_comment(&self, task_comment: &TaskComments) -> Result<()> {
+        self.repository.create_task_comment(task_comment).await
     }
 
-    pub async fn delete_task_comment(&self, label: &mut TaskComments) -> Result<()> {
-        self.repository.delete_task_comment(label).await
+    pub async fn update_task_comment(&self, task_comment: &mut TaskComments) -> Result<()> {
+        self.repository.update_task_comment(task_comment).await
+    }
+
+    pub async fn delete_task_comment(&self, task_comment: &mut TaskComments) -> Result<()> {
+        self.repository.delete_task_comment(task_comment).await
     }
 }

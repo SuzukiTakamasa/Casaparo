@@ -11,7 +11,7 @@ import { MonthContext } from '@components/MonthPaginator'
 import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
 
 import APIClient from '@utils/api_client'
-import { TaskData, TaskResponse } from '@/app/utils/interfaces'
+import { TaskData, TaskResponse, HasTaskComments } from '@/app/utils/interfaces'
 import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
          splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
@@ -233,6 +233,14 @@ const Task = () => {
             setHasChildTaskErrTxt("子タスクが存在するため削除できません。")
             return
         }
+        const hasTaskComments = await client.get<HasTaskComments>(`/v2/task_comment/has_comments/${deletedTaskData.id}`)
+        if (hasTaskComments.data !== null && hasTaskComments.data.has_comments) {
+            setTaskCommentErrTxt("コメントが存在するため削除できません。")
+            return
+        } else if (hasTaskComments.data === null) {
+            setTaskCommentErrTxt("コメントの存在を確認できませんでした。")
+            return
+        }
         await client.post<TaskData>('/v2/task/delete', deletedTaskData)
         await fetchTasks()
     }
@@ -433,6 +441,7 @@ const Task = () => {
                 </div>
             )}
             {hasChildTaskErrTxt !== "" && <div className="text-sm text-red-500">{hasChildTaskErrTxt}</div>}
+            {hasTaskCommentErrTxt !== "" && <div className="text-sm text-red-500">{hasTaskCommentErrTxt}</div>}
             <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>
