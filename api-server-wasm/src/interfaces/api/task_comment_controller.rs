@@ -25,6 +25,16 @@ impl<R: TaskCommentRepository> TaskCommentController<R> {
         Response::from_json(&result)
     }
 
+    pub async fn has_comments(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let id = ctx.param("id").unwrap();
+        let id_as_u32: u32 = id.parse().unwrap();
+        let result = match self.usecases.has_comments(id_as_u32).await {
+            Ok(has_comments) => has_comments,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        Response::from_json(&result)
+    }
+
     pub async fn create_task_comment(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,

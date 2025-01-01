@@ -153,6 +153,10 @@ export interface TaskCommentData {
     version: number
 }
 
+export interface HasTaskComments {
+    has_comments: boolean
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -196,7 +200,8 @@ export type APIRequest = HouseholdData |
                       ShoppingNoteData |
              ExtractedShoppingNoteData |
                               TaskData |
-                       TaskCommentData
+                       TaskCommentData |
+                       HasTaskComments
 
 export type APIResponse = HouseholdResponse |
                            ScheduleResponse |

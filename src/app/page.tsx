@@ -82,7 +82,9 @@ export default function Home() {
     fetchInventories()
 
     fetchIsCompletedCurrentMonth()
-    fetchIsCompletedLastMonth()
+    if (month !== 1) {
+      fetchIsCompletedLastMonth()
+    }
    }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories, fetchTasks, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
 
   return (
