@@ -26,7 +26,7 @@ impl<R: TaskCommentRepository> TaskCommentController<R> {
     }
 
     pub async fn has_comments(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
-        let id = ctx.param("id").unwrap();
+        let id = ctx.param("task_id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
         let result = match self.usecases.has_comments(id_as_u32).await {
             Ok(has_comments) => has_comments,

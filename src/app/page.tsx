@@ -68,7 +68,13 @@ export default function Home() {
     }
   }, [])
   const fetchIsCompletedLastMonth = useCallback(async () => {
-    const isCompletedLastMonth = await client.get<IsCompleted>(`/v2/completed_household/${year}/${month - 1}`)
+    let pathParams = ""
+    if (month === 1) {
+      pathParams = `${year - 1}/12`
+    } else {
+      pathParams = `${year}/${month - 1}`
+    }
+    const isCompletedLastMonth = await client.get<IsCompleted>(`/v2/completed_household/${pathParams}`)
     if (isCompletedLastMonth.data) {
       setIsCompletedLastMonth(isCompletedLastMonth.data.is_completed)
     }
@@ -82,9 +88,7 @@ export default function Home() {
     fetchInventories()
 
     fetchIsCompletedCurrentMonth()
-    if (month !== 1) {
-      fetchIsCompletedLastMonth()
-    }
+    fetchIsCompletedLastMonth()
    }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories, fetchTasks, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
 
   return (
@@ -97,7 +101,7 @@ export default function Home() {
             {isCompletedLastMonth === 0 &&
             <div className="flex justify-center bg-red-700">
               <ExclamationTriangleIcon/>
-            <p>{`${month - 1}月の家計簿がまだ確定されていません。`}</p>
+            <p>{`${month === 1 ? `(${year - 1}年)12` : month - 1}月の家計簿がまだ確定されていません。`}</p>
             </div>
             }
             {(isCompletedCurrentMonth === 0 && today >= 25) &&
