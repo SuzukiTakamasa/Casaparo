@@ -1,5 +1,5 @@
 import { createContext, useContext, ReactNode } from 'react'
-import { ChevronLeftIcon, ChevronRightIcon } from './HeroicIcons'
+import { ChevronLeftIcon, ChevronRightIcon } from './Heroicons'
 
 export type GeneralPaginationContextType = {
     page: number

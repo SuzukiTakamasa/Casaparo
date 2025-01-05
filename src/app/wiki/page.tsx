@@ -8,7 +8,7 @@ import ReactMarkdown from 'react-markdown'
 import dynamic from 'next/dynamic'
 
 import { WikiData, WikiResponse } from '@/app/utils/interfaces'
-import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
 import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'

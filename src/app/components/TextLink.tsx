@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRightStartToIcon } from './HeroicIcons'
+import { ArrowRightStartToIcon } from './Heroicons'
 
 type TextLinkProps = {
     path: string,

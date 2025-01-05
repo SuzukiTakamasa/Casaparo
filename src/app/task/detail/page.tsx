@@ -10,7 +10,7 @@ import DOMPurify from 'dompurify'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon, BackButtonIcon } from '@/app/components/Heroicons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
@@ -456,6 +456,22 @@ const TaskDetail = () => {
                         </div>  
                     </div>
                 </div>
+            )}
+
+            <Link href="/task" className="text-blue-500 text-sm font-bold hover:underline">
+                <div className="flex items-center mt-2">
+                    <BackButtonIcon />
+                    <span className="ml-2">タスク一覧に戻る</span>
+                </div>
+            </Link>
+
+            {taskDetail.parent_task_id !== 0 && (
+                <Link href={`/task/detail?id=${taskDetail.parent_task_id}`} className="text-blue-500 text-sm font-bold hover:underline">
+                    <div className="flex items-center mt-2">
+                        <BackButtonIcon />
+                        <span className="ml-2">1つ上の親タスクに戻る</span>
+                    </div>
+                </Link>
             )}
 
             <div className="container mx-auto p-4 grid place-items-left">

@@ -5,8 +5,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import DOMPurify from 'dompurify'
 import APIClient from '@utils/api_client'
+import { BackButtonIcon } from '@/app/components/Heroicons'
 import { WikiData } from '@/app/utils/interfaces'
 import { convertUrlsToLinks } from '@/app/utils/utility_function'
 
@@ -31,6 +33,12 @@ const WikiDetail = () => {
     
     return (
         <>
+            <Link href="/wiki" className="flex items-center text-blue-500 hover:text-blue-600">
+                <div className="flex items-center mt-2">
+                    <BackButtonIcon />
+                    <span className="ml-2">Wiki一覧に戻る</span>
+                </div>
+            </Link>
             <div className="container mx-auto p-4 grid place-items-left">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
                 {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} alt={wikiDetail.title} />}

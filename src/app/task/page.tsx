@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse, HasTaskComments } from '@/app/utils/interfaces'
