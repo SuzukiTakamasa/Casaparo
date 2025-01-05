@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
-import { PencilIcon, TrashBoxIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
 import APIClient from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 

@@ -8,7 +8,7 @@ import APIClient from '@utils/api_client'
 import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@/app/utils/interfaces'
 
 import { setUser, boolToInt, intToBool } from '@utils/utility_function'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 
 

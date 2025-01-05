@@ -13,7 +13,7 @@ import APIClient from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
-import { ExclamationTriangleIcon } from '@components/HeroicIcons'
+import { ExclamationTriangleIcon } from '@/app/components/Heroicons'
 
 
 const client = new  APIClient()

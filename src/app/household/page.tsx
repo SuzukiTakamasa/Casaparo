@@ -9,7 +9,7 @@ import YearPicker from '@components/YearPicker'
 import TextLink from '@components/TextLink'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@components/HeroicIcons'
+import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@/app/components/Heroicons'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
