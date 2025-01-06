@@ -458,18 +458,18 @@ const TaskDetail = () => {
                 </div>
             )}
 
-            <Link href="/task" className="text-blue-500 text-sm font-bold hover:underline">
+            <Link href="/task" className="text-blue-500 font-bold hover:underline [-webkit-tap-highlight-color:transparent]">
                 <div className="flex items-center mt-2">
                     <BackButtonIcon />
-                    <span className="ml-2">タスク一覧に戻る</span>
+                    <span className="ml-2">タスク一覧へ</span>
                 </div>
             </Link>
 
             {taskDetail.parent_task_id !== 0 && (
-                <Link href={`/task/detail?id=${taskDetail.parent_task_id}`} className="text-blue-500 text-sm font-bold hover:underline">
+                <Link href={`/task/detail?id=${taskDetail.parent_task_id}`} className="text-blue-500 font-bold hover:underline [-webkit-tap-highlight-color:transparent]">
                     <div className="flex items-center mt-2">
                         <BackButtonIcon />
-                        <span className="ml-2">1つ上の親タスクに戻る</span>
+                        <span className="ml-2">1つ上の親タスクへ</span>
                     </div>
                 </Link>
             )}
