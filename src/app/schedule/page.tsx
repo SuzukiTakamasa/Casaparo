@@ -594,7 +594,7 @@ const Schedule = () => {
                                         value={fromTime}
                                         onChange={e => {
                                             setFromTime(e.target.value)
-                                            if (!validateFromTimeAndToTime(e.target.value, toTime)) {
+                                            if (!(validateFromTimeAndToTime(e.target.value, toTime) || isMultipleDays)) {
                                                 setToTime(e.target.value)
                                             }
                                         }}
