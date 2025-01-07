@@ -592,7 +592,12 @@ const Schedule = () => {
                                     <select
                                         className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
                                         value={fromTime}
-                                        onChange={e => setFromTime(e.target.value)}
+                                        onChange={e => {
+                                            setFromTime(e.target.value)
+                                            if (!validateFromTimeAndToTime(e.target.value, toTime)) {
+                                                setToTime(e.target.value)
+                                            }
+                                        }}
                                     >
                                         {getTimeArray().map((t, i) => (
                                             <option key={i} value={t}>{t}</option>

@@ -9,8 +9,8 @@
  */
 
 export interface Env {
-	CASAPARO: R2Bucket
-	CASAPARO_DEV: R2Bucket
+	CASAPARO?: R2Bucket
+	CASAPARO_DEV?: R2Bucket
 	R2_WORKER_HOST: string
 }
 
@@ -32,8 +32,8 @@ export default {
 				{ headers: corsHeaders })
 		}
 
-		const isDev = request.headers.get('Environment') === 'DB_DEV' 
-		const bucketName: R2Bucket = isDev ? env.CASAPARO_DEV : env.CASAPARO
+		const bucketName = env.CASAPARO_DEV ? env.CASAPARO_DEV : env.CASAPARO
+		if (!bucketName) return new Response('Bucket not found', { status: 500 })
 
 		if (request.url.endsWith('/upload') && request.method === 'POST') {
 			try {
