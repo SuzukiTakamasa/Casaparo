@@ -54,6 +54,17 @@ class APIClient {
             return { data: null, error: String(e) }
         }
     }
+    public async getImage(fileName: string): Promise<R2Response> {
+        const headers = {
+            'Content-Type': 'application/octet-stream',
+            'Environemnt': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
+        } as const
+        const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/${fileName}`, {
+            method: 'GET',
+            headers: headers
+        })
+        return await res.json()
+    }
     public async upload(file: File): Promise<R2Response> {
         const headers = {
             'Content-Type': 'application/octet-stream',
