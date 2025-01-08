@@ -26,6 +26,8 @@ const Wiki = () => {
     const [titleValidMsg, setTitleValidMsg] = useState("")
     const [contentValidMsg, setContentValidMsg] = useState("")
 
+    const [imageFetchErrTxt, setImageFetchErrTxt] = useState("")
+
     const [wikis, setWikis] = useState<WikiResponse>([])
     const [id, setId] = useState(0)
     const [title, setTitle] = useState("")
@@ -84,6 +86,7 @@ const Wiki = () => {
         setIsUpdate(false)
         setTitleValidMsg("")
         setContentValidMsg("")
+        setImageFetchErrTxt("")
     }
     const handleShowPreview = () => {
         setShowPreview(!showPreview)
@@ -141,7 +144,7 @@ const Wiki = () => {
         if (response.hasOwnProperty("image_url")) {
             setImageUrl(response.image_url)
         } else {
-            console.log(response)
+            setImageFetchErrTxt("画像のアップロードに失敗しました。")
         }
     }
     const handleDeleteFile = async(fileName: string) => {
@@ -153,7 +156,7 @@ const Wiki = () => {
                 await updateImageUrlEmpty()
             }
         } else {
-            console.log(response)
+            setImageFetchErrTxt("画像の削除に失敗しました。")
         }
     }
 

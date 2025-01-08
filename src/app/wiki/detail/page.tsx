@@ -33,15 +33,15 @@ const WikiDetail = () => {
     
     return (
         <>
-            <Link href="/wiki" className="flex items-center text-blue-500 hover:text-blue-600">
+            <Link href="/wiki" className="text-blue-500 font-bold hover:underline [-webkit-tap-highlight-color:transparent]">
                 <div className="flex items-center mt-2">
                     <BackButtonIcon />
-                    <span className="ml-2">Wiki一覧に戻る</span>
+                    <span className="ml-2">Wiki一覧へ</span>
                 </div>
             </Link>
             <div className="container mx-auto p-4 grid place-items-left">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
-                {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} alt={wikiDetail.title} />}
+                {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} width={250} height={250} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
                     <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(wikiDetail.content)))}} />
                 </div>
