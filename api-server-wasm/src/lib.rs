@@ -47,14 +47,6 @@ use crate::application::usecases::task_comment_usecases::TaskCommentUsecases;
 use crate::interfaces::api::task_comment_controller::TaskCommentController;
 
 
-fn get_db_env(req: &Request) -> Result<String> {
-    let header_name = "Environment"; 
-    match req.headers().get(header_name)? {
-        Some(value) => Ok(value),
-        None => Err(worker::Error::RustError(format!("Failed to get {} value", header_name))),
-    }
-}
-
 pub struct AppState {
     household_controller: HouseholdController<D1HouseholdRepository>,
     schedule_controller: ScheduleController<D1ScheduleRepository>,
@@ -89,7 +81,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             .map(|resp| resp.with_headers(headers))
     }
 
-    let db_str = get_db_env(&req)?;
+    let db_str = env.secret("D1_DATABASE_BINDING")?.to_string();
     let db = Arc::new(env.d1(db_str.as_str())?);
 
     let household_repository = D1HouseholdRepository::new(db.clone());
