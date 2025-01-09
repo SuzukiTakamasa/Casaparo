@@ -22,7 +22,6 @@ class APIClient {
         this.host = process.env.NEXT_PUBLIC_BACKEND_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
-            'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         } as const
     }
     public async get<T extends APIRequest | APIResponse>(endpoint: string, params?: string): Promise<Result<T>> {
@@ -57,7 +56,6 @@ class APIClient {
     public async upload(file: File): Promise<R2Response> {
         const headers = {
             'Content-Type': 'application/octet-stream',
-            'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         } as const
         const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/upload`, {
             method: 'POST',
@@ -69,7 +67,6 @@ class APIClient {
     public async delete(fileName: string): Promise<R2Response> {
         const headers = {
             'Content-Type': 'application/octet-stream',
-            'Environment': process.env.NEXT_PUBLIC_DATABASE_ENVIRONMENT as string
         } as const
         const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/delete`, {
             method: 'POST',
