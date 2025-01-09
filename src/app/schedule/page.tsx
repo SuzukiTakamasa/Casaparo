@@ -170,7 +170,7 @@ const Schedule = () => {
                         isDisplayed(schedule) &&
                         <button 
                             key={i}
-                            className="bg-blue-600 hover:bg-blue-800 text-white py-1 px-2 rounded-full"
+                            className="bg-blue-600 hover:bg-blue-800 text-white py-1 px-2 m-1 rounded-full"
                             onClick={() => handleOpenUpdateDialog({
                                 id: schedule.id,
                                 description: schedule.description,
@@ -194,7 +194,7 @@ const Schedule = () => {
                         isAnniversary(anniversary) &&
                         <button
                             key={i}
-                            className="bg-orange-600 hover:bg-orange-800 text-white py-1 px-2 rounded-full"
+                            className="bg-orange-600 hover:bg-orange-800 text-white py-1 px-2 m-1 rounded-full"
                         >
                             {anniversary.description}
                         </button>
