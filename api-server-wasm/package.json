@@ -12,7 +12,12 @@
 		"dump-completed_households": "wrangler d1 execute casaparo --command \"SELECT * FROM completed_households\" > ./dumps/dump_completed_households.json",
 		"dump-wikis": "wrangler d1 execute casaparo --command \"SELECT * FROM wikis\" > ./dumps/dump_wikis.json",
 		"dump-labels": "wrangler d1 execute casaparo --command \"SELECT * FROM labels\" > ./dumps/dump_labels.json",
-		"dump-anniversaries": "wrangler d1 execute casaparo --command \"SELECT * FROM anniversaries\" > ./dumps/dump_anniversaries.json"
+		"dump-anniversaries": "wrangler d1 execute casaparo --command \"SELECT * FROM anniversaries\" > ./dumps/dump_anniversaries.json",
+		"dump-tasks": "wrangler d1 execute casaparo --command \"SELECT * FROM tasks\" > ./dumps/dump_tasks.json",
+		"dump-task_comment": "wrangler d1 execute casaparo --command \"SELECT * FROM task_comments\" > ./dumps/dump_task_comments.json",
+		"dump-inventory": "wrangler d1 execute casaparo --command \"SELECT * FROM inventories\" > ./dumps/dump_inventories.json",
+		"dump-inventory_type": "wrangler d1 execute casaparo --command \"SELECT * FROM inventory_types\" > ./dumps/dump_inventory_types.json",
+		"dump-shopping_note": "wrangler d1 execute casaparo --command \"SELECT * FROM shopping_notes\" > ./dumps/dump_shopping_notes.json"
 	},
 	"devDependencies": {
 		"wrangler": "^3.1.2"
