@@ -2,7 +2,6 @@
 export interface Env {
     LINE_BOT_CHANNEL_ACCESS_TOKEN: string
     WORKER_RS_BACKEND_API_HOST: string
-    DATABASE_ENVIRONMENT: string
     WORKER_RS: Fetcher
 }
 
@@ -36,7 +35,6 @@ export default class LINEMessagingAPIHandler {
         } as const
         this.backendHeaders = {
             "Content-Type": "application/json",
-            "Environment": env.DATABASE_ENVIRONMENT
         } as const
         this.currentYear = new Date().getFullYear()
         this.currentMonth = new Date().getMonth() + 1
