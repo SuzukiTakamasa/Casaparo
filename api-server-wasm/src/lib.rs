@@ -64,13 +64,14 @@ pub struct AppState {
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     /*let allowed_origins = vec![
-        env.var("CORS_FRONTEND_HOST_DEV")?.to_string(),
-        env.var("CORS_FRONTEND_HOST_PROD_DEFAULT")?.to_string(),
-        env.var("CORS_FRONTEND_HOST_PROD_LINE_BOT")?.to_string(),
-    ];
-    let allowed_origins_str = allowed_origins.join("\0");*/
+        env.secret("CORS_LOCALHOST")?.to_string(),
+        env.secret("CORS_FRONTEND_HOST")?.to_string(),
+        env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
+        env.secret("CORS_LINE_R2_HOST")?.to_string(),
+    ];*/
 
     let mut headers = Headers::new();
+
     headers.set("Access-Control-Allow-Origin", "*")?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
