@@ -42,7 +42,7 @@ impl InventoryTypeRepository for D1InventoryTypeRepository {
     }
 
     async fn update_inventory_type(&self, inventory_type: &mut InventoryTypes) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from InventoryTypes where id = ?1");
+        let fetch_version_statement = self.db.prepare("select version from inventory_types where id = ?1");
         let fetch_version_query = fetch_version_statement.bind(&[inventory_type.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
