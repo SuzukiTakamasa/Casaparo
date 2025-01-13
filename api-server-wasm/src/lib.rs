@@ -63,16 +63,16 @@ pub struct AppState {
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
-    let allowed_origins = vec![
-        env.secret("CORS_LOCALHOST")?.to_string(), //only for dev
+    /*let allowed_origins = vec![
+        env.secret("CORS_LOCALHOST")?.to_string(),
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
         env.secret("CORS_LINE_R2_HOST")?.to_string(),
-    ];
+    ];*/
 
     let mut headers = Headers::new();
 
-    headers.set("Access-Control-Allow-Origin", &allowed_origins.join(", "))?;
+    headers.set("Access-Control-Allow-Origin", "*")?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
     headers.set("Access-Control-Max-Age", "86400")?;
