@@ -71,13 +71,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     ];
 
     let mut headers = Headers::new();
-    let origin = req.headers().get("Origin")?.unwrap_or_default();
 
-    if allowed_origins.contains(&origin) {
-        headers.set("Access-Control-Allow-Origin", &origin)?;
-    } else {
-        return Response::error("Not allowed origin", 403);
-    }
+    headers.set("Access-Control-Allow-Origin", &allowed_origins.join(", "))?;
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
     headers.set("Access-Control-Max-Age", "86400")?;
