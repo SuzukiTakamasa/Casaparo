@@ -15,6 +15,7 @@ import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, 
 import { formatNumberWithCommas } from '@utils/utility_function'
 import APIClient from '@utils/api_client'
 import { setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { DEFAULT_MIN_VERSION } from 'node:tls'
 
 
 const client = new APIClient()
@@ -40,7 +41,10 @@ const Household = () => {
     const [isDefault, setIsDefault] = useState(false)
     const [isOwner, setIsOwner] = useState(1)
     const [version, setVersion] = useState(1)
+
     const [billingAmount, setBillingAmount] = useState(0)
+    const [totalAmount, setTotalAmount] = useState(0)
+
     const [isCompleted, setIsCompleted] = useState(0)
     const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
 
@@ -164,10 +168,13 @@ const Household = () => {
         })
         setBillingAmount(balance)
     }, [households])
+    const calculateTotalAmount = useCallback(() => {
+        let balance = 0
+        households.forEach(household => balance += household.amount)
+        setTotalAmount(balance)
+    }, [households])
     const handleAddCompletedHousehold = async () => {
         if (!window.confirm("家計簿を確定しますか？")) return
-        let totalAmount = 0
-        households.forEach(household => totalAmount += household.amount)
         let detailArray = []
         for await (let household of households) {
             detailArray.push({ name: household.name, amount: household.amount} as Detail)
@@ -190,7 +197,8 @@ const Household = () => {
 
     useEffect(() => {
         calculateBillingAmount()
-    }, [calculateBillingAmount])
+        calculateTotalAmount()
+    }, [calculateBillingAmount, calculateTotalAmount])
 
 
     return (
@@ -223,13 +231,17 @@ const Household = () => {
                 (householdYear < year ||
                 (householdYear === year && householdMonth < month) ||
                 (householdYear === year && householdMonth === month && today >= 25)) &&
-                <div className="flex justify-center">
-                <button
-                    className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
-                    onClick={handleAddCompletedHousehold}
-                >
-                    確定
-                </button>
+                <div>
+                    <div className="flex justify-center">
+                        <button
+                            className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
+                            onClick={handleAddCompletedHousehold}
+                        >
+                            確定
+                        </button>
+                    </div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(billingAmount)}</div>
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(totalAmount)}</div>
                 </div>
                 }
 
