@@ -69,7 +69,7 @@ const Wiki = () => {
         setShowDialog(true)
         setId(id as number)
         setTitle(title)
-        setContent(content)
+        setContent(decodeURI(content))
         setCreatedBy(created_by)
         setImageUrl(image_url)
         setVersion(version)
@@ -227,6 +227,7 @@ const Wiki = () => {
                                 </button>
                             </div>
                             }
+                            {imageFetchErrTxt !== "" && <div className="text-sm text-red-500">{imageFetchErrTxt}</div>}
                             <button
                                 className="aria-label text-black text-left"
                                 onClick={handleShowPreview}
