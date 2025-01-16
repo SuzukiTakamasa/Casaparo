@@ -41,7 +41,7 @@ const WikiDetail = () => {
             </Link>
             <div className="container mx-auto p-4 grid place-items-left">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
-                {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} width={250} height={250} alt={wikiDetail.title} />}
+                {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} width={150} height={150} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
                     <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(wikiDetail.content)))}} />
                 </div>

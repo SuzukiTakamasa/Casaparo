@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS images;
+CREATE TABLE images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    url TEXT NOT NULL,
+    entity INTEGER NOT NULL,
+    related_entity_id INTEGER NOT NULL,
+    version INTEGER NOT NULL
+);
