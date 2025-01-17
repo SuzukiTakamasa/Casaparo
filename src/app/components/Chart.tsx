@@ -1,6 +1,6 @@
-import { Line } from 'react-chartjs-2'
+import { Line, Pie } from 'react-chartjs-2'
 import { Chart, registerables } from "chart.js"
-import { HouseholdMonthlySummaryResponse } from "@/app/utils/interfaces"
+import { HouseholdResponse, HouseholdMonthlySummaryResponse } from "@/app/utils/interfaces"
 
 Chart.register(...registerables)
 
@@ -8,7 +8,11 @@ type LineChartComponentProps = {
     expenses: HouseholdMonthlySummaryResponse
 }
 
-const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
+type PieChartComponentProps = {
+    household: HouseholdResponse
+}
+
+export const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
     const labels: string[] = expenses.map( e => `${e.month}月`)
     const datasets_total_amount: number[] = expenses.map( e => e.total_amount)
     const datasets_billing_amount: number[] = expenses.map( e => e.billing_amount)
@@ -65,4 +69,44 @@ const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
     return <Line data={data} options={options} />
 }
 
-export default LineChartComponent
+export const PieChartComponent = ({ household }: PieChartComponentProps) => {
+    const backgroundColors = [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+      ]
+      
+    const borderColors = [
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)',
+    ]
+
+    const labels = household.map(h => h.name)
+    const dataValues = household.map(h => h.amount)
+    const month = household[0].month
+
+    const backgroundColor = household.map((_, i) => backgroundColors[i > backgroundColors.length - 1 ? i - backgroundColors.length - 1 : 1])
+    const backColor = household.map((_, i) => borderColors[i > borderColors.length - 1 ? i - borderColors.length - 1 : 1])
+
+    const data = {
+        labels: labels,
+        datasets: [
+            {
+            label: `${month}月の家計簿`,
+            data: dataValues,
+            backgroundColor: backgroundColor,
+            borderColor: backColor,
+            borderWidth: 1,
+            },
+        ],
+    }
+
+    return <Pie data={data} />
+}
