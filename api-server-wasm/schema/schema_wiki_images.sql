@@ -3,5 +3,6 @@ CREATE TABLE images (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     url TEXT NOT NULL,
     wiki_id INTEGER NOT NULL,
-    version INTEGER NOT NULL
+    version INTEGER NOT NULL,
+    FOREIGN KEY (wiki_id) REFERENCES wikis(id) ON DELETE CASCADE
 );

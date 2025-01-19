@@ -18,6 +18,10 @@ use crate::infrastructure::repositories::d1_wiki_repository::D1WikiRepository;
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::interfaces::api::wiki_controller::WikiController;
 
+use crate::infrastructure::repositories::d1_wiki_image_repository::D1WikiImageRepository;
+use crate::application::usecases::wiki_image_usecases::WikiImageUsecases;
+use crate::interfaces::api::wiki_image_controller::WikiImageController;
+
 use crate::infrastructure::repositories::d1_label_repository::D1LabelRepository;
 use crate::application::usecases::label_usecases::LabelUsecases;
 use crate::interfaces::api::label_controller::LabelController;
@@ -51,6 +55,7 @@ pub struct AppState {
     household_controller: HouseholdController<D1HouseholdRepository>,
     schedule_controller: ScheduleController<D1ScheduleRepository>,
     wiki_controller: WikiController<D1WikiRepository>,
+    wiki_image_controller: WikiImageController<D1WikiImageRepository>,
     label_controller: LabelController<D1LabelRepository>,
     anniversary_controller: AnniversaryController<D1AnniversaryRepository>,
     inventory_controller: InventoryController<D1InventoryRepository>,
@@ -97,6 +102,10 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let wiki_usecases = WikiUsecases::new(wiki_repository);
     let wiki_controller = WikiController::new(wiki_usecases);
 
+    let wiki_image_repository = D1WikiImageRepository::new(db.clone());
+    let wiki_image_usecases = WikiImageUsecases::new(wiki_image_repository);
+    let wiki_image_controller = WikiImageController::new(wiki_image_usecases);
+
     let label_repository = D1LabelRepository::new(db.clone());
     let label_usecases = LabelUsecases::new(label_repository);
     let label_controller = LabelController::new(label_usecases);
@@ -129,6 +138,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         household_controller,
         schedule_controller,
         wiki_controller,
+        wiki_image_controller,
         label_controller,
         anniversary_controller,
         inventory_controller,
@@ -199,6 +209,16 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/wiki/delete", |mut req, ctx| async move {
             ctx.data.wiki_controller.delete_wiki(&mut req).await
+        })
+     //wiki_image
+        .get_async("/v2/wiki_image/:id", |_req, ctx| async move {
+            ctx.data.wiki_image_controller.get_wiki_images_by_id(&ctx).await
+        })
+        .post_async("/v2/wiki_image/create", |mut req, ctx| async move {
+            ctx.data.wiki_image_controller.create_wiki_image(&mut req).await
+        })
+        .post_async("/v2/wiki_image/delete", |mut req, ctx| async move {
+            ctx.data.wiki_image_controller.delete_wiki_image(&mut req).await
         })
      //label
         .get_async("/v2/label", |_req, ctx| async move {
