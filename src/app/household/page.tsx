@@ -15,7 +15,6 @@ import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, 
 import { formatNumberWithCommas } from '@utils/utility_function'
 import APIClient from '@utils/api_client'
 import { setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
-import { DEFAULT_MIN_VERSION } from 'node:tls'
 
 
 const client = new APIClient()

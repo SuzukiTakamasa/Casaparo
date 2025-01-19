@@ -3,7 +3,7 @@
 //export const runtime = 'edge'
 
 import React, { useState, useContext, useCallback, useEffect } from 'react'
-import LineChartComponent from '@components/Chart'
+import { LineChartComponent } from '@components/Chart'
 import Loader from '@components/Loader'
 
 import { YearProvider, YearContext } from '@components/YearPicker'

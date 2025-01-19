@@ -8,7 +8,7 @@ export const formatNumberWithCommas = (number: number): string => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 }
 
-export const convertUrlsToLinks = (text: string) => {
+export const convertUrlsToLinks = (text: string): string => {
     const urlRegex = /https?:\/\/[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/g
     return text.replace(urlRegex, (url) => {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">${url}</a>`;
@@ -105,10 +105,10 @@ export const isUnsignedInteger = (intStr: string): boolean => {
     return /^\d+$/.test(intStr)
 }
 
-const sliceHour = (timeStr: string) => { return Number(timeStr.split(":")[0]) } 
-const sliceMinute = (timeStr: string) => { return Number(timeStr.split(":")[1]) }
+const sliceHour = (timeStr: string): number => { return Number(timeStr.split(":")[0]) } 
+const sliceMinute = (timeStr: string): number => { return Number(timeStr.split(":")[1]) }
 
-export const validateFromTimeAndToTime = (fromTimeStr: string, toTimeStr: string) => {
+export const validateFromTimeAndToTime = (fromTimeStr: string, toTimeStr: string): boolean => {
     let isValid = true
     if (sliceHour(fromTimeStr) > sliceHour(toTimeStr)) {
         isValid = false
