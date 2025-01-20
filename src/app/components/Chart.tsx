@@ -92,8 +92,11 @@ export const PieChartComponent = ({ household }: PieChartComponentProps) => {
     const dataValues = household.map(h => h.amount)
     const month = household[0].month
 
-    const backgroundColor = household.map((_, i) => backgroundColors[i > backgroundColors.length - 1 ? i - backgroundColors.length - 1 : 1])
-    const backColor = household.map((_, i) => borderColors[i > borderColors.length - 1 ? i - borderColors.length - 1 : 1])
+    const backgroundColorLastIndex = backgroundColors.length - 1
+    const borderColorLastIndex = borderColors.length - 1
+
+    const backgroundColor = household.map((_, i) => backgroundColors[i > backgroundColorLastIndex ? i - backgroundColorLastIndex : i])
+    const borderColor = household.map((_, i) => borderColors[i > borderColorLastIndex ? i - borderColorLastIndex : i])
 
     const data = {
         labels: labels,
@@ -102,7 +105,7 @@ export const PieChartComponent = ({ household }: PieChartComponentProps) => {
             label: `${month}月の家計簿`,
             data: dataValues,
             backgroundColor: backgroundColor,
-            borderColor: backColor,
+            borderColor: borderColor,
             borderWidth: 1,
             },
         ],
