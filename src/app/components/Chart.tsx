@@ -9,7 +9,7 @@ type LineChartComponentProps = {
 }
 
 type PieChartComponentProps = {
-    household: HouseholdResponse
+    households: HouseholdResponse
 }
 
 export const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
@@ -69,7 +69,7 @@ export const LineChartComponent = ({ expenses }: LineChartComponentProps) => {
     return <Line data={data} options={options} />
 }
 
-export const PieChartComponent = ({ household }: PieChartComponentProps) => {
+export const PieChartComponent = ({ households }: PieChartComponentProps) => {
     const backgroundColors = [
         'rgba(255, 99, 132, 0.2)',
         'rgba(54, 162, 235, 0.2)',
@@ -88,15 +88,15 @@ export const PieChartComponent = ({ household }: PieChartComponentProps) => {
     'rgba(255, 159, 64, 1)',
     ]
 
-    const labels = household.map(h => h.name)
-    const dataValues = household.map(h => h.amount)
-    const month = household[0].month
+    const labels = households.map(h => h.name)
+    const dataValues = households.map(h => h.amount)
+    const month = households[0]?.month ?? 0
 
     const backgroundColorLastIndex = backgroundColors.length - 1
     const borderColorLastIndex = borderColors.length - 1
 
-    const backgroundColor = household.map((_, i) => backgroundColors[i > backgroundColorLastIndex ? i - backgroundColorLastIndex : i])
-    const borderColor = household.map((_, i) => borderColors[i > borderColorLastIndex ? i - borderColorLastIndex : i])
+    const backgroundColor = households.map((_, i) => backgroundColors[i > backgroundColorLastIndex ? i - backgroundColorLastIndex : i])
+    const borderColor = households.map((_, i) => borderColors[i > borderColorLastIndex ? i - borderColorLastIndex : i])
 
     const data = {
         labels: labels,
@@ -111,5 +111,9 @@ export const PieChartComponent = ({ household }: PieChartComponentProps) => {
         ],
     }
 
-    return <Pie data={data} />
+    return (
+    <div className="w-64 h-64">
+        <Pie data={data} />
+    </div>
+    )
 }
