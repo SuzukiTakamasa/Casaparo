@@ -68,12 +68,7 @@ export default function Home() {
     }
   }, [])
   const fetchIsCompletedLastMonth = useCallback(async () => {
-    let pathParams = ""
-    if (month === 1) {
-      pathParams = `${year - 1}/12`
-    } else {
-      pathParams = `${year}/${month - 1}`
-    }
+    const pathParams = month === 1 ? `${year - 1}/12` : `${year}/${month - 1}`
     const isCompletedLastMonth = await client.get<IsCompleted>(`/v2/completed_household/${pathParams}`)
     if (isCompletedLastMonth.data) {
       setIsCompletedLastMonth(isCompletedLastMonth.data.is_completed)

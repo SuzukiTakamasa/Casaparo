@@ -12,6 +12,7 @@ import { BackButtonIcon } from '@/app/components/Heroicons'
 import { WikiData } from '@/app/utils/interfaces'
 import { convertUrlsToLinks } from '@/app/utils/utility_function'
 
+
 const client = new APIClient()
 
 
