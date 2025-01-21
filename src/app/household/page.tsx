@@ -219,14 +219,14 @@ const Household = () => {
                 }
                 <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
                 {intToBool(isCompleted) &&
-                <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                    <div className="mt-1">
-                        <CheckBadgeIcon/>
+                    <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                        <div className="mt-1">
+                            <CheckBadgeIcon/>
+                        </div>
+                        清算済み
                     </div>
-                    清算済み
-                </div>
                 }
-                {!intToBool(isCompleted) &&
+                {!isCompleted &&
                 (householdYear < year ||
                 (householdYear === year && householdMonth < month) ||
                 (householdYear === year && householdMonth === month && today >= 25)) &&
