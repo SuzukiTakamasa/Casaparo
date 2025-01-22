@@ -72,7 +72,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         env.secret("CORS_LOCALHOST")?.to_string(),
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
-        env.secret("CORS_LINE_R2_HOST")?.to_string(),
+        env.secret("CORS_R2_HOST")?.to_string(),
     ];
 
     let mut headers = Headers::new();
@@ -83,6 +83,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     } else {
         return Response::error("Invalid origin", 403);
     }
+    
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
     headers.set("Access-Control-Max-Age", "86400")?;
