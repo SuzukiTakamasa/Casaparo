@@ -69,7 +69,6 @@ pub struct AppState {
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     let allowed_origins = vec![
-        env.secret("CORS_LOCALHOST")?.to_string(),
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
         env.secret("CORS_R2_HOST")?.to_string(),
