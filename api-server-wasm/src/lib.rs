@@ -77,17 +77,17 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     let mut headers = Headers::new();
 
-    if req.method() == Method::Options {
-        let origin = req.headers().get("Origin")?.unwrap_or_default();
-        if allowed_origins.contains(&origin) {
-            headers.set("Access-Control-Allow-Origin", &origin)?;
-        } else {
-            return Response::error("Invalid origin", 403);
-        }
-        headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
-        headers.set("Access-Control-Allow-Headers", "*")?;
-        headers.set("Access-Control-Max-Age", "86400")?;
+    let origin = req.headers().get("Origin")?.unwrap_or_default();
+    if allowed_origins.contains(&origin) {
+        headers.set("Access-Control-Allow-Origin", &origin)?;
+    } else {
+        return Response::error("Invalid origin", 403);
+    }
+    headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
+    headers.set("Access-Control-Allow-Headers", "*")?;
+    headers.set("Access-Control-Max-Age", "86400")?;
 
+    if req.method() == Method::Options {
         return Response::empty()
             .map(|resp| resp.with_headers(headers))
     }
