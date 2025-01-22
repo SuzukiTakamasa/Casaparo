@@ -68,16 +68,23 @@ pub struct AppState {
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
-    /*let allowed_origins = vec![
+    let allowed_origins = vec![
         env.secret("CORS_LOCALHOST")?.to_string(),
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
         env.secret("CORS_LINE_R2_HOST")?.to_string(),
-    ];*/
+    ];
+
+    let origin = req.headers().get("Origin")?.unwrap_or_default();
 
     let mut headers = Headers::new();
 
-    headers.set("Access-Control-Allow-Origin", "*")?;
+    if allowed_origins.contains(&origin) {
+        headers.set("Access-Control-Allow-Origin", &origin)?;
+    } else {
+        return Response::error("Invalid origin", 403);
+    }
+    
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
     headers.set("Access-Control-Max-Age", "86400")?;
