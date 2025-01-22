@@ -68,16 +68,27 @@ pub struct AppState {
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
-    /*let allowed_origins = vec![
-        env.secret("CORS_LOCALHOST")?.to_string(),
+    let db_str = env.secret("D1_DATABASE_BINDING")?.to_string();
+
+    let mut allowed_origins = vec![
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
-        env.secret("CORS_LINE_R2_HOST")?.to_string(),
-    ];*/
+        env.secret("CORS_R2_HOST")?.to_string(),
+    ];
+    
+    if db_str == "DB-DEV" {
+        allowed_origins.push(env.secret("CORS_LOCALHOST")?.to_string())
+    }
 
     let mut headers = Headers::new();
 
-    headers.set("Access-Control-Allow-Origin", "*")?;
+    let origin = req.headers().get("Origin")?.unwrap_or_default();
+    if allowed_origins.contains(&origin) {
+        headers.set("Access-Control-Allow-Origin", &origin)?;
+    } else {
+        return Response::error("Invalid origin", 403);
+    }
+    
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
     headers.set("Access-Control-Allow-Headers", "*")?;
     headers.set("Access-Control-Max-Age", "86400")?;
@@ -87,7 +98,6 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             .map(|resp| resp.with_headers(headers))
     }
 
-    let db_str = env.secret("D1_DATABASE_BINDING")?.to_string();
     let db = Arc::new(env.d1(db_str.as_str())?);
 
     let household_repository = D1HouseholdRepository::new(db.clone());
