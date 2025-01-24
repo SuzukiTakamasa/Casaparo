@@ -32,21 +32,22 @@ impl WikiImageRepository for D1WikiImageRepository {
         Ok(())
     }
 
-    async fn delete_wiki_image(&self, wiki_image: &WikiImages) -> Result<()> {
+    async fn delete_wiki_image(&self, wiki_image: &mut WikiImages) -> Result<()> {
         let fetch_version_statement = self.db.prepare("select version from wiki_images where id = ?1");
         let fetch_version_query = fetch_version_statement.bind(&[wiki_image.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
             if wiki_image.version == latest.version {
-                let statement = self.db.prepare("delete from wiki_images where id = ?1");
+                wiki_image.version += 1;
+            } else {
+                return Err(worker::Error::RustError("Attempt to delete a stale object".to_string()))
+            }
+        } else {
+            return Err(worker::Error::RustError("Version is found None".to_string()))
+        }
+        let statement = self.db.prepare("delete from wiki_images where id = ?1");
                 let query = statement.bind(&[wiki_image.id.into()])?;
                 query.run().await?;
                 Ok(())
-            } else {
-                Err(worker::Error::RustError("Attempt to delete a stale object".to_string()))
-            }
-        } else {
-            Err(worker::Error::RustError("Version is found None".to_string()))
-        }
     }
 }

@@ -20,7 +20,7 @@ impl<R: WikiImageRepository> WikiImageUsecases<R> {
         self.repository.create_wiki_image(wiki_image).await
     }
 
-    pub async fn delete_wiki_image(&self, wiki_image: &WikiImages) -> Result<()> {
+    pub async fn delete_wiki_image(&self, wiki_image: &mut WikiImages) -> Result<()> {
         self.repository.delete_wiki_image(wiki_image).await
     }
 }

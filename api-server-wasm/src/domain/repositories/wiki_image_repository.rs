@@ -6,5 +6,5 @@ use worker::Result;
 pub trait WikiImageRepository {
     async fn get_wiki_images_by_id(&self, id: u32) -> Result<Vec<WikiImages>>;
     async fn create_wiki_image(&self, wiki_image: &WikiImages) -> Result<()>;
-    async fn delete_wiki_image(&self, wiki_image: &WikiImages) -> Result<()>;
+    async fn delete_wiki_image(&self, wiki_image: &mut WikiImages) -> Result<()>;
 }

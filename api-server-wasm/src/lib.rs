@@ -68,11 +68,17 @@ pub struct AppState {
 #[event(fetch, respond_with_errors)]
 async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
-    let allowed_origins = vec![
+    let db_str = env.secret("D1_DATABASE_BINDING")?.to_string();
+
+    let mut allowed_origins = vec![
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
         env.secret("CORS_R2_HOST")?.to_string(),
     ];
+    
+    if db_str == "DB-DEV" {
+        allowed_origins.push(env.secret("CORS_LOCALHOST")?.to_string())
+    }
 
     let mut headers = Headers::new();
 
@@ -92,7 +98,6 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
             .map(|resp| resp.with_headers(headers))
     }
 
-    let db_str = env.secret("D1_DATABASE_BINDING")?.to_string();
     let db = Arc::new(env.d1(db_str.as_str())?);
 
     let household_repository = D1HouseholdRepository::new(db.clone());
