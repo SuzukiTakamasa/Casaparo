@@ -8,9 +8,11 @@ import './globals.css'
 import React, { useState } from 'react'
 import Link from 'next/link'
 
-import { XMarkIcon, HamburgerIcon } from './components/Heroicons'
+import { XMarkIcon, HamburgerIcon } from '@components/Heroicons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, faTasks, IconDefinition } from '@fortawesome/free-solid-svg-icons'
+
+import SlideAnimation from '@components/SlideAnimation'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -54,6 +56,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
               </button>
               <Link href="/" className="ml-4 px-4 py-2 text-white font-bold hover:underline hover:bg-gray-600">Casaparo</Link>
             </div>
+            <SlideAnimation />
             <div className={`fixed inset-0 bg-black bg-opacity-50 z-50 ${menuVisible ? 'block' : 'hidden'}`} onClick={toggleMenu}></div>
             <div className={`absolute inset-y-0 left-0 transform ${menuVisible ? 'translate-x-0' : '-translate-x-full'} w-64 bg-gray-800 transition duration-300 ease-in-out top-16`} style={{zIndex: 1000}}>
               <TextLinkWithIcon path="/household" icon={faHouse} text="家計簿" toggleMenuCallback={toggleMenu} />
