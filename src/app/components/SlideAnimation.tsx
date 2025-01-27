@@ -18,11 +18,6 @@ const SlideAnimation = () => {
                     {fellows}
                 </div>
                 ))}
-                {casaparoFellows.map((fellows, index) => (
-                <div key={index + casaparoFellows.length} className="mx-4 text-white p-2 rounded-md">
-                    {fellows}
-                </div>
-                ))}
             </div>
         </div>
     )
