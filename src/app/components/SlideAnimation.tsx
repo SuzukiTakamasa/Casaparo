@@ -3,16 +3,17 @@ import { useState } from 'react'
 const SlideAnimation = () => {
     const [fellowIndex, setFellowIndex] = useState(0)
     const [isShowWords, setIsShowWords] = useState(false)
+    const [isRarePattern, setIsRarePattern] = useState(false)
 
     const casaparoFellows = [
-        {"⚪️": "< ﾏﾝﾏﾙﾏﾙ!!"},
-        {"🦀": "< ｶﾆﾏﾛ!!"},
-        {"🦵🦵": "< ｱﾝﾖｸﾜｶﾞﾀ!!"},
-        {"🛀": "< ｵﾌﾛﾝ...ﾀﾛｽ"},
-        {"🛌": "< ﾈﾝﾈﾏﾝ!!"},
-        {"💥": "< ｳﾆﾏﾛ!!"},
-        {"🧊": "< ﾁﾒﾃｰ!!"},
-        {"🚨🚨": "< ﾋﾟｯﾋﾟｰ!!"}
+        {"⚪️": isRarePattern ? "< ...ﾝ?" : "< ﾏﾝﾏﾙﾏﾙ!!"},
+        {"🦀": isRarePattern ? "< ｲｴｰｲ!!" : "< ｶﾆﾏﾛ!!"},
+        {"🦵🦵": isRarePattern ? "< ｶﾆｸﾜｶﾞﾀ!!" : "< ｱﾝﾖｸﾜｶﾞﾀ!!"},
+        {"🛀": isRarePattern ? "< ...(ﾆｯｺﾘ)" : "< ｵﾌﾛﾝ...ﾀﾛｽ"},
+        {"🛌": isRarePattern ? "< ｲｯﾊﾟｲﾈﾀｰ!!" : "< ﾈﾝﾈﾏﾝ!!"},
+        {"💥": isRarePattern ? "< ｲ...ｲｴｰｲ!!" : "< ｳﾆﾏﾛ!!"},
+        {"🧊": isRarePattern ? "< ﾁﾒﾃｰ!!" : "< ﾋﾝﾔﾘﾏﾛ!!"},
+        {"🚨🚨": isRarePattern ? "< ﾌﾟｯﾌﾟｰ!!" : "< ﾋﾟｯﾋﾟｰ!!"}
     ]
 
     const selectedFellow = casaparoFellows[fellowIndex]
@@ -22,7 +23,9 @@ const SlideAnimation = () => {
             <div className="animate-slide flex whitespace-nowrap"
                  onAnimationIteration={() => {
                     setIsShowWords(false)
-                    setFellowIndex(Math.floor(Math.random() * casaparoFellows.length))}}
+                    setFellowIndex(Math.floor(Math.random() * casaparoFellows.length))
+                    setIsRarePattern(Math.random() < 0.1)
+                }}
             >
                 <div
                      className="mx-4 text-white p-2 rounded-md"
