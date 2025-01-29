@@ -372,10 +372,20 @@ const Inventory = () => {
         await client.post<ShoppingNoteData>("/v2/shopping_note/delete", deleteShoppingNoteData)
         await fetchShoppingNotes()
     }
-    const registerToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+    /*const registerToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
         await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
+    }
+    */
+    const completeShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+        await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        await fetchShoppingNotes()
+        await fetchInventories()
+    }
+    const handleCpmpleteShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+        if (!window.confirm("在庫に登録せずに完了としますか？")) return
+        await completeShoppingNote(registerToInventoryShoppingNote)
     }
     const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
@@ -383,10 +393,9 @@ const Inventory = () => {
             client.post<InventoryData>(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
         })
         await Promise.all(promises)
-        await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
-        await fetchShoppingNotes()
-        await fetchInventories()
+        await completeShoppingNote(registerToInventoryShoppingNote)
     }
+
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
         return (
             shoppingNotes.length >= lastDataIndexPerPage ?
@@ -817,7 +826,7 @@ const Inventory = () => {
                                                 <TrashBoxIcon />
                                             </button>
                                             <button
-                                                className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded"}
+                                                className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded mr-1"}
                                                 onClick={() => registerToInventoryTemp({
                                                     id: firstShoppingNote.id,
                                                     notes: JSON.stringify(shoppingNote.map((note) => ({
@@ -835,11 +844,30 @@ const Inventory = () => {
                                             >
                                                 在庫に登録
                                             </button>
+                                            <button
+                                                className={"bg-gray-700 hover:bg-gray-900 text-white font-blod py-1 px-1 rounded"}
+                                                onClick={() => handleCpmpleteShoppingNote({
+                                                    id: firstShoppingNote.id,
+                                                    notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                        id: note.note_id,
+                                                        types: note.note_types,
+                                                        name: note.note_name,
+                                                        amount: note.note_amount,
+                                                        created_by: note.created_by,
+                                                        version: note.note_version
+                                                }))),
+                                                    is_registered: firstShoppingNote.is_registered,
+                                                    created_by: firstShoppingNote.created_by,
+                                                    version: firstShoppingNote.version
+                                                })}
+                                            >
+                                                在庫登録せずに完了
+                                            </button>
                                         </>
                                             :
                                         <div className="bg-gray-500 flex justify-left">
                                             <CheckBadgeIcon/>
-                                            <div>登録済み</div>
+                                            <div>完了</div>
                                         </div>
                                         }
                                         <div className="ml-4">登録者：{setUser(firstShoppingNote.created_by)}</div>
