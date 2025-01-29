@@ -6,7 +6,7 @@ resource "cloudflare_access_application" "terraform_managed_resource_c7529019-36
   domain                     = "*.casaparo.pages.dev"
   enable_binding_cookie      = false
   http_only_cookie_attribute = true
-  name                       = "casaparo - Cloudflare Pages"
+  name                       = "Casaparo Dev"
   session_duration           = "24h"
   type                       = "self_hosted"
 }
