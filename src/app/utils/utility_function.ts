@@ -13,7 +13,14 @@ export const convertUrlsToLinks = (text: string): string => {
     return text.replace(urlRegex, (url) => {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">${url}</a>`;
     })
-  }
+}
+
+export const adaptThreePointReader = (text: string, maxLength: number): string => {
+    const textLength = Array.from(text).reduce((count, str) => {
+        return str.match(/[ -~]/) ? count + 1 : count + 2
+    }, 0)
+    return textLength > maxLength * 2 ? text.slice(0, maxLength - 1) + "..." : text
+}
 
 export const setUser = (userInt: number): string => {
     switch (userInt) {

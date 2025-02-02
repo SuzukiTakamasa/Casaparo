@@ -14,7 +14,7 @@ import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@/app/components/Heroi
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import APIClient from '@utils/api_client'
-import { setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { adaptThreePointReader, setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -383,7 +383,7 @@ const Household = () => {
                                         <TrashBoxIcon />
                                     </button>
                                 </td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{household.name}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{adaptThreePointReader(household.name, 10)}</td>
                                 <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{setUser(household.is_owner)}</td>  
                             </tr>
