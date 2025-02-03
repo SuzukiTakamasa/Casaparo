@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback, useContext } from 'react'
 import APIClient from '@utils/api_client'
 import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@/app/utils/interfaces'
 
-import { adaptThreePointReader, setUser, boolToInt, intToBool } from '@utils/utility_function'
+import { adaptTwoPointReader, setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 
@@ -612,7 +612,7 @@ const Inventory = () => {
                                     </button>
                                 </td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{setInventoryTypesStr(inventory.types)}</td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{adaptThreePointReader(inventory.name, 10)}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(inventory.name, 10)}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{inventory.amount}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{setUser(inventory.created_by)}</td>
                             </tr>
