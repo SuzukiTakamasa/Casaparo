@@ -19,14 +19,23 @@ impl D1HouseholdRepository {
 #[async_trait(?Send)]
 impl HouseholdRepository for D1HouseholdRepository {
     async fn get_households(&self, year: u16, month: u8) -> Result<Vec<Households>> {
-        let statement = self.db.prepare("select * from households where ( year = ?1 and month = ?2 ) or is_default = 1 order by is_default desc");
+        let statement = self.db.prepare(r#"select *
+                                                                from households
+                                                                where ( year = ?1 and month = ?2 )
+                                                                or is_default = 1
+                                                                order by is_default desc"#);
         let query = statement.bind(&[year.into(), month.into()])?;
         let result = query.all().await?;
         result.results::<Households>()
     }
 
     async fn get_fixed_amount(&self, year: u16, month: u8) -> Result<FixedAmount> {
-        let statement = self.db.prepare("select sum(case when is_owner = 1 then amount else -amount end) as billing_amount, sum(amount) as total_amount from households where ( year = ?1 and month = ?2 ) or is_default = 1");
+        let statement = self.db.prepare(r#"select
+                                                                sum(case when is_owner = 1 then amount else -amount end) as billing_amount,
+                                                                sum(amount) as total_amount
+                                                                from households
+                                                                where ( year = ?1 and month = ?2 )
+                                                                or is_default = 1"#);
         let query = statement.bind(&[year.into(), month.into()])?;
         let result = query.first::<FixedAmount>(None).await?;
         match result {
@@ -36,7 +45,13 @@ impl HouseholdRepository for D1HouseholdRepository {
     }
 
     async fn get_completed_households(&self, year: u16, month: u8) -> Result<IsCompleted> {
-        let statement = self.db.prepare("select case when exists (select * from completed_households where year = ?1 and month = ?2) then 1 else 0 end as is_completed");
+        let statement = self.db.prepare(r#"select
+                                                                case when exists
+                                                                (select * from completed_households where year = ?1 and month = ?2)
+                                                                then 1
+                                                                else 0
+                                                                end
+                                                                as is_completed"#);
         let query = statement.bind(&[year.into(), month.into()])?;
         let result = query.first::<IsCompleted>(None).await?;
         match result {
@@ -46,21 +61,35 @@ impl HouseholdRepository for D1HouseholdRepository {
     }
 
     async fn get_completed_households_monthly_summary(&self, year: u16) -> Result<Vec<HouseholdMonthlySummary>> {
-        let statement = self.db.prepare("select month, billing_amount, total_amount from completed_households where year = ?1");
+        let statement = self.db.prepare(r#"select
+                                                                month,
+                                                                billing_amount,
+                                                                total_amount
+                                                                from completed_households
+                                                                where year = ?1"#);
         let query = statement.bind(&[year.into()])?;
         let result = query.all().await?;
         result.results::<HouseholdMonthlySummary>()
     }
 
     async fn get_completed_households_monthly_summary_by_month(&self, year: u16, month: u8) -> Result<Vec<HouseholdMonthlySummary>> {
-        let statement = self.db.prepare("select json_extract(value, '$.name') as detail_name, cast(json_extract(value, '$.amount') as integer) as detail_amount, c.billing_amount, c.total_amount from completed_households c, json_each(c.detail) as details where year = ?1 and month = ?2");
+        let statement = self.db.prepare(r#"select
+                                                                json_extract(value, '$.name') as detail_name,
+                                                                cast(json_extract(value, '$.amount') as integer) as detail_amount,
+                                                                c.billing_amount,
+                                                                c.total_amount
+                                                                from completed_households c,
+                                                                json_each(c.detail) as details
+                                                                where year = ?1 and month = ?2"#);
         let query = statement.bind(&[year.into(), month.into()])?;
         let result = query.all().await?;
         result.results::<HouseholdMonthlySummary>()
     }
 
     async fn create_household(&self, household: &Households) -> Result<()> {
-        let statement = self.db.prepare("insert into households (name, amount, year, month, is_default, is_owner, version) values (?1, ?2, ?3, ?4, ?5, ?6, ?7)");
+        let statement = self.db.prepare(r#"insert into households
+                                                                (name, amount, year, month, is_default, is_owner, version)
+                                                                values (?1, ?2, ?3, ?4, ?5, ?6, ?7)"#);
         let query = statement.bind(&[household.name.clone().into(),
                                                           household.amount.into(),
                                                           household.year.into(),
@@ -73,7 +102,10 @@ impl HouseholdRepository for D1HouseholdRepository {
     }
 
     async fn update_household(&self, household: &mut Households) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from households where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select
+                                                                              version
+                                                                              from households
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
 
@@ -86,7 +118,13 @@ impl HouseholdRepository for D1HouseholdRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update households set name = ?1, amount = ?2, is_default = ?3, is_owner = ?4, version = ?5 where id = ?6");
+        let statement = self.db.prepare(r#"update households
+                                                                set name = ?1,
+                                                                amount = ?2,
+                                                                is_default = ?3,
+                                                                is_owner = ?4,
+                                                                version = ?5
+                                                                where id = ?6"#);
         let query = statement.bind(&[household.name.clone().into(),
                                                           household.amount.into(),
                                                           household.is_default.into(),
@@ -99,7 +137,10 @@ impl HouseholdRepository for D1HouseholdRepository {
 
 
     async fn delete_household(&self, household: &mut Households) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from households where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select
+                                                                              version
+                                                                              from households
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
 
@@ -112,14 +153,18 @@ impl HouseholdRepository for D1HouseholdRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("delete from households where id = ?1");
+        let statement = self.db.prepare(r#"delete
+                                                                from households
+                                                                where id = ?1"#);
         let query = statement.bind(&[household.id.into()])?;
         query.run().await?;
         Ok(())
     }
 
     async fn create_completed_household(&self, completed_household: &CompletedHouseholds) -> Result<()> {
-        let statement = self.db.prepare("insert into completed_households (year, month, detail, billing_amount, total_amount) values (?1, ?2, ?3, ?4, ?5)");
+        let statement = self.db.prepare(r#"insert into completed_households
+                                                                (year, month, detail, billing_amount, total_amount)
+                                                                values (?1, ?2, ?3, ?4, ?5)"#);
         let query = statement.bind(&[completed_household.year.into(),
                                                           completed_household.month.into(),
                                                           completed_household.detail.clone().into(),
