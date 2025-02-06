@@ -18,13 +18,17 @@ impl D1InventoryRepository {
 #[async_trait(?Send)]
 impl InventoryRepository for D1InventoryRepository {
     async fn get_inventories(&self) -> Result<Vec<Inventories>> {
-        let query = self.db.prepare("select * from inventories order by amount asc, id desc");
+        let query = self.db.prepare(r#"select *
+                                                            from inventories
+                                                            order by amount asc, id desc"#);
         let result = query.all().await?;
         result.results::<Inventories>()
     }
 
     async fn create_inventory(&self, inventory: &Inventories) -> Result<()> {
-        let statement = self.db.prepare("insert into inventories (types, name, amount, created_by, version) values (?1, ?2, ?3, ?4, ?5)");
+        let statement = self.db.prepare(r#"insert into inventories
+                                                                (types, name, amount, created_by, version)
+                                                                values (?1, ?2, ?3, ?4, ?5)"#);
         let query = statement.bind(&[inventory.types.into(),
                                                           inventory.name.clone().into(),
                                                           inventory.amount.into(),
@@ -35,7 +39,9 @@ impl InventoryRepository for D1InventoryRepository {
     }
 
     async fn update_amount(&self, inventory: &mut Inventories) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from inventories
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
@@ -47,7 +53,10 @@ impl InventoryRepository for D1InventoryRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update inventories set amount = amount + ?1, version = ?2 where id = ?3");
+        let statement = self.db.prepare(r#"update inventories
+                                                                set amount = amount + ?1,
+                                                                version = ?2
+                                                                where id = ?3"#);
         let query = statement.bind(&[inventory.amount.into(),
                                                           inventory.version.into(),
                                                           inventory.id.into()])?;
@@ -56,7 +65,9 @@ impl InventoryRepository for D1InventoryRepository {
     }
 
     async fn update_inventory(&self, inventory: &mut Inventories) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from inventories
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
@@ -68,7 +79,13 @@ impl InventoryRepository for D1InventoryRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update inventories set types = ?1, name = ?2, amount = ?3, created_by = ?4, version = ?5 where id = ?6");
+        let statement = self.db.prepare(r#"update inventories
+                                                                set types = ?1,
+                                                                name = ?2,
+                                                                amount = ?3,
+                                                                created_by = ?4,
+                                                                version = ?5
+                                                                where id = ?6"#);
         let query = statement.bind(&[inventory.types.into(),
                                                           inventory.name.clone().into(),
                                                           inventory.amount.into(),
@@ -80,7 +97,9 @@ impl InventoryRepository for D1InventoryRepository {
     }
 
     async fn delete_inventory(&self, inventory: &mut Inventories) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from inventories where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from inventories
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
@@ -92,7 +111,9 @@ impl InventoryRepository for D1InventoryRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("delete from inventories where id = ?1");
+        let statement = self.db.prepare(r#"delete
+                                                                from inventories 
+                                                                where id = ?1"#);
         let query = statement.bind(&[inventory.id.into()])?;
         query.run().await?;
         Ok(())

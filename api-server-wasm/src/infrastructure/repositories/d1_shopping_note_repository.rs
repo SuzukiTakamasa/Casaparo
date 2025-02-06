@@ -18,13 +18,27 @@ impl D1ShoppingNoteRepository {
 #[async_trait(?Send)]
 impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     async fn get_shopping_notes(&self) -> Result<Vec<ExtractedShoppingNotes>> {
-        let query = self.db.prepare("select s.id, cast(json_extract(value, '$.id') as integer) as note_id, cast(json_extract(value, '$.types') as integer) as note_types, json_extract(value, '$.name') as note_name, cast(json_extract(value, '$.amount') as integer ) as note_amount, cast(json_extract(value, '$.created_by') as integer) as note_created_by, cast(json_extract(value, '$.version') as integer) as note_version, s.is_registered, s.created_by, s.version from shopping_notes s, json_each(s.notes) as notes order by s.is_registered asc, s.id desc");
+        let query = self.db.prepare(r#"select s.id,
+                                                            cast(json_extract(value, '$.id') as integer) as note_id,
+                                                            cast(json_extract(value, '$.types') as integer) as note_types,
+                                                            json_extract(value, '$.name') as note_name,
+                                                            cast(json_extract(value, '$.amount') as integer ) as note_amount,
+                                                            cast(json_extract(value, '$.created_by') as integer) as note_created_by,
+                                                            cast(json_extract(value, '$.version') as integer) as note_version,
+                                                            s.is_registered,
+                                                            s.created_by,
+                                                            s.version
+                                                            from shopping_notes s,
+                                                            json_each(s.notes) as notes
+                                                            order by s.is_registered asc, s.id desc"#);
         let result = query.all().await?;
         result.results::<ExtractedShoppingNotes>()
     }
 
     async fn create_shopping_note(&self, shopping_note: &ShoppingNotes) -> Result<()> {
-        let statement = self.db.prepare("insert into shopping_notes (notes, is_registered, created_by, version) values (?1, ?2, ?3, ?4)");
+        let statement = self.db.prepare(r#"insert into shopping_notes
+                                                                (notes, is_registered, created_by, version)
+                                                                values (?1, ?2, ?3, ?4)"#);
         let query = statement.bind(&[shopping_note.notes.clone().into(),
                                                           shopping_note.is_registered.into(),
                                                           shopping_note.created_by.into(),
@@ -77,7 +91,9 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         }
          */
 
-        let fetch_version_statement = self.db.prepare("select version from shopping_notes where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from shopping_notes
+                                                                              where id = ?1"#);
                 let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
                 let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
                 if let Some(latest) = fetch_version_result {
@@ -89,7 +105,10 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 } else {
                     return Err(worker::Error::RustError("Version is found None".to_string()))
                 }
-        let update_is_registered_statement = self.db.prepare("update shopping_notes set is_registered = 1, version = ?1 where id = ?2");
+        let update_is_registered_statement = self.db.prepare(r#"update shopping_notes
+                                                                                     set is_registered = 1,
+                                                                                     version = ?1
+                                                                                     where id = ?2"#);
         let update_is_registered_query = update_is_registered_statement.bind(&[shopping_note.version.into(),
                                                                                                     shopping_note.id.into()])?;
         update_is_registered_query.run().await?;
@@ -111,7 +130,9 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn update_shopping_note(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from shopping_notes where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from shopping_notes
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
@@ -123,7 +144,11 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("update shopping_notes set notes = ?1, is_registered = ?2, version = ?3 where id = ?4");
+        let statement = self.db.prepare(r#"update shopping_notes
+                                                                set notes = ?1,
+                                                                is_registered = ?2,
+                                                                version = ?3
+                                                                where id = ?4"#);
         let query = statement.bind(&[shopping_note.notes.clone().into(),
                                                           shopping_note.is_registered.into(),
                                                           shopping_note.version.into(),
@@ -133,7 +158,9 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
     }
 
     async fn delete_shopping_note(&self, shopping_note: &mut ShoppingNotes) -> Result<()> {
-        let fetch_version_statement = self.db.prepare("select version from shopping_notes where id = ?1");
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from shopping_notes
+                                                                              where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
         if let Some(latest) = fetch_version_result {
@@ -145,7 +172,9 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         } else {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
-        let statement = self.db.prepare("delete from shopping_notes where id = ?1");
+        let statement = self.db.prepare(r#"delete
+                                                                from shopping_notes
+                                                                where id = ?1"#);
         let query = statement.bind(&[shopping_note.id.into()])?;
         query.run().await?;
         Ok(())
