@@ -111,9 +111,27 @@ export const PieChartComponent = ({ expenses, month }: PieChartComponentProps) =
         ],
     }
 
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right' as const,
+                labels: {
+                    color: '#ffffff'
+                }
+            }
+        },
+        layout: {
+            padding: {
+                right: 20
+            }
+        }
+    }
+
     return (
-        <div className="w-64 h-64">
-            <Pie data={data} />
+        <div className="w-full max-w-md mx-auto aspect-square">
+            <Pie data={data} options={options}/>
         </div>
     )
 }
