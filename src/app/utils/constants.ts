@@ -1,16 +1,16 @@
 
 export const HouseholdConstants = {
     IsDefault: {
-        NotDefault: false,
-        Default: true
+        NOT_DEFAULT: false,
+        DEFAULT: true
     },
     IsOwner: {
-        NotOwner: 0,
-        Owner: 1
+        NOT_OWNER: 0,
+        OWNER: 1
     },
     IsCompleted: {
-        NotCompleted: 0,
-        Completed: 1
+        NOT_COMPLETED: 0,
+        COMPLETED: 1
     },
     DateOfFixedHousehold: 25
 }
@@ -38,21 +38,21 @@ export const InventoryConstants = {
 
 export const ShoppingNoteConstants = {
     IsRegistered: {
-        NotRegistered: 0,
-        Registered: 1
+        NOT_REGISTERED: 0,
+        REGISTERED: 1
     }
 }
 
 export const TaskConstants = {
     Status: {
-        Completed: 2,
-        InProgress: 1,
-        New: 0
+        COMPLETED: 2,
+        IN_PROGRESS: 1,
+        NEW: 0
     },
     Priority: {
-        High: 2,
-        Middle: 1,
-        Low: 0
+        HIGH: 2,
+        MIDDLE: 1,
+        LOW: 0
     },
     CreatedBy: {
         Y: 0,

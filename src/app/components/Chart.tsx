@@ -95,8 +95,8 @@ export const PieChartComponent = ({ expenses, month }: PieChartComponentProps) =
     const backgroundColorLastIndex = backgroundColors.length - 1
     const borderColorLastIndex = borderColors.length - 1
 
-    const backgroundColor = expenses.map((_, i) => backgroundColors[i > backgroundColorLastIndex ? i - backgroundColorLastIndex : i])
-    const borderColor = expenses.map((_, i) => borderColors[i > borderColorLastIndex ? i - borderColorLastIndex : i])
+    const backgroundColor = expenses.map((_, i) => backgroundColors[i > backgroundColorLastIndex ? i - backgroundColorLastIndex * i % 6 : i])
+    const borderColor = expenses.map((_, i) => borderColors[i > borderColorLastIndex ? i - borderColorLastIndex * i % 6 : i])
 
     const data = {
         labels: labels,
