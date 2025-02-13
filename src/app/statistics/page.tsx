@@ -77,7 +77,7 @@ const Statistics = () => {
             <div className="flex justify-center">
                 {isLoading ? <Loader size={100} isLoading={isLoading} /> :
                  (mode === "year" ? <LineChartComponent expenses={annualHouseholdSummary}/> :
-                                    <PieChartComponent expenses={monthlyHouseholdSummary} month={month}/>)
+                                    <PieChartComponent expenses={monthlyHouseholdSummary} month={statisticsMonth}/>)
                 }
             </div>
         </>
