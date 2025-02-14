@@ -66,14 +66,14 @@ export default function Home() {
     if (isCompletedCurrentMonth.data) {
       setIsCompletedCurrentMonth(isCompletedCurrentMonth.data.is_completed)
     }
-  }, [])
+  }, [isCompletedCurrentMonth])
   const fetchIsCompletedLastMonth = useCallback(async () => {
     const pathParams = month === 1 ? `${year - 1}/12` : `${year}/${month - 1}`
     const isCompletedLastMonth = await client.get<IsCompleted>(`/v2/completed_household/${pathParams}`)
     if (isCompletedLastMonth.data) {
       setIsCompletedLastMonth(isCompletedLastMonth.data.is_completed)
     }
-  }, [])
+  }, [isCompletedLastMonth])
 
    useEffect(() => {
     fetchFixedAmount()
