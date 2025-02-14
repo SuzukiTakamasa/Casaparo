@@ -440,7 +440,7 @@ const Schedule = () => {
             holidays.push(d)
         }
         setHolidays(holidays)
-    }, [])
+    }, [scheduleYear])
     const fetchAnniversaries = useCallback(async () => {
         const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
         setAnniversaries(anniversaries.data || [])

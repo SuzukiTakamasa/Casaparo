@@ -46,7 +46,7 @@ const Statistics = () => {
             setMonthlyHouseholdSummary(res.data)
             setIsLoading(false)
         }
-    }, [statisticsMonth])
+    }, [statisticsYear, statisticsMonth])
 
     useEffect(() => {
         fetchAnnualHousehold()

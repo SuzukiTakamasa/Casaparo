@@ -96,8 +96,9 @@ export const PieChartComponent = ({ expenses, month }: PieChartComponentProps) =
     const borderColorLastIndex = borderColors.length - 1
 
     const specifyColor = (eachColorlastIndex: number, dataIndex: number) => {
+        const numOfColors = eachColorlastIndex + 1
         return (dataIndex > eachColorlastIndex ?
-                dataIndex - eachColorlastIndex * Math.floor(dataIndex / 6) :
+                dataIndex - numOfColors * Math.floor(dataIndex / numOfColors) :
                 dataIndex)
     }
 
