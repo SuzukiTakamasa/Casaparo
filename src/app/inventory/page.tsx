@@ -8,7 +8,8 @@ import APIClient from '@utils/api_client'
 import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@/app/utils/interfaces'
 
 import { adaptTwoPointReader, setUser, boolToInt, intToBool } from '@utils/utility_function'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
+import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
+import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 
 
@@ -584,8 +585,7 @@ const Inventory = () => {
                         {handleDisaplySelectedTypeOfInventories(inventories).map((inventory, i) => (
                             <tr key={i} className={`${inventory.amount === 0 && "bg-red-900"}`}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                    <button
-                                        className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                    <EditButton
                                         onClick={() => handleOpenUpdateInventoryDialog({
                                             id: inventory.id,
                                             types: inventory.types,
@@ -593,12 +593,8 @@ const Inventory = () => {
                                             amount: inventory.amount,
                                             created_by: inventory.created_by,
                                             version: inventory.version
-                                        })}
-                                    >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
+                                    })}/>
+                                    <DeleteButton
                                         onClick={() => deleteInventory({
                                             id: inventory.id,
                                             types: inventory.types,
@@ -607,9 +603,7 @@ const Inventory = () => {
                                             created_by: inventory.created_by,
                                             version: inventory.version
                                         })}
-                                    >
-                                        <TrashBoxIcon />
-                                    </button>
+                                    />
                                 </td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{setInventoryTypesStr(inventory.types)}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(inventory.name, 10)}</td>
@@ -787,9 +781,8 @@ const Inventory = () => {
                                     <div className="flex flex-col justify-left">
                                         {!firstShoppingNote.is_registered ?
                                         <div>
-                                            <div className="flex justify-left">
-                                                <button
-                                                    className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded mr-1"}
+                                            <div className="flex justify-left space-x-1">
+                                                <EditButton
                                                     onClick={() => handleOpenUpdateShoppingNoteDialog({
                                                         id: firstShoppingNote.id,
                                                         notes: JSON.stringify(shoppingNote.map((note) => ({
@@ -804,11 +797,8 @@ const Inventory = () => {
                                                         created_by: firstShoppingNote.created_by,
                                                         version: firstShoppingNote.version
                                                     })}
-                                                >
-                                                    <PencilIcon />
-                                                </button>
-                                                <button
-                                                    className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded mr-1"}
+                                                />
+                                                <DeleteButton
                                                     onClick={() => deleteShoppingNote({
                                                         id: firstShoppingNote.id,
                                                         notes: JSON.stringify(shoppingNote.map((note) => ({
@@ -823,9 +813,7 @@ const Inventory = () => {
                                                         created_by: firstShoppingNote.created_by,
                                                         version: firstShoppingNote.version
                                                     })}
-                                                >
-                                                    <TrashBoxIcon />
-                                                </button>
+                                                 />
                                                 <div className="ml-4">登録者：{setUser(firstShoppingNote.created_by)}</div>
                                             </div>
                                             <div className="flex justify-left mt-1">

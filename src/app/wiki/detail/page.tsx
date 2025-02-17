@@ -5,10 +5,9 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
 import DOMPurify from 'dompurify'
 import APIClient from '@utils/api_client'
-import { BackButtonIcon } from '@/app/components/Heroicons'
+import { TextLinkToBackToPreviousPage } from '@/app/components/TextLink'
 import { WikiData } from '@/app/utils/interfaces'
 import { convertUrlsToLinks } from '@/app/utils/utility_function'
 
@@ -34,12 +33,7 @@ const WikiDetail = () => {
     
     return (
         <>
-            <Link href="/wiki" className="text-blue-500 font-bold hover:underline [-webkit-tap-highlight-color:transparent]">
-                <div className="flex items-center mt-2">
-                    <BackButtonIcon />
-                    <span className="ml-2">Wiki一覧へ</span>
-                </div>
-            </Link>
+            <TextLinkToBackToPreviousPage path="/wiki" text="Wiki一覧へ" />
             <div className="container mx-auto p-4 grid place-items-left">
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
                 {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} width={150} height={150} alt={wikiDetail.title} />}

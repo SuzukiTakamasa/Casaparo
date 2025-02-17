@@ -6,10 +6,11 @@ import React, { useState, useEffect, useContext, useCallback } from 'react'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
-import TextLink from '@components/TextLink'
+import { TextLink } from '@components/TextLink'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon, CheckBadgeIcon } from '@/app/components/Heroicons'
+import { CheckBadgeIcon } from '@/app/components/Heroicons'
+import { EditButton, DeleteButton } from '@components/Buttons'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
@@ -356,8 +357,7 @@ const Household = () => {
                         {households.map((household, i) => (
                             <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                    <button
-                                        className={"bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"}
+                                    <EditButton
                                         onClick={() => handleOpenUpdateDialog({
                                             id: household.id,
                                             name: household.name,
@@ -365,12 +365,8 @@ const Household = () => {
                                             is_default: household.is_default,
                                             is_owner: household.is_owner,
                                             version: household.version
-                                        })}
-                                    >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        className={"bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"}
+                                    })}/>
+                                    <DeleteButton
                                         onClick={() => deleteHousehold({
                                             id: household.id,
                                             name: household.name,
@@ -379,9 +375,7 @@ const Household = () => {
                                             is_owner: household.is_owner,
                                             version: household.version
                                         })}
-                                    >
-                                        <TrashBoxIcon />
-                                    </button>
+                                    />
                                 </td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(household.name, 10)}</td>
                                 <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>

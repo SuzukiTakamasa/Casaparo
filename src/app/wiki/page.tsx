@@ -8,7 +8,8 @@ import ReactMarkdown from 'react-markdown'
 import dynamic from 'next/dynamic'
 
 import { WikiData, WikiResponse } from '@/app/utils/interfaces'
-import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
+import { TrashBoxIcon } from '@/app/components/Heroicons'
+import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import APIClient from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
@@ -270,8 +271,7 @@ const Wiki = () => {
                     {wikis.map((wiki, i) => (
                         <tr key={i} >
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                <EditButton
                                     onClick={() => handleOpenUpdateDialog({
                                         id: wiki.id,
                                         title: wiki.title,
@@ -281,11 +281,8 @@ const Wiki = () => {
                                         image_url: wiki.image_url,
                                         version: wiki.version
                                     })}
-                                >
-                                    <PencilIcon />
-                                </button>
-                                <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                />
+                                <DeleteButton
                                     onClick={() => deleteWiki({
                                         id: wiki.id,
                                         title: wiki.title,
@@ -295,9 +292,7 @@ const Wiki = () => {
                                         image_url: wiki.image_url,
                                         version: wiki.version
                                     })}
-                                >
-                                    <TrashBoxIcon />
-                                </button>
+                                />
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">
                                 <Link href={`/wiki/detail?id=${wiki.id}`} className="text-blue-500 font-bold hover:underline">{wiki.title}</Link>
