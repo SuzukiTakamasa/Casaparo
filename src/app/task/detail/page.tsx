@@ -10,7 +10,8 @@ import DOMPurify from 'dompurify'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon, BackButtonIcon } from '@/app/components/Heroicons'
+import { TextLinkToBackToPreviousPage } from '@/app/components/TextLink'
+import { EditButton, DeleteButton } from '@/app/components/Buttons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
@@ -458,20 +459,10 @@ const TaskDetail = () => {
                 </div>
             )}
 
-            <Link href="/task" className="text-blue-500 font-bold hover:underline [-webkit-tap-highlight-color:transparent]">
-                <div className="flex items-center mt-2">
-                    <BackButtonIcon />
-                    <span className="ml-2">タスク一覧へ</span>
-                </div>
-            </Link>
+            <TextLinkToBackToPreviousPage path="/task" text="タスク一覧へ" />
 
             {taskDetail.parent_task_id !== 0 && (
-                <Link href={`/task/detail?id=${taskDetail.parent_task_id}`} className="text-blue-500 font-bold hover:underline [-webkit-tap-highlight-color:transparent]">
-                    <div className="flex items-center mt-2">
-                        <BackButtonIcon />
-                        <span className="ml-2">1つ上の親タスクへ</span>
-                    </div>
-                </Link>
+                <TextLinkToBackToPreviousPage path={`/task/detail?id=${taskDetail.parent_task_id}`} text="1つ上の親タスクへ" />
             )}
 
             <div className="container mx-auto p-4 grid place-items-left">
@@ -521,8 +512,7 @@ const TaskDetail = () => {
                             {relatedSubTasks.map((relatedSubTask, i) => (
                                 <div key={i} className="flex justify-left">
                                     <div className="space-x-1 mr-4">
-                                        <button
-                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+                                        <EditButton
                                             onClick={() => handleOpenUpdateRelatedSubTaskDialog({
                                                 id: relatedSubTask.id,
                                                 title: relatedSubTask.title,
@@ -535,11 +525,8 @@ const TaskDetail = () => {
                                                 parent_task_id: relatedSubTask.parent_task_id,
                                                 version: relatedSubTask.version
                                             })}
-                                        >
-                                            <PencilIcon />
-                                        </button>
-                                        <button
-                                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                        />
+                                        <DeleteButton
                                             onClick={() => deleteRelatedSubTask({
                                                 id: relatedSubTask.id,
                                                 title: relatedSubTask.title,
@@ -552,9 +539,7 @@ const TaskDetail = () => {
                                                 parent_task_id: relatedSubTask.parent_task_id,
                                                 version: relatedSubTask.version
                                             })}
-                                        >
-                                            <TrashBoxIcon />
-                                        </button>
+                                        />
                                     </div>
                                     <Link href={`/task/detail?id=${relatedSubTask.id}`} className={`${relatedSubTask.status === 2 ? "text-gray-500" : "text-blue-500"} text-sm px-1 py-1 font-bold hover:underline`}>
                                         {relatedSubTask.title}
@@ -579,8 +564,7 @@ const TaskDetail = () => {
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskComment.comment)))}} />
                                 <div className="flex justify-right space-x-1">
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                    <EditButton
                                         onClick={() => handleOpenUpdateTaskCommentDialog({
                                             id: taskComment.id,
                                             created_by: taskComment.created_by,
@@ -589,11 +573,8 @@ const TaskDetail = () => {
                                             task_id: taskComment.task_id,
                                             version:taskComment.version
                                         })}
-                                    >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                    />
+                                    <DeleteButton
                                         onClick={() => deleteTaskComment({
                                             id: taskComment.id,
                                             created_by: taskComment.created_by,
@@ -602,9 +583,7 @@ const TaskDetail = () => {
                                             task_id: taskComment.task_id,
                                             version:taskComment.version
                                         })}
-                                    >
-                                        <TrashBoxIcon />
-                                    </button>
+                                    />
                                     <div className="text-xs ml-1 mt-2">{`(最終更新: ${taskComment.updated_at})`}</div>
                                 </div>
                             </div>

@@ -5,7 +5,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
-import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
+import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import APIClient from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
@@ -353,28 +353,22 @@ const Setting = () => {
                         {labels.map((label, i) => (
                             <tr key={i}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+                                    <EditButton
                                         onClick={() => handleOpenUpdateLabelDialog({
                                             id: label.id,
                                             name: label.name,
                                             label: label.label,
                                             version: label.version
                                         })}
-                                    >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                    />
+                                    <DeleteButton
                                         onClick={() => deleteLabel({
                                             id: label.id,
                                             name: label.name,
                                             label: label.label,
                                             version: label.version
                                         })}
-                                    >
-                                        <TrashBoxIcon />
-                                    </button>
+                                    />
                                 </td>
                                 <td className="border-b px-1 py-1 text-center">{label.label}</td>
                                 <td className="border-b px-1 py-1 text-center">{label.name}</td>
@@ -461,8 +455,7 @@ const Setting = () => {
                         {anniversaries.map((anniversary, i) => (
                             <tr key={i}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+                                <EditButton
                                     onClick={() => handleOpenUpdateAnniversaryDialog({
                                         id: anniversary.id,
                                         month: anniversary.month,
@@ -470,11 +463,8 @@ const Setting = () => {
                                         description: anniversary.description,
                                         version: anniversary.version
                                     })}
-                                >
-                                    <PencilIcon />
-                                </button>
-                                <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                />
+                                <DeleteButton
                                     onClick={() => deleteAnniversary({
                                         id: anniversary.id,
                                         month: anniversary.month,
@@ -482,9 +472,7 @@ const Setting = () => {
                                         description: anniversary.description,
                                         version: anniversary.version
                                     })}
-                                >
-                                    <TrashBoxIcon />
-                                </button>
+                                />
                             </td>
                             <td className="border-b px-1 py-1 text-center">{`${anniversary.month}/${anniversary.date}`}</td>
                             <td className="border-b px-1 py-1 text-center">{anniversary.description}</td>
@@ -545,26 +533,20 @@ const Setting = () => {
                         {inventoryTypes.map((inventoryType, i) => (
                             <tr key={i}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                    <button
-                                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-1 rounded"
+                                    <EditButton
                                         onClick={() => handleOpenUpdateInventoryTypeDialog({
                                             id: inventoryType.id,
                                             types: inventoryType.types,
                                             version: inventoryType.version
                                         })}
-                                    >
-                                        <PencilIcon />
-                                    </button>
-                                    <button
-                                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                    />
+                                    <DeleteButton
                                         onClick={() => deleteInventoryType({
                                             id: inventoryType.id,
                                             types: inventoryType.types,
                                             version: inventoryType.version
                                         })}
-                                    >
-                                        <TrashBoxIcon />
-                                    </button>
+                                    />
                                 </td>
                                 <td className="border-b px-1 py-1 text-center">{inventoryType.types}</td>
                             </tr>

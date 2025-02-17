@@ -7,7 +7,7 @@ import { ReactNode, useEffect, useState, useCallback, useContext } from 'react'
 import { MonthContext } from '@components/MonthPaginator'
 import { YearContext } from '@components/YearPicker'
 import Loader from '@components/Loader'
-import TextLink from '@components/TextLink'
+import { TextLink } from '@components/TextLink'
 
 import APIClient from '@utils/api_client'
 

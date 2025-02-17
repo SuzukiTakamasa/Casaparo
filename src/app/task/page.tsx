@@ -8,7 +8,7 @@ import dynamic from 'next/dynamic'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
-import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
+import { EditButton, DeleteButton } from '@/app/components/Buttons'
 
 import APIClient from '@utils/api_client'
 import { TaskData, TaskResponse, HasTaskComments } from '@/app/utils/interfaces'
@@ -455,8 +455,7 @@ const Task = () => {
                     {handleFilterTasksWithPagination(handleDisplayTasks(tasks)).map((task, i) => (
                         <tr key={i}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                <button
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-blod py-1 px-1 rounded"
+                                <EditButton
                                     onClick={() => handleOpenUpdateDialog({
                                         id: task.id,
                                         title: task.title,
@@ -469,11 +468,8 @@ const Task = () => {
                                         parent_task_id: task.parent_task_id,
                                         version: task.version
                                     })}
-                                >
-                                    <PencilIcon />
-                                </button>
-                                <button
-                                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded"
+                                />
+                                <DeleteButton
                                     onClick={() => deleteTask({
                                         id: task.id,
                                         title: task.title,
@@ -486,9 +482,7 @@ const Task = () => {
                                         parent_task_id: task.parent_task_id,
                                         version: task.version
                                     })}
-                                >
-                                    <TrashBoxIcon />
-                                </button>
+                                />
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">
                                 <Link href={`/task/detail?id=${task.id}`} className={`${task.status === 2 ? "text-gray-500" : "text-blue-500"} font-bold hover:underline`}>{task.title}</Link>
