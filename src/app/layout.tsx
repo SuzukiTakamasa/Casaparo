@@ -5,7 +5,7 @@
 import { Inter } from 'next/font/google'
 import './globals.css'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
 import { XMarkIcon, HamburgerIcon } from '@components/Heroicons'
@@ -40,6 +40,14 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
   const toggleMenu = () => {
     setMenuVisible(!menuVisible)
   }
+
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+      .then(registration => console.log("Service Workerの登録に成功しました。:", registration))
+      .catch(error => console.error("Service Workerの登録に失敗しました。", error))
+    }
+  }, [])
 
   return (
     <html lang="en">
