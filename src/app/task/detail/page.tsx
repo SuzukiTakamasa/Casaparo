@@ -13,7 +13,7 @@ import { MonthContext } from '@components/MonthPaginator'
 import { TextLinkToBackToPreviousPage } from '@/app/components/TextLink'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 
-import APIClient from '@utils/api_client'
+import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
 import { convertUrlsToLinks, setUser, setStatusStr, setPriorityStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'

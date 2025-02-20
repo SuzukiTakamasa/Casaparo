@@ -14,7 +14,7 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
-import APIClient from '@utils/api_client'
+import { APIClient } from '@utils/api_client'
 import { adaptTwoPointReader, setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 
 

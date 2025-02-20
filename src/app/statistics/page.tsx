@@ -12,7 +12,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import APIClient from '@utils/api_client'
+import { APIClient } from '@utils/api_client'
 import { HouseholdMonthlySummaryResponse } from "@/app/utils/interfaces"
 
 

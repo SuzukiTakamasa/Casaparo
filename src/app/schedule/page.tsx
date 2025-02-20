@@ -12,7 +12,7 @@ import MonthPaginator from '@components/MonthPaginator'
 
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@/app/components/Heroicons'
-import APIClient, {execExternalGetAPI} from '@utils/api_client'
+import { APIClient, execExternalGetAPI} from '@utils/api_client'
 import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
 
 
