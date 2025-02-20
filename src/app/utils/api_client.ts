@@ -1,4 +1,5 @@
 import { APIRequest, APIResponse, R2Response, Result , IsSuccess } from './interfaces'
+import { urlBase64ToUint8Array } from './utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -14,7 +15,7 @@ export const execExternalGetAPI = async<T>(url: string, getParams?: string): Pro
     }   
 }
 
-class APIClient {
+export class APIClient {
     private readonly host: string
     private readonly headers: {[key: string]: string}
 
@@ -53,28 +54,93 @@ class APIClient {
             return { data: null, error: String(e) }
         }
     }
-    public async upload(file: File): Promise<R2Response> {
-        const headers = {
+}
+
+export class R2Client {
+    private readonly host: string
+    private readonly headers: {[key: string]: string}
+
+    constructor() {
+        this.host = process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME as string
+        this.headers = {
             'Content-Type': 'application/octet-stream',
         } as const
-        const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/upload`, {
+    }
+    public async upload(file: File): Promise<R2Response> {
+        const res = await fetch(`${this.host}/upload`, {
             method: 'POST',
             body: file,
-            headers: headers
+            headers: this.headers
         })
         return await res.json()
     }
     public async delete(fileName: string): Promise<R2Response> {
-        const headers = {
-            'Content-Type': 'application/octet-stream',
-        } as const
-        const res = await fetch(`${process.env.NEXT_PUBLIC_R2_WORKER_HOST_NAME}/delete`, {
+        const res = await fetch(`${this.host}/delete`, {
             method: 'POST',
             body: JSON.stringify({file_name: fileName}),
-            headers: headers
+            headers: this.headers
         })
         return await res.json()
     }
 }
 
-export default APIClient
+export class PushNotificationSubscriber {
+    private readonly host: string
+    private readonly headers: {[key: string]: string}
+    private readonly subscribeOptions: PushSubscriptionOptions
+
+    constructor() {
+        this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
+        this.headers = {
+            'Content-Type': 'application/json',
+        }
+        this.subscribeOptions = {
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLUC_KEY!).buffer
+        }
+    }
+    public async isSubscribed(): Promise<Result<PushSubscription>> {
+        try {
+            const registration = await navigator.serviceWorker.ready
+            const subscription = await registration.pushManager.getSubscription()
+            return { data: subscription, error: null }
+        } catch (e) {
+            console.log(e)
+            return { data: null, error: String(e) }
+        }
+    }
+
+    public async subscribe(): Promise<Result<IsSuccess>> {
+        try {
+            const registration = await navigator.serviceWorker.ready
+            const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
+            const res = await fetch(this.host + '/subscribe', {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify(subscription)
+            })
+            const jsonRes = await res.json()
+            return { data: <IsSuccess>jsonRes, error: null }
+        } catch (e) {
+            console.log(e)
+            return { data: null, error: String(e) }
+        }
+    }
+
+    public async unsubscribe(): Promise<Result<IsSuccess>> {
+        try {
+            const subscription = await this.isSubscribed()
+            if (!subscription.data) return { data: null, error: 'No Subscription' }
+            const res = await fetch(this.host + '/unsubscribe', {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify(subscription.data)
+            })
+            const jsonRes = await res.json()
+            return { data: <IsSuccess>jsonRes, error: null }
+        } catch (e) {
+            console.log(e)
+            return { data: null, error: String(e) }
+        }
+    }
+}

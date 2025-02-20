@@ -9,7 +9,7 @@ import { YearContext } from '@components/YearPicker'
 import Loader from '@components/Loader'
 import { TextLink } from '@components/TextLink'
 
-import APIClient from '@utils/api_client'
+import { APIClient } from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'

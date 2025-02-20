@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic'
 import { WikiData, WikiResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
-import APIClient from '@utils/api_client'
+import { APIClient, R2Client } from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
@@ -18,6 +18,7 @@ import { ReactQuillStyles } from '@utils/styles'
 const ReactQuill = dynamic(() => import('react-quill'))
 
 const client = new APIClient()
+const r2Client = new R2Client()
 
 
 const Wiki = () => {
@@ -141,7 +142,7 @@ const Wiki = () => {
     }
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files![0]
-        const response = await client.upload(file)
+        const response = await r2Client.upload(file)
         if (response.hasOwnProperty("image_url")) {
             setImageUrl(response.image_url)
         } else {
@@ -150,7 +151,7 @@ const Wiki = () => {
     }
     const handleDeleteFile = async(fileName: string) => {
         if (!window.confirm("削除しますか？")) return
-        const response = await client.delete(fileName)
+        const response = await r2Client.delete(fileName)
         if (response.hasOwnProperty("image_url")) {
             setImageUrl("")
             if (isUpdate) {

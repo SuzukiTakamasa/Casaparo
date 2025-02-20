@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
-import APIClient from '@utils/api_client'
+import { APIClient } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
 
