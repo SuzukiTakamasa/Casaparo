@@ -99,7 +99,7 @@ export class PushNotificationSubscriber {
             applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLUC_KEY!).buffer
         }
     }
-    public async isSubscribed(): Promise<Result<PushSubscription>> {
+    private async _isSubscribed(): Promise<Result<PushSubscription>> {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.getSubscription()
@@ -129,7 +129,7 @@ export class PushNotificationSubscriber {
 
     public async unsubscribe(): Promise<Result<IsSuccess>> {
         try {
-            const subscription = await this.isSubscribed()
+            const subscription = await this._isSubscribed()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
             const res = await fetch(this.host + '/unsubscribe', {
                 method: 'POST',
@@ -137,6 +137,7 @@ export class PushNotificationSubscriber {
                 body: JSON.stringify(subscription.data)
             })
             const jsonRes = await res.json()
+            await subscription.data.unsubscribe()
             return { data: <IsSuccess>jsonRes, error: null }
         } catch (e) {
             console.log(e)
