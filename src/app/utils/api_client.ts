@@ -1,5 +1,4 @@
 import { APIRequest, APIResponse, R2Response, Result , IsSuccess, BroadcastPayload } from './interfaces'
-import { urlBase64ToUint8Array } from './utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -89,7 +88,7 @@ export class WebPushSubscriber {
     private readonly headers: {[key: string]: string}
     private readonly subscribeOptions: PushSubscriptionOptions
 
-    constructor() {
+    constructor(urlBase64ToUint8Array: (urlBase64: string) => Uint8Array<ArrayBuffer>) {
         this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',

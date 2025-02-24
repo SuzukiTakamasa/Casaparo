@@ -12,8 +12,6 @@ import { getMonthArray, getDateArray } from '@utils/utility_function'
 
 
 const client = new APIClient()
-const subscriber = new WebPushSubscriber()
-
 
 const Setting = () => {
     const [showLabelDialog, setShowLabelDialog] = useState(false)
@@ -51,6 +49,19 @@ const Setting = () => {
     const [inventoryTypeVersion, setInventoryTypeVersion] = useState(1)
 
     const [isSubscribed, setIsSubscribed] = useState(false)
+
+    const urlBase64ToUint8Array = (base64String: string): Uint8Array<ArrayBuffer> => {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4)
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+        const rawData = window.atob(base64)
+        const outputArray = new Uint8Array(rawData.length)
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i)
+        }
+        return outputArray
+    }
+
+    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array)
 
     const validateLabel = () => {
         let isValid = true
