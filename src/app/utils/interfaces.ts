@@ -170,6 +170,11 @@ export interface BroadcastPayload {
     body: string
 }
 
+export interface PushSubscriptionOptionsOverride {
+    userVisibleOnly: boolean
+    applicationServerKey: Uint8Array
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]

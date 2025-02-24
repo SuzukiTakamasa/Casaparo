@@ -1,4 +1,4 @@
-import { APIRequest, APIResponse, R2Response, Result , IsSuccess, BroadcastPayload } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result , IsSuccess, BroadcastPayload, PushSubscriptionOptionsOverride } from './interfaces'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -86,16 +86,16 @@ export class R2Client {
 export class WebPushSubscriber {
     private readonly host: string
     private readonly headers: {[key: string]: string}
-    private readonly subscribeOptions: PushSubscriptionOptions
+    private readonly subscribeOptions: PushSubscriptionOptionsOverride
 
-    constructor(urlBase64ToUint8Array: (urlBase64: string) => Uint8Array<ArrayBuffer>) {
+    constructor(urlBase64ToUint8Array: (urlBase64: string) => Uint8Array) {
         this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
         }
         this.subscribeOptions = {
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!).buffer
+            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)
         }
     }
     private async _isSubscribed(): Promise<Result<PushSubscription>> {
