@@ -49,6 +49,7 @@ const Setting = () => {
     const [inventoryTypeVersion, setInventoryTypeVersion] = useState(1)
 
     const [isSubscribed, setIsSubscribed] = useState(false)
+    const [subscriber, setSubscriber] = useState<WebPushSubscriber>(new WebPushSubscriber(new Uint8Array()))
 
     const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
         const padding = '='.repeat((4 - base64String.length % 4) % 4)
@@ -60,8 +61,6 @@ const Setting = () => {
         }
         return outputArray
     }
-
-    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
 
     const validateLabel = () => {
         let isValid = true
@@ -311,6 +310,11 @@ const Setting = () => {
         fetchAnniversaries()
         fetchInventoryTypes()
     }, [fetchLabels, fetchAnniversaries, fetchInventoryTypes])
+
+    useEffect(() => {
+        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
+        setSubscriber(subscriber)
+    }, [])
 
     return (
         <>
