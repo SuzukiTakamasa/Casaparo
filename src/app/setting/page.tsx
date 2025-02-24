@@ -61,7 +61,7 @@ const Setting = () => {
         return outputArray
     }
 
-    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array)
+    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
 
     const validateLabel = () => {
         let isValid = true
