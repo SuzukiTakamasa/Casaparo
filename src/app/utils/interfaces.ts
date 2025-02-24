@@ -165,6 +165,16 @@ export interface DeleteImageRequest {
     file_name: string
 }
 
+export interface BroadcastPayload {
+    title: string
+    body: string
+}
+
+export interface PushSubscriptionOptionsOverride {
+    userVisibleOnly: boolean
+    applicationServerKey: Uint8Array
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]

@@ -3,15 +3,15 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import Toggle from 'react-styled-toggle'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
-import { APIClient } from '@utils/api_client'
+import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
 
 const client = new APIClient()
-
 
 const Setting = () => {
     const [showLabelDialog, setShowLabelDialog] = useState(false)
@@ -47,6 +47,20 @@ const Setting = () => {
     const [inventoryTypeId, setInventoryTypeId] = useState(0)
     const [inventoryType, setInventoryType] = useState("")
     const [inventoryTypeVersion, setInventoryTypeVersion] = useState(1)
+
+    const [isSubscribed, setIsSubscribed] = useState(false)
+    const [subscriber, setSubscriber] = useState<WebPushSubscriber>(new WebPushSubscriber(new Uint8Array()))
+
+    const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4)
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
+        const rawData = window.atob(base64)
+        const outputArray = new Uint8Array(rawData.length)
+        for (let i = 0; i < rawData.length; ++i) {
+            outputArray[i] = rawData.charCodeAt(i)
+        }
+        return outputArray
+    }
 
     const validateLabel = () => {
         let isValid = true
@@ -282,6 +296,14 @@ const Setting = () => {
         await client.post<InventoryTypeData>('/v2/inventory_type/delete', deleteInventoryTypeData)
         await fetchInventoryTypes()
     }
+    const handleSubscribeWebPushNotification = async () => {
+        const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
+        if (!window.confirm(popupMsg)) return
+        const res = isSubscribed ? await subscriber.unsubscribe() : await subscriber.subscribe()
+        if (res.data !== null) {
+            setIsSubscribed(!isSubscribed)
+        }
+    }
     
     useEffect(() => {
         fetchLabels()
@@ -289,16 +311,22 @@ const Setting = () => {
         fetchInventoryTypes()
     }, [fetchLabels, fetchAnniversaries, fetchInventoryTypes])
 
+    useEffect(() => {
+        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
+        setSubscriber(subscriber)
+    }, [])
+
     return (
         <>
             <h1 className="text-2xl font-bold mc-4">🦵 設定 🦵</h1>
 
             <div className="container mx-auto p-4">
+                <h2 className="text-xl font-bold mb-2">ラベル</h2>
                 <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                     onClick={handleOpenAddLabelDialog}
                 >
-                ラベルを登録
+                登録
                 </button>
 
                 {showLabelDialog && (
@@ -379,11 +407,12 @@ const Setting = () => {
             </div>
 
             <div className="container mx-auto p-4">
+                <h2 className="text-xl font-bold mb-2">記念日</h2>
                 <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                     onClick={handleOpenAddAnniversaryDialog}
                 >
-                記念日を登録
+                登録
                 </button>
 
                 {showAnniversaryDialog && (
@@ -483,11 +512,12 @@ const Setting = () => {
             </div>
 
             <div className="container mx-auto p-4">
+                <h2 className="text-xl font-bold mb-2">在庫種別</h2>
                 <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                     onClick={handleOpenAddInventoryTypeDialog}
                 >
-                在庫種別を登録
+                登録
                 </button>
 
                 {showInventoryTypeDialog && (
@@ -553,6 +583,13 @@ const Setting = () => {
                         ))}
                     </tbody>
                 </table>
+                <h2 className="text-xl font-bold mt-8">Push通知</h2>
+                <div className="flex justify-between items-center mt-2">
+                    <Toggle
+                        checked={isSubscribed}
+                        onChange={handleSubscribeWebPushNotification}
+                    />
+                </div>
             </div>
         </>
     )
