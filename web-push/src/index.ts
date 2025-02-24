@@ -1,5 +1,5 @@
 
-import { sendNotification, WebPushError } from 'web-push'
+import { sendNotification } from 'web-push'
 import APIHandler from './api_handler'
 
 export interface Env {
@@ -43,7 +43,7 @@ export default {
 				return new Response('ok', { status: 200 })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/broadcast') {
-			const payload = await request.json()
+			const payload: BroadcastPayload = await request.json()
 			const subscriptions = await api_handler.getSubscriptions()
 			if (subscriptions.error !== null) return new Response('internal server error', { status: 500 })
 			await Promise.all(subscriptions.data!.map(async (s) => {

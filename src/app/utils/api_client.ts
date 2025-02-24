@@ -1,4 +1,4 @@
-import { APIRequest, APIResponse, R2Response, Result , IsSuccess } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result , IsSuccess, BroadcastPayload } from './interfaces'
 import { urlBase64ToUint8Array } from './utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -84,7 +84,7 @@ export class R2Client {
     }
 }
 
-export class PushNotificationSubscriber {
+export class WebPushSubscriber {
     private readonly host: string
     private readonly headers: {[key: string]: string}
     private readonly subscribeOptions: PushSubscriptionOptions
@@ -96,7 +96,7 @@ export class PushNotificationSubscriber {
         }
         this.subscribeOptions = {
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLUC_KEY!).buffer
+            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!).buffer
         }
     }
     private async _isSubscribed(): Promise<Result<PushSubscription>> {
@@ -138,6 +138,21 @@ export class PushNotificationSubscriber {
             })
             const jsonRes = await res.json()
             await subscription.data.unsubscribe()
+            return { data: <IsSuccess>jsonRes, error: null }
+        } catch (e) {
+            console.log(e)
+            return { data: null, error: String(e) }
+        }
+    }
+
+    public async broadcast(payload: BroadcastPayload): Promise<Result<IsSuccess>> {
+        try {
+            const res = await fetch(this.host + '/broadcast', {
+                method: 'POST',
+                headers: this.headers,
+                body: JSON.stringify(payload)
+            })
+            const jsonRes = await res.json()
             return { data: <IsSuccess>jsonRes, error: null }
         } catch (e) {
             console.log(e)

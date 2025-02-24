@@ -165,6 +165,11 @@ export interface DeleteImageRequest {
     file_name: string
 }
 
+export interface BroadcastPayload {
+    title: string
+    body: string
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]
