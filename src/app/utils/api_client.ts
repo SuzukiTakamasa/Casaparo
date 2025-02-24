@@ -88,14 +88,14 @@ export class WebPushSubscriber {
     private readonly headers: {[key: string]: string}
     private readonly subscribeOptions: PushSubscriptionOptionsOverride
 
-    constructor(urlBase64ToUint8Array: (urlBase64: string) => Uint8Array) {
+    constructor(applicationServerKey: Uint8Array) {
         this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
         }
         this.subscribeOptions = {
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)
+            applicationServerKey: applicationServerKey
         }
     }
     private async _isSubscribed(): Promise<Result<PushSubscription>> {
