@@ -287,7 +287,8 @@ const Setting = () => {
         await fetchInventoryTypes()
     }
     const handleSubscribeWebPushNotification = async () => {
-        if (!window.confirm(isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?")) return
+        const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
+        if (!window.confirm(popupMsg)) return
         const res = isSubscribed ? await subscriber.unsubscribe() : await subscriber.subscribe()
         if (res.data !== null) {
             setIsSubscribed(!isSubscribed)
