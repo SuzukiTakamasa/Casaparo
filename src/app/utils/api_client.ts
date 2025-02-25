@@ -98,7 +98,7 @@ export class WebPushSubscriber {
             applicationServerKey: applicationServerKey
         }
     }
-    private async _isSubscribed(): Promise<Result<PushSubscription>> {
+    public async isSubscribed(): Promise<Result<PushSubscription>> {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.getSubscription()
@@ -128,7 +128,7 @@ export class WebPushSubscriber {
 
     public async unsubscribe(): Promise<Result<IsSuccess>> {
         try {
-            const subscription = await this._isSubscribed()
+            const subscription = await this.isSubscribed()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
             const res = await fetch(this.host + '/unsubscribe', {
                 method: 'POST',
