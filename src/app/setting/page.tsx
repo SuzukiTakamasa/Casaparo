@@ -296,6 +296,16 @@ const Setting = () => {
         await client.post<InventoryTypeData>('/v2/inventory_type/delete', deleteInventoryTypeData)
         await fetchInventoryTypes()
     }
+    const initWebPushSubscriber = useCallback(() => {
+        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
+        setSubscriber(subscriber)
+    }, [])
+    const fetchIsSubscribed = useCallback(async () => {
+        const subscription = await subscriber.isSubscribed()
+        if (subscription.data !== null) {
+            setIsSubscribed(true)
+        }
+    }, [])
     const handleSubscribeWebPushNotification = async () => {
         const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
         if (!window.confirm(popupMsg)) return
@@ -312,8 +322,8 @@ const Setting = () => {
     }, [fetchLabels, fetchAnniversaries, fetchInventoryTypes])
 
     useEffect(() => {
-        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
-        setSubscriber(subscriber)
+        initWebPushSubscriber()
+        fetchIsSubscribed()
     }, [])
 
     return (
