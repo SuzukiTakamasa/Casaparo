@@ -1,4 +1,5 @@
 
+import { PushSubscription } from 'web-push'
 import { Env, WebPushSubscription } from './index'
 
 interface Result<T> {
@@ -30,7 +31,7 @@ export default class APIHandler {
         }
     }
 
-    public async subscribe(body: WebPushSubscription): Promise<Result<WebPushSubscription>> {
+    public async subscribe(body: PushSubscription): Promise<Result<PushSubscription>> {
         try {
             const res = await fetch(this.host + '/v2/web_push_subscription/create', {
                 method: 'POST',
@@ -38,13 +39,13 @@ export default class APIHandler {
                 body: JSON.stringify(body)
             })
             const jsonRes = await res.json()
-            return { data: <WebPushSubscription>jsonRes, error: null }
+            return { data: <PushSubscription>jsonRes, error: null }
         } catch(e) {
             return { data: null, error: String(e) }
         }
     }
 
-    public async unsubscribe(body: WebPushSubscription): Promise<Result<WebPushSubscription>> {
+    public async unsubscribe(body: PushSubscription): Promise<Result<PushSubscription>> {
         try {
             const res = await fetch(this.host + '/v2/web_push_subscription/delete', {
                 method: 'POST',
@@ -52,7 +53,7 @@ export default class APIHandler {
                 body: JSON.stringify(body)
             })
             const jsonRes = await res.json()
-            return { data: <WebPushSubscription>jsonRes, error: null }
+            return { data: <PushSubscription>jsonRes, error: null }
         } catch(e) {
             return { data: null, error: String(e) }
         }
