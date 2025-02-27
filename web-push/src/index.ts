@@ -1,5 +1,5 @@
 
-import { sendNotification } from 'web-push'
+import { sendNotification, PushSubscription } from 'web-push'
 import APIHandler from './api_handler'
 
 export interface Env {
@@ -11,13 +11,10 @@ export interface Env {
 
 export interface WebPushSubscription {
 	id?: number
-	subscription_id: string,
+	user_id?: string,
 	endpoint: string,
-	p256h_key: string,
-	auth_key: string,
-	metadata: string,
-	is_active: boolean,
-	updated_at: string,
+	p256h_key: string | null,
+	auth_key: string | null,
 	version: number
 }
 
@@ -31,14 +28,26 @@ export default {
 		const api_handler = new APIHandler(env)
 		
 		if (request.method === 'POST' && new URL(request.url).pathname === '/subscribe') {
-			const subscription: WebPushSubscription = await request.json()
-			const result = await api_handler.subscribe(subscription)
+			const subscription: PushSubscription = await request.json()
+			const webPushSubscription = {
+				endpoint: subscription.endpoint,
+				p256h_key: subscription.keys.p256dh,
+				auth_key: subscription.keys.auth,
+				version: 0
+			}
+			const result = await api_handler.subscribe(webPushSubscription)
 			if (result.error !== null) return new Response('internal server error', { status: 500 })
 			return new Response('ok', { status: 200 })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/unsubscribe') {
-			const subscription: WebPushSubscription = await request.json()
-			const result = await api_handler.unsubscribe(subscription)
+			const subscription: PushSubscription = await request.json()
+			const webPushSubscription = {
+				endpoint: subscription.endpoint,
+				p256h_key: subscription.keys.p256dh,
+				auth_key: subscription.keys.auth,
+				version: 0
+			}
+			const result = await api_handler.unsubscribe(webPushSubscription)
 			if (result.error !== null) return new Response('internal server error', { status: 500 })
 				return new Response('ok', { status: 200 })
 
@@ -52,8 +61,8 @@ export default {
 						{
 							endpoint: s.endpoint,
 							keys: {
-								p256dh: s.p256h_key,
-								auth: s.auth_key
+								p256dh: s.p256h_key || '',
+								auth: s.auth_key || ''
 							}
 						},
 						JSON.stringify(payload),
