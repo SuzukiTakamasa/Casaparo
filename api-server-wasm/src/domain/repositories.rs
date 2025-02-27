@@ -9,3 +9,4 @@ pub mod shopping_note_repository;
 pub mod inventory_type_repository;
 pub mod task_repository;
 pub mod task_comment_repository;
+pub mod web_push_subscription_repository;
