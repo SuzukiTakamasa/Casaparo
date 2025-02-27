@@ -6,3 +6,4 @@ pub mod wiki;
 pub mod wiki_image;
 pub mod inventory;
 pub mod task;
+pub mod web_push_subscription;

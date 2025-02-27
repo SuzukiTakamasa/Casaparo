@@ -50,6 +50,10 @@ use crate::infrastructure::repositories::d1_task_comment_repository::D1TaskComme
 use crate::application::usecases::task_comment_usecases::TaskCommentUsecases;
 use crate::interfaces::api::task_comment_controller::TaskCommentController;
 
+use crate::infrastructure::repositories::d1_web_push_subscription_repository::D1WebPushSubscriptionRepository;
+use crate::application::usecases::web_push_subscription_usecases::WebPushSubscriptionUsecases;
+use crate::interfaces::api::web_push_subscription_controller::WebPushSubscriptionController;
+
 
 pub struct AppState {
     household_controller: HouseholdController<D1HouseholdRepository>,
@@ -63,6 +67,7 @@ pub struct AppState {
     inventory_type_controller: InventoryTypeController<D1InventoryTypeRepository>,
     task_controller: TaskController<D1TaskRepository>,
     task_comment_controller: TaskCommentController<D1TaskCommentRepository>,
+    web_push_subscription_controller: WebPushSubscriptionController<D1WebPushSubscriptionRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -140,9 +145,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let task_usecases = TaskUsecases::new(task_repository);
     let task_controller = TaskController::new(task_usecases);
 
-    let task_comment_repository = D1TaskCommentRepository::new(db);
+    let task_comment_repository = D1TaskCommentRepository::new(db.clone());
     let task_comment_usecases = TaskCommentUsecases::new(task_comment_repository);
     let task_comment_controller = TaskCommentController::new(task_comment_usecases);
+
+    let web_push_subscription_repository = D1WebPushSubscriptionRepository::new(db);
+    let web_push_subscription_usecases = WebPushSubscriptionUsecases::new(web_push_subscription_repository);
+    let web_push_subscription_controller = WebPushSubscriptionController::new(web_push_subscription_usecases);
 
     let app_state = AppState {
         household_controller,
@@ -156,6 +165,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         inventory_type_controller,
         task_controller,
         task_comment_controller,
+        web_push_subscription_controller,
     };
 
 
@@ -341,6 +351,16 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/task_comment/delete", |mut req, ctx| async move {
             ctx.data.task_comment_controller.delete_task_comment(&mut req).await
+        })
+     //web_push_subscription
+        .get_async("/v2/web_push_subscription", |_req, ctx| async move {
+            ctx.data.web_push_subscription_controller.get_web_push_subscriptions().await
+        })
+        .post_async("/v2/web_push_subscription/create", |mut req, ctx| async move {
+            ctx.data.web_push_subscription_controller.create_web_push_subscription(&mut req).await
+        })
+        .post_async("/v2/web_push_subscription/delete", |mut req, ctx| async move {
+            ctx.data.web_push_subscription_controller.delete_web_push_subscription(&mut req).await
         })
     .run(req, env)
     .await

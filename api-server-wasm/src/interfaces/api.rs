@@ -9,3 +9,4 @@ pub mod shopping_note_controller;
 pub mod inventory_type_controller;
 pub mod task_controller;
 pub mod task_comment_controller;
+pub mod web_push_subscription_controller;
