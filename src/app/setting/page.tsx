@@ -331,13 +331,15 @@ const Setting = () => {
             <h1 className="text-2xl font-bold mc-4">🦵 設定 🦵</h1>
 
             <div className="container mx-auto p-4">
-                <h2 className="text-xl font-bold mb-2">ラベル</h2>
-                <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                    onClick={handleOpenAddLabelDialog}
-                >
-                登録
-                </button>
+                <div className="flex justify-left space-x-4">
+                    <h2 className="text-xl font-bold mt-2">ラベル</h2>
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        onClick={handleOpenAddLabelDialog}
+                    >
+                    登録
+                    </button>
+                </div>
 
                 {showLabelDialog && (
                     <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -417,13 +419,15 @@ const Setting = () => {
             </div>
 
             <div className="container mx-auto p-4">
-                <h2 className="text-xl font-bold mb-2">記念日</h2>
-                <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                    onClick={handleOpenAddAnniversaryDialog}
-                >
-                登録
-                </button>
+                <div className="flex justify-left space-x-4">
+                <h2 className="text-xl font-bold mt-2">記念日</h2>
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        onClick={handleOpenAddAnniversaryDialog}
+                    >
+                    登録
+                    </button>
+                </div>
 
                 {showAnniversaryDialog && (
                     <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
@@ -522,13 +526,15 @@ const Setting = () => {
             </div>
 
             <div className="container mx-auto p-4">
-                <h2 className="text-xl font-bold mb-2">在庫種別</h2>
-                <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
-                    onClick={handleOpenAddInventoryTypeDialog}
-                >
-                登録
-                </button>
+                <div className="flex justify-left space-x-4">
+                    <h2 className="text-xl font-bold mt-2">在庫種別</h2>
+                    <button
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
+                        onClick={handleOpenAddInventoryTypeDialog}
+                    >
+                    登録
+                    </button>
+                </div>
 
                 {showInventoryTypeDialog && (
                     <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
