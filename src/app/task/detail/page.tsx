@@ -474,7 +474,7 @@ const TaskDetail = () => {
                 <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 mt-1">
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300">
-                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskDetail.description)))}} />
+                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskDetail.description)), { ADD_ATTR: ['target']})}} />
                         </div>
                         <table className="mt-2">
                             <tbody>
@@ -562,7 +562,7 @@ const TaskDetail = () => {
                         <div className="flex justify-left space-x-2">
                             <div className="text-lg">{setUser(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskComment.comment)))}} />
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskComment.comment)), { ADD_ATTR: ['target']})}} />
                                 <div className="flex justify-right space-x-1">
                                     <EditButton
                                         onClick={() => handleOpenUpdateTaskCommentDialog({
