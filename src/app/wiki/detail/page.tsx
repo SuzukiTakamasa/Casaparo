@@ -38,7 +38,7 @@ const WikiDetail = () => {
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
                 {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} width={150} height={150} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
-                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(wikiDetail.content)))}} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(wikiDetail.content)), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
                 </div>
             </div>
         </>
