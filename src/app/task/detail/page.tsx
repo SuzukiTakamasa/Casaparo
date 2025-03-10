@@ -15,7 +15,8 @@ import { EditButton, DeleteButton } from '@/app/components/Buttons'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
-import { convertUrlsToLinks, setUser, setStatusStr, setPriorityStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+import { convertUrlsToLinks, setUser, setStatusStr, setPriorityStr, splitYearMonthDayStr,
+         getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -96,7 +97,7 @@ const TaskDetail = () => {
             isValid = false
             setRelatedSubTaskCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
         }
-        if (getDate(year, month, today) > getDate(relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay)) {
+        if (relatedSubTaskStatus !== 2 && getDate(year, month, today) > getDate(relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay)) {
             isValid = false
             setRelatedSubTaskDueDateValidMsg("本日より後の日付を設定してください。")
         }
@@ -150,6 +151,7 @@ const TaskDetail = () => {
         })
     }
     const handleOpenUpdateRelatedSubTaskDialog = ({id, title, status, priority, description, created_by, due_date, parent_task_id, version}: TaskData) => {
+        const [ddYear, ddMonth, ddDay] = splitYearMonthDayStr(due_date)
         setShowRelatedSubTaskDialog(true)
         setIsUpdateRelatedSubTask(true)
         setRelatedSubTaskId(id as number)
@@ -159,6 +161,9 @@ const TaskDetail = () => {
         setRelatedSubTaskDescription(decodeURI(description))
         handleSetRelatedSubTaskCreatedByTAndY(created_by)
         setRelatedSubTaskDueDate(due_date)
+        setRelatedSubTaskDueDateYear(ddYear)
+        setRelatedSubTaskDueDateMonth(ddMonth)
+        setRelatedSubTaskDueDateDay(ddDay)
         setRelatedSubTaskParentTaskId(parent_task_id)
         setRelatedSubTaskVersion(version)
         window.scrollTo({
@@ -413,7 +418,7 @@ const TaskDetail = () => {
                             </select>
                         </label>
                         </div>
-                        {relatedSubTaskDueDateValidMsg !== "" && <div className="text-sm text-red 500">{relatedSubTaskDueDateValidMsg}</div>}
+                        {relatedSubTaskDueDateValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskDueDateValidMsg}</div>}
                         <label className="text-black">
                             <span>親チケット</span>
                             <select
@@ -440,7 +445,7 @@ const TaskDetail = () => {
                                 />
                             <span>🥺ྀི</span>
                         </div>
-                        {relatedSubTaskCreatedByValidMsg !== "" && <div className="text-sm text-red 500">{relatedSubTaskCreatedByValidMsg}</div>}
+                        {relatedSubTaskCreatedByValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskCreatedByValidMsg}</div>}
                         <div className="flex justify-center space-x-4">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"

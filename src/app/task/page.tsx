@@ -99,7 +99,7 @@ const Task = () => {
             isValid = false
             setCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
         }
-        if (getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
+        if (status !== 2 && getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
             isValid = false
             setDueDateValidMsg("本日より後の日付を設定してください。")
         }
