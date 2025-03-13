@@ -31,7 +31,7 @@ export default {
 
 		if (request.method === 'OPTIONS') {
 			const allow_origin_list = [env.CORS_FRONTEND_HOST]
-			if (env.ENVIRONMENT === 'dev') allow_origin_list.push('http://localhost:3000')
+			if (env.ENVIRONMENT === 'dev') allow_origin_list.push('http://localhost:3000/')
 			return new Response(null, {
 				status: 200,
 				headers: {
