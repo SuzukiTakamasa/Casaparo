@@ -7,6 +7,8 @@ export interface Env {
 	VAPID_PRIVATE_KEY: string
 	WORKER_RS_BACKEND_API_HOST: string
 	MAIL_TO_EMAIL_ADDRESS: string
+	ENVIRONMENT: string
+	CORS_FRONTEND_HOST: string
 }
 
 export interface WebPushSubscription {
@@ -26,6 +28,20 @@ export interface BroadcastPayload {
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
 		const api_handler = new APIHandler(env)
+
+		if (request.method === 'OPTIONS') {
+			const allow_origin_list = [env.CORS_FRONTEND_HOST]
+			if (env.ENVIRONMENT === 'dev') allow_origin_list.push('http://localhost:3000')
+			return new Response(null, {
+				status: 200,
+				headers: {
+					'Access-Control-Allow-Origin': allow_origin_list.join(','),
+					'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+					'Access-Control-Allow-Headers': 'Content-Type',
+					'Access-Control-Max-Age': '86400'
+				}
+			})
+		}
 		
 		if (request.method === 'POST' && new URL(request.url).pathname === '/subscribe') {
 			const subscription: PushSubscription = await request.json()
