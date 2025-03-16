@@ -1,14 +1,15 @@
-import LINEMessagingAPIHandler, { Env } from "./api_handler"
+import LINEMessagingAPIHandler, { Env, WorkerRsAPIHandler } from "./api_handler"
 
 export default {
-  async scheduled(event: any, env: Env, ctx: ExecutionContext) {
-    const apiHandler = new LINEMessagingAPIHandler(env)
+  async scheduled(event: any, env: Env, _: ExecutionContext) {
+    const wsHandler = new WorkerRsAPIHandler(env)
+    const lbHandler = new LINEMessagingAPIHandler(env)
     switch (event.cron) {
         case "0 0 24 * *":
-            await apiHandler.remindFixedHousehold()
+            await lbHandler.remindFixedHousehold()
             break
         case "0 0 25 * *":
-            await apiHandler.broadcastFixedHousehold()
+            await lbHandler.broadcastFixedHousehold(wsHandler)
             break
     }
   }
