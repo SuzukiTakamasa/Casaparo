@@ -15,38 +15,22 @@ interface Result<T> {
     error: string | null
 }
 
-export default class LINEMessagingAPIHandler {
-    private readonly lineBotHost: string
-    private readonly backendHost: string
-    private readonly accessToken: string
-    private readonly lineBotHeaders: {[key: string]: string}
-    private readonly backendHeaders: {[key: string]: string}
-    private readonly workerRs
-    public currentYear: number
-    public currentMonth: number
+export class WorkerRsAPIHandler {
+    private readonly host: string
+    private readonly headers: {[key: string]: string}
 
     constructor(env: Env) {
-        this.lineBotHost = "https://api.line.me/v2/bot/message"
-        this.backendHost = env.WORKER_RS_BACKEND_API_HOST
-        this.accessToken = env.LINE_BOT_CHANNEL_ACCESS_TOKEN
-        this.lineBotHeaders = {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${this.accessToken}`
-        } as const
-        this.backendHeaders = {
+        this.host = env.WORKER_RS_BACKEND_API_HOST
+        this.headers = {
             "Content-Type": "application/json",
         } as const
-        this.currentYear = new Date().getFullYear()
-        this.currentMonth = new Date().getMonth() + 1
-        this.workerRs = env.WORKER_RS
     }
 
-    public async _getAPIHandler<T>(url: string, params?: string): Promise<Result<T>> {
-        if (params) url += params
+    public async get<T>(params: string): Promise<Result<T>> {
         try {
-            const response = await this.workerRs.fetch(url, {
+            const response = await fetch(this.host + params, {
                 method: 'GET',
-                headers: this.backendHeaders
+                headers: this.headers
             })
             const jsonRes = response.json()
             return { data: <T>jsonRes, error: null }
@@ -55,11 +39,40 @@ export default class LINEMessagingAPIHandler {
         }
     }
 
-    public async _postAPIHandler<T>(url: string, endpoint: string, data: object): Promise<Result<T>> {
+    public async post<T>(endpoint: string, data: T): Promise<Result<T>> {
         try {
-            const response = await this.workerRs.fetch(url + endpoint, {
+            const response = await fetch(this.host + endpoint, {
                 method: 'POST',
-                headers: url === this.lineBotHost ? this.lineBotHeaders : this.backendHeaders,
+                headers: this.headers,
+                body: JSON.stringify(data)
+            })
+            const jsonRes = response.json()
+            return { data: <T>jsonRes, error: null }
+        } catch(e) {
+            return  { data: null, error: String(e)}
+        }
+    }
+}
+
+export default class LINEMessagingAPIHandler {
+    private host: string
+    private readonly accessToken: string
+    private readonly headers: {[key: string]: string}
+
+    constructor(env: Env) {
+        this.host = "https://api.line.me/v2/bot/message"
+        this.accessToken = env.LINE_BOT_CHANNEL_ACCESS_TOKEN
+        this.headers = {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${this.accessToken}`
+        } as const
+    }
+
+    public async callback<T>(url: string, endpoint: string, data: T): Promise<Result<T>> {
+        try {
+            const response = await fetch(url + endpoint, {
+                method: 'POST',
+                headers: this.headers,
                 body: JSON.stringify(data)
             })
             const jsonRes = response.json()
@@ -69,26 +82,23 @@ export default class LINEMessagingAPIHandler {
         }
     }
 
-    public async broadcastFixedHousehold() { 
-        const responseFixedHousehold = await this._getAPIHandler<FixedAmount>(`${this.backendHost}/household/fixed_amount/${this.currentYear}/${this.currentMonth}`)
-        const requestBody = responseFixedHousehold.error != null ? {
-            messages: [
-              {
-                "type": "text",
-                "text": `【今月の生活費のお知らせ 】\n 負担分： ${responseFixedHousehold.data!.billing_amount}\n生活費合計: ${responseFixedHousehold.data!.total_amount}\n(※清算が終わったら家計簿を確定してください。)`
-              }
-            ]
-        }
-        :
-        {
+    public async broadcastFixedHousehold(wsHandler: WorkerRsAPIHandler) { 
+        const currentYear = new Date().getFullYear()
+        const currentMonth = new Date().getMonth() + 1
+        const responseFixedHousehold = await wsHandler.get<FixedAmount>(`/household/fixed_amount/${currentYear}/${currentMonth}`)
+        
+        const msgText = responseFixedHousehold.error != null ?
+            `エラーが発生しました。${responseFixedHousehold.error}`:
+            `【今月の生活費のお知らせ 】\n 負担分： ${responseFixedHousehold.data!.billing_amount}\n生活費合計: ${responseFixedHousehold.data!.total_amount}\n(※清算が終わったら家計簿を確定してください。)`
+        const requestBody = {
             messages: [
                 {
                     "type": "text",
-                    "text": `エラーが発生しました。${responseFixedHousehold.error}`
+                    "text": msgText
                 }
             ]
         }
-       await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
+       await this.callback<any>(this.host, "/broadcast", requestBody)
     }
 
     public async remindFixedHousehold() {
@@ -100,6 +110,6 @@ export default class LINEMessagingAPIHandler {
           }
         ]
       }
-      await this._postAPIHandler<any>(this.lineBotHost, "/broadcast", requestBody)
+      await this.callback<any>(this.host, "/broadcast", requestBody)
     }
 }
