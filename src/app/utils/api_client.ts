@@ -1,4 +1,4 @@
-import { APIRequest, APIResponse, R2Response, Result , IsSuccess, BroadcastPayload } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscription, BroadcastPayload } from './interfaces'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -113,10 +113,16 @@ export class WebPushSubscriber {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
+            const webPushSubscription: WebPushSubscription = {
+                endpoint: subscription.endpoint,
+                p256h_key: String(subscription.getKey('p256dh')),
+                auth_key: String(subscription.getKey('auth')),
+                version: 0
+            }
             const res = await fetch(this.host + '/subscribe', {
                 method: 'POST',
                 headers: this.headers,
-                body: JSON.stringify(subscription)
+                body: JSON.stringify(webPushSubscription)
             })
             const jsonRes = await res.json()
             return { data: <IsSuccess>jsonRes, error: null }
@@ -130,10 +136,16 @@ export class WebPushSubscriber {
         try {
             const subscription = await this.isSubscribed()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
+            const webPushSubscription: WebPushSubscription = {
+                endpoint: subscription.data.endpoint,
+                p256h_key: String(subscription.data.getKey('p256dh')),
+                auth_key: String(subscription.data.getKey('auth')),
+                version: 0
+            }
             const res = await fetch(this.host + '/unsubscribe', {
                 method: 'POST',
                 headers: this.headers,
-                body: JSON.stringify(subscription.data)
+                body: JSON.stringify(webPushSubscription)
             })
             const jsonRes = await res.json()
             await subscription.data.unsubscribe()
