@@ -50,8 +50,8 @@ export default {
 				version: 0
 			}
 			const result = await api_handler.subscribe(webPushSubscription)
-			if (result.error !== null) return new Response('internal server error', { status: 500 })
-			return new Response('ok', { status: 200 })
+			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500 })
+			return new Response(JSON.stringify({data: result.data, error: null}), { status: 200 })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/unsubscribe') {
 			const subscription: PushSubscription = await request.json()
@@ -62,8 +62,8 @@ export default {
 				version: 0
 			}
 			const result = await api_handler.unsubscribe(webPushSubscription)
-			if (result.error !== null) return new Response('internal server error', { status: 500 })
-				return new Response('ok', { status: 200 })
+			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500 })
+				return new Response(JSON.stringify({data: result.data, error: null}), { status: 200 })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/broadcast') {
 			const payload: BroadcastPayload = await request.json()
@@ -89,7 +89,7 @@ export default {
 						}
 					)
 				} catch (e) {
-					return new Response('internal server error', { status: 500})
+					return new Response(JSON.stringify({data: null, error: e}), { status: 500})
 				}
 			}))
 		}
