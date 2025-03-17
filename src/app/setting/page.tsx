@@ -52,7 +52,6 @@ const Setting = () => {
     const [subscriber, setSubscriber] = useState<WebPushSubscriber>(new WebPushSubscriber(new Uint8Array()))
 
     const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
-        console.log(`The base64 string is ${base64String}`)
         const padding = '='.repeat((4 - base64String.length % 4) % 4)
         const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
         const rawData = window.atob(base64)
@@ -60,7 +59,6 @@ const Setting = () => {
         for (let i = 0; i < rawData.length; ++i) {
             outputArray[i] = rawData.charCodeAt(i)
         }
-        console.log(`The Uint8Array is ${outputArray}`)
         return outputArray
     }
 
