@@ -98,6 +98,10 @@ export class WebPushSubscriber {
             applicationServerKey: new Uint8Array(applicationServerKey).buffer
         }
     }
+    private arrayBufferToBase64(buffer: ArrayBuffer): string {
+        const bytes = new Uint8Array(buffer)
+        return btoa(String.fromCharCode.apply(null, Array.from(bytes)))
+    }
     public async isSubscribed(): Promise<Result<PushSubscription>> {
         try {
             const registration = await navigator.serviceWorker.ready
@@ -115,8 +119,8 @@ export class WebPushSubscriber {
             const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
             const webPushSubscription: WebPushSubscription = {
                 endpoint: subscription.endpoint,
-                p256h_key: String(subscription.getKey('p256dh')),
-                auth_key: String(subscription.getKey('auth')),
+                p256h_key: this.arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0)),
+                auth_key: this.arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
                 version: 0
             }
             const res = await fetch(this.host + '/subscribe', {
@@ -138,8 +142,8 @@ export class WebPushSubscriber {
             if (!subscription.data) return { data: null, error: 'No Subscription' }
             const webPushSubscription: WebPushSubscription = {
                 endpoint: subscription.data.endpoint,
-                p256h_key: String(subscription.data.getKey('p256dh')),
-                auth_key: String(subscription.data.getKey('auth')),
+                p256h_key: this.arrayBufferToBase64(subscription.data.getKey('p256dh') ?? new ArrayBuffer(0)),
+                auth_key: this.arrayBufferToBase64(subscription.data.getKey('auth') ?? new ArrayBuffer(0)),
                 version: 0
             }
             const res = await fetch(this.host + '/unsubscribe', {
