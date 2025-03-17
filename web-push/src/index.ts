@@ -1,5 +1,5 @@
 
-import { sendNotification, PushSubscription } from 'web-push'
+import { sendNotification } from 'web-push'
 import APIHandler from './api_handler'
 
 export interface Env {
@@ -42,25 +42,13 @@ export default {
 		}
 		
 		if (request.method === 'POST' && new URL(request.url).pathname === '/subscribe') {
-			const subscription: PushSubscription = await request.json()
-			const webPushSubscription = {
-				endpoint: subscription.endpoint,
-				p256h_key: subscription.keys.p256dh,
-				auth_key: subscription.keys.auth,
-				version: 0
-			}
+			const webPushSubscription: WebPushSubscription = await request.json()
 			const result = await api_handler.subscribe(webPushSubscription)
 			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500 })
 			return new Response(JSON.stringify({data: result.data, error: null}), { status: 200 })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/unsubscribe') {
-			const subscription: PushSubscription = await request.json()
-			const webPushSubscription = {
-				endpoint: subscription.endpoint,
-				p256h_key: subscription.keys.p256dh,
-				auth_key: subscription.keys.auth,
-				version: 0
-			}
+			const webPushSubscription: WebPushSubscription = await request.json()
 			const result = await api_handler.unsubscribe(webPushSubscription)
 			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500 })
 				return new Response(JSON.stringify({data: result.data, error: null}), { status: 200 })

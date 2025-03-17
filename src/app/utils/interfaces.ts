@@ -165,6 +165,15 @@ export interface DeleteImageRequest {
     file_name: string
 }
 
+export interface WebPushSubscription {
+	id?: number
+	user_id?: string,
+	endpoint: string,
+	p256h_key: string | null,
+	auth_key: string | null,
+	version: number
+}
+
 export interface BroadcastPayload {
     title: string
     body: string
