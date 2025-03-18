@@ -6,6 +6,7 @@ export interface Env {
 	VAPID_PUBLIC_KEY: string
 	VAPID_PRIVATE_KEY: string
 	WORKER_RS_BACKEND_API_HOST: string
+	WORKER_RS: Fetcher
 	MAIL_TO_EMAIL_ADDRESS: string
 	ENVIRONMENT: string
 	CORS_FRONTEND_HOST: string
@@ -13,7 +14,6 @@ export interface Env {
 
 export interface WebPushSubscription {
 	id?: number
-	user_id?: string,
 	endpoint: string,
 	p256h_key: string | null,
 	auth_key: string | null,
@@ -26,37 +26,42 @@ export interface BroadcastPayload {
 }
 
 export default {
-	async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+	async fetch(request: Request, env: Env, _: ExecutionContext): Promise<Response> {
 		const api_handler = new APIHandler(env)
+
+		const headers = {
+			'Access-Control-Allow-Origin': '*',
+			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+			'Access-Control-Allow-Headers': '*',
+			'Access-Control-Max-Age': '86400'
+		}
 
 		if (request.method === 'OPTIONS') {
 			return new Response(null, {
 				status: 204,
-				headers: {
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
-					'Access-Control-Allow-Headers': '*',
-					'Access-Control-Max-Age': '86400'
-				}
+				headers: headers
 			})
 		}
 		
 		if (request.method === 'POST' && new URL(request.url).pathname === '/subscribe') {
 			const webPushSubscription: WebPushSubscription = await request.json()
 			const result = await api_handler.subscribe(webPushSubscription)
-			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500 })
-			return new Response(JSON.stringify({data: result.data, error: null}), { status: 200 })
+
+			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500, headers: headers })
+			return new Response(JSON.stringify({data: result.data, error: null}), { status: 200, headers: headers })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/unsubscribe') {
 			const webPushSubscription: WebPushSubscription = await request.json()
 			const result = await api_handler.unsubscribe(webPushSubscription)
-			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500 })
-				return new Response(JSON.stringify({data: result.data, error: null}), { status: 200 })
+
+			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500, headers: headers })
+				return new Response(JSON.stringify({data: result.data, error: null}), { status: 200, headers: headers })
 
 		} else if (request.method === 'POST' && new URL(request.url).pathname === '/broadcast') {
 			const payload: BroadcastPayload = await request.json()
 			const subscriptions = await api_handler.getSubscriptions()
-			if (subscriptions.error !== null) return new Response('internal server error', { status: 500 })
+			
+			if (subscriptions.error !== null) return new Response('internal server error', { status: 500, headers: headers })
 			await Promise.all(subscriptions.data!.map(async (s) => {
 				try {
 					await sendNotification(
@@ -77,7 +82,7 @@ export default {
 						}
 					)
 				} catch (e) {
-					return new Response(JSON.stringify({data: null, error: e}), { status: 500})
+					return new Response(JSON.stringify({data: null, error: e}), { status: 500, headers: headers})
 				}
 			}))
 		}

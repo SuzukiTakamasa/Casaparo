@@ -8,8 +8,9 @@ crons = [
     "0 0 25 * *"
 ]
 
-[bindings]
-WORKER_RS = { service = "worker-rust-dev" }
+[[services]]
+binding = "WORKER_RS"
+service = "worker-rust-dev"
 
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
