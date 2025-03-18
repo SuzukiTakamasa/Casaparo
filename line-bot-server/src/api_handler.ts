@@ -16,11 +16,13 @@ interface Result<T> {
 }
 
 export class WorkerRsAPIHandler {
+    private readonly service: Fetcher
     private readonly host: string
     private readonly headers: {[key: string]: string}
 
-    constructor(env: Env) {
-        this.host = env.WORKER_RS_BACKEND_API_HOST
+    constructor({WORKER_RS, WORKER_RS_BACKEND_API_HOST}: Env) {
+        this.service = WORKER_RS
+        this.host = WORKER_RS_BACKEND_API_HOST
         this.headers = {
             "Content-Type": "application/json",
         } as const
@@ -28,7 +30,7 @@ export class WorkerRsAPIHandler {
 
     public async get<T>(params: string): Promise<Result<T>> {
         try {
-            const response = await fetch(this.host + params, {
+            const response = await this.service.fetch(this.host + params, {
                 method: 'GET',
                 headers: this.headers
             })
@@ -41,7 +43,7 @@ export class WorkerRsAPIHandler {
 
     public async post<T>(endpoint: string, data: T): Promise<Result<T>> {
         try {
-            const response = await fetch(this.host + endpoint, {
+            const response = await this.service.fetch(this.host + endpoint, {
                 method: 'POST',
                 headers: this.headers,
                 body: JSON.stringify(data)
@@ -59,9 +61,9 @@ export default class LINEMessagingAPIHandler {
     private readonly accessToken: string
     private readonly headers: {[key: string]: string}
 
-    constructor(env: Env) {
+    constructor({LINE_BOT_CHANNEL_ACCESS_TOKEN}: Env) {
         this.host = "https://api.line.me/v2/bot/message"
-        this.accessToken = env.LINE_BOT_CHANNEL_ACCESS_TOKEN
+        this.accessToken = LINE_BOT_CHANNEL_ACCESS_TOKEN
         this.headers = {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${this.accessToken}`
