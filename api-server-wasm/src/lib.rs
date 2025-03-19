@@ -92,7 +92,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     if allowed_origins.contains(&origin) {
         headers.set("Access-Control-Allow-Origin", &origin)?;
     } else {
-        return Response::error("Invalid origin", 403);
+        return Response::error(format!("Invalid origin: {}", origin), 403);
     }
     
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
