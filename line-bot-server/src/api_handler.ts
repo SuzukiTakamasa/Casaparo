@@ -20,11 +20,12 @@ export class WorkerRsAPIHandler {
     private readonly host: string
     private readonly headers: {[key: string]: string}
 
-    constructor({WORKER_RS, WORKER_RS_BACKEND_API_HOST}: Env) {
+    constructor({WORKER_RS, WORKER_RS_BACKEND_API_HOST}: Env, origin: string) {
         this.service = WORKER_RS
         this.host = WORKER_RS_BACKEND_API_HOST
         this.headers = {
             "Content-Type": "application/json",
+            "Origin": origin
         } as const
     }
 
