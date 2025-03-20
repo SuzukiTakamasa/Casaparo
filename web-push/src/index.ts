@@ -27,7 +27,9 @@ export interface BroadcastPayload {
 
 export default {
 	async fetch(request: Request, env: Env, _: ExecutionContext): Promise<Response> {
-		const api_handler = new APIHandler(env)
+
+		const origin = new URL(request.url).origin
+		const api_handler = new APIHandler(env, origin)
 
 		const headers = {
 			'Access-Control-Allow-Origin': '*',
