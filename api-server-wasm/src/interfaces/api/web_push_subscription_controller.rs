@@ -2,9 +2,10 @@ use crate::application::usecases::web_push_subscription_usecases::WebPushSubscri
 use crate::domain::repositories::web_push_subscription_repository::WebPushSubscriptionRepository;
 use crate::domain::entities::web_push_subscription::WebPushSubscription;
 use crate::domain::entities::service::IsSuccess;
-use worker::Result;
+use worker::{Result, RouteContext};
 use worker::{Request, Response};
 use serde_json::from_str;
+use crate::AppState;
 
 pub struct WebPushSubscriptionController<R: WebPushSubscriptionRepository> {
     usecases: WebPushSubscriptionUsecases<R>,
@@ -17,6 +18,15 @@ impl<R: WebPushSubscriptionRepository> WebPushSubscriptionController<R> {
 
     pub async fn get_web_push_subscriptions(&self) -> Result<Response> {
         let result = match self.usecases.get_web_push_subscriptions().await {
+            Ok(web_push_subscription) => web_push_subscription,
+            Err(e) => return Response::error(e.to_string(), 500)
+        };
+        Response::from_json(&result)
+    }
+
+    pub async fn get_web_push_subscription_by_subscription_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let subscription_id = ctx.param("subscription_id").unwrap();
+        let result = match self.usecases.get_web_push_subscription_by_subscription_id(subscription_id).await {
             Ok(web_push_subscription) => web_push_subscription,
             Err(e) => return Response::error(e.to_string(), 500)
         };

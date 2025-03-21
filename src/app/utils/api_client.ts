@@ -2,6 +2,8 @@ import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscri
 import * as dotenv from 'dotenv'
 dotenv.config()
 
+const crypto = require("crypto")
+
 export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
     if (getParams) url += getParams
     try {
@@ -118,6 +120,7 @@ export class WebPushSubscriber {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
             const webPushSubscription: WebPushSubscription = {
+                subscription_id: crypto.randomUUID(),
                 endpoint: subscription.endpoint,
                 p256h_key: this.arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0)),
                 auth_key: this.arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
@@ -128,6 +131,7 @@ export class WebPushSubscriber {
                 headers: this.headers,
                 body: JSON.stringify(webPushSubscription)
             })
+            if (res.status === 200) localStorage.setItem('subscription_id', webPushSubscription.subscription_id)
             const jsonRes = await res.json()
             return { data: <IsSuccess>jsonRes, error: null }
         } catch (e) {
@@ -140,7 +144,10 @@ export class WebPushSubscriber {
         try {
             const subscription = await this.isSubscribed()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
+            const subscription_id = localStorage.getItem('subscription_id')
+            if (!subscription_id) return { data: null, error: 'No Subscription ID' }
             const webPushSubscription: WebPushSubscription = {
+                subscription_id: subscription_id,
                 endpoint: subscription.data.endpoint,
                 p256h_key: this.arrayBufferToBase64(subscription.data.getKey('p256dh') ?? new ArrayBuffer(0)),
                 auth_key: this.arrayBufferToBase64(subscription.data.getKey('auth') ?? new ArrayBuffer(0)),
@@ -151,6 +158,7 @@ export class WebPushSubscriber {
                 headers: this.headers,
                 body: JSON.stringify(webPushSubscription)
             })
+            if (res.status === 200) localStorage.removeItem('subscription_id')
             const jsonRes = await res.json()
             await subscription.data.unsubscribe()
             return { data: <IsSuccess>jsonRes, error: null }

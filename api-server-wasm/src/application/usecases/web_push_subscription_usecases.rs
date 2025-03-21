@@ -15,6 +15,10 @@ impl<R: WebPushSubscriptionRepository> WebPushSubscriptionUsecases<R> {
         self.repository.get_web_push_subscriptions().await
     }
 
+    pub async fn get_web_push_subscription_by_subscription_id(&self, subscription_id: &str) -> Result<Option<WebPushSubscription>> {
+        self.repository.get_web_push_subscription_by_subscription_id(subscription_id).await
+    }
+
     pub async fn create_web_push_subscription(&self, web_push_subscription: &WebPushSubscription) -> Result<()> {
         self.repository.create_web_push_subscription(web_push_subscription).await
     }

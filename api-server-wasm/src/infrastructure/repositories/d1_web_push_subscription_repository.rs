@@ -26,14 +26,25 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
         result.results::<WebPushSubscription>()
     }
 
+    async fn get_web_push_subscription_by_subscription_id(&self, subscription_id: &str) -> Result<Option<WebPushSubscription>> {
+        let statement = self.db.prepare(r#"select
+                                                                *
+                                                                from web_push_subscriptions
+                                                                where subscription_id = ?1"#);
+        let query = statement.bind(&[subscription_id.into()])?;
+        let result = query.first::<WebPushSubscription>(None).await?;
+        Ok(result)
+    }
+
     async fn create_web_push_subscription(&self, web_push_subscription: &WebPushSubscription) -> Result<()> {
         let statement = self.db.prepare(r#"insert into web_push_subscriptions
-                                                                (endpoint, p256h_key, auth_key, version)
-                                                                values (?1, ?2, ?3, ?4)"#);
+                                                                (endpoint, subscription_id, p256h_key, auth_key, version)
+                                                                values (?1, ?2, ?3, ?4, ?5)"#);
         let query = statement.bind(&[web_push_subscription.endpoint.clone().into(),
-                                                        web_push_subscription.p256h_key.clone().into(),
-                                                        web_push_subscription.auth_key.clone().into(),
-                                                        web_push_subscription.version.into()])?;
+                                                          web_push_subscription.subscription_id.clone().into(),
+                                                          web_push_subscription.p256h_key.clone().into(),
+                                                          web_push_subscription.auth_key.clone().into(),
+                                                          web_push_subscription.version.into()])?;
         query.run().await?;
         Ok(())
     }
@@ -55,8 +66,8 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
             return Err(worker::Error::RustError("Version is found None".to_string()))
         }
         let statement = self.db.prepare(r#"delete from web_push_subscriptions
-                                                                where id = ?1"#);
-        let query = statement.bind(&[web_push_subscription.id.into()])?;
+                                                                where subscription_id = ?1"#);
+        let query = statement.bind(&[web_push_subscription.subscription_id.clone().into()])?;
         query.run().await?;
         Ok(())
     }
