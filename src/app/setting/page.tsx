@@ -49,7 +49,7 @@ const Setting = () => {
     const [inventoryTypeVersion, setInventoryTypeVersion] = useState(1)
 
     const [isSubscribed, setIsSubscribed] = useState(false)
-    const [subscriber, setSubscriber] = useState<WebPushSubscriber>(new WebPushSubscriber(new Uint8Array()))
+    const [subscriber, setSubscriber] = useState<WebPushSubscriber>(new WebPushSubscriber(new Uint8Array(), new APIClient()))
 
     const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
         const padding = '='.repeat((4 - base64String.length % 4) % 4)
@@ -297,7 +297,8 @@ const Setting = () => {
         await fetchInventoryTypes()
     }
     const initWebPushSubscriber = useCallback(() => {
-        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!))
+        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
+                                                 new APIClient())
         setSubscriber(subscriber)
     }, [])
     const fetchIsSubscribed = useCallback(async () => {
@@ -310,9 +311,7 @@ const Setting = () => {
         const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
         if (!window.confirm(popupMsg)) return
         const res = isSubscribed ? await subscriber.unsubscribe() : await subscriber.subscribe()
-        if (res.data !== null) {
-            setIsSubscribed(!isSubscribed)
-        }
+        setIsSubscribed(!isSubscribed)
     }
     
     useEffect(() => {

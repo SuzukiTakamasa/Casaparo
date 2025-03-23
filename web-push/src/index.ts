@@ -33,7 +33,7 @@ export default {
 
 		const headers = {
 			'Access-Control-Allow-Origin': '*',
-			'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+			'Access-Control-Allow-Methods': 'POST, OPTIONS',
 			'Access-Control-Allow-Headers': '*',
 			'Access-Control-Max-Age': '86400'
 		}
@@ -45,21 +45,7 @@ export default {
 			})
 		}
 		
-		if (request.method === 'POST' && new URL(request.url).pathname === '/subscribe') {
-			const webPushSubscription: WebPushSubscription = await request.json()
-			const result = await api_handler.subscribe(webPushSubscription)
-
-			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500, headers: headers })
-			return new Response(JSON.stringify({data: result.data, error: null}), { status: 200, headers: headers })
-
-		} else if (request.method === 'POST' && new URL(request.url).pathname === '/unsubscribe') {
-			const webPushSubscription: WebPushSubscription = await request.json()
-			const result = await api_handler.unsubscribe(webPushSubscription)
-
-			if (result.error !== null) return new Response(JSON.stringify({data: null, error: result.error}), { status: 500, headers: headers })
-				return new Response(JSON.stringify({data: result.data, error: null}), { status: 200, headers: headers })
-
-		} else if (request.method === 'POST' && new URL(request.url).pathname === '/broadcast') {
+		if (request.method === 'POST' && new URL(request.url).pathname === '/broadcast') {
 			const payload: BroadcastPayload = await request.json()
 			const subscriptions = await api_handler.getSubscriptions()
 			
