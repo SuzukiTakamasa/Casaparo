@@ -32,32 +32,4 @@ export default class APIHandler {
             return { data: null, error: String(e) }
         }
     }
-
-    public async subscribe(body: WebPushSubscription): Promise<Result<WebPushSubscription>> {
-        try {
-            const res = await this.service.fetch(this.host + '/v2/web_push_subscription/create', {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify(body)
-            })
-            const jsonRes = await res.json()
-            return { data: <WebPushSubscription>jsonRes, error: null }
-        } catch(e) {
-            return { data: null, error: String(e) }
-        }
-    }
-
-    public async unsubscribe(body: WebPushSubscription): Promise<Result<WebPushSubscription>> {
-        try {
-            const res = await this.service.fetch(this.host + '/v2/web_push_subscription/delete', {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify(body)
-            })
-            const jsonRes = await res.json()
-            return { data: <WebPushSubscription>jsonRes, error: null }
-        } catch(e) {
-            return { data: null, error: String(e) }
-        }
-    }
 }

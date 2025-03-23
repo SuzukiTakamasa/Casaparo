@@ -165,9 +165,9 @@ export interface DeleteImageRequest {
     file_name: string
 }
 
-export interface WebPushSubscription {
+export interface WebPushSubscriptionData {
 	id?: number
-	user_id?: string,
+	subscription_id: string,
 	endpoint: string,
 	p256h_key: string | null,
 	auth_key: string | null,
@@ -215,7 +215,8 @@ export type APIRequest = HouseholdData |
              ExtractedShoppingNoteData |
                               TaskData |
                        TaskCommentData |
-                       HasTaskComments
+                       HasTaskComments |
+               WebPushSubscriptionData
 
 export type APIResponse = HouseholdResponse |
                            ScheduleResponse |

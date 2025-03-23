@@ -1,6 +1,7 @@
-import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscription, BroadcastPayload } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscriptionData, BroadcastPayload } from './interfaces'
 import * as dotenv from 'dotenv'
 dotenv.config()
+import { v4 as uuidv4 } from 'uuid'
 
 export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
     if (getParams) url += getParams
@@ -87,8 +88,9 @@ export class WebPushSubscriber {
     private readonly host: string
     private readonly headers: {[key: string]: string}
     private readonly subscribeOptions: PushSubscriptionOptions
+    private readonly client: APIClient
 
-    constructor(applicationServerKey: Uint8Array) {
+    constructor(applicationServerKey: Uint8Array, apiClient: APIClient) {
         this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
@@ -97,6 +99,7 @@ export class WebPushSubscriber {
             userVisibleOnly: true,
             applicationServerKey: new Uint8Array(applicationServerKey).buffer
         }
+        this.client = apiClient
     }
     private arrayBufferToBase64(buffer: ArrayBuffer): string {
         const bytes = new Uint8Array(buffer)
@@ -117,19 +120,16 @@ export class WebPushSubscriber {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
-            const webPushSubscription: WebPushSubscription = {
+            const webPushSubscription: WebPushSubscriptionData = {
+                subscription_id: uuidv4(),
                 endpoint: subscription.endpoint,
                 p256h_key: this.arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0)),
                 auth_key: this.arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
                 version: 0
             }
-            const res = await fetch(this.host + '/subscribe', {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify(webPushSubscription)
-            })
-            const jsonRes = await res.json()
-            return { data: <IsSuccess>jsonRes, error: null }
+            const res = await this.client.post<WebPushSubscriptionData>('/v2/web_push_subscription/create', webPushSubscription)
+            if (res.data) localStorage.setItem('subscription_id', webPushSubscription.subscription_id)
+            return { data: res.data, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
@@ -140,20 +140,17 @@ export class WebPushSubscriber {
         try {
             const subscription = await this.isSubscribed()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
-            const webPushSubscription: WebPushSubscription = {
-                endpoint: subscription.data.endpoint,
-                p256h_key: this.arrayBufferToBase64(subscription.data.getKey('p256dh') ?? new ArrayBuffer(0)),
-                auth_key: this.arrayBufferToBase64(subscription.data.getKey('auth') ?? new ArrayBuffer(0)),
-                version: 0
-            }
-            const res = await fetch(this.host + '/unsubscribe', {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify(webPushSubscription)
-            })
-            const jsonRes = await res.json()
+            const subscription_id = localStorage.getItem('subscription_id')
+
+            if (!subscription_id) return { data: null, error: 'No Subscription ID' }
+            const savedSubscription = await this.client.get<WebPushSubscriptionData>(`/v2/web_push_subscription/${subscription_id}`)
+
+            if (!savedSubscription.data) return { data: null, error: 'No Saved Subscription' }
+            const res = await this.client.post<WebPushSubscriptionData>('/v2/web_push_subscription/delete', savedSubscription.data)
+
+            if (res.data) localStorage.removeItem('subscription_id')
             await subscription.data.unsubscribe()
-            return { data: <IsSuccess>jsonRes, error: null }
+            return { data: res.data, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }

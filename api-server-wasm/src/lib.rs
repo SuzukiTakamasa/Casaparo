@@ -357,6 +357,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/web_push_subscription", |_req, ctx| async move {
             ctx.data.web_push_subscription_controller.get_web_push_subscriptions().await
         })
+        .get_async("/v2/web_push_subscription/:subscription_id", |_req, ctx| async move {
+            ctx.data.web_push_subscription_controller.get_web_push_subscription_by_subscription_id(&ctx).await
+        })
         .post_async("/v2/web_push_subscription/create", |mut req, ctx| async move {
             ctx.data.web_push_subscription_controller.create_web_push_subscription(&mut req).await
         })
