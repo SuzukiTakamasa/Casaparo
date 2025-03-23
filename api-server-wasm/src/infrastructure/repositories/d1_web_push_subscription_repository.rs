@@ -26,14 +26,17 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
         result.results::<WebPushSubscription>()
     }
 
-    async fn get_web_push_subscription_by_subscription_id(&self, subscription_id: &str) -> Result<Option<WebPushSubscription>> {
+    async fn get_web_push_subscription_by_subscription_id(&self, subscription_id: &str) -> Result<WebPushSubscription> {
         let statement = self.db.prepare(r#"select
                                                                 *
                                                                 from web_push_subscriptions
                                                                 where subscription_id = ?1"#);
         let query = statement.bind(&[subscription_id.into()])?;
         let result = query.first::<WebPushSubscription>(None).await?;
-        Ok(result)
+        match result {
+            Some(web_push_subscription) => Ok(web_push_subscription),
+            None => Err(worker::Error::RustError(format!("A web push subscription with subscription_id {} is not found.", subscription_id)))
+        }
     }
 
     async fn create_web_push_subscription(&self, web_push_subscription: &WebPushSubscription) -> Result<()> {
