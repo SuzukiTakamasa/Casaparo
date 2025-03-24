@@ -5,6 +5,7 @@ mod application;
 mod domain;
 mod infrastructure;
 mod interfaces;
+mod service;
 
 use crate::infrastructure::repositories::d1_household_repository::D1HouseholdRepository;
 use crate::application::usecases::household_usecases::HouseholdUsecases;
