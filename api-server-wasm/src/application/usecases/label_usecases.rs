@@ -7,6 +7,18 @@ pub struct LabelUsecases<R: LabelRepository> {
     repository: R,
 }
 
+impl Labels {
+    fn validate(&self) -> Result<()> {
+        if self.name.len() == 0 {
+            return Err(worker::Error::RustError("The name must not be empty.".to_string()));
+        }
+        if self.label.len() == 0 {
+            return Err(worker::Error::RustError("The label_type must not be empty.".to_string()));
+        }
+        Ok(())
+    }
+}
+
 impl<R: LabelRepository> LabelUsecases<R> {
     pub fn new(repository: R) -> Self {
         Self { repository }
@@ -22,14 +34,17 @@ impl<R: LabelRepository> LabelUsecases<R> {
     }
 
     pub async fn create_label(&self, label: &Labels) -> Result<()> {
+        label.validate()?;
         self.repository.create_label(label).await
     }
 
     pub async fn update_label(&self, label: &mut Labels) -> Result<()> {
+        label.validate()?;
         self.repository.update_label(label).await
     }
 
     pub async fn delete_label(&self, label: &mut Labels) -> Result<()> {
+        label.validate()?;
         self.repository.delete_label(label).await
     }
 }

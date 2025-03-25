@@ -7,6 +7,15 @@ pub struct InventoryTypeUsecases<R: InventoryTypeRepository> {
     repository: R,
 }
 
+impl InventoryTypes {
+    fn validate(&self) -> Result<()> {
+        if self.types.len() == 0 {
+            return Err(worker::Error::RustError("The types must not be empty.".to_string()));
+        }
+        Ok(())
+    }
+}
+
 impl<R: InventoryTypeRepository> InventoryTypeUsecases<R> {
     pub fn new(repository: R) -> Self {
         Self { repository }
@@ -22,14 +31,17 @@ impl<R: InventoryTypeRepository> InventoryTypeUsecases<R> {
     }
 
     pub async fn create_inventory_type(&self, inventory_type: &InventoryTypes) -> Result<()> {
+        inventory_type.validate()?;
         self.repository.create_inventory_type(inventory_type).await
     }
 
     pub async fn update_inventory_type(&self, inventory_type: &mut InventoryTypes) -> Result<()> {
+        inventory_type.validate()?;
         self.repository.update_inventory_type(inventory_type).await
     }
 
     pub async fn delete_inventory_type(&self, inventory_type: &mut InventoryTypes) -> Result<()> {
+        inventory_type.validate()?;
         self.repository.delete_inventory_type(inventory_type).await
     }
 }
