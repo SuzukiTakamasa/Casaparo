@@ -1,6 +1,7 @@
 use crate::domain::entities::household::{Households, FixedAmount, HouseholdMonthlySummary, IsCompleted, CompletedHouseholds};
 use crate::domain::repositories::household_repository::HouseholdRepository;
 use crate::service::validators::common_validators::{validate_year, validate_month};
+use crate::worker_err;
 use worker::Result;
 
 pub struct HouseholdUsecases<R: HouseholdRepository> {
@@ -19,10 +20,10 @@ impl Households {
             validate_month(month)?;
         }
         if self.is_default != 0 || self.is_default != 1 {
-            return Err(worker::Error::RustError("The is_default must be 0 or 1.".to_string()));
+            return Err(worker_err!("The is_default must be 0 or 1."));
         }
         if self.is_owner != 0 || self.is_owner != 1 {
-            return Err(worker::Error::RustError("The is_owner must be 0 or 1.".to_string()));
+            return Err(worker_err!("The is_owner must be 0 or 1."));
         }
         Ok(())
     }
@@ -33,7 +34,7 @@ impl CompletedHouseholds {
         validate_year(self.year)?;
         validate_month(self.month)?;
         if self.detail.len() == 0 {
-            return Err(worker::Error::RustError("The detail must not be empty.".to_string()));
+            return Err(worker_err!("The detail must not be empty."));
         }
         Ok(())
     }

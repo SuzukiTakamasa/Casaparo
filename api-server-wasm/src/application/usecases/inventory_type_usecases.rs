@@ -1,5 +1,6 @@
 use crate::domain::entities::setting::{InventoryTypes, IsUsed};
 use crate::domain::repositories::inventory_type_repository::InventoryTypeRepository;
+use crate::worker_err;
 use worker::Result;
 
 
@@ -10,7 +11,7 @@ pub struct InventoryTypeUsecases<R: InventoryTypeRepository> {
 impl InventoryTypes {
     fn validate(&self) -> Result<()> {
         if self.types.len() == 0 {
-            return Err(worker::Error::RustError("The types must not be empty.".to_string()));
+            return Err(worker_err!("The types must not be empty."));
         }
         Ok(())
     }

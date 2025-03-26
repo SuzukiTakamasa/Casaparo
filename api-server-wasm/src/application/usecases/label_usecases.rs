@@ -1,5 +1,6 @@
 use crate::domain::entities::setting::{Labels, IsUsed};
 use crate::domain::repositories::label_repository::LabelRepository;
+use crate::worker_err;
 use worker::Result;
 
 
@@ -10,10 +11,10 @@ pub struct LabelUsecases<R: LabelRepository> {
 impl Labels {
     fn validate(&self) -> Result<()> {
         if self.name.len() == 0 {
-            return Err(worker::Error::RustError("The name must not be empty.".to_string()));
+            return Err(worker_err!("The name must not be empty."));
         }
         if self.label.len() == 0 {
-            return Err(worker::Error::RustError("The label_type must not be empty.".to_string()));
+            return Err(worker_err!("The label_type must not be empty."));
         }
         Ok(())
     }

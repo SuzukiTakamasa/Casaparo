@@ -1,5 +1,6 @@
 use crate::domain::entities::inventory::Inventories;
 use crate::domain::repositories::inventory_repository::InventoryRepository;
+use crate::worker_err;
 use worker::Result;
 
 
@@ -10,10 +11,10 @@ pub struct InventoryUsecases<R: InventoryRepository> {
 impl Inventories {
     fn validate(&self) -> Result<()> {
         if self.name.len() == 0 {
-            return Err(worker::Error::RustError("The name must not be empty.".to_string()));
+            return Err(worker_err!("The name must not be empty."));
         }
         if self.created_by == 0 || self.created_by == 1 {
-            return Err(worker::Error::RustError("The created_by must be 0 or 1.".to_string()));
+            return Err(worker_err!("The created_by must be 0 or 1."));
         }
         Ok(())
     }

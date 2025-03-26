@@ -1,6 +1,7 @@
 use crate::domain::entities::setting::Anniversaries;
 use crate::domain::repositories::anniversary_repository::AnniversaryRepository;
 use crate::service::validators::common_validators::{validate_month, validate_date};
+use crate::worker_err;
 use worker::Result;
 
 
@@ -13,7 +14,7 @@ impl Anniversaries {
         validate_month(self.month)?;
         validate_date(self.date)?;
         if self.description.len() == 0 {
-            return Err(worker::Error::RustError("The description must not be empty.".to_string()));
+            return Err(worker_err!("The description must not be empty."));
         }
         Ok(())
     }
