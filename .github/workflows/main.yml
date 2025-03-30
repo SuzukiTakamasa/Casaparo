@@ -7,6 +7,8 @@ on:
   pull_request:
     branches:
       - main
+    types:
+      - closed
 
 jobs:
   deploy-to-worker-rs:
@@ -25,14 +27,14 @@ jobs:
       working-directory: ${{ github.workspace }}/api-server-wasm
 
     - name: Publish to Cloudflare Workers (Development)
-      if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
+      if: github.ref == 'refs/heads/dev'
       run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/api-server-wasm
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
-      if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+      if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
       run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/api-server-wasm
       env:
@@ -58,14 +60,14 @@ jobs:
       working-directory: ${{ github.workspace }}/line-bot-server
     
     - name: Publish to Cloudflare Workers (Development)
-      if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
+      if: github.ref == 'refs/heads/dev'
       run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/line-bot-server
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
-      if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+      if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
       run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/line-bot-server
       env:
@@ -91,14 +93,14 @@ jobs:
       working-directory: ${{ github.workspace }}/r2
     
     - name: Publish to Cloudflare Workers (Development)
-      if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
+      if: github.ref == 'refs/heads/dev'
       run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/r2
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
-      if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+      if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
       run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/r2
       env:
@@ -124,14 +126,14 @@ jobs:
       working-directory: ${{ github.workspace }}/web-push
     
     - name: Publish to Cloudflare Workers (Development)
-      if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && github.base_ref == 'dev')
+      if: github.ref == 'refs/heads/dev'
       run: npm run deploy-dev
       working-directory: ${{ github.workspace }}/web-push
       env:
         CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     - name: Publish to Cloudflare Workers (Production)
-      if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.base_ref == 'main')
+      if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
       run: npm run deploy-prod
       working-directory: ${{ github.workspace }}/web-push
       env:
