@@ -12,8 +12,8 @@ import MonthPaginator from '@components/MonthPaginator'
 
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@/app/components/Heroicons'
-import { APIClient, execExternalGetAPI} from '@utils/api_client'
-import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
+import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
+import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime, urlBase64ToUint8Array } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -73,6 +73,10 @@ const Schedule = () => {
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
     const [isMultipleDays, setIsMultipleDays] = useState(false)
+    const [isNotified, setIsNotified] = useState(false)
+
+    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
+                                                 client)
 
 
     const getCalendar = (year: number, month: number, day: number) => {
@@ -354,6 +358,7 @@ const Schedule = () => {
         setDateValidMsg("")
         setDescriptionValidMsg("")
         setCreatedByValidMsg("")
+        setIsNotified(false)
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
@@ -378,6 +383,12 @@ const Schedule = () => {
             version: version
         }
         await client.post<ScheduleData>('/v2/schedule/create', addScheduleData)
+        if (isNotified) {
+            await subscriber.broadcast({
+                title: "新しい予定が追加されました",
+                body: `${description}\n${fromYear}-${fromMonth}-${fromDate} ${fromTime}\n~${toYear}-${toMonth}-${toDate} ${toTime}`
+            })
+        }
         await fetchSchedules()
     }
     const fetchLabels = async () => {
@@ -401,6 +412,12 @@ const Schedule = () => {
             version: version
         }
         await client.post<ScheduleData>('/v2/schedule/update', updateSchedule)
+        if (isNotified) {
+            await subscriber.broadcast({
+                title: "予定が更新されました",
+                body: `${description}\n${fromYear}-${fromMonth}-${fromDate} ${fromTime}\n~${toYear}-${toMonth}-${toDate} ${toTime}`
+            })
+        }
         await fetchSchedules()
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
@@ -652,6 +669,16 @@ const Schedule = () => {
                                             <option key={i} value={l.id}>{`${l.label} ${l.name}`}</option>
                                         ))}
                                     </select>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label className="text-black">
+                                    <input
+                                        type="checkbox"
+                                        checked={isNotified}
+                                        onChange={e => setIsNotified(!isNotified)}
+                                    />
+                                    <span className="ml-2">通知を受け取る</span>
                                     </label>
                                 </div>
                             </div>

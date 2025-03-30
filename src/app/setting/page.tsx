@@ -8,7 +8,7 @@ import Toggle from 'react-styled-toggle'
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
-import { getMonthArray, getDateArray } from '@utils/utility_function'
+import { getMonthArray, getDateArray, urlBase64ToUint8Array } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -49,18 +49,9 @@ const Setting = () => {
     const [inventoryTypeVersion, setInventoryTypeVersion] = useState(1)
 
     const [isSubscribed, setIsSubscribed] = useState(false)
-    const [subscriber, setSubscriber] = useState<WebPushSubscriber>(new WebPushSubscriber(new Uint8Array(), new APIClient()))
 
-    const urlBase64ToUint8Array = (base64String: string): Uint8Array => {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4)
-        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/')
-        const rawData = window.atob(base64)
-        const outputArray = new Uint8Array(rawData.length)
-        for (let i = 0; i < rawData.length; ++i) {
-            outputArray[i] = rawData.charCodeAt(i)
-        }
-        return outputArray
-    }
+    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
+                                             client)
 
     const validateLabel = () => {
         let isValid = true
@@ -296,11 +287,6 @@ const Setting = () => {
         await client.post<InventoryTypeData>('/v2/inventory_type/delete', deleteInventoryTypeData)
         await fetchInventoryTypes()
     }
-    const initWebPushSubscriber = useCallback(() => {
-        const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
-                                                 new APIClient())
-        setSubscriber(subscriber)
-    }, [])
     const fetchIsSubscribed = useCallback(async () => {
         const subscription = await subscriber.isSubscribed()
         if (subscription.data !== null) {
@@ -321,7 +307,6 @@ const Setting = () => {
     }, [fetchLabels, fetchAnniversaries, fetchInventoryTypes])
 
     useEffect(() => {
-        initWebPushSubscriber()
         fetchIsSubscribed()
     }, [])
 
