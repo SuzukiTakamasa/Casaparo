@@ -50,7 +50,7 @@ export default {
 			const subscriptions = await api_handler.getSubscriptions()
 			
 			if (subscriptions.error !== null) return new Response('internal server error', { status: 500, headers: headers })
-			await Promise.all(subscriptions.data!.map(async (s) => {
+			const result = await Promise.all(subscriptions.data!.map(async (s) => {
 				try {
 					await sendNotification(
 						{
@@ -73,6 +73,7 @@ export default {
 					return new Response(JSON.stringify({data: null, error: e}), { status: 500, headers: headers})
 				}
 			}))
+			return new Response(JSON.stringify({data: String(result), error: null}), { status: 200, headers: headers})
 		}
 		return new Response('not found', { status: 404 })
 	},
