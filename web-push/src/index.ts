@@ -50,9 +50,9 @@ export default {
 			const subscriptions = await api_handler.getSubscriptions()
 			
 			if (subscriptions.error !== null) return new Response('internal server error', { status: 500, headers: headers })
-			const [...result] = await Promise.all(subscriptions.data!.map(async (s) => {
+			const result = await Promise.all(subscriptions.data!.map(async (s) => {
 				try {
-					await sendNotification(
+					const sendResult = await sendNotification(
 						{
 							endpoint: s.endpoint,
 							keys: {
@@ -69,8 +69,9 @@ export default {
 							}
 						} as RequestOptions
 					)
+					return {data: JSON.stringify(sendResult), error: null}
 				} catch (e) {
-					return new Response(JSON.stringify({data: null, error: e}), { status: 500, headers: headers})
+					return {data: null, error: e}
 				}
 			}))
 			return new Response(JSON.stringify({data: JSON.stringify(result), error: null}), { status: 200, headers: headers})
