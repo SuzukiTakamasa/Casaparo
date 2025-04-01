@@ -73,7 +73,7 @@ export default {
 					return new Response(JSON.stringify({data: null, error: e}), { status: 500, headers: headers})
 				}
 			}))
-			return new Response(JSON.stringify({data: String(result), error: null}), { status: 200, headers: headers})
+			return new Response(JSON.stringify({data: JSON.stringify(result), error: null}), { status: 200, headers: headers})
 		}
 		return new Response('not found', { status: 404 })
 	},
