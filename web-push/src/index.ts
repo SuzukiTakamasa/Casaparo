@@ -45,7 +45,7 @@ export default {
 			})
 		}
 		
-		if (request.method === 'POST' && new URL(request.url).pathname === '/broadcast') {
+		if (request.method === 'POST' && request.url.endsWith('/broadcast')) {
 			const payload: BroadcastPayload = await request.json()
 			const subscriptions = await api_handler.getSubscriptions()
 			
