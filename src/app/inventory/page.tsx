@@ -5,7 +5,7 @@
 import { useEffect, useState, useCallback, useContext } from 'react'
 
 import { APIClient } from '@utils/api_client'
-import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse, Result } from '@/app/utils/interfaces'
+import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse } from '@/app/utils/interfaces'
 
 import { adaptTwoPointReader, setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
