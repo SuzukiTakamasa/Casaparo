@@ -1,5 +1,5 @@
 
-import { sendNotification } from 'web-push'
+import { sendNotification, PushSubscription, RequestOptions } from 'web-push'
 import APIHandler from './api_handler'
 
 export interface Env {
@@ -15,8 +15,8 @@ export interface Env {
 export interface WebPushSubscription {
 	id?: number
 	endpoint: string,
-	p256h_key: string | null,
-	auth_key: string | null,
+	p256h_key: string,
+	auth_key: string,
 	version: number
 }
 
@@ -50,16 +50,16 @@ export default {
 			const subscriptions = await api_handler.getSubscriptions()
 			
 			if (subscriptions.error !== null) return new Response('internal server error', { status: 500, headers: headers })
-			const result = await Promise.all(subscriptions.data!.map(async (s) => {
+			const [...result] = await Promise.all(subscriptions.data!.map(async (s) => {
 				try {
 					await sendNotification(
 						{
 							endpoint: s.endpoint,
 							keys: {
-								p256dh: s.p256h_key || '',
-								auth: s.auth_key || ''
+								p256dh: s.p256h_key,
+								auth: s.auth_key
 							}
-						},
+						} as PushSubscription,
 						JSON.stringify(payload),
 						{
 							vapidDetails: {
@@ -67,7 +67,7 @@ export default {
 								publicKey: env.VAPID_PUBLIC_KEY,
 								privateKey: env.VAPID_PRIVATE_KEY
 							}
-						}
+						} as RequestOptions
 					)
 				} catch (e) {
 					return new Response(JSON.stringify({data: null, error: e}), { status: 500, headers: headers})
