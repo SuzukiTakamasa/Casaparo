@@ -7,6 +7,6 @@ self.addEventListener('push', (event) => {
     }
 
     event.waitUntil(
-        self.ServiceWorkerRegistration.showNotification(title, options)
+        self.registration.showNotification(title, options)
     )
 })
