@@ -57,7 +57,7 @@ const Inventory = () => {
     const numberOfDataPerPage = 10
     const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
 
-    const [isHiddenRegisteredShoppingNotes, setIsHiddenRegisteredShoppingNotes] = useState(false)
+    const [isDisplayedRegisteredShoppingNotes, setIsDisplayedRegisteredShoppingNotes] = useState(false)
 
     const setInventoryTypesStr = (types: number) => {
         return inventoryTypes.filter(i => i.id === types)[0]?.types ?? "-"
@@ -404,14 +404,15 @@ const Inventory = () => {
             shoppingNotes.slice(firstDataIndexPerPage - 1)
         )
     }
-    const handleIsHiddenRegisteredShoppingNotes = () => {
-        setIsHiddenRegisteredShoppingNotes(!isHiddenRegisteredShoppingNotes)
+    const handleIsDisplayedRegisteredShoppingNotes = () => {
+        setIsDisplayedRegisteredShoppingNotes(!isDisplayedRegisteredShoppingNotes)
     }
     const handleDisplayShoppingNotes = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
         return (
-            isHiddenRegisteredShoppingNotes ?
-            shoppingNotes.filter(s => s[0].is_registered === 0) :
+            isDisplayedRegisteredShoppingNotes ?
             shoppingNotes
+            :
+            shoppingNotes.filter(s => s[0].is_registered === 0)
         )
     }
     const isYetToRegisterToInventory = (id: number) => {
@@ -626,10 +627,10 @@ const Inventory = () => {
                     <input
                         className="ml-8 mr-2"
                         type="checkbox"
-                        checked={isHiddenRegisteredShoppingNotes}
-                        onChange={handleIsHiddenRegisteredShoppingNotes}
+                        checked={isDisplayedRegisteredShoppingNotes}
+                        onChange={handleIsDisplayedRegisteredShoppingNotes}
                     />
-                    <span>登録済みを非表示</span>
+                    <span>登録済みを表示</span>
 
                     <GeneralPaginationProvider page={pagination} setPage={setPagination}>
                         <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} cssStr="text-lg font-bold mx-4" />
