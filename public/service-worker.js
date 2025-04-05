@@ -10,3 +10,7 @@ self.addEventListener('push', (event) => {
         self.registration.showNotification(title, options)
     )
 })
+
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close()
+})
