@@ -60,6 +60,7 @@ export default {
 					const sendResult = await webpush.sendNotification(
 						{
 							endpoint: s.endpoint,
+							expirationTime: null,
 							keys: {
 								p256dh: s.p256h_key,
 								auth: s.auth_key
