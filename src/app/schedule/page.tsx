@@ -74,6 +74,7 @@ const Schedule = () => {
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
     const [isMultipleDays, setIsMultipleDays] = useState(false)
     const [isNotified, setIsNotified] = useState(false)
+    const [isSubscribed, setIsSubscribed] = useState(false)
 
     const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
                                                  client)
@@ -229,6 +230,10 @@ const Schedule = () => {
         if (createdBy === null && !createdByT && !createdByY) {
             isValid = false
             setCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
+        }
+        if (isNotified && !isSubscribed) {
+            isValid = false
+            setCreatedByValidMsg("通知を受け取るには、設定からPush通知の購読設定を行なってください。")
         }
         return isValid
     }
@@ -462,6 +467,12 @@ const Schedule = () => {
         const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
         setAnniversaries(anniversaries.data || [])
     }, [])
+    const fetchIsSubscribed = useCallback(async () => {
+        const res = await subscriber.isSubscribed()
+        if (res.data) {
+            setIsSubscribed(true)
+        }
+    }, [])
 
     useEffect(() => {
         handleGetHolidaysList()
@@ -484,6 +495,10 @@ const Schedule = () => {
             setActiveTab('month')
         }
     }, [scheduleYear, scheduleMonth])
+
+    useEffect(() => {
+        fetchIsSubscribed()
+    })
 
     return (
         <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth} setYear={setScheduleYear}>
