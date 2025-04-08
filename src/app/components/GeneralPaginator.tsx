@@ -55,7 +55,7 @@ export const GeneralPaginationStr = ({ numberOfDataPerPage, numberOfData, cssStr
     const lastDataIndexPerPage = page * numberOfDataPerPage
     return (
         <div className={`${cssStr}`}>
-            {`${firstDataIndexPerPage} - ${lastDataIndexPerPage <= numberOfData ? lastDataIndexPerPage : numberOfData} / ${numberOfData}`}
+            {`${numberOfData > 0 ? firstDataIndexPerPage : 0} - ${lastDataIndexPerPage <= numberOfData ? lastDataIndexPerPage : numberOfData} / ${numberOfData}`}
         </div>
     )
 }
