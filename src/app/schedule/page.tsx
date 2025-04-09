@@ -468,7 +468,7 @@ const Schedule = () => {
         setAnniversaries(anniversaries.data || [])
     }, [])
     const fetchIsSubscribed = useCallback(async () => {
-        const res = await subscriber.isSubscribed()
+        const res = await subscriber.fetchSubscription()
         if (res.data) {
             setIsSubscribed(true)
         }
