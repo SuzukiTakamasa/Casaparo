@@ -288,7 +288,7 @@ const Setting = () => {
         await fetchInventoryTypes()
     }
     const fetchIsSubscribed = useCallback(async () => {
-        const subscription = await subscriber.isSubscribed()
+        const subscription = await subscriber.fetchSubscription()
         if (subscription.data !== null) {
             setIsSubscribed(true)
         }
