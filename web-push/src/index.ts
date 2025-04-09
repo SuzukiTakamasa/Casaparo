@@ -13,7 +13,9 @@ export interface Env {
 }
 
 export interface WebPushSubscription {
-	id?: number
+	id?: number,
+	subscription_id: string,
+	expiration_time: number
 	endpoint: string,
 	p256h_key: string,
 	auth_key: string,

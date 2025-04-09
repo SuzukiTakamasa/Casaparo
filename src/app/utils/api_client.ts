@@ -105,10 +105,15 @@ export class WebPushSubscriber {
         const bytes = new Uint8Array(buffer)
         return btoa(String.fromCharCode.apply(null, Array.from(bytes)))
     }
-    public async isSubscribed(): Promise<Result<PushSubscription>> {
+    public async fetchSubscription(): Promise<Result<PushSubscription>> {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.getSubscription()
+
+            if (subscription?.expirationTime && subscription.expirationTime < Date.now()) {
+                await this.unsubscribe()
+                return { data: null, error: 'Subscription expired' }
+            }
             return { data: subscription, error: null }
         } catch (e) {
             console.log(e)
@@ -123,8 +128,9 @@ export class WebPushSubscriber {
             const webPushSubscription: WebPushSubscriptionData = {
                 subscription_id: uuidv4(),
                 endpoint: subscription.endpoint,
-                p256h_key: this.arrayBufferToBase64(subscription.getKey('p256dh') ?? new ArrayBuffer(0)),
-                auth_key: this.arrayBufferToBase64(subscription.getKey('auth') ?? new ArrayBuffer(0)),
+                expiration_time: subscription.expirationTime ?? null,
+                p256h_key: this.arrayBufferToBase64(subscription.getKey('p256dh') as ArrayBuffer),
+                auth_key: this.arrayBufferToBase64(subscription.getKey('auth') as ArrayBuffer),
                 version: 0
             }
             const res = await this.client.post<WebPushSubscriptionData>('/v2/web_push_subscription/create', webPushSubscription)
@@ -138,7 +144,7 @@ export class WebPushSubscriber {
 
     public async unsubscribe(): Promise<Result<IsSuccess>> {
         try {
-            const subscription = await this.isSubscribed()
+            const subscription = await this.fetchSubscription()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
             const subscription_id = localStorage.getItem('subscription_id')
 
