@@ -5,7 +5,6 @@ pub struct WebPushSubscription {
     pub id: Option<u32>,
     pub subscription_id: String,
     pub endpoint: String,
-    pub expiration_time: Option<String>,
     pub p256h_key: String,
     pub auth_key: String,
     pub version: u32

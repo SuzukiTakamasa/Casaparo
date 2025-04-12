@@ -15,7 +15,6 @@ export interface Env {
 export interface WebPushSubscription {
 	id?: number,
 	subscription_id: string,
-	expiration_time: number
 	endpoint: string,
 	p256h_key: string,
 	auth_key: string,
@@ -62,7 +61,6 @@ export default {
 					const sendResult = await webpush.sendNotification(
 						{
 							endpoint: s.endpoint,
-							expirationTime: null,
 							keys: {
 								p256dh: s.p256h_key,
 								auth: s.auth_key
