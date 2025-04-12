@@ -41,11 +41,10 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
 
     async fn create_web_push_subscription(&self, web_push_subscription: &WebPushSubscription) -> Result<()> {
         let statement = self.db.prepare(r#"insert into web_push_subscriptions
-                                                                (subscription_id, endpoint, expiration_time, p256h_key, auth_key, version)
-                                                                values (?1, ?2, ?3, ?4, ?5, ?6)"#);
+                                                                (subscription_id, endpoint, p256h_key, auth_key, version)
+                                                                values (?1, ?2, ?3, ?4, ?5)"#);
         let query = statement.bind(&[web_push_subscription.subscription_id.clone().into(),
                                                           web_push_subscription.endpoint.clone().into(),
-                                                          web_push_subscription.expiration_time.clone().into(),
                                                           web_push_subscription.p256h_key.clone().into(),
                                                           web_push_subscription.auth_key.clone().into(),
                                                           web_push_subscription.version.into()])?;

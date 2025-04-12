@@ -128,7 +128,6 @@ export class WebPushSubscriber {
             const webPushSubscription: WebPushSubscriptionData = {
                 subscription_id: uuidv4(),
                 endpoint: subscription.endpoint,
-                expiration_time: subscription.expirationTime ?? null,
                 p256h_key: this.arrayBufferToBase64(subscription.getKey('p256dh') as ArrayBuffer),
                 auth_key: this.arrayBufferToBase64(subscription.getKey('auth') as ArrayBuffer),
                 version: 0

@@ -169,7 +169,6 @@ export interface WebPushSubscriptionData {
 	id?: number
 	subscription_id: string,
 	endpoint: string,
-    expiration_time: number | null,
 	p256h_key: string,
 	auth_key: string,
 	version: number
