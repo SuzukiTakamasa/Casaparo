@@ -5,6 +5,7 @@ dotenv.config()
 import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 
+
 export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
     if (getParams) url += getParams
     try {

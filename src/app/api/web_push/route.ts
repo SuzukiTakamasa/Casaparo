@@ -1,4 +1,4 @@
-import webpush from 'web-push';
+/*import webpush from 'web-push';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { APIClient } from '@/app/utils/api_client';
@@ -61,3 +61,4 @@ export async function OPTIONS() {
     headers: headers
   })
 }
+*/

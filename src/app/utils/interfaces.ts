@@ -184,6 +184,11 @@ export interface BroadcastRequest {
     subscriptions: WebPushSubscriptionResponse
 }
 
+export interface SendResultData {
+    body: string
+    statusCode: number
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]
@@ -209,6 +214,8 @@ export type TaskResponse = TaskData[]
 export type TaskCommentResponse = TaskCommentData[]
 
 export type WebPushSubscriptionResponse = WebPushSubscriptionData[]
+
+export type SendResultResponse = SendResultData[]
 
 export type APIRequest = HouseholdData |
                           ScheduleData |
@@ -240,4 +247,5 @@ export type APIResponse = HouseholdResponse |
                                 FixedAmount |
                                 IsCompleted |
                                      IsUsed |
-                WebPushSubscriptionResponse
+                WebPushSubscriptionResponse |
+                         SendResultResponse
