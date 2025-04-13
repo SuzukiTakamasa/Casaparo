@@ -56,8 +56,8 @@ export default {
 				env.VAPID_PUBLIC_KEY,
 				env.VAPID_PRIVATE_KEY
 			)
-			const result = await Promise.all(subscriptions.data!.map(async (s) => {
-				try {
+			try {
+				const result = await Promise.all(subscriptions.data!.map(async (s) => {
 					const sendResult = await webpush.sendNotification(
 						{
 							endpoint: s.endpoint,
@@ -68,12 +68,12 @@ export default {
 						},
 						JSON.stringify(payload),
 					)
-					return {data: JSON.stringify(sendResult), error: null}
-				} catch (e) {
-					return {data: null, error: e}
-				}
-			}))
-			return new Response(JSON.stringify({data: JSON.stringify(result), error: null}), { status: 200, headers: headers})
+					return {body: sendResult.body, statusCode: sendResult.statusCode}
+				}))
+				return new Response(JSON.stringify({data: result, error: null}), { status: 200, headers: headers})	
+			} catch (e) {
+				return new Response(JSON.stringify({data: null, error: e}), { status: 500, headers: headers})
+			}
 		}
 		return new Response('not found', { status: 404 })
 	},

@@ -13,7 +13,7 @@ import MonthPaginator from '@components/MonthPaginator'
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@/app/components/Heroicons'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
-import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime, urlBase64ToUint8Array } from '@utils/utility_function'
+import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -76,8 +76,7 @@ const Schedule = () => {
     const [isNotified, setIsNotified] = useState(false)
     const [isSubscribed, setIsSubscribed] = useState(false)
 
-    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
-                                                 client)
+    const subscriber = new WebPushSubscriber(client)
 
 
     const getCalendar = (year: number, month: number, day: number) => {

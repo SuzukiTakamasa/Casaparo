@@ -8,7 +8,7 @@ import Toggle from 'react-styled-toggle'
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
-import { getMonthArray, getDateArray, urlBase64ToUint8Array } from '@utils/utility_function'
+import { getMonthArray, getDateArray } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -50,8 +50,7 @@ const Setting = () => {
 
     const [isSubscribed, setIsSubscribed] = useState(false)
 
-    const subscriber = new WebPushSubscriber(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!),
-                                             client)
+    const subscriber = new WebPushSubscriber(client)
 
     const validateLabel = () => {
         let isValid = true

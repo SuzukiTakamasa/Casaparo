@@ -1,4 +1,5 @@
 import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscriptionData, BroadcastPayload } from './interfaces'
+import { urlBase64ToUint8Array } from '@utils/utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { v4 as uuidv4 } from 'uuid'
@@ -90,14 +91,14 @@ export class WebPushSubscriber {
     private readonly subscribeOptions: PushSubscriptionOptions
     private readonly client: APIClient
 
-    constructor(applicationServerKey: Uint8Array, apiClient: APIClient) {
+    constructor(apiClient: APIClient) {
         this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
         }
         this.subscribeOptions = {
             userVisibleOnly: true,
-            applicationServerKey: new Uint8Array(applicationServerKey).buffer
+            applicationServerKey: new Uint8Array(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)).buffer
         }
         this.client = apiClient
     }
