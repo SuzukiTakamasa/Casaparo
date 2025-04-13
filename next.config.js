@@ -10,10 +10,7 @@ const nextConfig = withPWA({
     images: {
         unoptimized: true,
         domains: ['r2-dev.incubus-appalachia.workers.dev', 'r2.incubus-appalachia.workers.dev'],
-    },
-    experimental: {
-        serverActions: true,
-    },
+    }
 })
 
 module.exports = nextConfig
