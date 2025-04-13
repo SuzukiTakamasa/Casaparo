@@ -5,7 +5,6 @@ const path = require('path')
 
 const linebotServerDirPath = path.join(__dirname, './line-bot-server/src/')
 const r2DirPath = path.join(__dirname, './r2/')
-const webPushDirPath = path.join(__dirname, './web-push/')
 
 const removePath = (path) => {
     fs.remove(path, e => {
@@ -16,4 +15,3 @@ const removePath = (path) => {
 
 removePath(linebotServerDirPath)
 removePath(r2DirPath)
-removePath(webPushDirPath)
