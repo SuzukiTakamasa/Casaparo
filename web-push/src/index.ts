@@ -51,12 +51,14 @@ export default {
 			const subscriptions = await api_handler.getSubscriptions()
 			
 			if (subscriptions.error !== null) return new Response('internal server error', { status: 500, headers: headers })
+
 			webpush.setVapidDetails(
 				`mailto:${env.MAIL_TO_EMAIL_ADDRESS}`,
 				env.VAPID_PUBLIC_KEY,
 				env.VAPID_PRIVATE_KEY
 			)
-			const result = await Promise.all(subscriptions.data!.map(async (s) => {
+			
+			const result = await Promise.allSettled(subscriptions.data!.map(async (s) => {
 				const sendResult = await webpush.sendNotification(
 					{
 						endpoint: s.endpoint,
@@ -66,6 +68,9 @@ export default {
 						}
 					},
 					JSON.stringify(payload),
+					{
+						contentEncoding: 'aes128gcm'
+					}
 				)
 				return {body: sendResult.body, statusCode: sendResult.statusCode}
 			}))

@@ -36,18 +36,4 @@ export default class APIHandler {
             return { data: null, error: String(e) }
         }
     }
-
-    public async deleteExpiredSubscriptions(subscription: WebPushSubscription): Promise<Result<IsSuccess>> {
-        try {
-            const res = await this.service.fetch(this.host + '/v2/web_push_subscription/delete', {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify(subscription)
-            })
-            const jsonRes = await res.json()
-            return { data: <IsSuccess>jsonRes, error: null }
-        } catch (e) {
-            return { data: null, error: String(e) }
-        }
-    }
 }
