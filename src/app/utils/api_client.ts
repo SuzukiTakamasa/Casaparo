@@ -1,8 +1,10 @@
-import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscriptionData, BroadcastPayload } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload } from './interfaces'
 import { urlBase64ToUint8Array } from '@utils/utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
+import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
+
 
 export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
     if (getParams) url += getParams
@@ -86,13 +88,11 @@ export class R2Client {
 }
 
 export class WebPushSubscriber {
-    private readonly host: string
     private readonly headers: {[key: string]: string}
     private readonly subscribeOptions: PushSubscriptionOptions
     private readonly client: APIClient
 
     constructor(apiClient: APIClient) {
-        this.host = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
         this.headers = {
             'Content-Type': 'application/json',
         }
@@ -163,15 +163,21 @@ export class WebPushSubscriber {
         }
     }
 
-    public async broadcast(payload: BroadcastPayload): Promise<Result<IsSuccess>> {
+    public async broadcast(payload: BroadcastPayload): Promise<Result<NextResponse>> {
         try {
-            const res = await fetch(this.host + '/broadcast', {
+            const subscriptions = await this.client.get<WebPushSubscriptionResponse>('/v2/web_push_subscription')
+            if (subscriptions.error !== null) {
+                return { data: null, error: `Internal Server Error: ${subscriptions.error}` }
+            }
+            const res = await fetch('/api/web_push', {
                 method: 'POST',
                 headers: this.headers,
-                body: JSON.stringify(payload)
+                body: JSON.stringify({
+                    subscriptions: subscriptions.data,
+                    payload: payload
+                })
             })
-            const jsonRes = await res.json()
-            return { data: <IsSuccess>jsonRes, error: null }
+            return { data: <NextResponse>res, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
