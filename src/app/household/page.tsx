@@ -11,6 +11,7 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 import { CheckBadgeIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
+import { ToasterComponent, toastMessage } from '@components/ToastMessage'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
@@ -202,6 +203,8 @@ const Household = () => {
 
 
     return (
+        <>
+        <ToasterComponent />
         <MonthProvider month={householdMonth} setMonth={setHouseholdMonth} setYear={setHouseholdYear}>
             <h1 className="text-2xl font-bold mc-4">⚪️ 家計簿 ⚪️</h1>
 
@@ -392,6 +395,7 @@ const Household = () => {
                 }
             </div>
         </MonthProvider>
+        </>
     )
 }
 

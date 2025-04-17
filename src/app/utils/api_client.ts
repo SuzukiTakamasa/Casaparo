@@ -1,4 +1,4 @@
-import { APIRequest, APIResponse, R2Response, Result , IsSuccess, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result, JSONResponse, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload } from './interfaces'
 import { urlBase64ToUint8Array } from '@utils/utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -43,7 +43,7 @@ export class APIClient {
             return { data: null, error: String(e) }
         }
     }
-    public async post<T extends APIRequest>(endpoint: string, data: T): Promise<Result<IsSuccess>> {
+    public async post<T extends APIRequest>(endpoint: string, data: T): Promise<Result<JSONResponse>> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',
@@ -51,7 +51,7 @@ export class APIClient {
                 body: JSON.stringify(data)
             })
             const jsonRes = await res.json()
-            return { data: <IsSuccess>jsonRes, error: null }
+            return { data: <JSONResponse>jsonRes, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
@@ -122,7 +122,7 @@ export class WebPushSubscriber {
         }
     }
 
-    public async subscribe(): Promise<Result<IsSuccess>> {
+    public async subscribe(): Promise<Result<JSONResponse>> {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
@@ -142,7 +142,7 @@ export class WebPushSubscriber {
         }
     }
 
-    public async unsubscribe(): Promise<Result<IsSuccess>> {
+    public async unsubscribe(): Promise<Result<JSONResponse>> {
         try {
             const subscription = await this.fetchSubscription()
             if (!subscription.data) return { data: null, error: 'No Subscription' }

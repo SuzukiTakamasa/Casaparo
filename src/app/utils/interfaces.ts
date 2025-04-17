@@ -4,8 +4,9 @@ export interface Result<T> {
     error: string | null
 }
 
-export interface IsSuccess {
-    is_success: number
+export interface JSONResponse {
+    status: number
+    message: string
 }
 
 export interface HouseholdData {

@@ -1,7 +1,7 @@
 use crate::application::usecases::schedule_usecases::ScheduleUsecases;
 use crate::domain::entities::schedule::Schedules;
 use crate::domain::repositories::schedule_repository::ScheduleRepository;
-use crate::domain::entities::service::IsSuccess;
+use crate::domain::entities::service::JSONResponse;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -17,11 +17,16 @@ impl<R: ScheduleRepository> ScheduleController<R> {
 
 
     pub async fn get_schedules(&self) -> Result<Response> {
-        let result = match self.usecases.get_schedules().await {
-            Ok(schedules) => schedules,
-            Err(e) => return Response::error(e.to_string(), 500) 
+        match self.usecases.get_schedules().await {
+            Ok(schedules) => return Response::from_json(&schedules),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            } 
         };
-        Response::from_json(&result)
     }
 
     pub async fn get_today_or_tomorrow_schedules(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
@@ -33,11 +38,16 @@ impl<R: ScheduleRepository> ScheduleController<R> {
         let month_as_u8: u8 = month.parse().unwrap();
         let day_as_u8: u8 = day.parse().unwrap();
 
-        let result = match self.usecases.get_today_or_tomorrow_schedules(year_as_u16, month_as_u8, day_as_u8).await {
-            Ok(schedule) => schedule,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_today_or_tomorrow_schedules(year_as_u16, month_as_u8, day_as_u8).await {
+            Ok(schedule) => return Response::from_json(&schedule),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn create_schedule(&self, req: &mut Request) -> Result<Response> {
@@ -49,11 +59,22 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Ok(schedule) => schedule,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_schedule(&schedule).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.create_schedule(&schedule).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Schedule created successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn update_schedule(&self, req: &mut Request) -> Result<Response> {
@@ -65,11 +86,22 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Ok(schedule) => schedule,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_schedule(&mut schedule).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.update_schedule(&mut schedule).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Schedule updated successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn delete_schedule(&self, req: &mut Request) -> Result<Response> {
@@ -81,10 +113,21 @@ impl<R: ScheduleRepository> ScheduleController<R> {
             Ok(schedule) => schedule,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_schedule(&mut schedule).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.delete_schedule(&mut schedule).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Schedule deleted successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 }

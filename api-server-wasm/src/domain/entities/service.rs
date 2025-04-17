@@ -6,6 +6,7 @@ pub struct LatestVersion {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct IsSuccess {
-    pub is_success: u8
+pub struct JSONResponse {
+    pub status: u16,
+    pub message: String,
 }

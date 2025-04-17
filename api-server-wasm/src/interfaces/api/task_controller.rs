@@ -1,7 +1,7 @@
 use crate::application::usecases::task_usecases::TaskUsecases;
 use crate::domain::entities::task::Tasks;
 use crate::domain::repositories::task_repository::TaskRepository;
-use crate::domain::entities::service::IsSuccess;
+use crate::domain::entities::service::JSONResponse;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -16,31 +16,46 @@ impl<R: TaskRepository> TaskController<R> {
     }
 
     pub async fn get_tasks(&self) -> Result<Response> {
-        let result = match self.usecases.get_tasks().await {
-            Ok(tasks) => tasks,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_tasks().await {
+            Ok(tasks) => return Response::from_json(&tasks),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn get_related_sub_tasks(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
-        let result = match self.usecases.get_related_sub_tasks(id_as_u32).await {
-            Ok(tasks) => tasks,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_related_sub_tasks(id_as_u32).await {
+            Ok(tasks) => return Response::from_json(&tasks),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn get_task_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
-        let result = match self.usecases.get_task_by_id(id_as_u32).await {
-            Ok(task) => task,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_task_by_id(id_as_u32).await {
+            Ok(task) => return Response::from_json(&task),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn create_task(&self, req: &mut Request) -> Result<Response> {
@@ -52,11 +67,22 @@ impl<R: TaskRepository> TaskController<R> {
             Ok(task) => task,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_task(&task).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.create_task(&task).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Task created successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn update_task(&self, req: &mut Request) -> Result<Response> {
@@ -68,11 +94,22 @@ impl<R: TaskRepository> TaskController<R> {
             Ok(task) => task,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_task(&mut task).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.update_task(&mut task).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Task updated successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn delete_task(&self, req: &mut Request) -> Result<Response> {
@@ -84,10 +121,21 @@ impl<R: TaskRepository> TaskController<R> {
             Ok(task) => task,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_task(&mut task).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.delete_task(&mut task).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Task deleted successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 }

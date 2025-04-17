@@ -29,7 +29,7 @@ export const ToasterComponent = () => {
         <Toaster
             position="bottom-right"
             toastOptions={{
-                duration: 2000,
+                duration: 3000,
             }}
         />
     )

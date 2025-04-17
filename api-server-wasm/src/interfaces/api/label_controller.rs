@@ -1,7 +1,7 @@
 use crate::application::usecases::label_usecases::LabelUsecases;
 use crate::domain::entities::setting::Labels;
 use crate::domain::repositories::label_repository::LabelRepository;
-use crate::domain::entities::service::IsSuccess;
+use crate::domain::entities::service::JSONResponse;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -16,21 +16,31 @@ impl<R: LabelRepository> LabelController<R> {
     }
 
     pub async fn get_labels(&self) -> Result<Response> {
-        let result = match self.usecases.get_labels().await {
-            Ok(labels) => labels,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_labels().await {
+            Ok(labels) => return Response::from_json(&labels),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn is_used_for_schedule(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
-        let result = match self.usecases.is_used_for_schedule(id_as_u32).await {
-            Ok(is_used) => is_used,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.is_used_for_schedule(id_as_u32).await {
+            Ok(is_used) => return Response::from_json(&is_used),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn create_label(&self, req: &mut Request) -> Result<Response> {
@@ -42,11 +52,22 @@ impl<R: LabelRepository> LabelController<R> {
             Ok(label) => label,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_label(&label).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.create_label(&label).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Label created successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn update_label(&self, req: &mut Request) -> Result<Response> {
@@ -58,11 +79,22 @@ impl<R: LabelRepository> LabelController<R> {
             Ok(label) => label,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_label(&mut label).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.update_label(&mut label).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Label updated successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn delete_label(&self, req: &mut Request) -> Result<Response> {
@@ -74,10 +106,21 @@ impl<R: LabelRepository> LabelController<R> {
             Ok(label) => label,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_label(&mut label).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.delete_label(&mut label).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Label deleted successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 }
