@@ -14,7 +14,6 @@ import { APIClient } from '@utils/api_client'
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ExclamationTriangleIcon } from '@/app/components/Heroicons'
-import { ToasterComponent } from '@components/ToastMessage' 
 
 
 const client = new  APIClient()
@@ -155,7 +154,6 @@ export default function Home() {
           ))}
         </CardWithTitleAndTextLink>
       </div>
-      <ToasterComponent />
     </main>
   )
 }

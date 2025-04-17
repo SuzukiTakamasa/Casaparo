@@ -1,7 +1,7 @@
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::domain::entities::wiki::Wikis;
 use crate::domain::repositories::wiki_repository::WikiRepository;
-use crate::domain::entities::service::IsSuccess;
+use crate::domain::entities::service::JSONResponse;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -16,21 +16,31 @@ impl<R: WikiRepository> WikiController<R> {
     }
 
     pub async fn get_wikis(&self) -> Result<Response> {
-        let result = match self.usecases.get_wikis().await {
-            Ok(wikis) => wikis,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_wikis().await {
+            Ok(wikis) => return Response::from_json(&wikis),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn get_wikis_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
-        let result = match self.usecases.get_wiki_by_id(id_as_u32).await {
-            Ok(wiki) => wiki,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_wiki_by_id(id_as_u32).await {
+            Ok(wiki) => return Response::from_json(&wiki),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn create_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -42,11 +52,22 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_wiki(&wiki).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.create_wiki(&wiki).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Wiki created successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn update_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -58,11 +79,22 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_wiki(&mut wiki).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.update_wiki(&mut wiki).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Wiki updated successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn delete_wiki(&self, req: &mut Request) -> Result<Response> {
@@ -74,10 +106,21 @@ impl<R: WikiRepository> WikiController<R> {
             Ok(wiki) => wiki,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_wiki(&mut wiki).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.delete_wiki(&mut wiki).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Wiki deleted successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 }

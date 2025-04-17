@@ -1,7 +1,7 @@
 use crate::application::usecases::inventory_usecases::InventoryUsecases;
 use crate::domain::entities::inventory::Inventories;
 use crate::domain::repositories::inventory_repository::InventoryRepository;
-use crate::domain::entities::service::IsSuccess;
+use crate::domain::entities::service::JSONResponse;
 use worker::{Request, Response, Result};
 use serde_json::from_str;
 
@@ -15,11 +15,17 @@ impl<R: InventoryRepository> InventoryController<R> {
     }
 
     pub async fn get_inventories(&self) -> Result<Response> {
-        let result = match self.usecases.get_inventories().await {
-            Ok(inventories) => inventories,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_inventories().await {
+            Ok(inventories) => return Response::from_json(&inventories),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
+        
     }
 
     pub async fn create_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -31,11 +37,22 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_inventory(&inventory).await {
-            Ok(_) => IsSuccess { is_success: 1},
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.create_inventory(&inventory).await {
+            Ok(_) => {
+                let sucess_response = JSONResponse {
+                    status: 200,
+                    message: "Inventory created successfully".to_string()
+                };
+                return Response::from_json(&sucess_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn update_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -47,11 +64,22 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_inventory(&mut inventory).await {
-            Ok(_) => IsSuccess { is_success: 1},
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.update_inventory(&mut inventory).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Inventory updated successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn update_amount(&self, req: &mut Request) -> Result<Response> {
@@ -63,11 +91,22 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.update_amount(&mut inventory).await {
-            Ok(_) => IsSuccess { is_success: 1},
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.update_amount(&mut inventory).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Inventory amount updated successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn delete_inventory(&self, req: &mut Request) -> Result<Response> {
@@ -79,10 +118,21 @@ impl<R: InventoryRepository> InventoryController<R> {
             Ok(inventory) => inventory,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_inventory(&mut inventory).await {
-            Ok(_) => IsSuccess { is_success: 1},
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.delete_inventory(&mut inventory).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Inventory deleted successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 }

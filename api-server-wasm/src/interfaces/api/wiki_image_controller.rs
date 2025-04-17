@@ -1,7 +1,7 @@
 use crate::application::usecases::wiki_image_usecases::WikiImageUsecases;
 use crate::domain::entities::wiki_image::WikiImages;
 use crate::domain::repositories::wiki_image_repository::WikiImageRepository;
-use crate::domain::entities::service::IsSuccess;
+use crate::domain::entities::service::JSONResponse;
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -18,11 +18,16 @@ impl<R: WikiImageRepository> WikiImageController<R> {
     pub async fn get_wiki_images_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
-        let result = match self.usecases.get_wiki_images_by_id(id_as_u32).await {
-            Ok(wiki_images) => wiki_images,
-            Err(e) => return Response::error(e.to_string(), 500)
+        match self.usecases.get_wiki_images_by_id(id_as_u32).await {
+            Ok(wiki_images) => return Response::from_json(&wiki_images),
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn create_wiki_image(&self, req: &mut Request) -> Result<Response> {
@@ -34,11 +39,22 @@ impl<R: WikiImageRepository> WikiImageController<R> {
             Ok(wiki_image) => wiki_image,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.create_wiki_image(&wiki_image).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.create_wiki_image(&wiki_image).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Wiki image created successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 
     pub async fn delete_wiki_image(&self, req: &mut Request) -> Result<Response> {
@@ -50,10 +66,21 @@ impl<R: WikiImageRepository> WikiImageController<R> {
             Ok(wiki_image) => wiki_image,
             Err(_) => return Response::error("Invalid request body", 400)
         };
-        let result = match self.usecases.delete_wiki_image(&mut wiki_image).await {
-            Ok(_) => IsSuccess { is_success: 1 },
-            Err(e) => return Response::error(format!("Internal server error: {}", e), 500)
+        match self.usecases.delete_wiki_image(&mut wiki_image).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Wiki image deleted successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
         };
-        Response::from_json(&result)
     }
 }
