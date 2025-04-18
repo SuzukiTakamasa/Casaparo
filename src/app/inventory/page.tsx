@@ -10,6 +10,7 @@ import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteDa
 import { adaptTwoPointReader, setUser, boolToInt, intToBool } from '@utils/utility_function'
 import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 
 
@@ -148,7 +149,8 @@ const Inventory = () => {
             created_by: inventoryCreatedBy as number,
             version: inventoryVersion
         }
-        await client.post<InventoryData>("/v2/inventory/create", addInventoryData)
+        const response = await client.post<InventoryData>("/v2/inventory/create", addInventoryData)
+        APIResponseToast(response, "在庫を登録しました。", "在庫の登録に失敗しました。")
         await fetchInventories()
     }
     const fetchInventoryTypes = useCallback(async () => {
@@ -164,7 +166,8 @@ const Inventory = () => {
             created_by: inventoryCreatedBy as number,
             version: inventoryVersion
         }
-        await client.post<InventoryData>("/v2/inventory/update", updateInventoryData)
+        const response = await client.post<InventoryData>("/v2/inventory/update", updateInventoryData)
+        APIResponseToast(response, "在庫を変更しました。", "在庫の変更に失敗しました。")
         await fetchInventories()
     }
     const deleteInventory = async (deleteInventoryData: InventoryData) => {
@@ -173,7 +176,8 @@ const Inventory = () => {
             setIsIncludedInYetToRegisterShoppingNoteMsg("在庫未登録の買い物メモで選択中のため削除できません。")
             return
         }
-        await client.post<InventoryData>("/v2/inventory/delete", deleteInventoryData)
+        const response = await client.post<InventoryData>("/v2/inventory/delete", deleteInventoryData)
+        APIResponseToast(response, "在庫を削除しました。", "在庫の削除に失敗しました。")
         await fetchInventories()
     }
     const handleInventoryIncrementAmount = () => {
@@ -354,7 +358,8 @@ const Inventory = () => {
             created_by: shoppingNoteCreatedBy,
             version: shoppingNoteVersion
         }
-        await client.post<ShoppingNoteData>("/v2/shopping_note/create", addShoppingNoteData)
+        const response = await client.post<ShoppingNoteData>("/v2/shopping_note/create", addShoppingNoteData)
+        APIResponseToast(response, "買い物メモを登録しました。", "買い物メモの登録に失敗しました。")
         await fetchShoppingNotes()
     }
     const updateShoppingNote = async () => {
@@ -365,12 +370,14 @@ const Inventory = () => {
             created_by: shoppingNoteCreatedBy,
             version: shoppingNoteVersion
         }
-        await client.post<ShoppingNoteData>("/v2/shopping_note/update", updateShoppingNoteData)
+        const response = await client.post<ShoppingNoteData>("/v2/shopping_note/update", updateShoppingNoteData)
+        APIResponseToast(response, "買い物メモを変更しました。", "買い物メモの変更に失敗しました。")
         await fetchShoppingNotes()
     }
     const deleteShoppingNote = async (deleteShoppingNoteData: ShoppingNoteData) => {
         if (!window.confirm("買い物メモを削除しますか？")) return
-        await client.post<ShoppingNoteData>("/v2/shopping_note/delete", deleteShoppingNoteData)
+        const response = await client.post<ShoppingNoteData>("/v2/shopping_note/delete", deleteShoppingNoteData)
+        APIResponseToast(response, "買い物メモを削除しました。", "買い物メモの削除に失敗しました。")
         await fetchShoppingNotes()
     }
     /*const registerToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
@@ -380,13 +387,15 @@ const Inventory = () => {
     }
     */
     const completeShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
-        await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        const response = await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
         await fetchInventories()
+        return response
     }
     const handleCpmpleteShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("在庫に登録せずに完了としますか？")) return
-        await completeShoppingNote(registerToInventoryShoppingNote)
+        const response = await completeShoppingNote(registerToInventoryShoppingNote)
+        APIResponseToast(response, "買い物メモのステータスを「完了」に更新しました。", "買い物メモのステータスの更新に失敗しました。")
     }
     const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
@@ -394,7 +403,8 @@ const Inventory = () => {
             client.post<InventoryData>(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
         })
         await Promise.all(promises)
-        await completeShoppingNote(registerToInventoryShoppingNote)
+        const response = await completeShoppingNote(registerToInventoryShoppingNote)
+        APIResponseToast(response, "買い物メモの内容を在庫に登録しました。", "買い物メモの内容の在庫登録に失敗しました。")
     }
 
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
@@ -875,6 +885,7 @@ const Inventory = () => {
                     })}
                 </>
                 }
+                <ToasterComponent />
             </div>
         </>
     )

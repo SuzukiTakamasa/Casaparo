@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic'
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, HasTaskComments } from '@/app/utils/interfaces'
@@ -208,7 +209,8 @@ const Task = () => {
             parent_task_id: parentTaskId,
             version: version
         }
-        await client.post<TaskData>('/v2/task/create', addTaskData)
+        const response = await client.post<TaskData>('/v2/task/create', addTaskData)
+        APIResponseToast(response, "タスクを登録しました。", "タスクの登録に失敗しました。")
         await fetchTasks()
     }
     const updateTask = async () => {
@@ -224,7 +226,8 @@ const Task = () => {
             parent_task_id: parentTaskId,
             version: version
         }
-        await client.post<TaskData>('/v2/task/update', updateTaskData)
+        const response = await client.post<TaskData>('/v2/task/update', updateTaskData)
+        APIResponseToast(response, "タスクを更新しました。", "タスクの更新に失敗しました。")
         await fetchTasks()
     }
     const deleteTask = async (deletedTaskData: TaskData) => {
@@ -241,7 +244,8 @@ const Task = () => {
             setTaskCommentErrTxt("コメントの存在を確認できませんでした。")
             return
         }
-        await client.post<TaskData>('/v2/task/delete', deletedTaskData)
+        const response = await client.post<TaskData>('/v2/task/delete', deletedTaskData)
+        APIResponseToast(response, "タスクを削除しました。", "タスクの削除に失敗しました。")
         await fetchTasks()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
@@ -505,6 +509,7 @@ const Task = () => {
                 </tbody>
             </table>
         </div>
+        <ToasterComponent />
     </>
     )
 }

@@ -7,6 +7,7 @@ import Toggle from 'react-styled-toggle'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
@@ -130,7 +131,8 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        await client.post<LabelData>('/v2/label/create', addedLabelData)
+        const response = await client.post<LabelData>('/v2/label/create', addedLabelData)
+        APIResponseToast(response, "ラベルを登録しました。", "ラベルの登録に失敗しました。")
         await fetchLabels()
     }
     const updateLabel = async () => {
@@ -140,7 +142,8 @@ const Setting = () => {
             label: newLabel,
             version: labelVersion
         }
-        await client.post<LabelData>('/v2/label/update', updatedLabelData)
+        const response = await client.post<LabelData>('/v2/label/update', updatedLabelData)
+        APIResponseToast(response, "ラベルを変更しました。", "ラベルの変更に失敗しました。")
         await fetchLabels()
     }
     const deleteLabel = async (deleteLabelData: LabelData) => {
@@ -150,7 +153,8 @@ const Setting = () => {
             setIsUsedErrMsg("このラベルは使用されています。")
             return
         }
-        await client.post<LabelData>('/v2/label/delete', deleteLabelData) 
+        const response = await client.post<LabelData>('/v2/label/delete', deleteLabelData)
+        APIResponseToast(response, "ラベルを削除しました。", "ラベルの削除に失敗しました。")
         await fetchLabels()
     }
 
@@ -202,7 +206,8 @@ const Setting = () => {
             description: anniversaryDescription,
             version: anniversaryVersion
         }
-        await client.post<AnniversaryData>('/v2/anniversary/create', addAnniversaryData)
+        const response = await client.post<AnniversaryData>('/v2/anniversary/create', addAnniversaryData)
+        APIResponseToast(response, "記念日を登録しました。", "記念日の登録に失敗しました。")
         await fetchAnniversaries()
     }
     const updateAnniversary = async () => {
@@ -213,12 +218,14 @@ const Setting = () => {
             description: anniversaryDescription,
             version: anniversaryVersion
         }
-        await client.post<AnniversaryData>('/v2/anniversary/update', updateAnniversaryData)
+        const response = await client.post<AnniversaryData>('/v2/anniversary/update', updateAnniversaryData)
+        APIResponseToast(response, "記念日を変更しました。", "記念日の変更に失敗しました。")
         await fetchAnniversaries()
     }
     const deleteAnniversary = async (deleteAnniversaryData: AnniversaryData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<AnniversaryData>('/v2/anniversary/delete', deleteAnniversaryData)
+        const response = await client.post<AnniversaryData>('/v2/anniversary/delete', deleteAnniversaryData)
+        APIResponseToast(response, "記念日を削除しました。", "記念日の削除に失敗しました。")
         await fetchAnniversaries()
     }
 
@@ -264,7 +271,8 @@ const Setting = () => {
             types: inventoryType,
             version: inventoryTypeVersion
         }
-        await client.post<InventoryTypeData>('/v2/inventory_type/create', addInventoryTypeData)
+        const response = await client.post<InventoryTypeData>('/v2/inventory_type/create', addInventoryTypeData)
+        APIResponseToast(response, "在庫種別を登録しました。", "在庫種別の登録に失敗しました。")
         await fetchInventoryTypes()
     }
     const updateInventoryType = async () => {
@@ -273,7 +281,8 @@ const Setting = () => {
             types: inventoryType,
             version: inventoryTypeVersion
         }
-        await client.post<InventoryTypeData>('/v2/inventory_type/update', updateInventoryTypeData)
+        const response = await client.post<InventoryTypeData>('/v2/inventory_type/update', updateInventoryTypeData)
+        APIResponseToast(response, "在庫種別を変更しました。", "在庫種別の変更に失敗しました。")
         await fetchInventoryTypes()
     }
     const deleteInventoryType = async (deleteInventoryTypeData: InventoryTypeData) => {
@@ -283,7 +292,8 @@ const Setting = () => {
             setIsUsedInventoryTypeErrMsg("この在庫種別は使用されています。")
             return
         }
-        await client.post<InventoryTypeData>('/v2/inventory_type/delete', deleteInventoryTypeData)
+        const response = await client.post<InventoryTypeData>('/v2/inventory_type/delete', deleteInventoryTypeData)
+        APIResponseToast(response, "在庫種別を削除しました。", "在庫種別の削除に失敗しました。")
         await fetchInventoryTypes()
     }
     const fetchIsSubscribed = useCallback(async () => {
@@ -590,6 +600,7 @@ const Setting = () => {
                     />
                 </div>
             </div>
+            <ToasterComponent />
         </>
     )
 }

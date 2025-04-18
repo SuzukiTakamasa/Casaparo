@@ -10,6 +10,8 @@ import dynamic from 'next/dynamic'
 import { WikiData, WikiResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+
 import { APIClient, R2Client } from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
@@ -106,7 +108,8 @@ const Wiki = () => {
             image_url: imageUrl,
             version: version
         }
-        await client.post<WikiData>('/v2/wiki/create', addedWikiData)
+        const response = await client.post<WikiData>('/v2/wiki/create', addedWikiData)
+        APIResponseToast(response, "Wikiを登録しました。", "Wikiの登録に失敗しました。")
         await fetchWikis()
     }
     const updateWiki = async () => {
@@ -119,7 +122,8 @@ const Wiki = () => {
             image_url: imageUrl,
             version: version
         }
-        await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
+        const response = await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
+        APIResponseToast(response, "Wikiを更新しました。", "Wikiの更新に失敗しました。")
         await fetchWikis()
     }
     const updateImageUrlEmpty = async () => {
@@ -132,12 +136,14 @@ const Wiki = () => {
             image_url: "",
             version: version
         }
-        await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
+        const response = await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
+        APIResponseToast(response, "Wikiを更新しました。", "Wikiの更新に失敗しました。")
         await fetchWikis()
     }
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<WikiData>('/v2/wiki/delete', deleteWikiData)
+        const response = await client.post<WikiData>('/v2/wiki/delete', deleteWikiData)
+        APIResponseToast(response, "Wikiを削除しました。", "Wikiの削除に失敗しました。")
         await fetchWikis()
     }
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -305,6 +311,7 @@ const Wiki = () => {
                 </tbody>
             </table>
         </div>
+        <ToasterComponent />
     </>
     )
 }

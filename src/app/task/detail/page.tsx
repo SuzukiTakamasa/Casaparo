@@ -12,6 +12,7 @@ import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
 import { TextLinkToBackToPreviousPage } from '@/app/components/TextLink'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
@@ -203,7 +204,8 @@ const TaskDetail = () => {
             parent_task_id: taskDetail?.id as number,
             version: relatedSubTaskVersion
         }
-        await client.post<TaskData>('/v2/task/create', addRelatedSubTaskData)
+        const response = await client.post<TaskData>('/v2/task/create', addRelatedSubTaskData)
+        APIResponseToast(response, "サブタスクを追加しました。", "サブタスクの追加に失敗しました。")
         await fetchRelatedSubTasks()
     }
     const updateRelatedSubTask = async () => {
@@ -219,12 +221,14 @@ const TaskDetail = () => {
             parent_task_id: relatedSubTaskParentTaskId,
             version: relatedSubTaskVersion
         }
-        await client.post<TaskData>('/v2/task/update', updateTaskData)
+        const response = await client.post<TaskData>('/v2/task/update', updateTaskData)
+        APIResponseToast(response, "サブタスクを変更しました。", "サブタスクの変更に失敗しました。")
         await fetchRelatedSubTasks()
     }
     const deleteRelatedSubTask = async (deletedTaskData: TaskData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<TaskData>('/v2/task/delete', deletedTaskData)
+        const response = await client.post<TaskData>('/v2/task/delete', deletedTaskData)
+        APIResponseToast(response, "サブタスクを削除しました。", "サブタスクの削除に失敗しました。")
         await fetchRelatedSubTasks()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
@@ -294,7 +298,8 @@ const TaskDetail = () => {
             task_id: Number(id),
             version: taskCommentVersion
         }
-        await client.post<TaskCommentData>('/v2/task_comment/create', addedTaskCommentData)
+        const response = await client.post<TaskCommentData>('/v2/task_comment/create', addedTaskCommentData)
+        APIResponseToast(response, "コメントを追加しました。", "コメントの追加に失敗しました。")
         await fetchTaskComments()
     }
     const updateTaskComment = async () => {
@@ -306,12 +311,14 @@ const TaskDetail = () => {
             task_id: Number(id),
             version: taskCommentVersion
         }
-        await client.post<TaskCommentData>('/v2/task_comment/update', updatedTaskCommentData)
+        const response = await client.post<TaskCommentData>('/v2/task_comment/update', updatedTaskCommentData)
+        APIResponseToast(response, "コメントを変更しました。", "コメントの変更に失敗しました。")
         await fetchTaskComments()
     }
     const deleteTaskComment = async (deletedTaskComment: TaskCommentData) => {
         if (!window.confirm("削除しますか?")) return
-        await client.post<TaskCommentData>('/v2/task_comment/delete', deletedTaskComment)
+        const response = await client.post<TaskCommentData>('/v2/task_comment/delete', deletedTaskComment)
+        APIResponseToast(response, "コメントを削除しました。", "コメントの削除に失敗しました。")
         await fetchTaskComments()
     }
     const handleSetComment = (value: string) => {
@@ -643,6 +650,7 @@ const TaskDetail = () => {
                         </div>
                     </div>
                 )}
+            <ToasterComponent />
         </>
     )
 }
