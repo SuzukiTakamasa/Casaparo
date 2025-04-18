@@ -1,4 +1,5 @@
 import { Toaster, toast } from 'react-hot-toast'
+import { JSONResponse, Result } from '@utils/interfaces'
 
 export type ToastMessageProps = {
     message: string
@@ -21,6 +22,14 @@ export const toastMessage = ({ message, type }: ToastMessageProps) => {
             break
         default:
             break
+    }
+}
+
+export const APIResponseToast = (response: Result<JSONResponse>, successMsg: string, errMsg: string) => {
+    if (response.data && response.data.status === 200) {
+        toastMessage({ message: successMsg, type: 'success' })
+    } else {
+        toastMessage({ message: errMsg, type: 'error' })
     }
 }
 

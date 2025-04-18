@@ -11,7 +11,7 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 import { CheckBadgeIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
-import { ToasterComponent, toastMessage } from '@components/ToastMessage'
+import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
@@ -140,7 +140,8 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post<HouseholdData>('/v2/household/create', addedHouseholdData)
+        const response = await client.post<HouseholdData>('/v2/household/create', addedHouseholdData)
+        APIResponseToast(response, "家計簿を登録しました。", "登録に失敗しました。")
         await fetchHouseholds()
     }
     const updateHousehold = async () => {
@@ -154,12 +155,14 @@ const Household = () => {
             is_owner: isOwner,
             version: version
         }
-        await client.post<HouseholdData>('/v2/household/update', updatedHouseholdData)
+        const response = await client.post<HouseholdData>('/v2/household/update', updatedHouseholdData)
+        APIResponseToast(response, "家計簿を変更しました。", "変更に失敗しました。")
         await fetchHouseholds()
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return
-        await client.post<HouseholdData>('/v2/household/delete', deletedHouseholdData)
+        const response = await client.post<HouseholdData>('/v2/household/delete', deletedHouseholdData)
+        APIResponseToast(response, "家計簿を削除しました。", "削除に失敗しました。")
         await fetchHouseholds()
     }
     const calculateBillingAmount = useCallback(() => {
@@ -187,7 +190,8 @@ const Household = () => {
             billing_amount: billingAmount,
             total_amount: totalAmount
         }
-        await client.post<CompletedHouseholdData>('/v2/completed_household/create', completedHousehold)
+        const response = await client.post<CompletedHouseholdData>('/v2/completed_household/create', completedHousehold)
+        APIResponseToast(response, "家計簿を確定しました。", "確定に失敗しました。")
         await fetchIsCompleted()
     }
 
