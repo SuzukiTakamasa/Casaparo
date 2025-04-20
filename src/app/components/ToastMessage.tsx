@@ -29,7 +29,7 @@ export const APIResponseToast = (response: Result<JSONResponse>, successMsg: str
     if (response.data && response.data.status === 200) {
         toastMessage({ message: successMsg, type: 'success' })
     } else {
-        toastMessage({ message: errMsg, type: 'error' })
+        toastMessage({ message: `${errMsg}:\n${response.data?.message}`, type: 'error' })
     }
 }
 
