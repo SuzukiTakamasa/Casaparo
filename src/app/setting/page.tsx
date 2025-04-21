@@ -87,13 +87,15 @@ const Setting = () => {
 
     const handleAddLabel = async () => {
         if (!validateLabel()) return
-        await addlabel()
+        const response = await addlabel()
         handleCloseLabelDialog()
+        APIResponseToast(response, "ラベルを登録しました。", "ラベルの登録に失敗しました。")
     }
     const handleUpdateLabel = async () => {
         if (!validateLabel()) return
-        await updateLabel()
+        const response = await updateLabel()
         handleCloseLabelDialog()
+        APIResponseToast(response, "ラベルを変更しました。", "ラベルの変更に失敗しました。")
     }
     const handleOpenAddLabelDialog = () => {
         setShowLabelDialog(true)
@@ -132,8 +134,8 @@ const Setting = () => {
             version: labelVersion
         }
         const response = await client.post<LabelData>('/v2/label/create', addedLabelData)
-        APIResponseToast(response, "ラベルを登録しました。", "ラベルの登録に失敗しました。")
         await fetchLabels()
+        return response
     }
     const updateLabel = async () => {
         const updatedLabelData = {
@@ -143,8 +145,8 @@ const Setting = () => {
             version: labelVersion
         }
         const response = await client.post<LabelData>('/v2/label/update', updatedLabelData)
-        APIResponseToast(response, "ラベルを変更しました。", "ラベルの変更に失敗しました。")
         await fetchLabels()
+        return response
     }
     const deleteLabel = async (deleteLabelData: LabelData) => {
         if (!window.confirm("削除しますか？")) return
@@ -160,13 +162,15 @@ const Setting = () => {
 
     const handleAddAnniversary = async () => {
         if (!validateAnniversary()) return
-        await addAnniversary()
+        const response = await addAnniversary()
         handleCloseAnniversaryDialog()
+        APIResponseToast(response, "記念日を登録しました。", "記念日の登録に失敗しました。")
     }
     const handleUpdateAnniversary = async () => {
         if (!validateAnniversary()) return
-        await updateAnniversary()
+        const response = await updateAnniversary()
         handleCloseAnniversaryDialog()
+        APIResponseToast(response, "記念日を変更しました。", "記念日の変更に失敗しました。")
     }
     const handleOpenAddAnniversaryDialog = () => {
         setShowAnniversaryDialog(true)
@@ -207,8 +211,8 @@ const Setting = () => {
             version: anniversaryVersion
         }
         const response = await client.post<AnniversaryData>('/v2/anniversary/create', addAnniversaryData)
-        APIResponseToast(response, "記念日を登録しました。", "記念日の登録に失敗しました。")
         await fetchAnniversaries()
+        return response
     }
     const updateAnniversary = async () => {
         const updateAnniversaryData = {
@@ -221,6 +225,7 @@ const Setting = () => {
         const response = await client.post<AnniversaryData>('/v2/anniversary/update', updateAnniversaryData)
         APIResponseToast(response, "記念日を変更しました。", "記念日の変更に失敗しました。")
         await fetchAnniversaries()
+        return response
     }
     const deleteAnniversary = async (deleteAnniversaryData: AnniversaryData) => {
         if (!window.confirm("削除しますか？")) return
@@ -231,13 +236,15 @@ const Setting = () => {
 
     const handleAddInventoryType = async () => {
         if (!validateInventoryType()) return
-        await addInventoryType()
+        const response = await addInventoryType()
         handleCloseInventoryTypeDialog()
+        APIResponseToast(response, "在庫種別を登録しました。", "在庫種別の登録に失敗しました。")
     }
     const handleUpdateInventoryType = async () => {
         if (!validateInventoryType()) return
-        await updateInventoryType()
+        const response = await updateInventoryType()
         handleCloseInventoryTypeDialog()
+        APIResponseToast(response, "在庫種別を変更しました。", "在庫種別の変更に失敗しました。")
     }
     const handleOpenAddInventoryTypeDialog = () => {
         setShowInventoryTypeDialog(true)
@@ -272,8 +279,8 @@ const Setting = () => {
             version: inventoryTypeVersion
         }
         const response = await client.post<InventoryTypeData>('/v2/inventory_type/create', addInventoryTypeData)
-        APIResponseToast(response, "在庫種別を登録しました。", "在庫種別の登録に失敗しました。")
         await fetchInventoryTypes()
+        return response
     }
     const updateInventoryType = async () => {
         const updateInventoryTypeData = {
@@ -282,8 +289,8 @@ const Setting = () => {
             version: inventoryTypeVersion
         }
         const response = await client.post<InventoryTypeData>('/v2/inventory_type/update', updateInventoryTypeData)
-        APIResponseToast(response, "在庫種別を変更しました。", "在庫種別の変更に失敗しました。")
         await fetchInventoryTypes()
+        return response
     }
     const deleteInventoryType = async (deleteInventoryTypeData: InventoryTypeData) => {
         if (!window.confirm("削除しますか？")) return

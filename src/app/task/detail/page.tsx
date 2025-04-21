@@ -136,13 +136,15 @@ const TaskDetail = () => {
     }
     const handleAddRelatedSubTask = async () => {
         if (!validateRelatedSubTask()) return
-        await addRelatedSubTask()
+        const response = await addRelatedSubTask()
         handleCloseRelatedSubTaskDialog()
+        APIResponseToast(response, "サブタスクを追加しました。", "サブタスクの追加に失敗しました。")
     }
     const handleUpdateRelatedSubTask = async () => {
         if (!validateRelatedSubTask()) return
-        await updateRelatedSubTask()
+        const response = await updateRelatedSubTask()
         handleCloseRelatedSubTaskDialog()
+        APIResponseToast(response, "サブタスクを変更しました。", "サブタスクの変更に失敗しました。")
     }
     const handleOpenAddRelatedSubTaskDialog = () => {
         setShowRelatedSubTaskDialog(true)
@@ -205,8 +207,8 @@ const TaskDetail = () => {
             version: relatedSubTaskVersion
         }
         const response = await client.post<TaskData>('/v2/task/create', addRelatedSubTaskData)
-        APIResponseToast(response, "サブタスクを追加しました。", "サブタスクの追加に失敗しました。")
         await fetchRelatedSubTasks()
+        return response
     }
     const updateRelatedSubTask = async () => {
         const updateTaskData = {
@@ -222,8 +224,8 @@ const TaskDetail = () => {
             version: relatedSubTaskVersion
         }
         const response = await client.post<TaskData>('/v2/task/update', updateTaskData)
-        APIResponseToast(response, "サブタスクを変更しました。", "サブタスクの変更に失敗しました。")
         await fetchRelatedSubTasks()
+        return response
     }
     const deleteRelatedSubTask = async (deletedTaskData: TaskData) => {
         if (!window.confirm("削除しますか？")) return
@@ -252,13 +254,15 @@ const TaskDetail = () => {
 
     const handleAddTaskComment = async () => {
         if (!validateTaskComment()) return
-        await addTaskComment()
+        const response = await addTaskComment()
         handleCloseTaskCommentDialog()
+        APIResponseToast(response, "コメントを追加しました。", "コメントの追加に失敗しました。")
     }
     const handleUpdateTaskComment = async () => {
         if (!validateTaskComment()) return
-        await updateTaskComment()
+        const response = await updateTaskComment()
         handleCloseTaskCommentDialog()
+        APIResponseToast(response, "コメントを変更しました。", "コメントの変更に失敗しました。")
     }
     const handleOpenTaskCommentDialog = () => {
         setShowTaskCommentDialog(true)
@@ -299,8 +303,8 @@ const TaskDetail = () => {
             version: taskCommentVersion
         }
         const response = await client.post<TaskCommentData>('/v2/task_comment/create', addedTaskCommentData)
-        APIResponseToast(response, "コメントを追加しました。", "コメントの追加に失敗しました。")
         await fetchTaskComments()
+        return response
     }
     const updateTaskComment = async () => {
         const updatedTaskCommentData = {
@@ -312,8 +316,8 @@ const TaskDetail = () => {
             version: taskCommentVersion
         }
         const response = await client.post<TaskCommentData>('/v2/task_comment/update', updatedTaskCommentData)
-        APIResponseToast(response, "コメントを変更しました。", "コメントの変更に失敗しました。")
         await fetchTaskComments()
+        return response
     }
     const deleteTaskComment = async (deletedTaskComment: TaskCommentData) => {
         if (!window.confirm("削除しますか?")) return
