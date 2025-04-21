@@ -98,13 +98,15 @@ const Inventory = () => {
 
     const handleAddInventory = async () => {
         if (!validateInventory()) return
-        await addInventory()
+        const response = await addInventory()
         handleCloseInventoryDialog()
+        APIResponseToast(response, "在庫を登録しました。", "在庫の登録に失敗しました。")
     }
     const handleUpdateInventory = async () => {
         if (!validateInventory()) return
-        await updateInventory()
+        const response = await updateInventory()
         handleCloseInventoryDialog()
+        APIResponseToast(response, "在庫を変更しました。", "在庫の変更に失敗しました。")
     }
     const handleOpenInventoryDialog = () => {
         setShowInventoryDialog(true)
@@ -150,8 +152,8 @@ const Inventory = () => {
             version: inventoryVersion
         }
         const response = await client.post<InventoryData>("/v2/inventory/create", addInventoryData)
-        APIResponseToast(response, "在庫を登録しました。", "在庫の登録に失敗しました。")
         await fetchInventories()
+        return response
     }
     const fetchInventoryTypes = useCallback(async () => {
         const inventoryTypes = await client.get<InventoryTypeResponse>("/v2/inventory_type")
@@ -169,6 +171,7 @@ const Inventory = () => {
         const response = await client.post<InventoryData>("/v2/inventory/update", updateInventoryData)
         APIResponseToast(response, "在庫を変更しました。", "在庫の変更に失敗しました。")
         await fetchInventories()
+        return response
     }
     const deleteInventory = async (deleteInventoryData: InventoryData) => {
         if (!window.confirm("在庫を削除しますか？")) return
@@ -196,13 +199,15 @@ const Inventory = () => {
 
     const handleAddShoppingNote = async () => {
         if (!validateShoppingNote()) return
-        await addShoppingNote()
+        const response = await addShoppingNote()
         handleCloseShoppingNoteDialog()
+        APIResponseToast(response, "買い物メモを登録しました。", "買い物メモの登録に失敗しました。")
     }
     const handleUpdateShoppingNote = async () => {
         if (!validateShoppingNote()) return
-        await updateShoppingNote()
+        const response = await updateShoppingNote()
         handleCloseShoppingNoteDialog()
+        APIResponseToast(response, "買い物メモを変更しました。", "買い物メモの変更に失敗しました。")
     }
     const handleOpenShoppingNoteDialog = () => {
         setShowShoppingNoteDialog(true)
@@ -359,8 +364,8 @@ const Inventory = () => {
             version: shoppingNoteVersion
         }
         const response = await client.post<ShoppingNoteData>("/v2/shopping_note/create", addShoppingNoteData)
-        APIResponseToast(response, "買い物メモを登録しました。", "買い物メモの登録に失敗しました。")
         await fetchShoppingNotes()
+        return response
     }
     const updateShoppingNote = async () => {
         const updateShoppingNoteData = {
@@ -371,8 +376,8 @@ const Inventory = () => {
             version: shoppingNoteVersion
         }
         const response = await client.post<ShoppingNoteData>("/v2/shopping_note/update", updateShoppingNoteData)
-        APIResponseToast(response, "買い物メモを変更しました。", "買い物メモの変更に失敗しました。")
         await fetchShoppingNotes()
+        return response
     }
     const deleteShoppingNote = async (deleteShoppingNoteData: ShoppingNoteData) => {
         if (!window.confirm("買い物メモを削除しますか？")) return

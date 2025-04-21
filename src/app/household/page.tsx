@@ -70,13 +70,15 @@ const Household = () => {
 
     const handleAddHousehold = async () => {
         if (!validate()) return
-        await addHousehold()
+        const response = await addHousehold()
         handleCloseDialog()
+        APIResponseToast(response, "家計簿を登録しました。", "登録に失敗しました。")
     }
     const handleUpdateHousehold = async () => {
         if (!validate()) return
-        await updateHousehold()
+        const response = await updateHousehold()
         handleCloseDialog()
+        APIResponseToast(response, "家計簿を変更しました。", "変更に失敗しました。")
     }
     const handleOpenAddDialog = () => {
         setShowDialog(true)
@@ -141,8 +143,8 @@ const Household = () => {
             version: version
         }
         const response = await client.post<HouseholdData>('/v2/household/create', addedHouseholdData)
-        APIResponseToast(response, "家計簿を登録しました。", "登録に失敗しました。")
         await fetchHouseholds()
+        return response
     }
     const updateHousehold = async () => {
         const updatedHouseholdData = {
@@ -156,8 +158,8 @@ const Household = () => {
             version: version
         }
         const response = await client.post<HouseholdData>('/v2/household/update', updatedHouseholdData)
-        APIResponseToast(response, "家計簿を変更しました。", "変更に失敗しました。")
         await fetchHouseholds()
+        return response
     }
     const deleteHousehold = async (deletedHouseholdData: HouseholdData) => {
         if (!window.confirm("削除しますか？")) return

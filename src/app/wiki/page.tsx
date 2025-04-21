@@ -58,13 +58,15 @@ const Wiki = () => {
 
     const handleAddWiki = async () => {
         if (!validate()) return
-        await addWiki()
+        const response = await addWiki()
         handleCloseDialog()
+        APIResponseToast(response, "Wikiを登録しました。", "Wikiの登録に失敗しました。")
     }
     const handleUpdateWiki = async () => {
         if (!validate()) return
-        await updateWiki()
+        const response = await updateWiki()
         handleCloseDialog()
+        APIResponseToast(response, "Wikiを更新しました。", "Wikiの更新に失敗しました。")
     }
     const handleOpenAddDialog = () => {
         setShowDialog(true)
@@ -109,8 +111,8 @@ const Wiki = () => {
             version: version
         }
         const response = await client.post<WikiData>('/v2/wiki/create', addedWikiData)
-        APIResponseToast(response, "Wikiを登録しました。", "Wikiの登録に失敗しました。")
         await fetchWikis()
+        return response
     }
     const updateWiki = async () => {
         const updatedWikiData = {
@@ -123,8 +125,8 @@ const Wiki = () => {
             version: version
         }
         const response = await client.post<WikiData>('/v2/wiki/update', updatedWikiData)
-        APIResponseToast(response, "Wikiを更新しました。", "Wikiの更新に失敗しました。")
         await fetchWikis()
+        return response
     }
     const updateImageUrlEmpty = async () => {
         const updatedWikiData = {

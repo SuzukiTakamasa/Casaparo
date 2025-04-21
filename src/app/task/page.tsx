@@ -138,13 +138,15 @@ const Task = () => {
     }
     const handleAddTask = async () => {
         if (!validate()) return
-        await addTask()
+        const response = await addTask()
         handleCloseDialog()
+        APIResponseToast(response, "タスクを登録しました。", "タスクの登録に失敗しました。")
     }
     const handleUpdateTask = async () => {
         if (!validate()) return
-        await updateTask()
+        const response = await updateTask()
         handleCloseDialog()
+        APIResponseToast(response, "タスクを更新しました。", "タスクの更新に失敗しました。")
     }
     const handleOpenAddDialog = () => {
         setShowDialog(true)
@@ -210,8 +212,8 @@ const Task = () => {
             version: version
         }
         const response = await client.post<TaskData>('/v2/task/create', addTaskData)
-        APIResponseToast(response, "タスクを登録しました。", "タスクの登録に失敗しました。")
         await fetchTasks()
+        return response
     }
     const updateTask = async () => {
         const updateTaskData = {
@@ -227,8 +229,8 @@ const Task = () => {
             version: version
         }
         const response = await client.post<TaskData>('/v2/task/update', updateTaskData)
-        APIResponseToast(response, "タスクを更新しました。", "タスクの更新に失敗しました。")
         await fetchTasks()
+        return response
     }
     const deleteTask = async (deletedTaskData: TaskData) => {
         if (!window.confirm("削除しますか？")) return

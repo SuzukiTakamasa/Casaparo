@@ -266,13 +266,15 @@ const Schedule = () => {
     }
     const handleAddSchedule = async () => {
         if (!validate()) return
-        await addSchedule()
+        const response = await addSchedule()
         handleCloseDialog()
+        APIResponseToast(response, "予定を登録しました。", "予定の登録に失敗しました。")
     }
     const handleUpdateSchedule = async () => {
         if (!validate()) return
-        await updateSchedule()
+        const response = await updateSchedule()
         handleCloseDialog()
+        APIResponseToast(response, "予定を更新しました。", "予定の更新に失敗しました。")
     }
     const handleDeleteSchedule = () => {
         deleteSchedule({
@@ -388,7 +390,6 @@ const Schedule = () => {
             version: version
         }
         const response = await client.post<ScheduleData>('/v2/schedule/create', addScheduleData)
-        APIResponseToast(response, "予定を登録しました。", "予定の登録に失敗しました。")
         if (isNotified) {
             await subscriber.broadcast({
                 title: "新しい予定が追加されました",
@@ -396,6 +397,7 @@ const Schedule = () => {
             })
         }
         await fetchSchedules()
+        return response
     }
     const fetchLabels = async () => {
         const labels = await client.get<LabelResponse>("/v2/label")
@@ -418,7 +420,6 @@ const Schedule = () => {
             version: version
         }
         const response = await client.post<ScheduleData>('/v2/schedule/update', updateSchedule)
-        APIResponseToast(response, "予定を更新しました。", "予定の更新に失敗しました。")
         if (isNotified) {
             await subscriber.broadcast({
                 title: "予定が更新されました",
@@ -426,6 +427,7 @@ const Schedule = () => {
             })
         }
         await fetchSchedules()
+        return response
     }
     const deleteSchedule = async (deletedScheduleData: ScheduleData) => {
         if (!window.confirm("削除しますか？")) return
