@@ -41,6 +41,7 @@ const Inventory = () => {
 
     const [noteTypesValidMsg, setNoteTypesValidMsg] = useState("")
     const [noteNameValidMsg, setNoteNameValidMsg] = useState("")
+    const [noZeroAmountInventoryErrMsg, setNoZeroAmountInventoryErrMsg] = useState("")
 
     const [shoppingNotes, setShoppingNotes] = useState<ExtractedShoppingNoteResponse[]>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
@@ -244,6 +245,7 @@ const Inventory = () => {
         setIsExisting([false])
         setNoteTypesValidMsg("")
         setNoteNameValidMsg("")
+        setNoZeroAmountInventoryErrMsg("")
     }
     const handleSetIsExisting = (index: number) => {
         setIsExisting(prevIsExisting => {
@@ -319,16 +321,18 @@ const Inventory = () => {
         setIsExisting([...isExisting, false])
     }
     const handleAddItemsInventoryAmountIsZero = () => {
-        setNotes([])
-        setIsExisting([])
         const itemsInventoryAmountIsZero = inventories.filter(i => i.amount === 0)
         if (itemsInventoryAmountIsZero.length !== 0) {
+            setNotes([])
+            setIsExisting([])
             setNotes(itemsInventoryAmountIsZero)
             const newIsExisting: boolean[] = []
             for (const _ of itemsInventoryAmountIsZero) {
                 newIsExisting.push(true)
             }
             setIsExisting(newIsExisting)
+        } else {
+            setNoZeroAmountInventoryErrMsg("在庫切れのアイテムは現在ありません。")
         }
     }
     const handleRemoveNote = () => {
@@ -752,6 +756,7 @@ const Inventory = () => {
                                     >
                                     在庫なしアイテムを一括で設定
                                     </button>
+                                    {noZeroAmountInventoryErrMsg !== "" && <div className="text-sm text-red-500">{noZeroAmountInventoryErrMsg}</div>}
                                     <div className="text-black">登録者</div>
                                         <div className="text-3xl text-center">
                                             <input
