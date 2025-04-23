@@ -145,8 +145,16 @@ const Wiki = () => {
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
         const response = await client.post<WikiData>('/v2/wiki/delete', deleteWikiData)
+        if (response.data && response.data.status === 200 && deleteWikiData.image_url !== "") {
+            const fileName = getImageFileName(deleteWikiData.image_url)
+            await r2Client.delete(fileName)
+        }
         APIResponseToast(response, "Wikiを削除しました。", "Wikiの削除に失敗しました。")
         await fetchWikis()
+    }
+
+    const getImageFileName = (imageUrl: string) => {
+        return new URL(imageUrl).pathname.slice(1)
     }
     const handleUploadFile = async(event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files![0]
@@ -228,10 +236,10 @@ const Wiki = () => {
                             </div>
                             {imageUrl &&
                             <div className='flex justify-center'>
-                                <div className="text-black font-bold">{new URL(imageUrl).pathname.slice(1)}</div>
+                                <div className="text-black font-bold">{getImageFileName(imageUrl)}</div>
                                 <button
                                     className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 rounded ml-2"
-                                    onClick={() => handleDeleteFile(new URL(imageUrl).pathname.slice(1))}
+                                    onClick={() => handleDeleteFile(getImageFileName(imageUrl))}
                                 >
                                     <TrashBoxIcon />
                                 </button>
