@@ -54,6 +54,33 @@ impl<R: ShoppingNoteRepository> ShoppingNoteController<R> {
         };
     }
 
+    pub async fn register_shopping_note_to_inventory(&self, req: &mut Request) -> Result<Response> {
+        let json_body = match req.text().await {
+            Ok(body) => body,
+            Err(_) => return Response::error("Bad request", 400)
+        };
+        let mut shopping_note: ShoppingNotes = match from_str(json_body.as_str()) {
+            Ok(shopping_note) => shopping_note,
+            Err(_) => return Response::error("Invalid request body", 400)
+        };
+        match self.usecases.register_shopping_note_to_inventory(&mut shopping_note).await {
+            Ok(_) => {
+                let success_response = JSONResponse {
+                    status: 200,
+                    message: "Shopping note registered to inventory successfully".to_string()
+                };
+                return Response::from_json(&success_response);
+            },
+            Err(e) => {
+                let error_response = JSONResponse {
+                    status: 500,
+                    message: format!("Internal server error: {}", e),
+                };
+                return Response::from_json(&error_response);
+            }
+        };
+    }
+
     pub async fn register_to_inventory(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
