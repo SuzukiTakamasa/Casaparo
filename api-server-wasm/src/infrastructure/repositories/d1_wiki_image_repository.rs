@@ -1,6 +1,7 @@
 use crate::domain::entities::wiki_image::WikiImages;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::wiki_image_repository::WikiImageRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -43,15 +44,8 @@ impl WikiImageRepository for D1WikiImageRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[wiki_image.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if wiki_image.version == latest.version {
-                wiki_image.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to delete a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, wiki_image);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from wiki_images
                                                                 where id = ?1"#);

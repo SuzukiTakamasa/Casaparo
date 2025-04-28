@@ -1,6 +1,7 @@
 use crate::domain::entities::setting::Anniversaries;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::anniversary_repository::AnniversaryRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -45,15 +46,8 @@ impl AnniversaryRepository for D1AnniversaryRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[anniversary.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if anniversary.version == latest.version {
-                anniversary.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, anniversary);
+
         let statement = self.db.prepare(r#"update anniversaries
                                                                 set month = ?1,
                                                                 date = ?2,
@@ -76,15 +70,8 @@ impl AnniversaryRepository for D1AnniversaryRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[anniversary.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if anniversary.version == latest.version {
-                anniversary.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, anniversary);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from anniversaries
                                                                 where id = ?1"#);

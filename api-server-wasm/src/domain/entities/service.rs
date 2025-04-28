@@ -4,7 +4,6 @@ use serde::{Deserialize, Serialize};
 pub struct LatestVersion {
     pub version: u32
 }
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct JSONResponse {
     pub status: u16,

@@ -1,6 +1,7 @@
 use crate::domain::entities::task::TaskComments;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::task_comment_repository::TaskCommentRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -45,15 +46,8 @@ impl TaskCommentRepository for D1TaskCommentRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[task_comment.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if task_comment.version == latest.version {
-                task_comment.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, task_comment);
+        
         let statement = self.db.prepare(r#"update task_comments
                                                                 set created_by = ?1,
                                                                 updated_at = ?2,
@@ -77,15 +71,8 @@ impl TaskCommentRepository for D1TaskCommentRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[task_comment.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if task_comment.version == latest.version {
-                task_comment.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, task_comment);
+
         let statement = self.db.prepare(r#"delete
                                                                 from task_comments
                                                                 where id = ?1"#);

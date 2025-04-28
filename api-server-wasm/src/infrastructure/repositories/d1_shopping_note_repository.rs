@@ -1,6 +1,7 @@
 use crate::domain::entities::inventory::{ShoppingNotes, ExtractedShoppingNotes, RegisteringInventoriesList};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::shopping_note_repository::ShoppingNoteRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -62,7 +63,7 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         let result = query.all().await?;
         let mut register_inventories_list = match result.results::<RegisteringInventoriesList>() {
             Ok(r) => r,
-            Err(_) => return Err(worker::Error::RustError("Failed to fetch shopping notes detail".to_string()))
+            Err(_) => return worker_error!("Failed to fetch shopping notes detail")
         };
 
         let mut query_lists = Vec::new();
@@ -87,10 +88,10 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                     if r.note_version == latest.version {
                         r.note_version += 1;
                     } else {
-                        return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
+                        return worker_error!("Attempt to update a stale object")
                     }
                 } else {
-                    return Err(worker::Error::RustError("Version is found None".to_string()))
+                    return worker_error!("Version is found None")
                 }
                 let update_inventories_statement = self.db.prepare(r#"update inventories
                                                                                          set amount = amount + ?1,
@@ -111,17 +112,10 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
         let fetch_version_statement = self.db.prepare(r#"select version
                                                                               from shopping_notes
                                                                               where id = ?1"#);
-                let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
-                let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-                if let Some(latest) = fetch_version_result {
-                    if shopping_note.version == latest.version {
-                        shopping_note.version += 1;
-                    } else {
-                        return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-                    }
-                } else {
-                    return Err(worker::Error::RustError("Version is found None".to_string()))
-                }
+        let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
+        let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+        optimistic_lock!(fetch_version_result, shopping_note);
+
         let update_is_registered_statement = self.db.prepare(r#"update shopping_notes
                                                                                      set is_registered = 1,
                                                                                      version = ?1
@@ -138,15 +132,8 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if shopping_note.version == latest.version {
-                shopping_note.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, shopping_note);
+
         let statement = self.db.prepare(r#"update shopping_notes
                                                                 set notes = ?1,
                                                                 is_registered = ?2,
@@ -166,15 +153,8 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if shopping_note.version == latest.version {
-                shopping_note.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, shopping_note);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from shopping_notes
                                                                 where id = ?1"#);

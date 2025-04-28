@@ -1,6 +1,7 @@
 use crate::domain::entities::web_push_subscription::WebPushSubscription;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::web_push_subscription_repository::WebPushSubscriptionRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -35,7 +36,7 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
         let result = query.first::<WebPushSubscription>(None).await?;
         match result {
             Some(web_push_subscription) => Ok(web_push_subscription),
-            None => Err(worker::Error::RustError(format!("A web push subscription with subscription_id {} is not found.", subscription_id)))
+            None => worker_error!(format!("A web push subscription with subscription_id {} is not found.", subscription_id))
         }
     }
 
@@ -59,15 +60,8 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[web_push_subscription.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if web_push_subscription.version == latest.version {
-                web_push_subscription.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, web_push_subscription);
+        
         let statement = self.db.prepare(r#"delete from web_push_subscriptions
                                                                 where subscription_id = ?1"#);
         let query = statement.bind(&[web_push_subscription.subscription_id.clone().into()])?;

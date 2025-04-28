@@ -1,6 +1,7 @@
 use crate::domain::entities::inventory::Inventories;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::inventory_repository::InventoryRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -44,15 +45,8 @@ impl InventoryRepository for D1InventoryRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if inventory.version == latest.version {
-                inventory.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, inventory);
+
         let statement = self.db.prepare(r#"update inventories
                                                                 set amount = amount + ?1,
                                                                 version = ?2
@@ -70,15 +64,8 @@ impl InventoryRepository for D1InventoryRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if inventory.version == latest.version {
-                inventory.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, inventory);
+
         let statement = self.db.prepare(r#"update inventories
                                                                 set types = ?1,
                                                                 name = ?2,
@@ -102,15 +89,8 @@ impl InventoryRepository for D1InventoryRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if inventory.version == latest.version {
-                inventory.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, inventory);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from inventories 
                                                                 where id = ?1"#);

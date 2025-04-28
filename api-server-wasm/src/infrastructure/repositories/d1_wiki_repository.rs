@@ -1,6 +1,7 @@
 use crate::domain::entities::wiki::Wikis;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::wiki_repository::WikiRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -33,7 +34,7 @@ impl WikiRepository for D1WikiRepository {
         let result = query.first::<Wikis>(None).await?;
         match result {
             Some(wiki) => Ok(wiki),
-            None => Err(worker::Error::RustError(format!("A wiki with id {} is not found.", id)))
+            None => worker_error!(format!("A wiki with id {} is not found.", id))
         }
     }
 
@@ -58,15 +59,8 @@ impl WikiRepository for D1WikiRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[wiki.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if wiki.version == latest.version {
-                wiki.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, wiki);
+
         let statement = self.db.prepare(r#"update wikis
                                                                 set title = ?1,
                                                                 content = ?2,
@@ -92,15 +86,8 @@ impl WikiRepository for D1WikiRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[wiki.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if wiki.version == latest.version {
-                wiki.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, wiki);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from wikis
                                                                 where id = ?1"#);

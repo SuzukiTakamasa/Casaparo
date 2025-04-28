@@ -6,6 +6,9 @@ mod domain;
 mod infrastructure;
 mod interfaces;
 
+#[macro_use]
+mod services;
+
 use crate::domain::entities::service::JSONResponse;
 
 use crate::infrastructure::repositories::d1_household_repository::D1HouseholdRepository;

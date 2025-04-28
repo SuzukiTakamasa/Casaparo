@@ -1,6 +1,7 @@
 use crate::domain::entities::household::{Households, FixedAmount, IsCompleted, HouseholdMonthlySummary, CompletedHouseholds};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::household_repository::HouseholdRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -40,7 +41,7 @@ impl HouseholdRepository for D1HouseholdRepository {
         let result = query.first::<FixedAmount>(None).await?;
         match result {
             Some(fixed_amount) => Ok(fixed_amount),
-            None => Err(worker::Error::RustError("Failed to fetch fixed amount".to_string()))
+            None => worker_error!("Failed to fetch fixed amount")
         }
     }
 
@@ -56,7 +57,7 @@ impl HouseholdRepository for D1HouseholdRepository {
         let result = query.first::<IsCompleted>(None).await?;
         match result {
             Some(is_completed) => Ok(is_completed),
-            None => Err(worker::Error::RustError("Failed to fetch is completed".to_string()))
+            None => worker_error!("Failed to fetch is completed")
         }
     }
 
@@ -108,16 +109,8 @@ impl HouseholdRepository for D1HouseholdRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-
-        if let Some(latest) = fetch_version_result {
-            if household.version == latest.version {
-                household.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, household);
+        
         let statement = self.db.prepare(r#"update households
                                                                 set name = ?1,
                                                                 amount = ?2,
@@ -143,16 +136,8 @@ impl HouseholdRepository for D1HouseholdRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[household.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+        optimistic_lock!(fetch_version_result, household);
 
-        if let Some(latest) = fetch_version_result {
-            if household.version == latest.version {
-                household.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
         let statement = self.db.prepare(r#"delete
                                                                 from households
                                                                 where id = ?1"#);
