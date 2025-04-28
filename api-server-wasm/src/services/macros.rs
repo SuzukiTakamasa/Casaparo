@@ -1,9 +1,11 @@
+#[macro_export]
 macro_rules! worker_error {
     ($err_msg:expr) => {
         Err(worker::Error::RustError($err_msg.to_string()))
     }
 }
 
+#[macro_export]
 macro_rules! optimistic_lock {
     ($latest:expr, $current:expr) => {
         if let Some(latest) = $latest {

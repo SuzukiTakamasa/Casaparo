@@ -1,6 +1,7 @@
 use crate::domain::entities::setting::{Labels, CountOfUsedLabel};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::label_repository::LabelRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -33,7 +34,7 @@ impl LabelRepository for D1LabelRepository {
         let result = query.first::<CountOfUsedLabel>(None).await?;
         match result {
             Some(count_of_used_label) => Ok(count_of_used_label),
-            None => Err(worker::Error::RustError("Failed to get the count of used label".to_string()))
+            None => worker_error!("Failed to get the count of used label")
         }
     }
 
@@ -54,15 +55,7 @@ impl LabelRepository for D1LabelRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[label.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if label.version == latest.version {
-                label.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, label);
         let statement = self.db.prepare(r#"update labels
                                                                 set name = ?1,
                                                                 label = ?2,
@@ -82,15 +75,7 @@ impl LabelRepository for D1LabelRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[label.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if label.version == latest.version {
-                label.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, label);
         let statement = self.db.prepare(r#"delete
                                                                 from labels
                                                                 where id = ?1"#);

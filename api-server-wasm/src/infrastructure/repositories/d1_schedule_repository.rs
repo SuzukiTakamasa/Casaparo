@@ -1,6 +1,7 @@
 use crate::domain::entities::schedule::Schedules;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::schedule_repository::ScheduleRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -78,15 +79,8 @@ impl ScheduleRepository for D1ScheduleRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if schedule.version == latest.version {
-                schedule.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, schedule);
+
         let statement = self.db.prepare(r#"update schedules
                                                                 set description = ?1,
                                                                 from_year = ?2,
@@ -124,15 +118,8 @@ impl ScheduleRepository for D1ScheduleRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[schedule.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if schedule.version == latest.version {
-                schedule.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, schedule);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from schedules
                                                                 where id = ?1"#);

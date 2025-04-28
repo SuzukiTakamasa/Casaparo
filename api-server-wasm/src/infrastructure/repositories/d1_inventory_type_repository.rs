@@ -1,6 +1,7 @@
 use crate::domain::entities::setting::{InventoryTypes, CountOfUsedInventoryType};
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::inventory_type_repository::InventoryTypeRepository;
+use crate::{optimistic_lock, worker_error};
 use crate::async_trait::async_trait;
 use worker::{D1Database, Result};
 use std::sync::Arc;
@@ -33,7 +34,7 @@ impl InventoryTypeRepository for D1InventoryTypeRepository {
         let result = query.first::<CountOfUsedInventoryType>(None).await?;
         match result {
             Some(count_of_used_inventory_types) => Ok(count_of_used_inventory_types),
-            None => Err(worker::Error::RustError("Failed to get the count of used inventory_types".to_string()))
+            None => worker_error!("Failed to get the count of used inventory_types")
         }
     }
 
@@ -53,15 +54,8 @@ impl InventoryTypeRepository for D1InventoryTypeRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory_type.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if inventory_type.version == latest.version {
-                inventory_type.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, inventory_type);
+
         let statement = self.db.prepare(r#"update inventory_types
                                                                 set types = ?1,
                                                                 version = ?2
@@ -79,15 +73,8 @@ impl InventoryTypeRepository for D1InventoryTypeRepository {
                                                                               where id = ?1"#);
         let fetch_version_query = fetch_version_statement.bind(&[inventory_type.id.into()])?;
         let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
-        if let Some(latest) = fetch_version_result {
-            if inventory_type.version == latest.version {
-                inventory_type.version += 1;
-            } else {
-                return Err(worker::Error::RustError("Attempt to update a stale object".to_string()))
-            }
-        } else {
-            return Err(worker::Error::RustError("Version is found None".to_string()))
-        }
+        optimistic_lock!(fetch_version_result, inventory_type);
+        
         let statement = self.db.prepare(r#"delete
                                                                 from inventory_types
                                                                 where id = ?1"#);
