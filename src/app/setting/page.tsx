@@ -223,7 +223,6 @@ const Setting = () => {
             version: anniversaryVersion
         }
         const response = await client.post<AnniversaryData>('/v2/anniversary/update', updateAnniversaryData)
-        APIResponseToast(response, "記念日を変更しました。", "記念日の変更に失敗しました。")
         await fetchAnniversaries()
         return response
     }
