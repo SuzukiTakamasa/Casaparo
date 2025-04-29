@@ -472,7 +472,7 @@ const Setting = () => {
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdateAnniversary ? handleUpdateAnniversary : handleAddAnniversary}
                                 >
-                                    {isUpdateLabel ? "変更" : "登録"}
+                                    {isUpdateAnniversary ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
