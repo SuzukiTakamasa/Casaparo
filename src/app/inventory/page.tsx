@@ -170,7 +170,6 @@ const Inventory = () => {
             version: inventoryVersion
         }
         const response = await client.post<InventoryData>("/v2/inventory/update", updateInventoryData)
-        APIResponseToast(response, "在庫を変更しました。", "在庫の変更に失敗しました。")
         await fetchInventories()
         return response
     }
@@ -401,7 +400,7 @@ const Inventory = () => {
         await fetchInventories()
         return response
     }
-    const handleCpmpleteShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+    const handleCompleteShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("在庫に登録せずに完了としますか？")) return
         const response = await completeShoppingNote(registerToInventoryShoppingNote)
         APIResponseToast(response, "買い物メモのステータスを「完了」に更新しました。", "買い物メモのステータスの更新に失敗しました。")
@@ -859,7 +858,7 @@ const Inventory = () => {
                                                 </button>
                                                 <button
                                                     className={"bg-gray-700 hover:bg-gray-900 text-white font-blod py-1 px-1 rounded"}
-                                                    onClick={() => handleCpmpleteShoppingNote({
+                                                    onClick={() => handleCompleteShoppingNote({
                                                         id: firstShoppingNote.id,
                                                         notes: JSON.stringify(shoppingNote.map((note) => ({
                                                             id: note.note_id,

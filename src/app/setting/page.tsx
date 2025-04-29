@@ -223,7 +223,6 @@ const Setting = () => {
             version: anniversaryVersion
         }
         const response = await client.post<AnniversaryData>('/v2/anniversary/update', updateAnniversaryData)
-        APIResponseToast(response, "記念日を変更しました。", "記念日の変更に失敗しました。")
         await fetchAnniversaries()
         return response
     }
@@ -473,7 +472,7 @@ const Setting = () => {
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdateAnniversary ? handleUpdateAnniversary : handleAddAnniversary}
                                 >
-                                    {isUpdateLabel ? "変更" : "登録"}
+                                    {isUpdateAnniversary ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
