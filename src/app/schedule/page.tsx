@@ -692,7 +692,7 @@ const Schedule = () => {
                                         </select>
                                         </label>
                                     </div>
-                                    <div>
+                                    {/*<div>
                                         <label className="text-black">
                                         <input
                                             type="checkbox"
@@ -701,7 +701,7 @@ const Schedule = () => {
                                         />
                                         <span className="ml-2">通知を受け取る</span>
                                         </label>
-                                    </div>
+                                    </div>*/}
                                 </div>
                                 <div className="flex justify-center space-x-4">
                                     <button
