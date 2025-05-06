@@ -201,7 +201,7 @@ const Schedule = () => {
                             key={i}
                             className="bg-orange-600 hover:bg-orange-800 text-white py-1 px-2 m-1 rounded-full"
                         >
-                            {anniversary.description}
+                            🎉{anniversary.description}
                         </button>
                     ))}
                 </td>

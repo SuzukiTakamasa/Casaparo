@@ -128,30 +128,70 @@ export default function Home() {
             <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
         </CardWithTitleAndTextLink>
         <CardWithTitleAndTextLink title="今日・明日の予定" path="/schedule" text="スケジュール一覧へ" margin="my-1">
-          {sortSchedulesByDateTime(schedules).map((schedule, i) => (
-            <div key={i} className="text-center text-xl">
-              {schedules.length > 0 ? `${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date}日(${getWeekDay(year, month, schedule.from_date)}) ${schedule.from_time}-${schedule.to_time} ${schedule.description}` : "なし"}
-            </div>
-          ))}
-          {anniversaries.map((anniversary, i) => (
-            <div key={i} className="text-center text-xl">
-              {anniversaries.length > 0 && anniversary.month === month && anniversary.date === today && `${anniversary.date}日(${getWeekDay(year, month, anniversary.date)}) ${anniversary.description}`}
-            </div>
-          ))}
+          <table className="flex justify-center">
+            <tbody>
+              {sortSchedulesByDateTime(schedules).map((schedule, i) => (
+                <div key={i} className="text-xl">
+                  {schedules.length > 0 &&
+                    <tr>
+                      <td>{setUser(schedule.created_by)}</td>
+                      <td>{schedule.label !== null ? schedule.label : ""}</td>
+                      <td className="pr-4">{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})</td>
+                      <td className="pr-4">{schedule.from_time}-{schedule.to_time}</td>
+                      <td>{schedule.description}</td>
+                    </tr>
+                  }
+                </div>
+              ))}
+              {anniversaries.map((anniversary, i) => (
+                <div key={i} className="text-xl">
+                  {anniversaries.length > 0 &&
+                   anniversary.month === month &&
+                   anniversary.date === today ||
+                   anniversary.date === today + 1 &&
+                    <tr>
+                      <td>🎉</td>
+                      <td></td>
+                      <td className="pr-4">{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
+                      <td className="pr-4"></td>
+                      <td>{anniversary.description}</td>
+                    </tr>
+                  }
+                </div>
+              ))}
+            </tbody>
+          </table>
         </CardWithTitleAndTextLink>
         <CardWithTitleAndTextLink title="在庫切れ情報" path="/inventory" text="在庫一覧へ" margin="my-1">
-          {inventories.map((inventory, i) => (
-            <div key={i} className="text-center text-xl">
-              {inventory.name}
-            </div>
-          ))}
+          <table className="flex justify-center">
+            <tbody>
+              {inventories.map((inventory, i) => (
+                <div key={i} className="text-xl">
+                  <tr> 
+                    <td>{inventory.name}</td>
+                  </tr>
+                </div>
+              ))}
+            </tbody>
+          </table>
         </CardWithTitleAndTextLink>
         <CardWithTitleAndTextLink title="期限間近・期限切れのタスク" path="/task" text="タスク一覧へ">
-          {tasks.map((task, i) => (
-            <div key={i} className={`flex justify-center text-xl m-1`}>
-              {tasks.length > 0 && (isWithinAWeekFromDueDate(task) || isOverDueDate(task)) && `${task.title} (期限: ${task.due_date})`}
-            </div>
-          ))}
+          <table className="flex justify-center">
+            <tbody>
+              {tasks.map((task, i) => (
+                <div key={i} className="text-xl">
+                  {tasks.length > 0 &&
+                  (isWithinAWeekFromDueDate(task) ||
+                  isOverDueDate(task)) &&
+                    <tr>
+                      <td className="pr-4">{task.title}</td>
+                      <td>(期限: {task.due_date})</td>
+                    </tr>
+                  }
+                </div>
+              ))}
+            </tbody>
+          </table>
         </CardWithTitleAndTextLink>
       </div>
     </main>
