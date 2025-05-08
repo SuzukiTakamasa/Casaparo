@@ -178,8 +178,7 @@ export default function Home() {
                   (isWithinAWeekFromDueDate(task) ||
                   isOverDueDate(task)) &&
                     <tr>
-                      <td className="pr-2">{task.title}</td>
-                      <td>(期限: {task.due_date})</td>
+                      <td className="pr-2">{task.title} (期限: {task.due_date})</td>
                     </tr>
                   }
                 </div>
