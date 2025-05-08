@@ -131,30 +131,24 @@ export default function Home() {
           <table className="flex justify-center">
             <tbody>
               {sortSchedulesByDateTime(schedules).map((schedule, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   {schedules.length > 0 &&
                     <tr>
-                      <td>{setUser(schedule.created_by)}</td>
-                      <td>{schedule.label !== null ? schedule.label : ""}</td>
-                      <td className="pr-4">{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})</td>
-                      <td className="pr-4">{schedule.from_time}-{schedule.to_time}</td>
-                      <td>{schedule.description}</td>
+                      <td>
+                        {schedule.from_date}日({getWeekDay(year, month, schedule.from_date)}) {schedule.from_time}-{schedule.to_time} {schedule.description}
+                      </td>
                     </tr>
                   }
                 </div>
               ))}
               {anniversaries.map((anniversary, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   {anniversaries.length > 0 &&
                    anniversary.month === month &&
                    anniversary.date === today ||
                    anniversary.date === today + 1 &&
                     <tr>
-                      <td>🎉</td>
-                      <td></td>
-                      <td className="pr-4">{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
-                      <td className="pr-4"></td>
-                      <td>{anniversary.description}</td>
+                      <td>{anniversary.date}日({getWeekDay(year, month, anniversary.date)}) {anniversary.description}</td>
                     </tr>
                   }
                 </div>
@@ -166,7 +160,7 @@ export default function Home() {
           <table className="flex justify-center">
             <tbody>
               {inventories.map((inventory, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   <tr> 
                     <td>{inventory.name}</td>
                   </tr>
@@ -179,13 +173,12 @@ export default function Home() {
           <table className="flex justify-center">
             <tbody>
               {tasks.map((task, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   {tasks.length > 0 &&
                   (isWithinAWeekFromDueDate(task) ||
                   isOverDueDate(task)) &&
                     <tr>
-                      <td className="pr-4">{task.title}</td>
-                      <td>(期限: {task.due_date})</td>
+                      <td className="pr-2">{task.title} (期限: {task.due_date})</td>
                     </tr>
                   }
                 </div>
