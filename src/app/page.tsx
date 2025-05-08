@@ -136,8 +136,8 @@ export default function Home() {
                     <tr>
                       <td>{setUser(schedule.created_by)}</td>
                       <td>{schedule.label !== null ? schedule.label : ""}</td>
-                      <td className="pr-4">{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})</td>
-                      <td className="pr-4">{schedule.from_time}-{schedule.to_time}</td>
+                      <td className="pr-2">{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})</td>
+                      <td className="pr-2">{schedule.from_time}-{schedule.to_time}</td>
                       <td>{schedule.description}</td>
                     </tr>
                   }
@@ -152,8 +152,8 @@ export default function Home() {
                     <tr>
                       <td>🎉</td>
                       <td></td>
-                      <td className="pr-4">{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
-                      <td className="pr-4"></td>
+                      <td className="pr-2">{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
+                      <td className="pr-2"></td>
                       <td>{anniversary.description}</td>
                     </tr>
                   }
@@ -184,7 +184,7 @@ export default function Home() {
                   (isWithinAWeekFromDueDate(task) ||
                   isOverDueDate(task)) &&
                     <tr>
-                      <td className="pr-4">{task.title}</td>
+                      <td className="pr-2">{task.title}</td>
                       <td>(期限: {task.due_date})</td>
                     </tr>
                   }
