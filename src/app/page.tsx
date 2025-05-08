@@ -135,7 +135,7 @@ export default function Home() {
                   {schedules.length > 0 &&
                     <tr>
                       <td>
-                        {setUser(schedule.created_by)}{schedule.label !== null ? schedule.label : ""}{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})
+                        {schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})
                       </td>
                       <td className="pr-2">{schedule.from_time}-{schedule.to_time}</td>
                       <td>{schedule.description}</td>
@@ -150,7 +150,7 @@ export default function Home() {
                    anniversary.date === today ||
                    anniversary.date === today + 1 &&
                     <tr>
-                      <td>🎉{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
+                      <td>{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
                       <td className="pr-2"></td>
                       <td>{anniversary.description}</td>
                     </tr>
