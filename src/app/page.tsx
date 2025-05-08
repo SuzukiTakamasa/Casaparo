@@ -134,9 +134,9 @@ export default function Home() {
                 <div key={i} className="text-lg">
                   {schedules.length > 0 &&
                     <tr>
-                      <td>{setUser(schedule.created_by)}</td>
-                      <td>{schedule.label !== null ? schedule.label : ""}</td>
-                      <td className="pr-2">{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})</td>
+                      <td>
+                        {setUser(schedule.created_by)}{schedule.label !== null ? schedule.label : ""}{schedule.from_date}日({getWeekDay(year, month, schedule.from_date)})
+                      </td>
                       <td className="pr-2">{schedule.from_time}-{schedule.to_time}</td>
                       <td>{schedule.description}</td>
                     </tr>
@@ -150,9 +150,7 @@ export default function Home() {
                    anniversary.date === today ||
                    anniversary.date === today + 1 &&
                     <tr>
-                      <td>🎉</td>
-                      <td></td>
-                      <td className="pr-2">{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
+                      <td>🎉{anniversary.date}日({getWeekDay(year, month, anniversary.date)})</td>
                       <td className="pr-2"></td>
                       <td>{anniversary.description}</td>
                     </tr>
