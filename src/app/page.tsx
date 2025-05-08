@@ -131,7 +131,7 @@ export default function Home() {
           <table className="flex justify-center">
             <tbody>
               {sortSchedulesByDateTime(schedules).map((schedule, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   {schedules.length > 0 &&
                     <tr>
                       <td>{setUser(schedule.created_by)}</td>
@@ -144,7 +144,7 @@ export default function Home() {
                 </div>
               ))}
               {anniversaries.map((anniversary, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   {anniversaries.length > 0 &&
                    anniversary.month === month &&
                    anniversary.date === today ||
@@ -166,7 +166,7 @@ export default function Home() {
           <table className="flex justify-center">
             <tbody>
               {inventories.map((inventory, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   <tr> 
                     <td>{inventory.name}</td>
                   </tr>
@@ -179,7 +179,7 @@ export default function Home() {
           <table className="flex justify-center">
             <tbody>
               {tasks.map((task, i) => (
-                <div key={i} className="text-xl">
+                <div key={i} className="text-lg">
                   {tasks.length > 0 &&
                   (isWithinAWeekFromDueDate(task) ||
                   isOverDueDate(task)) &&
