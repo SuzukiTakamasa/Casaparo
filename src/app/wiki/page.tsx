@@ -11,6 +11,7 @@ import { WikiData, WikiResponse } from '@/app/utils/interfaces'
 import { TrashBoxIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import { CreatedBy } from '@utils/constants'
 
 import { APIClient, R2Client } from '@utils/api_client'
 import { setUser, getCurrentDateTime } from '@utils/utility_function'
@@ -86,7 +87,7 @@ const Wiki = () => {
         setId(0)
         setTitle("")
         setContent("")
-        setCreatedBy(1)
+        setCreatedBy(CreatedBy.T)
         setImageUrl("")
         setVersion(1)
         setIsUpdate(false)

@@ -17,7 +17,7 @@ import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, 
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { APIClient } from '@utils/api_client'
 import { adaptTwoPointReader, setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
-
+import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants'
 
 const client = new APIClient()
 
@@ -124,7 +124,7 @@ const Household = () => {
             const res = await client.get<IsCompleted>(`/v2/completed_household/${householdYear}/${householdMonth}`)
             if (res.data) {
                 setIsCompleted(res.data.is_completed)
-                if (res.data.is_completed === 1) {
+                if (res.data.is_completed === HouseholdConstants.IsCompleted.COMPLETED) {
                     const expenses = await client.get<HouseholdMonthlySummaryResponse>(`/v2/completed_household/monthly_summary/${householdYear}/${householdMonth}`)
                     if (expenses.data) {
                         setExpense(expenses.data)
@@ -239,7 +239,7 @@ const Household = () => {
                 {!isCompleted &&
                 (householdYear < year ||
                 (householdYear === year && householdMonth < month) ||
-                (householdYear === year && householdMonth === month && today >= 25)) &&
+                (householdYear === year && householdMonth === month && today >= DateOfFixedHousehold)) &&
                 <div>
                     <div className="flex justify-center">
                         <button
@@ -364,7 +364,7 @@ const Household = () => {
                     </thead>
                     <tbody>
                         {households.map((household, i) => (
-                            <tr key={i} className={`${household.is_default && "bg-gray-500"}`}>
+                            <tr key={i} className={`${household.is_default === HouseholdConstants.IsDefault.DEFAULT && "bg-gray-500"}`}>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                     <EditButton
                                         onClick={() => handleOpenUpdateDialog({
@@ -387,7 +387,7 @@ const Household = () => {
                                     />
                                 </td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(household.name, 10)}</td>
-                                <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
+                                <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner === HouseholdConstants.IsOwner.OWNER ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{setUser(household.is_owner)}</td>  
                             </tr>
                         ))}

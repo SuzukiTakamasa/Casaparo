@@ -95,11 +95,11 @@ export class WebPushSubscriber {
     constructor(apiClient: APIClient) {
         this.headers = {
             'Content-Type': 'application/json',
-        }
+        } as const
         this.subscribeOptions = {
             userVisibleOnly: true,
             applicationServerKey: new Uint8Array(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)).buffer
-        }
+        } as const
         this.client = apiClient
     }
     private arrayBufferToBase64(buffer: ArrayBuffer): string {

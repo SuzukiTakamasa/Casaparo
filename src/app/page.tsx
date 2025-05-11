@@ -13,6 +13,7 @@ import { APIClient } from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
+import { DateOfFixedHousehold } from '@utils/constants' 
 import { ExclamationTriangleIcon } from '@/app/components/Heroicons'
 
 
@@ -118,7 +119,7 @@ export default function Home() {
             <p>{`${month === 1 ? `(${year - 1}年)12` : month - 1}月の家計簿がまだ確定されていません。`}</p>
             </div>
             }
-            {(isCompletedCurrentMonth === 0 && today >= 25) &&
+            {(isCompletedCurrentMonth === 0 && today >= DateOfFixedHousehold) &&
             <div className="flex justify-center bg-yellow-700">
               <ExclamationTriangleIcon/>
               <p>{`${month}月の家計簿を確定してください。`}</p>
