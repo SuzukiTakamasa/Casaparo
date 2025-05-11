@@ -15,6 +15,7 @@ import { TrashBoxIcon, PlusIcon } from '@/app/components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
 import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
+import { CreatedBy } from '@utils/constants'
 
 
 const client = new APIClient()
@@ -239,26 +240,26 @@ const Schedule = () => {
     }
     const handleSetCreatedBy = useCallback(() => {
         if (createdByT && createdByY) {
-            return 2
+            return CreatedBy.TY
         } else if (createdByT && !createdByY) {
-            return 1
+            return CreatedBy.T
         } else if (!createdByT && createdByY) {
-            return 0
+            return CreatedBy.Y
         }
         return null
     }, [createdByT, createdByY])
     const handleSetCreatedByTAndY = (value: number) => {
         setCreatedBy(value)
         switch (value) {
-            case 2:
+            case CreatedBy.TY:
                 setCreatedByT(true)
                 setCreatedByY(true)
                 break
-            case 1:
+            case CreatedBy.T:
                 setCreatedByT(true)
                 setCreatedByY(false)
                 break
-            case 0:
+            case CreatedBy.Y:
                 setCreatedByT(false)
                 setCreatedByY(true)
                 break

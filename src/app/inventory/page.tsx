@@ -12,6 +12,7 @@ import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
+import { CreatedBy, ShoppingNoteConstants } from '@utils/constants' 
 
 
 const client = new APIClient()
@@ -46,7 +47,7 @@ const Inventory = () => {
     const [shoppingNotes, setShoppingNotes] = useState<ExtractedShoppingNoteResponse[]>([])
     const [shoppingNoteId, setShoppingNoteId] = useState(0)
     const [isUpdateShoppingNote, setIsUpdateShoppingNote] = useState(false)
-    const [notes, setNotes] = useState<InventoryData[]>([{id: 0, types: 0, name: "", amount: 0, created_by: 1, version: 1}])
+    const [notes, setNotes] = useState<InventoryData[]>([{id: 0, types: 0, name: "", amount: 0, created_by: CreatedBy.T, version: 1}])
     const [isRegistered, setIsRegistered] = useState(false)
     const [shoppingNoteCreatedBy, setShoppingNoteCreatedBy] = useState(1)
     const [shoppingNoteVersion, setShoppingNoteVersion] = useState(1)
@@ -132,7 +133,7 @@ const Inventory = () => {
         setTypes(0)
         setName("")
         setAmount(0)
-        setInventoryCreatedBy(1)
+        setInventoryCreatedBy(CreatedBy.T)
         setInventoryVersion(1)
         setIsUpdateInventory(false)
         setTypesValidMsg("")
@@ -236,9 +237,9 @@ const Inventory = () => {
     const handleCloseShoppingNoteDialog = () => {
         setShowShoppingNoteDialog(false)
         setShoppingNoteId(0)
-        setNotes([{id: 0, types: 0, name: "", amount: 0, created_by: 0, version: 1}])
+        setNotes([{id: 0, types: 0, name: "", amount: 0, created_by: CreatedBy.T, version: 1}])
         setIsRegistered(false)
-        setShoppingNoteCreatedBy(1)
+        setShoppingNoteCreatedBy(CreatedBy.T)
         setShoppingNoteVersion(1)
         setIsUpdateShoppingNote(false)
         setIsExisting([false])
@@ -274,7 +275,7 @@ const Inventory = () => {
             newNotes[index].name = matchedInventory?.name ?? ""
             newNotes[index].id = matchedInventory?.id ?? 0
             newNotes[index].types = matchedInventory?.types ?? 0
-            newNotes[index].created_by = matchedInventory?.created_by ?? 1
+            newNotes[index].created_by = matchedInventory?.created_by ?? CreatedBy.T
             newNotes[index].version = matchedInventory?.version ?? 1
             return newNotes
         })
@@ -316,7 +317,7 @@ const Inventory = () => {
         })
     }
     const handleAddNote = () => {
-        setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: 1, version: 1}])
+        setNotes([...notes, {id: 0, types: 0, name: "", amount: 0, created_by: CreatedBy.T, version: 1}])
         setIsExisting([...isExisting, false])
     }
     const handleAddItemsInventoryAmountIsZero = () => {
@@ -353,8 +354,8 @@ const Inventory = () => {
             const newGroupedNotes = groupedNotes.filter(n => n[0].is_registered === isRegistered)
             return newGroupedNotes.sort((a, b) => b[0].id - a[0].id)
           }
-          const groupedNotesNotIsRegistered = sortGroupedNotes(Object.values(groupedNotes), 0)
-          const groupedNotesIsRegistered = sortGroupedNotes(Object.values(groupedNotes), 1)
+          const groupedNotesNotIsRegistered = sortGroupedNotes(Object.values(groupedNotes), ShoppingNoteConstants.IsRegistered.NOT_REGISTERED)
+          const groupedNotesIsRegistered = sortGroupedNotes(Object.values(groupedNotes), ShoppingNoteConstants.IsRegistered.REGISTERED)
           const groupedNotesSortedByIsRegistered = groupedNotesNotIsRegistered.concat(groupedNotesIsRegistered)
           setShoppingNotes(groupedNotesSortedByIsRegistered)
         }
@@ -430,11 +431,11 @@ const Inventory = () => {
             isDisplayedRegisteredShoppingNotes ?
             shoppingNotes
             :
-            shoppingNotes.filter(s => s[0].is_registered === 0)
+            shoppingNotes.filter(s => s[0].is_registered === ShoppingNoteConstants.IsRegistered.NOT_REGISTERED)
         )
     }
     const isYetToRegisterToInventory = (id: number) => {
-        const yetToRegisterToInventory = shoppingNotes.map(s => s.filter(i => i.is_registered === 0))
+        const yetToRegisterToInventory = shoppingNotes.map(s => s.filter(i => i.is_registered === ShoppingNoteConstants.IsRegistered.NOT_REGISTERED))
         let isIncluded = false
         for (const y of yetToRegisterToInventory) {
             for (const i of Object.values(y)) {
@@ -559,14 +560,14 @@ const Inventory = () => {
                                         <input
                                             type="radio"
                                             value="1"
-                                            checked={inventoryCreatedBy === 1}
+                                            checked={inventoryCreatedBy === CreatedBy.T}
                                             onChange={e => setInventoryCreatedBy(Number(e.target.value))}
                                         />
                                         <span className="mr-8">🥺</span>
                                         <input
                                             type="radio"
                                             value="0"
-                                            checked={inventoryCreatedBy === 0}
+                                            checked={inventoryCreatedBy === CreatedBy.Y}
                                             onChange={e => setInventoryCreatedBy(Number(e.target.value))}
                                         />
                                         <span>🥺ྀི</span>
@@ -761,14 +762,14 @@ const Inventory = () => {
                                             <input
                                                 type="radio"
                                                 value="1"
-                                                checked={shoppingNoteCreatedBy === 1}
+                                                checked={shoppingNoteCreatedBy === CreatedBy.T}
                                                 onChange={e => handleSetShoppingNoteCreatedBy(Number(e.target.value))}
                                             />
                                             <span className="mr-8">🥺</span>
                                             <input
                                                 type="radio"
                                                 value="0"
-                                                checked={shoppingNoteCreatedBy === 0}
+                                                checked={shoppingNoteCreatedBy === CreatedBy.Y}
                                                 onChange={e => setShoppingNoteCreatedBy(Number(e.target.value))}
                                             />
                                             <span>🥺ྀི</span>

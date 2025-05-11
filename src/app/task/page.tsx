@@ -10,6 +10,7 @@ import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, HasTaskComments } from '@/app/utils/interfaces'
@@ -77,7 +78,7 @@ const Task = () => {
                 {handleDisplayTasks(subTasks).map((subTask, i) => (
                     subTask.parent_task_id === parentTaskId && (
                     <div key={i} className="text-sm ml-4">
-                        └ <Link href={`/task/detail?id=${subTask.id}`} className={`${subTask.status === 2 ? "text-gray-500" : "text-blue-500"}  font-bold hover:underline`}>{`${subTask.title}`}</Link>
+                        └ <Link href={`/task/detail?id=${subTask.id}`} className={`${subTask.status === TaskConstants.Status.COMPLETED ? "text-gray-500" : "text-blue-500"}  font-bold hover:underline`}>{`${subTask.title}`}</Link>
                         {displaySubTasks(subTasks, subTask.id as number)}
                     </div>
                 )
@@ -100,7 +101,7 @@ const Task = () => {
             isValid = false
             setCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
         }
-        if (status !== 2 && getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
+        if (status !== TaskConstants.Status.COMPLETED && getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
             isValid = false
             setDueDateValidMsg("本日より後の日付を設定してください。")
         }
@@ -111,26 +112,26 @@ const Task = () => {
     }
     const handleSetCreatedBy = useCallback(() => {
         if (createdByT && createdByY) {
-            return 2
+            return CreatedBy.TY
         } else if (createdByT && !createdByY) {
-            return 1
+            return CreatedBy.T
         } else if (!createdByT && createdByY) {
-            return 0
+            return CreatedBy.Y
         }
         return null
     }, [createdByT, createdByY])
     const handleSetCreatedByTAndY = (value: number) => {
         setCreatedBy(value)
         switch (value) {
-            case 2:
+            case CreatedBy.TY:
                 setCreatedByT(true)
                 setCreatedByY(true)
                 break
-            case 1:
+            case CreatedBy.T:
                 setCreatedByT(true)
                 setCreatedByY(false)
                 break
-            case 0:
+            case CreatedBy.Y:
                 setCreatedByT(false)
                 setCreatedByY(true)
                 break
@@ -177,7 +178,7 @@ const Task = () => {
         setIsUpdate(false)
         setId(0)
         setTitle("")
-        setStatus(0)
+        setStatus(TaskConstants.Status.NEW)
         setPriority(0)
         setDescription("")
         setCreatedBy(null)
@@ -269,7 +270,7 @@ const Task = () => {
         return (
             isDisplayedCompletedTask ?
             task :
-            task.filter(t => t.status !== 2)
+            task.filter(t => t.status !== TaskConstants.Status.COMPLETED)
         )
     }
     const handleFilterTasksWithPagination = (tasks: TaskResponse) => {
@@ -491,7 +492,7 @@ const Task = () => {
                                 />
                             </td>
                             <td className="border-b px-1 py-1 text-center text-sm">
-                                <Link href={`/task/detail?id=${task.id}`} className={`${task.status === 2 ? "text-gray-500" : "text-blue-500"} font-bold hover:underline`}>{task.title}</Link>
+                                <Link href={`/task/detail?id=${task.id}`} className={`${task.status === TaskConstants.Status.COMPLETED ? "text-gray-500" : "text-blue-500"} font-bold hover:underline`}>{task.title}</Link>
                                 <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
                                 <div className="flex justify-center">
                                     <div className="text-left">
@@ -502,8 +503,8 @@ const Task = () => {
                             <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
                             <td className="border-b px-1 py-1 text-center text-xs">
                                 {task.due_date}
-                                {task.status !== 2 && isWithinAWeekFromDueDate(task) && <div className="text-yellow-500">期限間近</div>}
-                                {task.status !== 2 && isOverDueDate(task) && <div className="text-red-500">期限切れ</div>}
+                                {task.status !== TaskConstants.Status.COMPLETED && isWithinAWeekFromDueDate(task) && <div className="text-yellow-500">期限間近</div>}
+                                {task.status !== TaskConstants.Status.COMPLETED && isOverDueDate(task) && <div className="text-red-500">期限切れ</div>}
                             </td>
                         </tr>
                         )

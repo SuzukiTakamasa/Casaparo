@@ -13,6 +13,7 @@ import { MonthContext } from '@components/MonthPaginator'
 import { TextLinkToBackToPreviousPage } from '@/app/components/TextLink'
 import { EditButton, DeleteButton } from '@/app/components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import { CreatedBy } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
@@ -109,26 +110,26 @@ const TaskDetail = () => {
     }
     const handleSetRelatedSubTaskCreatedBy = useCallback(() => {
         if (relatedSubTaskCreatedByT && relatedSubTaskCreatedByY) {
-            return 2
+            return CreatedBy.TY
         } else if (relatedSubTaskCreatedByT && !relatedSubTaskCreatedByY) {
-            return 1
+            return CreatedBy.T
         } else if (!relatedSubTaskCreatedByT && relatedSubTaskCreatedByY) {
-            return 0
+            return CreatedBy.Y
         }
         return null
     }, [relatedSubTaskCreatedByT, relatedSubTaskCreatedByY])
     const handleSetRelatedSubTaskCreatedByTAndY = (value: number) => {
         setRelatedSubTaskCreatedBy(value)
         switch (value) {
-            case 2:
+            case CreatedBy.TY:
                 setRelatedSubTaskCreatedByT(true)
                 setRelatedSubTaskCreatedByY(true)
                 break
-            case 1:
+            case CreatedBy.T:
                 setRelatedSubTaskCreatedByT(true)
                 setRelatedSubTaskCreatedByY(false)
                 break
-            case 0:
+            case CreatedBy.Y:
                 setRelatedSubTaskCreatedByT(false)
                 setRelatedSubTaskCreatedByY(true)
                 break
@@ -182,7 +183,7 @@ const TaskDetail = () => {
         setRelatedSubTaskStatus(0)
         setRelatedSubTaskPriority(0)
         setRelatedSubTaskDescription("")
-        setRelatedSubTaskCreatedBy(0)
+        setRelatedSubTaskCreatedBy(CreatedBy.T)
         setRelatedSubTaskDueDate("")
         setRelatedSubTaskParentTaskId(0)
         setRelatedSubTaskVersion(0)
@@ -286,7 +287,7 @@ const TaskDetail = () => {
     const handleCloseTaskCommentDialog = () => {
         setShowTaskCommentDialog(false)
         setTaskCommentId(0)
-        setTaskCommentCreatedBy(1)
+        setTaskCommentCreatedBy(CreatedBy.T)
         setComment("")
         setTaskCommentVersion(0)
     }
@@ -624,14 +625,14 @@ const TaskDetail = () => {
                                     <input
                                         type="radio"
                                         value="1"
-                                        checked={taskCommentCreatedBy === 1}
+                                        checked={taskCommentCreatedBy === CreatedBy.T}
                                         onChange={e => setTaskCommentCreatedBy(Number(e.target.value))}
                                         />
                                         <span className="mr-8">🥺</span>
                                     <input
                                         type="radio"
                                         value="0"
-                                        checked={taskCommentCreatedBy === 0}
+                                        checked={taskCommentCreatedBy === CreatedBy.Y}
                                         onChange={e => setTaskCommentCreatedBy(Number(e.target.value))}
                                         />
                                         <span>🥺ྀི</span>
