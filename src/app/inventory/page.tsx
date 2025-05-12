@@ -389,12 +389,14 @@ const Inventory = () => {
         APIResponseToast(response, "買い物メモを削除しました。", "買い物メモの削除に失敗しました。")
         await fetchShoppingNotes()
     }
-    /*const registerToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+    const registerShoppingNoteToInventory = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
-        await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
+        const response = await client.post<ShoppingNoteData>("/v2/shopping_note/register_shopping_note_to_inventory", registerToInventoryShoppingNote)
+        APIResponseToast(response, "買い物メモの内容を在庫に登録しました。", "買い物メモの内容の在庫登録に失敗しました。")
+        await fetchInventories()
         await fetchShoppingNotes()
     }
-    */
+    
     const completeShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         const response = await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
@@ -405,15 +407,6 @@ const Inventory = () => {
         if (!window.confirm("在庫に登録せずに完了としますか？")) return
         const response = await completeShoppingNote(registerToInventoryShoppingNote)
         APIResponseToast(response, "買い物メモのステータスを「完了」に更新しました。", "買い物メモのステータスの更新に失敗しました。")
-    }
-    const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
-        if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
-        const promises = JSON.parse(registerToInventoryShoppingNote.notes).map((request: InventoryData) => {
-            client.post<InventoryData>(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
-        })
-        await Promise.all(promises)
-        const response = await completeShoppingNote(registerToInventoryShoppingNote)
-        APIResponseToast(response, "買い物メモの内容を在庫に登録しました。", "買い物メモの内容の在庫登録に失敗しました。")
     }
 
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
@@ -840,7 +833,7 @@ const Inventory = () => {
                                             <div className="flex justify-left mt-1">
                                                 <button
                                                     className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded mr-1"}
-                                                    onClick={() => registerToInventoryTemp({
+                                                    onClick={() => registerShoppingNoteToInventory({
                                                         id: firstShoppingNote.id,
                                                         notes: JSON.stringify(shoppingNote.map((note) => ({
                                                             id: note.note_id,

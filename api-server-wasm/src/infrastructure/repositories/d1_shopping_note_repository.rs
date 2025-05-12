@@ -103,6 +103,21 @@ impl ShoppingNoteRepository for D1ShoppingNoteRepository {
                 query_lists.push(update_inventories_query);
             }
         }
+        let fetch_version_statement = self.db.prepare(r#"select version
+                                                                              from shopping_notes
+                                                                              where id = ?1"#);
+        let fetch_version_query = fetch_version_statement.bind(&[shopping_note.id.into()])?;
+        let fetch_version_result = fetch_version_query.first::<LatestVersion>(None).await?;
+        optimistic_lock!(fetch_version_result, shopping_note);
+
+        let update_is_registered_statement = self.db.prepare(r#"update shopping_notes
+                                                                                     set is_registered = 1,
+                                                                                     version = ?1
+                                                                                     where id = ?2"#);
+        let update_is_registered_query = update_is_registered_statement.bind(&[shopping_note.version.into(),
+                                                                                                    shopping_note.id.into()])?;
+        query_lists.push(update_is_registered_query);
+        
         self.db.batch(query_lists).await?;
         Ok(())
     }
