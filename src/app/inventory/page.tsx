@@ -393,6 +393,7 @@ const Inventory = () => {
         if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
         const response = await client.post<ShoppingNoteData>("/v2/shopping_note/register_shopping_note_to_inventory", registerToInventoryShoppingNote)
         APIResponseToast(response, "買い物メモの内容を在庫に登録しました。", "買い物メモの内容の在庫登録に失敗しました。")
+        await fetchInventories()
         await fetchShoppingNotes()
     }
     
@@ -406,15 +407,6 @@ const Inventory = () => {
         if (!window.confirm("在庫に登録せずに完了としますか？")) return
         const response = await completeShoppingNote(registerToInventoryShoppingNote)
         APIResponseToast(response, "買い物メモのステータスを「完了」に更新しました。", "買い物メモのステータスの更新に失敗しました。")
-    }
-    const registerToInventoryTemp = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
-        if (!window.confirm("買い物メモの内容を在庫に登録しますか？")) return
-        const promises = JSON.parse(registerToInventoryShoppingNote.notes).map((request: InventoryData) => {
-            client.post<InventoryData>(`/v2/inventory/${request.id === 0 ? "create" : "update_amount"}`, request)
-        })
-        await Promise.all(promises)
-        const response = await completeShoppingNote(registerToInventoryShoppingNote)
-        APIResponseToast(response, "買い物メモの内容を在庫に登録しました。", "買い物メモの内容の在庫登録に失敗しました。")
     }
 
     const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
