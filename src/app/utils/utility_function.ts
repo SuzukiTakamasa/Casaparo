@@ -1,5 +1,6 @@
 import dayjs from 'dayjs'
 import { ScheduleResponse, TaskData } from "./interfaces"
+import { CreatedBy, TaskConstants } from './constants'
 
 export const boolToInt = (flag: boolean): number => +flag
 export const intToBool = (bit: number): boolean => !!bit
@@ -24,11 +25,11 @@ export const adaptTwoPointReader = (text: string, maxLength: number): string => 
 
 export const setUser = (userInt: number): string => {
     switch (userInt) {
-        case 2:
+        case CreatedBy.TY:
             return "🥺🥺ྀི"
-        case 1:
+        case CreatedBy.T:
             return "🥺"
-        case 0:
+        case CreatedBy.Y:
             return "🥺ྀི"
         default:
             return "Invalid user"
@@ -163,11 +164,11 @@ export const sortSchedulesByDateTime = (schedules: ScheduleResponse): ScheduleRe
 
 export const setStatusStr = (status: number): string => {
     switch (status) {
-        case 0:
+        case TaskConstants.Status.COMPLETED:
             return "未着手"
-        case 1:
+        case TaskConstants.Status.IN_PROGRESS:
             return "着手中"
-        case 2:
+        case TaskConstants.Status.NEW:
             return "完了"
         default:
             return "-"
@@ -176,11 +177,11 @@ export const setStatusStr = (status: number): string => {
 
 export const setPriorityStr = (priority: number): string => {
     switch (priority) {
-        case 0:
+        case TaskConstants.Priority.LOW:
             return "低"
-        case 1:
+        case TaskConstants.Priority.MIDDLE:
             return "中"
-        case 2:
+        case TaskConstants.Priority.HIGH:
             return "高"
         default:
             return "-"
