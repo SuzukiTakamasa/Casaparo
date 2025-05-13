@@ -96,6 +96,9 @@ impl TaskRepository for D1TaskRepository {
     }
 
     async fn delete_task(&self, task: &mut Tasks) -> Result<()> {
+        let activate_foreign_key_query = self.db.prepare(r#"pragma foreign_keys = on"#);
+        activate_foreign_key_query.run().await?;
+        
         let fetch_version_statement = self.db.prepare(r#"select version
                                                                               from tasks
                                                                               where id = ?1"#);

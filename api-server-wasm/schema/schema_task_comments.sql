@@ -5,5 +5,6 @@ CREATE TABLE task_comments (
     updated_at TEXT NOT NULL,
     comment TEXT NOT NULL,
     task_id INTEGER NOT NULL,
-    version INTEGER NOT NULL
+    version INTEGER NOT NULL,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE 
 );
