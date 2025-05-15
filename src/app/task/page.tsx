@@ -13,7 +13,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
-import { TaskData, TaskResponse, HasTaskComments } from '@/app/utils/interfaces'
+import { TaskData, TaskResponse } from '@/app/utils/interfaces'
 import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
          splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
@@ -62,7 +62,6 @@ const Task = () => {
     const [version, setVersion] = useState(0)
 
     const [hasChildTaskErrTxt, setHasChildTaskErrTxt] = useState("")
-    const [hasTaskCommentErrTxt, setTaskCommentErrTxt] = useState("")
 
     const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
 
@@ -237,14 +236,6 @@ const Task = () => {
         if (!window.confirm("削除しますか？")) return
         if (tasks.some(t => t.parent_task_id === deletedTaskData.id)) {
             setHasChildTaskErrTxt("子タスクが存在するため削除できません。")
-            return
-        }
-        const hasTaskComments = await client.get<HasTaskComments>(`/v2/task_comment/has_comments/${deletedTaskData.id}`)
-        if (hasTaskComments.data !== null && hasTaskComments.data.has_comments) {
-            setTaskCommentErrTxt("コメントが存在するため削除できません。")
-            return
-        } else if (hasTaskComments.data === null) {
-            setTaskCommentErrTxt("コメントの存在を確認できませんでした。")
             return
         }
         const response = await client.post<TaskData>('/v2/task/delete', deletedTaskData)
@@ -448,7 +439,6 @@ const Task = () => {
                 </div>
             )}
             {hasChildTaskErrTxt !== "" && <div className="text-sm text-red-500">{hasChildTaskErrTxt}</div>}
-            {hasTaskCommentErrTxt !== "" && <div className="text-sm text-red-500">{hasTaskCommentErrTxt}</div>}
             <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>

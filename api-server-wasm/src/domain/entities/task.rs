@@ -15,11 +15,6 @@ pub struct Tasks {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct HasTaskComments {
-    pub has_comments: bool
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct TaskComments {
     pub id: Option<u32>,
     pub created_by: u8,
