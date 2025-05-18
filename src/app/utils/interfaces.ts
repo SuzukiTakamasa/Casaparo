@@ -4,9 +4,10 @@ export interface Result<T> {
     error: string | null
 }
 
-export interface JSONResponse {
+export interface JSONResponse<T> {
     status: number
-    message: string
+    message: string | null
+    data: T | null
 }
 
 export interface HouseholdData {

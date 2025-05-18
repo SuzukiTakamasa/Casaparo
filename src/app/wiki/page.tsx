@@ -146,7 +146,7 @@ const Wiki = () => {
     const deleteWiki = async(deleteWikiData: WikiData) => {
         if (!window.confirm("削除しますか？")) return
         const response = await client.post<WikiData>('/v2/wiki/delete', deleteWikiData)
-        if (response.data && response.data.status === 200 && deleteWikiData.image_url !== "") {
+        if (response.data && deleteWikiData.image_url !== "") {
             const fileName = getImageFileName(deleteWikiData.image_url)
             await r2Client.delete(fileName)
         }

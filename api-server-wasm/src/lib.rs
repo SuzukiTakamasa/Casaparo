@@ -9,7 +9,7 @@ mod interfaces;
 #[macro_use]
 mod services;
 
-use crate::domain::entities::service::JSONResponse;
+use crate::domain::entities::service::{Status, JSONResponse};
 
 use crate::infrastructure::repositories::d1_household_repository::D1HouseholdRepository;
 use crate::application::usecases::household_usecases::HouseholdUsecases;
@@ -97,11 +97,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     if allowed_origins.contains(&origin) {
         headers.set("Access-Control-Allow-Origin", &origin)?;
     } else {
-        return Response::from_json(
-            &JSONResponse {
-            status: 403,
-            message: "Origin not allowed".to_string(),
-        })
+        return JSONResponse::<()>::new(Status::Forbidden, Some("Origin not allowed".to_string()), None);
     }
     
     headers.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")?;
