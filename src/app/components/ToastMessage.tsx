@@ -26,7 +26,7 @@ export const toastMessage = ({ message, type }: ToastMessageProps) => {
 }
 
 export const APIResponseToast = <T,>(response: Result<T>, successMsg: string, errMsg: string) => {
-    if (response.data !== null) {
+    if (response.error === null) {
         toastMessage({ message: successMsg, type: 'success' })
     } else {
         toastMessage({ message: `${errMsg}:\n${response.error}`, type: 'error' })
