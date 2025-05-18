@@ -1,10 +1,7 @@
 use crate::application::usecases::task_comment_usecases::TaskCommentUsecases;
 use crate::domain::entities::task::TaskComments;
 use crate::domain::repositories::task_comment_repository::TaskCommentRepository;
-use crate::domain::entities::service::JSONResponse;
-use worker::{Request, Response, Result, RouteContext};
-use serde_json::from_str;
-use crate::AppState;
+use super::*;
 
 pub struct TaskCommentController<R: TaskCommentRepository> {
     usecases: TaskCommentUsecases<R>,
@@ -19,95 +16,53 @@ impl<R: TaskCommentRepository> TaskCommentController<R> {
         let task_id = ctx.param("task_id").unwrap();
         let task_id_as_u32: u32 = task_id.parse().unwrap();
         match self.usecases.get_task_comments_by_task_id(task_id_as_u32).await {
-            Ok(task_comment) => return Response::from_json(&task_comment),
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(task_comment) => return JSONResponse::new(Status::Ok, None, Some(task_comment)),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
     pub async fn create_task_comment(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return Response::error("Bad request", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let task_comment: TaskComments = match from_str(json_body.as_str()) {
             Ok(task_comment) => task_comment,
-            Err(_) => return Response::error("Invalid request body", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.create_task_comment(&task_comment).await {
-            Ok(_) => {
-                let success_response = JSONResponse {
-                    status: 200,
-                    message: "Task comment created successfully".to_string()
-                };
-                return Response::from_json(&success_response);
-            },
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(_) => return JSONResponse::<()>::new(Status::Created, None, None),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
     pub async fn update_task_comment(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return Response::error("Bad request", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let mut task_comment: TaskComments = match from_str(json_body.as_str()) {
             Ok(task_comment) => task_comment,
-            Err(_) => return Response::error("Invalid request body", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.update_task_comment(&mut task_comment).await {
-            Ok(_) => {
-                let success_response = JSONResponse {
-                    status: 200,
-                    message: "Task comment updated successfully".to_string()
-                };
-                return Response::from_json(&success_response);
-            },
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(_) => return JSONResponse::<()>::new(Status::Ok, None, None),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
     pub async fn delete_task_comment(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return Response::error("Bad request", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let mut task_comment: TaskComments = match from_str(json_body.as_str()) {
             Ok(task_comment) => task_comment,
-            Err(_) => return Response::error("Invalid request body", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.delete_task_comment(&mut task_comment).await {
-            Ok(_) => {
-                let success_response = JSONResponse {
-                    status: 200,
-                    message: "Task comment deleted successfully".to_string()
-                };
-                return Response::from_json(&success_response);
-            },
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(_) => return JSONResponse::<()>::new(Status::Ok, None, None),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)    
         };
     }
 }

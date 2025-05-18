@@ -1,7 +1,7 @@
 use crate::application::usecases::wiki_usecases::WikiUsecases;
 use crate::domain::entities::wiki::Wikis;
 use crate::domain::repositories::wiki_repository::WikiRepository;
-use crate::domain::entities::service::JSONResponse;
+use crate::domain::entities::service::{JSONResponse, Status};
 use worker::{Request, Response, Result, RouteContext};
 use serde_json::from_str;
 use crate::AppState;
@@ -17,14 +17,8 @@ impl<R: WikiRepository> WikiController<R> {
 
     pub async fn get_wikis(&self) -> Result<Response> {
         match self.usecases.get_wikis().await {
-            Ok(wikis) => return Response::from_json(&wikis),
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(wikis) => return JSONResponse::new(Status::Ok, None, Some(wikis)),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
@@ -32,95 +26,53 @@ impl<R: WikiRepository> WikiController<R> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
         match self.usecases.get_wiki_by_id(id_as_u32).await {
-            Ok(wiki) => return Response::from_json(&wiki),
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(wiki) => return JSONResponse::new(Status::Ok, None, Some(wiki)),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
     pub async fn create_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return Response::error("Bad request", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let wiki: Wikis = match from_str(json_body.as_str()) {
             Ok(wiki) => wiki,
-            Err(_) => return Response::error("Invalid request body", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.create_wiki(&wiki).await {
-            Ok(_) => {
-                let success_response = JSONResponse {
-                    status: 200,
-                    message: "Wiki created successfully".to_string()
-                };
-                return Response::from_json(&success_response);
-            },
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(_) => return JSONResponse::<()>::new(Status::Created, None, None),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
     pub async fn update_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return Response::error("Bad request", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let mut wiki: Wikis = match from_str(json_body.as_str()) {
             Ok(wiki) => wiki,
-            Err(_) => return Response::error("Invalid request body", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.update_wiki(&mut wiki).await {
-            Ok(_) => {
-                let success_response = JSONResponse {
-                    status: 200,
-                    message: "Wiki updated successfully".to_string()
-                };
-                return Response::from_json(&success_response);
-            },
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(_) => return JSONResponse::<()>::new(Status::Ok, None, None),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 
     pub async fn delete_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return Response::error("Bad request", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let mut wiki: Wikis = match from_str(json_body.as_str()) {
             Ok(wiki) => wiki,
-            Err(_) => return Response::error("Invalid request body", 400)
+            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.delete_wiki(&mut wiki).await {
-            Ok(_) => {
-                let success_response = JSONResponse {
-                    status: 200,
-                    message: "Wiki deleted successfully".to_string()
-                };
-                return Response::from_json(&success_response);
-            },
-            Err(e) => {
-                let error_response = JSONResponse {
-                    status: 500,
-                    message: format!("Internal server error: {}", e),
-                };
-                return Response::from_json(&error_response);
-            }
+            Ok(_) => return JSONResponse::<()>::new(Status::Ok, None, None),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };
     }
 }

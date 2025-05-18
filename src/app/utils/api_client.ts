@@ -13,7 +13,6 @@ export const execExternalGetAPI = async<T>(url: string, getParams?: string): Pro
         const jsonRes = await res.json()
     return { data: <T>jsonRes, error: null }
     } catch(e) {
-        console.log(e)
         return { data: null, error: String(e) }
     }   
 }
@@ -36,24 +35,28 @@ export class APIClient {
                 method: 'GET',
                 headers: this.headers
             })
-            const jsonRes = await res.json()
-            return { data: <T>jsonRes, error: null }
+            const jsonResponse: JSONResponse<T> = await res.json()
+            if (jsonResponse.status >= 400) {
+                return { data: null, error: jsonResponse.message }
+            }
+            return { data: jsonResponse.data, error: null}
         } catch (e) {
-            console.log(e)
             return { data: null, error: String(e) }
         }
     }
-    public async post<T extends APIRequest>(endpoint: string, data: T): Promise<Result<JSONResponse>> {
+    public async post<T extends APIRequest>(endpoint: string, data: T): Promise<Result<T>> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',
                 headers: this.headers,
                 body: JSON.stringify(data)
             })
-            const jsonRes = await res.json()
-            return { data: <JSONResponse>jsonRes, error: null }
+            const jsonResponse: JSONResponse<T> = await res.json()
+            if (jsonResponse.status >= 400) {
+                return { data: null, error: jsonResponse.message }
+            }
+            return { data: jsonResponse.data, error: null }
         } catch (e) {
-            console.log(e)
             return { data: null, error: String(e) }
         }
     }
@@ -122,7 +125,7 @@ export class WebPushSubscriber {
         }
     }
 
-    public async subscribe(): Promise<Result<JSONResponse>> {
+    public async subscribe(): Promise<Result<WebPushSubscriptionData>> {
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
@@ -142,7 +145,7 @@ export class WebPushSubscriber {
         }
     }
 
-    public async unsubscribe(): Promise<Result<JSONResponse>> {
+    public async unsubscribe(): Promise<Result<WebPushSubscriptionData>> {
         try {
             const subscription = await this.fetchSubscription()
             if (!subscription.data) return { data: null, error: 'No Subscription' }
