@@ -51,6 +51,15 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
 
   return (
     <html lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Casaparo</title>
+        <link rel="icon-any" href="/icon512_rounded.png" />
+        <link rel="icon-maskable" href="/icon512_maskable.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="description" content="Casaparo - 家計簿、在庫・買い物メモ、スケジュール、統計、タスク、Wiki、設定を管理するアプリです。" />
+      </head>
       <body className={inter.className}>
         <header className="bg-gray-800 text-white p-4 z-10">
           <nav className="flex justify-between items-center">
