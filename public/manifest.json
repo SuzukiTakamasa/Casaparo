@@ -17,7 +17,7 @@
     ],
     "orientation":"any",
     "display":"standalone",
-    "scope": "/casaparo/",
+    "scope": "/",
     "dir":"auto",
     "name":"Casaparo",
     "short_name":"Gurepachi app",
