@@ -146,8 +146,8 @@ export default function Home() {
                 <div key={i} className="text-lg">
                   {anniversaries.length > 0 &&
                    anniversary.month === month &&
-                   anniversary.date === today ||
-                   anniversary.date === today + 1 &&
+                   (anniversary.date === today ||
+                   anniversary.date === today + 1) &&
                     <tr>
                       <td>🎉 {anniversary.date}日({getWeekDay(year, month, anniversary.date)}) {anniversary.description}</td>
                     </tr>
