@@ -57,6 +57,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
         <link rel="icon-any" href="/icon512_rounded.png" />
         <link rel="icon-maskable" href="/icon512_maskable.png" />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon512_rounded.png" />
         <meta name="theme-color" content="#000000" />
         <meta name="description" content="Casaparo - 家計簿、在庫・買い物メモ、スケジュール、統計、タスク、Wiki、設定を管理するアプリです。" />
       </head>
