@@ -164,11 +164,11 @@ export const sortSchedulesByDateTime = (schedules: ScheduleResponse): ScheduleRe
 
 export const setStatusStr = (status: number): string => {
     switch (status) {
-        case TaskConstants.Status.COMPLETED:
+        case TaskConstants.Status.NEW:
             return "未着手"
         case TaskConstants.Status.IN_PROGRESS:
             return "着手中"
-        case TaskConstants.Status.NEW:
+        case TaskConstants.Status.COMPLETED:
             return "完了"
         default:
             return "-"
