@@ -16,7 +16,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@/app/utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { APIClient } from '@utils/api_client'
-import { adaptTwoPointReader, setUser, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { adaptTwoPointReader, setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants'
 
 const client = new APIClient()
@@ -388,7 +388,7 @@ const Household = () => {
                                 </td>
                                 <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(household.name, 10)}</td>
                                 <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner === HouseholdConstants.IsOwner.OWNER ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{setUser(household.is_owner)}</td>  
+                                <td className="border-b px-1 py-1 text-center text-sm">{setCreatedByStr(household.is_owner)}</td>  
                             </tr>
                         ))}
                     </tbody>

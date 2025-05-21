@@ -14,7 +14,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient, R2Client } from '@utils/api_client'
-import { setUser, getCurrentDateTime } from '@utils/utility_function'
+import { setCreatedByStr, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -316,7 +316,7 @@ const Wiki = () => {
                                 <Link href={`/wiki/detail?id=${wiki.id}`} className="text-blue-500 font-bold hover:underline">{wiki.title}</Link>
                                 <div className="text-xs">{`(最終更新: ${wiki.updated_at})`}</div>
                             </td>
-                            <td className="border-b px-1 py-1 text-center text-sm">{setUser(wiki.created_by)}</td>
+                            <td className="border-b px-1 py-1 text-center text-sm">{setCreatedByStr(wiki.created_by)}</td>
                         </tr>
                     ))}
                 </tbody>

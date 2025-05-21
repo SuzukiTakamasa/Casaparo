@@ -23,8 +23,8 @@ export const adaptTwoPointReader = (text: string, maxLength: number): string => 
     return textLength > maxLength * 2 ? text.slice(0, maxLength - 1) + ".." : text
 }
 
-export const setUser = (userInt: number): string => {
-    switch (userInt) {
+export const setCreatedByStr = (createdBy: number): string => {
+    switch (createdBy) {
         case CreatedBy.TY:
             return "🥺🥺ྀི"
         case CreatedBy.T:

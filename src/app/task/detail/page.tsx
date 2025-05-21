@@ -17,7 +17,7 @@ import { CreatedBy } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@/app/utils/interfaces'
-import { convertUrlsToLinks, setUser, setStatusStr, setPriorityStr, splitYearMonthDayStr,
+import { convertUrlsToLinks, setCreatedByStr, setStatusStr, setPriorityStr, splitYearMonthDayStr,
          getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
@@ -505,7 +505,7 @@ const TaskDetail = () => {
                                 </tr>
                                 <tr>
                                     <td className="text-sm pr-4 font-bold">作成者:</td>
-                                    <td className="text-sm">{setUser(taskDetail.created_by)}</td>
+                                    <td className="text-sm">{setCreatedByStr(taskDetail.created_by)}</td>
                                 </tr>
                                 <tr>
                                     <td className="text-sm pr-4 font-bold">期限:</td>
@@ -577,7 +577,7 @@ const TaskDetail = () => {
                 {taskComments.map((taskComment, i) => (
                     <div key={i} className="my-1">
                         <div className="flex justify-left space-x-2">
-                            <div className="text-lg">{setUser(taskComment.created_by)}</div>
+                            <div className="text-lg">{setCreatedByStr(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
                                 <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskComment.comment)), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
                                 <div className="flex justify-right space-x-1">
