@@ -12,8 +12,8 @@ import { TextLink } from '@components/TextLink'
 import { APIClient } from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
-import { formatNumberWithCommas, getToday, getWeekDay, setUser, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
-import { DateOfFixedHousehold } from '@utils/constants' 
+import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
+import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants' 
 import { ExclamationTriangleIcon } from '@/app/components/Heroicons'
 
 
@@ -113,20 +113,20 @@ export default function Home() {
       <div className="container max-w-full">
         <h1 className="text-2xl font-bold pb-8">🥺ダッシュボード🥺ྀི</h1>
         <CardWithTitleAndTextLink title="今月の生活費・各負担分" path="/household" text="家計簿一覧へ">
-          {isCompletedLastMonth === 0 &&
+          {isCompletedLastMonth === HouseholdConstants.IsCompleted.NOT_COMPLETED &&
             <div className="flex justify-center bg-red-700">
               <ExclamationTriangleIcon/>
             <p>{`${month === 1 ? `(${year - 1}年)12` : month - 1}月の家計簿がまだ確定されていません。`}</p>
             </div>
-            }
-            {(isCompletedCurrentMonth === 0 && today >= DateOfFixedHousehold) &&
-            <div className="flex justify-center bg-yellow-700">
-              <ExclamationTriangleIcon/>
-              <p>{`${month}月の家計簿を確定してください。`}</p>
-            </div>
-            }
-            <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
-            <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
+          }
+          {(isCompletedCurrentMonth === HouseholdConstants.IsCompleted.NOT_COMPLETED && today >= DateOfFixedHousehold) &&
+          <div className="flex justify-center bg-yellow-700">
+            <ExclamationTriangleIcon/>
+            <p>{`${month}月の家計簿を確定してください。`}</p>
+          </div>
+          }
+          <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
+          <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
         </CardWithTitleAndTextLink>
         <CardWithTitleAndTextLink title="今日・明日の予定" path="/schedule" text="スケジュール一覧へ" margin="my-1">
           <table className="flex justify-center">
@@ -136,7 +136,7 @@ export default function Home() {
                   {schedules.length > 0 &&
                     <tr>
                       <td>
-                        {setUser(schedule.created_by)} {schedule.from_date}日({getWeekDay(year, month, schedule.from_date)}) {schedule.from_time}-{schedule.to_time} {schedule.description}
+                        {setCreatedByStr(schedule.created_by)} {schedule.from_date}日({getWeekDay(year, month, schedule.from_date)}) {schedule.from_time}-{schedule.to_time} {schedule.description}
                       </td>
                     </tr>
                   }

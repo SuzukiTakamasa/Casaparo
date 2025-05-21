@@ -14,7 +14,7 @@ import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, Anniver
 import { TrashBoxIcon, PlusIcon } from '@/app/components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
-import { setUser, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
+import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
 
 
@@ -193,7 +193,7 @@ const Schedule = () => {
                                 version: schedule.version
                             })}
                         >
-                            {`${setUser(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date !== day ? "0:00" : schedule.from_time}-${schedule.to_date !== day ? "23:59" : schedule.to_time} ${schedule.description}`}
+                            {`${setCreatedByStr(schedule.created_by)}${schedule.label !== null ? schedule.label : ""} ${schedule.from_date !== day ? "0:00" : schedule.from_time}-${schedule.to_date !== day ? "23:59" : schedule.to_time} ${schedule.description}`}
                         </button>
                     ))}
                     {anniversaries.map((anniversary, i) => (
