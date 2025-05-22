@@ -241,7 +241,7 @@ const TaskDetail = () => {
                 darr.push(d)
             }
         setMonthDaysArray(darr)
-    }, [relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth])
+    }, [numberOfDays])
     const handleSetRelatedSubTaskDueDate = useCallback(() => {
         setRelatedSubTaskDueDate(`${relatedSubTaskDueDateYear}/${relatedSubTaskDueDateMonth}/${relatedSubTaskDueDateDay}`)
     }, [relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay])

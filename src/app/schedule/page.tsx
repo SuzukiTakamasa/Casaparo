@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import React, { useState, useEffect, useContext, useCallback } from 'react'
+import React, { useState, useEffect, useContext, useCallback, useMemo } from 'react'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
 import YearPicker from '@components/YearPicker'
@@ -78,7 +78,7 @@ const Schedule = () => {
     const [isNotified, setIsNotified] = useState(false)
     const [isSubscribed, setIsSubscribed] = useState(false)
 
-    const subscriber = new WebPushSubscriber(client)
+    const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
 
     const getCalendar = (year: number, month: number, day: number) => {
@@ -443,7 +443,7 @@ const Schedule = () => {
                 darr.push(d)
             }
         setMonthDaysArray(darr)
-    }, [activeTab, scheduleYear, scheduleMonth])
+    }, [numberOfDays])
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
         const darr = []
@@ -461,13 +461,10 @@ const Schedule = () => {
                 }
             }
         setWeekDaysArray(darr)
-    }, [activeTab])
+    }, [year, month, today, numberOfDays])
     const handleGetHolidaysList = useCallback(async () => {
         const holidayList = await execExternalGetAPI<{[key: string]: string}>(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
-        for (var d in holidayList.data) {
-            holidays.push(d)
-        }
-        setHolidays(holidays)
+        setHolidays(holidayList.data ? Object.keys(holidayList.data) : [])
     }, [scheduleYear])
     const fetchAnniversaries = useCallback(async () => {
         const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
@@ -478,7 +475,7 @@ const Schedule = () => {
         if (res.data) {
             setIsSubscribed(true)
         }
-    }, [])
+    }, [subscriber])
 
     useEffect(() => {
         handleGetHolidaysList()
