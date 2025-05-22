@@ -464,11 +464,8 @@ const Schedule = () => {
     }, [year, month, today, numberOfDays])
     const handleGetHolidaysList = useCallback(async () => {
         const holidayList = await execExternalGetAPI<{[key: string]: string}>(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
-        for (var d in holidayList.data) {
-            holidays.push(d)
-        }
-        setHolidays(holidays)
-    }, [scheduleYear, holidays])
+        setHolidays(holidayList.data ? Object.keys(holidayList.data) : [])
+    }, [scheduleYear])
     const fetchAnniversaries = useCallback(async () => {
         const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
         setAnniversaries(anniversaries.data || [])
