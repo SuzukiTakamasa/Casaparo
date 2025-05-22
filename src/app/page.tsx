@@ -13,7 +13,7 @@ import { APIClient } from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
-import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants' 
+import { HouseholdConstants, DateOfFixedHousehold, TaskConstants } from '@utils/constants' 
 import { ExclamationTriangleIcon } from '@/app/components/Heroicons'
 
 
@@ -81,21 +81,21 @@ export default function Home() {
   }, [])
   const fetchTasks = useCallback(async () => {
     const tasks = await client.get<TaskResponse>('/v2/task')
-    setTasks(tasks.data?.filter(t => t.status !== 2) || [])
+    setTasks(tasks.data?.filter(t => t.status !== TaskConstants.Status.COMPLETED) || [])
   }, [])
   const fetchIsCompletedCurrentMonth = useCallback(async () => {
     const isCompletedCurrentMonth = await client.get<IsCompleted>(`/v2/completed_household/${year}/${month}`)
     if (isCompletedCurrentMonth.data) {
       setIsCompletedCurrentMonth(isCompletedCurrentMonth.data.is_completed)
     }
-  }, [isCompletedCurrentMonth])
+  }, [year, month])
   const fetchIsCompletedLastMonth = useCallback(async () => {
     const pathParams = month === 1 ? `${year - 1}/12` : `${year}/${month - 1}`
     const isCompletedLastMonth = await client.get<IsCompleted>(`/v2/completed_household/${pathParams}`)
     if (isCompletedLastMonth.data) {
       setIsCompletedLastMonth(isCompletedLastMonth.data.is_completed)
     }
-  }, [isCompletedLastMonth])
+  }, [year, month])
 
    useEffect(() => {
     fetchFixedAmount()

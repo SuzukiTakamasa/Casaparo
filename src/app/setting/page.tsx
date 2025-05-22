@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Toggle from 'react-styled-toggle'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
@@ -51,7 +51,7 @@ const Setting = () => {
 
     const [isSubscribed, setIsSubscribed] = useState(false)
 
-    const subscriber = new WebPushSubscriber(client)
+    const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
     const validateLabel = () => {
         let isValid = true
@@ -307,7 +307,7 @@ const Setting = () => {
         if (subscription.data !== null) {
             setIsSubscribed(true)
         }
-    }, [])
+    }, [subscriber])
     const handleSubscribeWebPushNotification = async () => {
         const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
         if (!window.confirm(popupMsg)) return
@@ -323,7 +323,7 @@ const Setting = () => {
 
     useEffect(() => {
         fetchIsSubscribed()
-    }, [])
+    }, [fetchIsSubscribed])
 
     return (
         <>

@@ -249,7 +249,7 @@ const Task = () => {
                 darr.push(d)
             }
         setMonthDaysArray(darr)
-    }, [dueDateYear, dueDateMonth])
+    }, [numberOfDays])
     const handleSetDueDate = useCallback(() => {
         setDueDate(`${dueDateYear}/${dueDateMonth}/${dueDateDay}`)
     }, [dueDateYear, dueDateMonth, dueDateDay])
