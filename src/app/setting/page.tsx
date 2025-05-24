@@ -485,7 +485,7 @@ const Setting = () => {
                     </div>
                 )}
 
-                <table className="tavle-auto min-w-full mt-4">
+                <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
                             <th className="border-b-2 py-1"></th>

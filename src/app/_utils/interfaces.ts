@@ -187,6 +187,11 @@ export interface SendResultData {
     statusCode: number
 }
 
+export interface Patches {
+    description: string
+    function: () => void
+}
+
 export type HouseholdResponse = HouseholdData[]
 
 export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]
