@@ -27,10 +27,10 @@
         "./src/*"
       ],
       "@utils/*": [
-        "./src/app/utils/*"
+        "./src/app/_utils/*"
       ],
       "@components/*": [
-        "./src/app/components/*"
+        "./src/app/_components/*"
       ]
     }
   },

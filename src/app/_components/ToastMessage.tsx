@@ -1,5 +1,5 @@
 import { Toaster, toast } from 'react-hot-toast'
-import { Result } from '@utils/interfaces'
+import { Result } from '@/app/_utils/interfaces'
 
 export type ToastMessageProps = {
     message: string

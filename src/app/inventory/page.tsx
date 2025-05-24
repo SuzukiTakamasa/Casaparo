@@ -5,11 +5,11 @@
 import { useEffect, useState, useCallback, useContext } from 'react'
 
 import { APIClient } from '@utils/api_client'
-import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse } from '@/app/utils/interfaces'
+import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse } from '@utils/interfaces'
 
 import { adaptTwoPointReader, setCreatedByStr, boolToInt, intToBool } from '@utils/utility_function'
-import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@/app/components/Heroicons'
-import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/Heroicons'
+import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
 import { CreatedBy, ShoppingNoteConstants } from '@utils/constants' 

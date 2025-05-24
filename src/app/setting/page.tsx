@@ -5,8 +5,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import Toggle from 'react-styled-toggle'
 
-import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@/app/utils/interfaces'
-import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@utils/interfaces'
+import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
