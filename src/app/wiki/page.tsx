@@ -7,9 +7,9 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import dynamic from 'next/dynamic'
 
-import { WikiData, WikiResponse } from '@/app/utils/interfaces'
-import { TrashBoxIcon } from '@/app/components/Heroicons'
-import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { WikiData, WikiResponse } from '@utils/interfaces'
+import { TrashBoxIcon } from '@components/Heroicons'
+import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { CreatedBy } from '@utils/constants'
 

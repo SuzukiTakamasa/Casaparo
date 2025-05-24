@@ -1,5 +1,5 @@
 
-import { PencilIcon, TrashBoxIcon } from '@/app/components/Heroicons'
+import { PencilIcon, TrashBoxIcon } from '@components/Heroicons'
 
 type ButtonProps = {
     onClick: () => void

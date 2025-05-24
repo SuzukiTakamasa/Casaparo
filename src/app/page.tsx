@@ -11,10 +11,10 @@ import { TextLink } from '@components/TextLink'
 
 import { APIClient } from '@utils/api_client'
 
-import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@/app/utils/interfaces'
+import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold, TaskConstants } from '@utils/constants' 
-import { ExclamationTriangleIcon } from '@/app/components/Heroicons'
+import { ExclamationTriangleIcon } from '@components/Heroicons'
 
 
 const client = new  APIClient()

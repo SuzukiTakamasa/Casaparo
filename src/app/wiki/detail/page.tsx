@@ -7,9 +7,9 @@ import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import DOMPurify from 'dompurify'
 import { APIClient } from '@utils/api_client'
-import { TextLinkToBackToPreviousPage } from '@/app/components/TextLink'
-import { WikiData } from '@/app/utils/interfaces'
-import { convertUrlsToLinks } from '@/app/utils/utility_function'
+import { TextLinkToBackToPreviousPage } from '@components/TextLink'
+import { WikiData } from '@utils/interfaces'
+import { convertUrlsToLinks } from '@utils/utility_function'
 
 
 const client = new APIClient()

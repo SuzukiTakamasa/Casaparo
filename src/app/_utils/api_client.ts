@@ -1,5 +1,5 @@
 import { APIRequest, APIResponse, R2Response, Result, JSONResponse, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload } from './interfaces'
-import { urlBase64ToUint8Array } from '@utils/utility_function'
+import { urlBase64ToUint8Array } from '@/app/_utils/utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
 import { NextResponse } from 'next/server'

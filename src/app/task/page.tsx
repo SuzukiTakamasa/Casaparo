@@ -8,12 +8,12 @@ import dynamic from 'next/dynamic'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
-import { EditButton, DeleteButton } from '@/app/components/Buttons'
+import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
-import { TaskData, TaskResponse } from '@/app/utils/interfaces'
+import { TaskData, TaskResponse } from '@utils/interfaces'
 import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
          splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
