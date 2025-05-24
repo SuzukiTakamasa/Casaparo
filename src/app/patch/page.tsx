@@ -7,16 +7,48 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { APIClient } from '@utils/api_client'
 import { Patches } from '@utils/interfaces'
 
+import { WikiData, WikiResponse, TaskData, TaskResponse } from '@utils/interfaces'
+
 
 const client  = new APIClient()
 
 const Patch = () => {
 
     // Patch List
-    const patchList: Patches[] = [
+    const patchList: Patches<any>[] = [
         {
-            description: "Decode descriptions of wiki and task",
-            function: async () => {},
+            id: 1,
+            description: "Decode descriptions of wiki",
+            function: async () => {
+                const response = await client.get<WikiResponse>("/v2/wiki")
+                if (response.error)  return { data: null, error: response.error }
+                if (!response.data) return { data: null, error: "No data found" }
+                const wikis = response.data!
+                for (const wiki of wikis) {
+                    wiki.content = decodeURI(wiki.content)
+                }
+                const result = Promise.all(wikis?.map(async (data) => {
+                    client.post<WikiData>("/v2/wiki/update", data)
+                }))
+                return result
+            }
+        },
+        {
+            id: 2,
+            description: "Decode descriptions of task",
+            function: async () => {
+                const response = await client.get<TaskResponse>("/v2/wiki")
+                if (response.error)  return { data: null, error: response.error }
+                if (!response.data) return { data: null, error: "No data found" }
+                const tasks = response.data!
+                for (const task of tasks) {
+                    task.description = decodeURI(task.description)
+                }
+                const result = Promise.all(tasks?.map(async (data) => {
+                    client.post<TaskData>("/v2/task/update", data)
+                }))
+                return result
+            }
         }
     ]
     //
@@ -28,7 +60,7 @@ const Patch = () => {
         if (!window.confirm("パッチを実行しますか？")) {
             return
         }
-        await patch.function()
+        const response = await patch.function()
         setIsDone(prev => {
             const newIsDone = [...prev]
             newIsDone[index] = true
@@ -44,6 +76,7 @@ const Patch = () => {
                 <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
+                            <th className="border-b-2 px-4 py-2">ID</th>
                             <th className="border-b-2 px-4 py-2">説明</th>
                             <th className="border-b-2 px-4 py-2"></th>
                         </tr>
@@ -51,6 +84,7 @@ const Patch = () => {
                     <tbody>
                         {patchList.map((patch, i) => (
                             <tr key={i}>
+                                <td className="border-b px-4 py-1 text-center">{patch.id}</td>
                                 <td className="border-b px-1 py-1 text-center">{patch.description}</td>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                     <button
