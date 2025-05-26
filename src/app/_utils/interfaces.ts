@@ -193,6 +193,7 @@ export interface Patches<T> {
     function: () => any
 }
 
+
 export type HouseholdResponse = HouseholdData[]
 
 export type HouseholdMonthlySummaryResponse = HouseholdMonthlySummaryData[]

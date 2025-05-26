@@ -4,54 +4,10 @@
 
 import React, { useState } from 'react'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
-import { APIClient } from '@utils/api_client'
-import { Patches } from '@utils/interfaces'
-
-import { WikiData, WikiResponse, TaskData, TaskResponse } from '@utils/interfaces'
-
-
-const client  = new APIClient()
+import { Result } from '@utils/interfaces'
+import patchList from './patch_list'
 
 const Patch = () => {
-
-    // Patch List
-    const patchList: Patches<any>[] = [
-        {
-            id: 1,
-            description: "Decode descriptions of wiki",
-            function: async () => {
-                const response = await client.get<WikiResponse>("/v2/wiki")
-                if (response.error)  return { data: null, error: response.error }
-                if (!response.data) return { data: null, error: "No data found" }
-                const wikis = response.data!
-                for (const wiki of wikis) {
-                    wiki.content = decodeURI(wiki.content)
-                }
-                const result = Promise.all(wikis?.map(async (data) => {
-                    client.post<WikiData>("/v2/wiki/update", data)
-                }))
-                return result
-            }
-        },
-        {
-            id: 2,
-            description: "Decode descriptions of task",
-            function: async () => {
-                const response = await client.get<TaskResponse>("/v2/wiki")
-                if (response.error)  return { data: null, error: response.error }
-                if (!response.data) return { data: null, error: "No data found" }
-                const tasks = response.data!
-                for (const task of tasks) {
-                    task.description = decodeURI(task.description)
-                }
-                const result = Promise.all(tasks?.map(async (data) => {
-                    client.post<TaskData>("/v2/task/update", data)
-                }))
-                return result
-            }
-        }
-    ]
-    //
 
     const [isDone, setIsDone] = useState(Array(patchList.length).fill(false))
 
@@ -60,13 +16,13 @@ const Patch = () => {
         if (!window.confirm("パッチを実行しますか？")) {
             return
         }
-        const response = await patch.function()
+        const response: Result<any> = await patch.function()
         setIsDone(prev => {
             const newIsDone = [...prev]
             newIsDone[index] = true
             return newIsDone
         })
-        APIResponseToast({ data: null, error: null }, "パッチの実行に成功しました", "パッチの実行に失敗しました")
+        APIResponseToast({ data: response.data, error: response.error }, "パッチの実行に成功しました", "パッチの実行に失敗しました")
     }
 
     return (
