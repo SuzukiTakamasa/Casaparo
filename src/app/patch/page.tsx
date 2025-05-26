@@ -4,22 +4,10 @@
 
 import React, { useState } from 'react'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
-import { APIClient } from '@utils/api_client'
-import { Patches } from '@utils/interfaces'
-
-
-const client  = new APIClient()
+import { Result } from '@utils/interfaces'
+import patchList from './patch_list'
 
 const Patch = () => {
-
-    // Patch List
-    const patchList: Patches[] = [
-        {
-            description: "Decode descriptions of wiki and task",
-            function: async () => {},
-        }
-    ]
-    //
 
     const [isDone, setIsDone] = useState(Array(patchList.length).fill(false))
 
@@ -28,13 +16,13 @@ const Patch = () => {
         if (!window.confirm("パッチを実行しますか？")) {
             return
         }
-        await patch.function()
+        const response: Result<any> = await patch.function()
         setIsDone(prev => {
             const newIsDone = [...prev]
             newIsDone[index] = true
             return newIsDone
         })
-        APIResponseToast({ data: null, error: null }, "パッチの実行に成功しました", "パッチの実行に失敗しました")
+        APIResponseToast({ data: response.data, error: response.error }, "パッチの実行に成功しました", "パッチの実行に失敗しました")
     }
 
     return (
@@ -44,6 +32,7 @@ const Patch = () => {
                 <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
+                            <th className="border-b-2 px-4 py-2">ID</th>
                             <th className="border-b-2 px-4 py-2">説明</th>
                             <th className="border-b-2 px-4 py-2"></th>
                         </tr>
@@ -51,6 +40,7 @@ const Patch = () => {
                     <tbody>
                         {patchList.map((patch, i) => (
                             <tr key={i}>
+                                <td className="border-b px-4 py-1 text-center">{patch.id}</td>
                                 <td className="border-b px-1 py-1 text-center">{patch.description}</td>
                                 <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                     <button

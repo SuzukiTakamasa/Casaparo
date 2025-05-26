@@ -187,10 +187,12 @@ export interface SendResultData {
     statusCode: number
 }
 
-export interface Patches {
+export interface Patches<T> {
+    id: number
     description: string
-    function: () => void
+    function: () => any
 }
+
 
 export type HouseholdResponse = HouseholdData[]
 
