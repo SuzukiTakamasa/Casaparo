@@ -10,7 +10,7 @@ const patchList: Patches<any>[] = [
         description: "Decode descriptions of wiki",
         function: async () => {
             const response = await client.get<WikiResponse>("/v2/wiki")
-            if (response.error)  return { data: null, error: response.error }
+            if (response.error) return { data: null, error: response.error }
             if (!response.data) return { data: null, error: "No data found" }
             const wikis = response.data!
             for (const wiki of wikis) {
@@ -28,8 +28,8 @@ const patchList: Patches<any>[] = [
         id: 2,
         description: "Decode descriptions of task",
         function: async () => {
-            const response = await client.get<TaskResponse>("/v2/wiki")
-            if (response.error)  return { data: null, error: response.error }
+            const response = await client.get<TaskResponse>("/v2/task")
+            if (response.error) return { data: null, error: response.error }
             if (!response.data) return { data: null, error: "No data found" }
             const tasks = response.data!
             for (const task of tasks) {

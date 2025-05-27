@@ -162,7 +162,7 @@ const TaskDetail = () => {
         setRelatedSubTaskTitle(title)
         setRelatedSubTaskStatus(status)
         setRelatedSubTaskPriority(priority)
-        setRelatedSubTaskDescription(decodeURI(description))
+        setRelatedSubTaskDescription(description)
         handleSetRelatedSubTaskCreatedByTAndY(created_by)
         setRelatedSubTaskDueDate(due_date)
         setRelatedSubTaskDueDateYear(ddYear)
@@ -200,7 +200,7 @@ const TaskDetail = () => {
             title: relatedSubTaskTitle,
             status: relatedSubTaskStatus,
             priority: relatedSubTaskPriority,
-            description: encodeURI(relatedSubTaskDescription),
+            description: relatedSubTaskDescription,
             created_by: relatedSubTaskCreatedBy as number,
             updated_at: getCurrentDateTime(),
             due_date: relatedSubTaskDueDate,
@@ -217,7 +217,7 @@ const TaskDetail = () => {
             title: relatedSubTaskTitle,
             status: relatedSubTaskStatus,
             priority: relatedSubTaskPriority,
-            description: encodeURI(relatedSubTaskDescription),
+            description: relatedSubTaskDescription,
             created_by: relatedSubTaskCreatedBy as number,
             updated_at: getCurrentDateTime(),
             due_date: relatedSubTaskDueDate,
@@ -276,7 +276,7 @@ const TaskDetail = () => {
         setShowTaskCommentDialog(true)
         setTaskCommentId(id as number)
         setTaskCommentCreatedBy(created_by)
-        setComment(decodeURI(comment))
+        setComment(comment)
         setTaskCommentVersion(version)
         setIsUpdateTaskComment(true)
         window.scrollTo({
@@ -299,7 +299,7 @@ const TaskDetail = () => {
         const addedTaskCommentData = {
             created_by: taskCommentCreatedBy,
             updated_at: getCurrentDateTime(),
-            comment: encodeURI(comment),
+            comment: comment,
             task_id: Number(id),
             version: taskCommentVersion
         }
@@ -312,7 +312,7 @@ const TaskDetail = () => {
             id: taskCommentId,
             created_by: taskCommentCreatedBy,
             updated_at: getCurrentDateTime(),
-            comment: encodeURI(comment),
+            comment: comment,
             task_id: Number(id),
             version: taskCommentVersion
         }
@@ -491,7 +491,7 @@ const TaskDetail = () => {
                 <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 mt-1">
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300">
-                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskDetail.description)), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
+                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(taskDetail.description), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
                         </div>
                         <table className="mt-2">
                             <tbody>
@@ -579,7 +579,7 @@ const TaskDetail = () => {
                         <div className="flex justify-left space-x-2">
                             <div className="text-lg">{setCreatedByStr(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(decodeURI(taskComment.comment)), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
+                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(taskComment.comment), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
                                 <div className="flex justify-right space-x-1">
                                     <EditButton
                                         onClick={() => handleOpenUpdateTaskCommentDialog({

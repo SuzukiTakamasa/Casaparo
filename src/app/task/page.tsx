@@ -159,7 +159,7 @@ const Task = () => {
         setTitle(title)
         setStatus(status)
         setPriority(priority)
-        setDescription(decodeURI(description))
+        setDescription(description)
         handleSetCreatedByTAndY(created_by)
         setDueDate(due_date)
         setDueDateYear(ddYear)
@@ -204,7 +204,7 @@ const Task = () => {
             title: title,
             status: status,
             priority: priority,
-            description: encodeURI(description),
+            description: description,
             created_by: createdBy as number,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
@@ -221,7 +221,7 @@ const Task = () => {
             title: title,
             status: status,
             priority: priority,
-            description: encodeURI(description),
+            description: description,
             created_by: createdBy as number,
             updated_at: getCurrentDateTime(),
             due_date: dueDate,
