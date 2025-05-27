@@ -6,7 +6,7 @@ pub struct LatestVersion {
     pub version: u32
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Copy, Clone, Serialize, Deserialize, Debug)]
 pub enum Status {
     Ok = 200,
     Created = 201,
@@ -36,6 +36,6 @@ impl <T: Serialize>JSONResponse<T> {
         message,
         data,
     };
-    return Response::from_json(&response);
+    return Response::from_json(&response).map(|resp| resp.with_status(status as u16));
     }
 }
