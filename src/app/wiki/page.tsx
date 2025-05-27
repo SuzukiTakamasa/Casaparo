@@ -76,7 +76,7 @@ const Wiki = () => {
         setShowDialog(true)
         setId(id as number)
         setTitle(title)
-        setContent(decodeURI(content))
+        setContent(content)
         setCreatedBy(created_by)
         setImageUrl(image_url)
         setVersion(version)
@@ -105,7 +105,7 @@ const Wiki = () => {
     const addWiki = async () => {
         const addedWikiData = {
             title: title,
-            content: encodeURI(content),
+            content: content,
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             image_url: imageUrl,
@@ -119,7 +119,7 @@ const Wiki = () => {
         const updatedWikiData = {
             id: id,
             title: title,
-            content: encodeURI(content),
+            content: content,
             created_by: createdBy,
             updated_at: getCurrentDateTime(),
             image_url: imageUrl,
