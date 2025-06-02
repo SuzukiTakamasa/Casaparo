@@ -196,8 +196,8 @@ const Wiki = () => {
             </button>
 
             {showDialog && (
-                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
-                    <div className="bg-white p-4 rounded max-h-[90vh] w-[90%]">
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
+                    <div className="bg-white p-4 rounded">
                         <div className="flex flex-col space-y-4 mb-4">
                             <input 
                                 className="border p-2 text-black"

@@ -339,6 +339,10 @@ const Inventory = () => {
         setNotes(notes.slice(0, -1))
         setIsExisting(isExisting.slice(0, -1))
     }
+    const handleRemoveSpecifiedNote = (index: number) => {
+        setNotes(notes.filter((_, i) => i !== index))
+        setIsExisting(isExisting.filter((_, i) => i !== index))
+    }
 
     const fetchShoppingNotes = useCallback(async () => {
         const extractedShoppingNotes = await client.get<ExtractedShoppingNoteResponse>("/v2/shopping_note")
@@ -649,7 +653,7 @@ const Inventory = () => {
                     </GeneralPaginationProvider>
 
                     {showShoppingNoteDialog && (
-                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
                             <div className="bg-white p-4 rounded">
                                 <div className="flex flex-col space-y-4 mb-4">
                                     <label className="flex items-center space-x-2 text-black">
@@ -678,28 +682,31 @@ const Inventory = () => {
                                                     </select>
                                                 </label>
                                                 {isExisting[i] ?
-                                                <label className="text-black">
-                                                    <select
-                                                        className="block bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
-                                                        value={note.id}
-                                                        onChange={(e) => handleSetNoteExistingName(i, e.target.value)}
+                                                    <label className="text-black">
+                                                        <select
+                                                            className="block bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
+                                                            value={note.id}
+                                                            onChange={(e) => handleSetNoteExistingName(i, e.target.value)}
+                                                        >
+                                                            <option value="">項目を選択</option>
+                                                            {inventories.map((inventory, i) => (
+                                                                <option key={i} value={inventory.id}>{inventory.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    </label>
+                                                    :
+                                                    <input
+                                                        className="border ml-1 text-black"
+                                                        type="text"
+                                                        placeholder="項目名"
+                                                        value={note.name}
+                                                        onChange={(e) => handleSetNoteName(i, e.target.value)}
                                                     >
-                                                        <option value="">項目を選択</option>
-                                                        {inventories.map((inventory, i) => (
-                                                            <option key={i} value={inventory.id}>{inventory.name}</option>
-                                                        ))}
-                                                    </select>
-                                                </label>
-                                                :
-                                                <input
-                                                    className="border ml-1 text-black"
-                                                    type="text"
-                                                    placeholder="項目名"
-                                                    value={note.name}
-                                                    onChange={(e) => handleSetNoteName(i, e.target.value)}
-                                                >
-                                                </input>
+                                                    </input>
                                                 }
+                                                <DeleteButton
+                                                    onClick={() => handleRemoveSpecifiedNote(i)}
+                                                />
                                             </div>
                                             <div className="flex flex-row-reverse">
                                                 <button
