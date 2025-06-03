@@ -16,7 +16,7 @@ type GeneralPaginationProviderProps = {
 export type GeneralPaginationStrProps = {
     numberOfDataPerPage: number
     numberOfData: number
-    cssStr: string
+    className: string
 }
 
 const defaultGeneralPagenationContext: GeneralPaginationContextType = {
@@ -49,18 +49,9 @@ export const GeneralPaginationProvider = ({ children, page, setPage }: GeneralPa
     )
 }
 
-export const GeneralPaginationStr = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
-    const { page } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
-    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(page, numberOfDataPerPage)
-    return (
-        <div className={`${cssStr}`}>
-            {`${numberOfData > 0 ? firstDataIndexPerPage : 0} - ${lastDataIndexPerPage <= numberOfData ? lastDataIndexPerPage : numberOfData} / ${numberOfData}`}
-        </div>
-    )
-}
-
-const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, cssStr }: GeneralPaginationStrProps) => {
+const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, className }: GeneralPaginationStrProps) => {
     const { page, handlePageIncrement, handlePageDecrement } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
+    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(page, numberOfDataPerPage)
     const isDisabledLeft = page === 1
     const isDisabledRight = page * numberOfDataPerPage >= numberOfData
 
@@ -73,11 +64,13 @@ const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, cssStr }: General
             >
                 <ChevronLeftIcon />
             </button>
-            <GeneralPaginationStr numberOfDataPerPage={numberOfDataPerPage} numberOfData={numberOfData} cssStr={cssStr}/>
+            <div className={`${className}`}>
+                {`${numberOfData > 0 ? firstDataIndexPerPage : 0} - ${lastDataIndexPerPage <= numberOfData ? lastDataIndexPerPage : numberOfData} / ${numberOfData}`}
+            </div>
             <button
                 className={`bg-transparent ${isDisabledRight ? "text-gray-700" : "text-white"} font-bold py-2 px-4 rounded`}
                 onClick={handlePageIncrement}
-                disabled={page * numberOfDataPerPage >= numberOfData}
+                disabled={isDisabledRight}
             >
                 <ChevronRightIcon />
             </button>

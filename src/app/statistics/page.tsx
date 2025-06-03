@@ -58,7 +58,7 @@ const Statistics = () => {
             <h1 className="text-2xl font-bold mc-4">🛀 統計 🛀</h1>
             <div className="flex justify-left">
                 <YearProvider year={statisticsYear} setYear={setStatisticsYear}>
-                    <YearPicker/>
+                    <YearPicker />
                 </YearProvider>
                 <input
                     className="ml-4"
@@ -71,7 +71,7 @@ const Statistics = () => {
             </div>
             {mode === "month" &&
                 <MonthProvider month={statisticsMonth} setMonth={setStatisticsMonth} setYear={setStatisticsYear}>
-                    <MonthPaginator monthStr="月" cssStr="mt-2 ml-4 font-bold"/>
+                    <MonthPaginator className="mt-2 ml-4 font-bold" />
                 </MonthProvider>
             }
             <div className="flex justify-center">

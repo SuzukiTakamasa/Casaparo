@@ -306,7 +306,7 @@ const Task = () => {
             <span>完了したタスクを表示</span>
 
             <GeneralPaginationProvider page={pagination} setPage={setPagination}>
-                <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayTasks(tasks).length} cssStr="text-lg font-bold mx-4" />
+                <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayTasks(tasks).length} className="text-lg font-bold mx-4" />
             </GeneralPaginationProvider>
 
             {showDialog && (
