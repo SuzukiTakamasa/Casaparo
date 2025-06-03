@@ -227,7 +227,7 @@ const Household = () => {
                     登録
                 </button>
                 }
-                <MonthPaginator monthStr="月" cssStr="text-lg font-bold mx-4" />
+                <MonthPaginator className="text-lg font-bold mx-4" />
                 {intToBool(isCompleted) &&
                     <div className="text-2xl font-bold bg-green-900 flex justify-center">
                         <div className="mt-1">

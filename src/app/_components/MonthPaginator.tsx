@@ -15,9 +15,8 @@ type MonthProviderProps = {
     setYear: React.Dispatch<React.SetStateAction<number>>
 }
 
-export type MonthStrProps = {
-    monthStr: string
-    cssStr: string
+type MonthPaginatorProps = {
+    className?: string
 }
 
 const defaultMonthContext: MonthContextType = {
@@ -55,17 +54,8 @@ export const MonthProvider = ({ children, month, setMonth, setYear }: MonthProvi
     )
 }
 
-export const MonthStrProvider = ({ monthStr, cssStr }: MonthStrProps) => {
-    const { month } = useContext(MonthContext) as MonthContextType
-    return (
-        <div className={`${cssStr}`}>
-            {month + `${monthStr}`}
-        </div>
-    )
-}
-
-const MonthPaginator = ({ monthStr, cssStr }: MonthStrProps) => {
-    const { handleMonthIncrement, handleMonthDecrement } = useContext(MonthContext) as MonthContextType
+const MonthPaginator = ({ className }: MonthPaginatorProps) => {
+    const { month, handleMonthIncrement, handleMonthDecrement } = useContext(MonthContext) as MonthContextType
 
     return (
         <div className="flex justify-center space-x-16">
@@ -75,7 +65,9 @@ const MonthPaginator = ({ monthStr, cssStr }: MonthStrProps) => {
             >
                 <ChevronLeftIcon />
             </button>
-            <MonthStrProvider monthStr={monthStr} cssStr={cssStr}/>
+            <div className={className}>
+                {month + "月"}
+            </div>
             <button
                 className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
                 onClick={handleMonthIncrement}

@@ -649,7 +649,7 @@ const Inventory = () => {
                     <span>登録済みを表示</span>
 
                     <GeneralPaginationProvider page={pagination} setPage={setPagination}>
-                        <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} cssStr="text-lg font-bold mx-4" />
+                        <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} className="text-lg font-bold mx-4" />
                     </GeneralPaginationProvider>
 
                     {showShoppingNoteDialog && (
