@@ -94,6 +94,7 @@ export class WebPushSubscriber {
     private readonly headers: {[key: string]: string}
     private readonly subscribeOptions: PushSubscriptionOptions
     private readonly client: APIClient
+    private readonly webPushHost: string
 
     constructor(apiClient: APIClient) {
         this.headers = {
@@ -104,6 +105,7 @@ export class WebPushSubscriber {
             applicationServerKey: new Uint8Array(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)).buffer
         } as const
         this.client = apiClient
+        this.webPushHost = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
     }
     private arrayBufferToBase64(buffer: ArrayBuffer): string {
         const bytes = new Uint8Array(buffer)
@@ -172,7 +174,7 @@ export class WebPushSubscriber {
             if (subscriptions.error !== null) {
                 return { data: null, error: `Internal Server Error: ${subscriptions.error}` }
             }
-            const res = await fetch('/api/web_push', {
+            const res = await fetch(`${this.webPushHost}/broadcast`, {
                 method: 'POST',
                 headers: this.headers,
                 body: JSON.stringify({
