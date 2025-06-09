@@ -17,7 +17,7 @@ import { TaskData, TaskResponse } from '@utils/interfaces'
 import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
          splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
-import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
+import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
 
 
 const ReactQuill = dynamic(() => import('react-quill'))
@@ -65,11 +65,8 @@ const Task = () => {
 
     const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
 
-    const { page } = useContext(GeneralPaginationContext)
-    const [pagination, setPagination] = useState(page)
-
+    const { handleFilterDataWithPagination } = useContext(GeneralPaginationContext)
     const numberOfDataPerPage = 10
-    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
 
     const displaySubTasks = (subTasks: TaskResponse, parentTaskId: number) => {
         return (
@@ -264,13 +261,6 @@ const Task = () => {
             task.filter(t => t.status !== TaskConstants.Status.COMPLETED)
         )
     }
-    const handleFilterTasksWithPagination = (tasks: TaskResponse) => {
-        return (
-            tasks.length >= lastDataIndexPerPage ?
-            tasks.slice(firstDataIndexPerPage - 1, lastDataIndexPerPage) :
-            tasks.slice(firstDataIndexPerPage - 1)
-        )
-    }
 
     useEffect(() => {
         fetchTasks()
@@ -305,8 +295,8 @@ const Task = () => {
             />
             <span>完了したタスクを表示</span>
 
-            <GeneralPaginationProvider page={pagination} setPage={setPagination}>
-                <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayTasks(tasks).length} className="text-lg font-bold mx-4" />
+            <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
+                <GeneralPaginator  numberOfData={handleDisplayTasks(tasks).length} className="text-lg font-bold mx-4" />
             </GeneralPaginationProvider>
 
             {showDialog && (
@@ -449,7 +439,7 @@ const Task = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {handleFilterTasksWithPagination(handleDisplayTasks(tasks)).map((task, i) => (
+                    {handleFilterDataWithPagination<TaskData>(handleDisplayTasks(tasks)).map((task, i) => (
                         <tr key={i}>
                             <td className="border-b py-1 flex-row justify-center items-center space-x-1">
                                 <EditButton

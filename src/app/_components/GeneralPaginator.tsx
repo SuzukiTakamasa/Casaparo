@@ -1,39 +1,38 @@
-import { createContext, useContext, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 import { ChevronLeftIcon, ChevronRightIcon } from './Heroicons'
 
 export type GeneralPaginationContextType = {
     page: number
     handlePageIncrement: () => void
     handlePageDecrement: () => void
+    firstDataIndexPerPage: number
+    lastDataIndexPerPage: number
+     handleFilterDataWithPagination: <T>(data: T[]) => T[]
 }
 
 type GeneralPaginationProviderProps = {
     children: ReactNode
-    page: number
-    setPage: React.Dispatch<React.SetStateAction<number>>
+    numberOfDataPerPage: number
 }
 
 export type GeneralPaginationStrProps = {
-    numberOfDataPerPage: number
-    numberOfData: number
     className: string
+    numberOfData: number
 }
 
 const defaultGeneralPagenationContext: GeneralPaginationContextType = {
     page: 1,
     handlePageIncrement: () => {},
-    handlePageDecrement: () => {}
-}
-
-export const getFirstAndLastDataIndexPerPage = (pagination: number, numberOfDataPerPage: number): readonly number[] & { length: 2 } => {
-    const firstDataIndexPerPage = (pagination - 1) * numberOfDataPerPage + 1
-    const lastDataIndexPerPage = pagination * numberOfDataPerPage
-    return [firstDataIndexPerPage, lastDataIndexPerPage] as const
+    handlePageDecrement: () => {},
+    firstDataIndexPerPage: 1,
+    lastDataIndexPerPage: 1,
+    handleFilterDataWithPagination: <T,>(data: T[]) => data
 }
 
 export const GeneralPaginationContext = createContext<GeneralPaginationContextType>(defaultGeneralPagenationContext)
 
-export const GeneralPaginationProvider = ({ children, page, setPage }: GeneralPaginationProviderProps) => {
+export const GeneralPaginationProvider = ({ children, numberOfDataPerPage }: GeneralPaginationProviderProps) => {
+    const [page, setPage] = useState(1)
 
     const handlePageIncrement = () => {
         setPage(page => page + 1)
@@ -42,18 +41,28 @@ export const GeneralPaginationProvider = ({ children, page, setPage }: GeneralPa
         setPage(page => page - 1)
     }
 
+    const firstDataIndexPerPage = (page - 1) * numberOfDataPerPage + 1
+    const lastDataIndexPerPage = page * numberOfDataPerPage
+
+    const handleFilterDataWithPagination = <T,>(data: T[]) => {
+            return (
+                data.length >= lastDataIndexPerPage ?
+                data.slice(firstDataIndexPerPage - 1, lastDataIndexPerPage) :
+                data.slice(firstDataIndexPerPage - 1)
+            )
+        }
+
     return (
-        <GeneralPaginationContext.Provider value={{ page, handlePageIncrement, handlePageDecrement }}>
+        <GeneralPaginationContext.Provider value={{ page, handlePageIncrement, handlePageDecrement, firstDataIndexPerPage, lastDataIndexPerPage, handleFilterDataWithPagination }}>
             {children}
         </GeneralPaginationContext.Provider>
     )
 }
 
-const GeneralPaginator = ({ numberOfDataPerPage, numberOfData, className }: GeneralPaginationStrProps) => {
-    const { page, handlePageIncrement, handlePageDecrement } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
-    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(page, numberOfDataPerPage)
+const GeneralPaginator = ({ numberOfData, className }: GeneralPaginationStrProps) => {
+    const { page, handlePageIncrement, handlePageDecrement, firstDataIndexPerPage, lastDataIndexPerPage } = useContext(GeneralPaginationContext) as GeneralPaginationContextType
     const isDisabledLeft = page === 1
-    const isDisabledRight = page * numberOfDataPerPage >= numberOfData
+    const isDisabledRight = lastDataIndexPerPage >= numberOfData
 
     return (
         <div className="flex justify-center space-x-16">

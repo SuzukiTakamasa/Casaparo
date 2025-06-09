@@ -11,7 +11,7 @@ import { adaptTwoPointReader, setCreatedByStr, boolToInt, intToBool } from '@uti
 import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
-import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider, getFirstAndLastDataIndexPerPage } from '@components/GeneralPaginator'
+import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
 import { CreatedBy, ShoppingNoteConstants } from '@utils/constants' 
 
 
@@ -54,11 +54,8 @@ const Inventory = () => {
 
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
 
-    const { page } = useContext(GeneralPaginationContext)
-    const [pagination, setPagination] = useState(page)
-
+    const { handleFilterDataWithPagination } = useContext(GeneralPaginationContext)
     const numberOfDataPerPage = 10
-    const [firstDataIndexPerPage, lastDataIndexPerPage] = getFirstAndLastDataIndexPerPage(pagination, numberOfDataPerPage)
 
     const [isDisplayedRegisteredShoppingNotes, setIsDisplayedRegisteredShoppingNotes] = useState(false)
 
@@ -412,14 +409,6 @@ const Inventory = () => {
         const response = await completeShoppingNote(registerToInventoryShoppingNote)
         APIResponseToast(response, "買い物メモのステータスを「完了」に更新しました。", "買い物メモのステータスの更新に失敗しました。")
     }
-
-    const handleFilterShoppingNotesWithPagination = (shoppingNotes: ExtractedShoppingNoteResponse[]) => {
-        return (
-            shoppingNotes.length >= lastDataIndexPerPage ?
-            shoppingNotes.slice(firstDataIndexPerPage - 1, lastDataIndexPerPage) :
-            shoppingNotes.slice(firstDataIndexPerPage - 1)
-        )
-    }
     const handleIsDisplayedRegisteredShoppingNotes = () => {
         setIsDisplayedRegisteredShoppingNotes(!isDisplayedRegisteredShoppingNotes)
     }
@@ -648,8 +637,8 @@ const Inventory = () => {
                     />
                     <span>登録済みを表示</span>
 
-                    <GeneralPaginationProvider page={pagination} setPage={setPagination}>
-                        <GeneralPaginator numberOfDataPerPage={numberOfDataPerPage} numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} className="text-lg font-bold mx-4" />
+                    <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
+                        <GeneralPaginator  numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} className="text-lg font-bold mx-4" />
                     </GeneralPaginationProvider>
 
                     {showShoppingNoteDialog && (
@@ -793,7 +782,7 @@ const Inventory = () => {
                         </div>
                     )}
 
-                    {handleFilterShoppingNotesWithPagination(handleDisplayShoppingNotes(shoppingNotes)).map((shoppingNote, i) => {
+                    {handleFilterDataWithPagination<ExtractedShoppingNoteResponse>(handleDisplayShoppingNotes(shoppingNotes)).map((shoppingNote, i) => {
                         const firstShoppingNote = shoppingNote[0]
                         return (
                         <div key={i}>
