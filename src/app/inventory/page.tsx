@@ -54,7 +54,6 @@ const Inventory = () => {
 
     const [isExisting, setIsExisting] = useState<boolean[]>([false])
 
-    const { handleFilterDataWithPagination } = useContext(GeneralPaginationContext)
     const numberOfDataPerPage = 10
 
     const [isDisplayedRegisteredShoppingNotes, setIsDisplayedRegisteredShoppingNotes] = useState(false)
@@ -434,6 +433,114 @@ const Inventory = () => {
         return isIncluded
     }
 
+    const PaginatedShoppingNotes = () => {
+        const { handleFilterDataWithPagination } = useContext(GeneralPaginationContext)
+        return (
+            <>
+            {handleFilterDataWithPagination<ExtractedShoppingNoteResponse>(handleDisplayShoppingNotes(shoppingNotes)).map((shoppingNote, i) => {
+                const firstShoppingNote = shoppingNote[0]
+                    return (
+                    <div key={i}>
+                        <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
+                            <div className="bg-black text-white p-2">
+                                <div className="flex flex-col justify-left">
+                                    {!firstShoppingNote.is_registered ?
+                                        <div>
+                                            <div className="flex justify-left space-x-1">
+                                                <EditButton
+                                                    onClick={() => handleOpenUpdateShoppingNoteDialog({
+                                                        id: firstShoppingNote.id,
+                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                            id: note.note_id,
+                                                            types: note.note_types,
+                                                            name: note.note_name,
+                                                            amount: note.note_amount,
+                                                            created_by: note.created_by,
+                                                            version: note.note_version
+                                                    }))),
+                                                        is_registered: firstShoppingNote.is_registered,
+                                                        created_by: firstShoppingNote.created_by,
+                                                        version: firstShoppingNote.version
+                                                    })}
+                                                />
+                                                <DeleteButton
+                                                    onClick={() => deleteShoppingNote({
+                                                        id: firstShoppingNote.id,
+                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                            id: note.note_id,
+                                                            types: note.note_types,
+                                                            name: note.note_name,
+                                                            amount: note.note_amount,
+                                                            created_by: note.created_by,
+                                                            version: note.note_version
+                                                    }))),
+                                                        is_registered: firstShoppingNote.is_registered,
+                                                        created_by: firstShoppingNote.created_by,
+                                                        version: firstShoppingNote.version
+                                                    })}
+                                                    />
+                                                <div className="ml-4">登録者：{setCreatedByStr(firstShoppingNote.created_by)}</div>
+                                            </div>
+                                            <div className="flex justify-left mt-1">
+                                                <button
+                                                    className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded mr-1"}
+                                                    onClick={() => registerShoppingNoteToInventory({
+                                                        id: firstShoppingNote.id,
+                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                            id: note.note_id,
+                                                            types: note.note_types,
+                                                            name: note.note_name,
+                                                            amount: note.note_amount,
+                                                            created_by: note.created_by,
+                                                            version: note.note_version
+                                                    }))),
+                                                        is_registered: firstShoppingNote.is_registered,
+                                                        created_by: firstShoppingNote.created_by,
+                                                        version: firstShoppingNote.version
+                                                    })}
+                                                >
+                                                    在庫に登録
+                                                </button>
+                                                <button
+                                                    className={"bg-gray-700 hover:bg-gray-900 text-white font-blod py-1 px-1 rounded"}
+                                                    onClick={() => handleCompleteShoppingNote({
+                                                        id: firstShoppingNote.id,
+                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
+                                                            id: note.note_id,
+                                                            types: note.note_types,
+                                                            name: note.note_name,
+                                                            amount: note.note_amount,
+                                                            created_by: note.created_by,
+                                                            version: note.note_version
+                                                    }))),
+                                                        is_registered: firstShoppingNote.is_registered,
+                                                        created_by: firstShoppingNote.created_by,
+                                                        version: firstShoppingNote.version
+                                                    })}
+                                                >
+                                                    在庫登録せずに完了
+                                                </button>
+                                            </div>
+                                        </div>
+                                        :
+                                        <div className="bg-green-900 flex justify-center">
+                                            <CheckBadgeIcon/>
+                                            <div>完了</div>
+                                        </div>
+                                    }
+                                </div>
+                                {shoppingNote.map((note, n) => (
+                                    <div key={n} className="text-right">{`${note.note_name} x ${note.note_amount}`}</div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    )
+                })}
+            </>
+        )
+    }
+
     useEffect(() => {
         fetchInventories()
         fetchInventoryTypes()
@@ -447,7 +554,8 @@ const Inventory = () => {
     }, [])
 
     return (
-        <>
+    <>
+        <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
             <h1 className="text-2xl font-bold mc-4">🚨 在庫・買い物メモ 🚨</h1>
 
             <div className="container mx-auto p-4">
@@ -637,9 +745,7 @@ const Inventory = () => {
                     />
                     <span>登録済みを表示</span>
 
-                    <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
                         <GeneralPaginator  numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} className="text-lg font-bold mx-4" />
-                    </GeneralPaginationProvider>
 
                     {showShoppingNoteDialog && (
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
@@ -781,111 +887,12 @@ const Inventory = () => {
                             </div>
                         </div>
                     )}
-
-                    {handleFilterDataWithPagination<ExtractedShoppingNoteResponse>(handleDisplayShoppingNotes(shoppingNotes)).map((shoppingNote, i) => {
-                        const firstShoppingNote = shoppingNote[0]
-                        return (
-                        <div key={i}>
-                            <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 my-1">
-                                <div className="bg-black text-white p-2">
-                                    <div className="flex flex-col justify-left">
-                                        {!firstShoppingNote.is_registered ?
-                                        <div>
-                                            <div className="flex justify-left space-x-1">
-                                                <EditButton
-                                                    onClick={() => handleOpenUpdateShoppingNoteDialog({
-                                                        id: firstShoppingNote.id,
-                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
-                                                            id: note.note_id,
-                                                            types: note.note_types,
-                                                            name: note.note_name,
-                                                            amount: note.note_amount,
-                                                            created_by: note.created_by,
-                                                            version: note.note_version
-                                                    }))),
-                                                        is_registered: firstShoppingNote.is_registered,
-                                                        created_by: firstShoppingNote.created_by,
-                                                        version: firstShoppingNote.version
-                                                    })}
-                                                />
-                                                <DeleteButton
-                                                    onClick={() => deleteShoppingNote({
-                                                        id: firstShoppingNote.id,
-                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
-                                                            id: note.note_id,
-                                                            types: note.note_types,
-                                                            name: note.note_name,
-                                                            amount: note.note_amount,
-                                                            created_by: note.created_by,
-                                                            version: note.note_version
-                                                    }))),
-                                                        is_registered: firstShoppingNote.is_registered,
-                                                        created_by: firstShoppingNote.created_by,
-                                                        version: firstShoppingNote.version
-                                                    })}
-                                                 />
-                                                <div className="ml-4">登録者：{setCreatedByStr(firstShoppingNote.created_by)}</div>
-                                            </div>
-                                            <div className="flex justify-left mt-1">
-                                                <button
-                                                    className={"bg-green-700 hover:bg-green-900 text-white font-blod py-1 px-1 rounded mr-1"}
-                                                    onClick={() => registerShoppingNoteToInventory({
-                                                        id: firstShoppingNote.id,
-                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
-                                                            id: note.note_id,
-                                                            types: note.note_types,
-                                                            name: note.note_name,
-                                                            amount: note.note_amount,
-                                                            created_by: note.created_by,
-                                                            version: note.note_version
-                                                    }))),
-                                                        is_registered: firstShoppingNote.is_registered,
-                                                        created_by: firstShoppingNote.created_by,
-                                                        version: firstShoppingNote.version
-                                                    })}
-                                                >
-                                                    在庫に登録
-                                                </button>
-                                                <button
-                                                    className={"bg-gray-700 hover:bg-gray-900 text-white font-blod py-1 px-1 rounded"}
-                                                    onClick={() => handleCompleteShoppingNote({
-                                                        id: firstShoppingNote.id,
-                                                        notes: JSON.stringify(shoppingNote.map((note) => ({
-                                                            id: note.note_id,
-                                                            types: note.note_types,
-                                                            name: note.note_name,
-                                                            amount: note.note_amount,
-                                                            created_by: note.created_by,
-                                                            version: note.note_version
-                                                    }))),
-                                                        is_registered: firstShoppingNote.is_registered,
-                                                        created_by: firstShoppingNote.created_by,
-                                                        version: firstShoppingNote.version
-                                                    })}
-                                                >
-                                                    在庫登録せずに完了
-                                                </button>
-                                            </div>
-                                        </div>
-                                            :
-                                        <div className="bg-green-900 flex justify-center">
-                                            <CheckBadgeIcon/>
-                                            <div>完了</div>
-                                        </div>
-                                        }
-                                    </div>
-                                    {shoppingNote.map((note, n) => (
-                                        <div key={n} className="text-right">{`${note.note_name} x ${note.note_amount}`}</div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        )
-                    })}
+                    <PaginatedShoppingNotes />
                 </>
                 }
                 <ToasterComponent />
             </div>
+            </GeneralPaginationProvider>
         </>
     )
 }
