@@ -262,6 +262,64 @@ const Task = () => {
         )
     }
 
+    const PaginatedTasks = () => {
+        const { handleFilterDataWithPagination } = useContext(GeneralPaginationContext)
+        return (
+            <>
+                {handleFilterDataWithPagination<TaskData>(handleDisplayTasks(tasks)).map((task, i) => (
+                    <tr key={i}>
+                        <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                            <EditButton
+                                onClick={() => handleOpenUpdateDialog({
+                                    id: task.id,
+                                    title: task.title,
+                                    status: task.status,
+                                    priority: task.priority,
+                                    description: task.description,
+                                    created_by: task.created_by,
+                                    updated_at: task.updated_at,
+                                    due_date: task.due_date,
+                                    parent_task_id: task.parent_task_id,
+                                    version: task.version
+                                })}
+                            />
+                            <DeleteButton
+                                onClick={() => deleteTask({
+                                    id: task.id,
+                                    title: task.title,
+                                    status: task.status,
+                                    priority: task.priority,
+                                    description: task.description,
+                                    created_by: task.created_by,
+                                    updated_at: task.updated_at,
+                                    due_date: task.due_date,
+                                    parent_task_id: task.parent_task_id,
+                                    version: task.version
+                                })}
+                            />
+                        </td>
+                        <td className="border-b px-1 py-1 text-center text-sm">
+                            <Link href={`/task/detail?id=${task.id}`} className={`${task.status === TaskConstants.Status.COMPLETED ? "text-gray-500" : "text-blue-500"} font-bold hover:underline`}>{task.title}</Link>
+                            <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
+                            <div className="flex justify-center">
+                                <div className="text-left">
+                                    {displaySubTasks(subTasks, task.id as number)}
+                                </div>
+                            </div>
+                        </td>
+                        <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
+                        <td className="border-b px-1 py-1 text-center text-xs">
+                            {task.due_date}
+                            {task.status !== TaskConstants.Status.COMPLETED && isWithinAWeekFromDueDate(task) && <div className="text-yellow-500">期限間近</div>}
+                            {task.status !== TaskConstants.Status.COMPLETED && isOverDueDate(task) && <div className="text-red-500">期限切れ</div>}
+                        </td>
+                    </tr>
+                    )
+                )}
+            </>
+        )
+    }
+
     useEffect(() => {
         fetchTasks()
     }, [fetchTasks])
@@ -278,6 +336,7 @@ const Task = () => {
 
     return (
     <>
+        <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
         <h1 className="text-2xl font-bold mc-4">🛏️ タスク 🛏️</h1>
 
         <div className="container mx-auto p-4">
@@ -295,10 +354,8 @@ const Task = () => {
             />
             <span>完了したタスクを表示</span>
 
-            <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
-                <GeneralPaginator  numberOfData={handleDisplayTasks(tasks).length} className="text-lg font-bold mx-4" />
-            </GeneralPaginationProvider>
-
+            <GeneralPaginator  numberOfData={handleDisplayTasks(tasks).length} className="text-lg font-bold mx-4" />
+            
             {showDialog && (
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
                     <div className="bg-white p-4 rounded">
@@ -439,60 +496,12 @@ const Task = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {handleFilterDataWithPagination<TaskData>(handleDisplayTasks(tasks)).map((task, i) => (
-                        <tr key={i}>
-                            <td className="border-b py-1 flex-row justify-center items-center space-x-1">
-                                <EditButton
-                                    onClick={() => handleOpenUpdateDialog({
-                                        id: task.id,
-                                        title: task.title,
-                                        status: task.status,
-                                        priority: task.priority,
-                                        description: task.description,
-                                        created_by: task.created_by,
-                                        updated_at: task.updated_at,
-                                        due_date: task.due_date,
-                                        parent_task_id: task.parent_task_id,
-                                        version: task.version
-                                    })}
-                                />
-                                <DeleteButton
-                                    onClick={() => deleteTask({
-                                        id: task.id,
-                                        title: task.title,
-                                        status: task.status,
-                                        priority: task.priority,
-                                        description: task.description,
-                                        created_by: task.created_by,
-                                        updated_at: task.updated_at,
-                                        due_date: task.due_date,
-                                        parent_task_id: task.parent_task_id,
-                                        version: task.version
-                                    })}
-                                />
-                            </td>
-                            <td className="border-b px-1 py-1 text-center text-sm">
-                                <Link href={`/task/detail?id=${task.id}`} className={`${task.status === TaskConstants.Status.COMPLETED ? "text-gray-500" : "text-blue-500"} font-bold hover:underline`}>{task.title}</Link>
-                                <div className="text-xs">{`(最終更新: ${task.updated_at})`}</div>
-                                <div className="flex justify-center">
-                                    <div className="text-left">
-                                        {displaySubTasks(subTasks, task.id as number)}
-                                    </div>
-                                </div>
-                            </td>
-                            <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
-                            <td className="border-b px-1 py-1 text-center text-xs">
-                                {task.due_date}
-                                {task.status !== TaskConstants.Status.COMPLETED && isWithinAWeekFromDueDate(task) && <div className="text-yellow-500">期限間近</div>}
-                                {task.status !== TaskConstants.Status.COMPLETED && isOverDueDate(task) && <div className="text-red-500">期限切れ</div>}
-                            </td>
-                        </tr>
-                        )
-                    )}
+                    <PaginatedTasks />
                 </tbody>
             </table>
         </div>
         <ToasterComponent />
+        </GeneralPaginationProvider>
     </>
     )
 }
