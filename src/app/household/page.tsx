@@ -12,6 +12,7 @@ import MonthPaginator from '@components/MonthPaginator'
 import { CheckBadgeIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
@@ -265,7 +266,7 @@ const Household = () => {
                                     value={newItemName}
                                     onChange={(e) => setNewItemName(e.target.value)}
                                 />
-                                {newItemNameValidMsg !== "" && <div className="text-sm text-red-500">{newItemNameValidMsg}</div>}
+                                <ValidationErrorMessage message={newItemNameValidMsg} />
                                 <input
                                     className="border p-2 text-black"
                                     type="text"
@@ -273,7 +274,7 @@ const Household = () => {
                                     value={newAmount}
                                     onChange={(e) => setNewAmount(e.target.value)}
                                 />
-                                {newAmountValidMsg !== "" && <div className="text-sm text-red-500">{newAmountValidMsg}</div>}
+                                <ValidationErrorMessage message={newAmountValidMsg} />
                                 <label className="flex items-center space-x-2 text-black">
                                     <input
                                         type="checkbox"

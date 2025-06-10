@@ -10,6 +10,7 @@ import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
@@ -366,7 +367,7 @@ const Task = () => {
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                         />
-                        {titleValidMsg !== "" && <div className="text-sm text-red-500">{titleValidMsg}</div>}
+                        <ValidationErrorMessage message={titleValidMsg} />
                         <ReactQuill
                             className="mt-2 text-black overflow-y-auto"
                             value={description}
@@ -374,7 +375,7 @@ const Task = () => {
                             modules={ReactQuillStyles.modules}
                             formats={ReactQuillStyles.formats}
                         />
-                        {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
+                        <ValidationErrorMessage message={descriptionValidMsg} />
                         <div className="mt-2 text-black">優先度</div>
                         <label className="text-black">
                             <select
@@ -438,7 +439,7 @@ const Task = () => {
                             </select>
                         </label>
                         </div>
-                        {dueDateValidMsg !== "" && <div className="text-sm text-red-500">{dueDateValidMsg}</div>}
+                        <ValidationErrorMessage message={dueDateValidMsg} />
                         <label className="text-black">
                             <span>親チケット</span>
                             <select
@@ -467,7 +468,7 @@ const Task = () => {
                                 />
                             <span>🥺ྀི</span>
                         </div>
-                        {createdByValidMsg !== "" && <div className="text-sm text-red-500">{createdByValidMsg}</div>}
+                        <ValidationErrorMessage message={createdByValidMsg} />
                         <div className="flex justify-center space-x-4">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -485,7 +486,7 @@ const Task = () => {
                     </div>
                 </div>
             )}
-            {hasChildTaskErrTxt !== "" && <div className="text-sm text-red-500">{hasChildTaskErrTxt}</div>}
+            <ValidationErrorMessage message={hasChildTaskErrTxt} />
             <table className="table-auto min-w-full mt-4">
                 <thead>
                     <tr>

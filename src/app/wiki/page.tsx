@@ -11,6 +11,7 @@ import { WikiData, WikiResponse } from '@utils/interfaces'
 import { TrashBoxIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient, R2Client } from '@utils/api_client'
@@ -206,7 +207,7 @@ const Wiki = () => {
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
                             />
-                            {titleValidMsg !== "" && <div className="text-sm text-red-500">{titleValidMsg}</div>}
+                            <ValidationErrorMessage message={titleValidMsg} />
                             <ReactQuill
                                 className="text-black"
                                 value={content}
@@ -214,7 +215,7 @@ const Wiki = () => {
                                 modules={ReactQuillStyles.modules}
                                 formats={ReactQuillStyles.formats}
                             />
-                            {contentValidMsg !== "" && <div className="text-sm text-red-500">{contentValidMsg}</div>}
+                            <ValidationErrorMessage message={contentValidMsg} />
                             <div className="text-black">作成者</div>
                             <div className="text-3xl text-center">
                                 <input
@@ -246,7 +247,7 @@ const Wiki = () => {
                                 </button>
                             </div>
                             }
-                            {imageFetchErrTxt !== "" && <div className="text-sm text-red-500">{imageFetchErrTxt}</div>}
+                            <ValidationErrorMessage message={imageFetchErrTxt} />
                             <button
                                 className="aria-label text-black text-left"
                                 onClick={handleShowPreview}

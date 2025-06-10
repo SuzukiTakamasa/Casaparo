@@ -12,6 +12,7 @@ import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { CreatedBy, ShoppingNoteConstants } from '@utils/constants' 
 
 
@@ -615,7 +616,7 @@ const Inventory = () => {
                                             ))}
                                         </select>
                                     </label>
-                                    {typesValidMsg !== "" && <div className="text-sm text-red-500">{typesValidMsg}</div>}
+                                    <ValidationErrorMessage message={typesValidMsg} />
                                     <input
                                         className="border p-2 text-black"
                                         type="text"
@@ -624,8 +625,8 @@ const Inventory = () => {
                                         onChange={e => setName(e.target.value)}
                                     >
                                     </input>
-                                    {nameValidMsg !== "" && <div className="text-sm text-red-500">{nameValidMsg}</div>}
-                                    {isIncludedInYetToRegisterShoppingNoteMsg !== "" && <div className="text-sm text-red-500">{isIncludedInYetToRegisterShoppingNoteMsg}</div>}
+                                    <ValidationErrorMessage message={nameValidMsg} />
+                                    <ValidationErrorMessage message={isIncludedInYetToRegisterShoppingNoteMsg} />
                                     <div className="flex justify-center">
                                         <button
                                             className={`${amount === 0 ? "text-gray-300" : "text-blue-700"} mr-1`}
@@ -684,7 +685,7 @@ const Inventory = () => {
                             </div>
                         </div>
                     )}
-                    {!isUpdateInventory && isIncludedInYetToRegisterShoppingNoteMsg !== "" && <div className="text-sm text-red-500 text-left">{isIncludedInYetToRegisterShoppingNoteMsg}</div>}
+                    {!isUpdateInventory && <ValidationErrorMessage message={isIncludedInYetToRegisterShoppingNoteMsg} />}
                     <table className="table-auto min-w-full mt-4">
                         <thead>
                             <tr>
@@ -828,8 +829,8 @@ const Inventory = () => {
                                             </div>
                                         </>
                                      ))}
-                                     {noteTypesValidMsg !== "" && <div className="text-sm text-red-500">{noteTypesValidMsg}</div>}
-                                     {noteNameValidMsg !== "" && <div className="text-sm text-red-500">{noteNameValidMsg}</div>}
+                                     <ValidationErrorMessage message={noteTypesValidMsg} />
+                                     <ValidationErrorMessage message={noteNameValidMsg} />
                                     <div className="flex justify-center">
                                         <button
                                             className="text-blue-700 mr-4"
@@ -851,7 +852,7 @@ const Inventory = () => {
                                     >
                                     在庫なしアイテムを一括で設定
                                     </button>
-                                    {noZeroAmountInventoryErrMsg !== "" && <div className="text-sm text-red-500">{noZeroAmountInventoryErrMsg}</div>}
+                                    <ValidationErrorMessage message={noZeroAmountInventoryErrMsg} />
                                     <div className="text-black">登録者</div>
                                         <div className="text-3xl text-center">
                                             <input

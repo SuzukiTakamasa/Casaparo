@@ -8,6 +8,7 @@ import Toggle from 'react-styled-toggle'
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@utils/interfaces'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
@@ -351,7 +352,7 @@ const Setting = () => {
                                     value={newLabel}
                                     onChange={(e) => setNewLabel(e.target.value)}
                                 />
-                                {newLabelValidMsg !== "" && <div className="text-sm text-red-500">{newLabelValidMsg}</div>}
+                                <ValidationErrorMessage message={newLabelValidMsg} />
                                 <input
                                     className="border p-2 text-black"
                                     type="text"
@@ -359,7 +360,7 @@ const Setting = () => {
                                     value={labelName}
                                     onChange={(e) => setLabelName(e.target.value)}                       
                                 />
-                                {labelNameValidMsg !== "" && <div className="text-sm text-red-500">{labelNameValidMsg}</div>}
+                                <ValidationErrorMessage message={labelNameValidMsg} />
                             </div>
                             <div className="flex justify-end space-x-4">
                                 <button
@@ -379,7 +380,7 @@ const Setting = () => {
                     </div>
                 )}
 
-                {isUsedErrMsg !== "" && <div className="text-sm text-red-500">{isUsedErrMsg}</div>}
+                <ValidationErrorMessage message={isUsedErrMsg} />
                 <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
@@ -465,7 +466,7 @@ const Setting = () => {
                                     value={anniversaryDescription}
                                     onChange={e => setAnniversaryDescription(e.target.value)}
                                 />
-                                {anniversaryValidMsg !== "" && <div className="text-sm text-red-500">{anniversaryValidMsg}</div>}
+                                <ValidationErrorMessage message={anniversaryValidMsg} />
                             </div>
                             <div className="flex justify-end space-x-4">
                                 <button
@@ -546,7 +547,7 @@ const Setting = () => {
                                     value={inventoryType}
                                     onChange={(e) => setInventoryType(e.target.value)}
                                 />
-                                {inventoryTypeValidMsg !== "" && <div className="text-sm text-red-500">{inventoryTypeValidMsg}</div>}
+                                <ValidationErrorMessage message={inventoryTypeValidMsg} />
                             </div>
                             <div className="flex justify-end space-x-4">
                                 <button
@@ -566,7 +567,7 @@ const Setting = () => {
                     </div>
                 )}
 
-                {isUsedInventoryTypeErrMsg !== "" && <div className="text-sm text-red-500">{isUsedInventoryTypeErrMsg}</div>}
+                <ValidationErrorMessage message={isUsedInventoryTypeErrMsg} />
                 <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
