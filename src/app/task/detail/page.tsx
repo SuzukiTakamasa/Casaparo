@@ -13,6 +13,7 @@ import { MonthContext } from '@components/MonthPaginator'
 import { TextLinkToBackToPreviousPage } from '@components/TextLink'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
@@ -358,7 +359,7 @@ const TaskDetail = () => {
                             value={relatedSubTaskTitle}
                             onChange={e => setRelatedSubTaskTitle(e.target.value)}
                         />
-                        {relatedSubTaskTitleValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskTitleValidMsg}</div>}
+                        <ValidationErrorMessage message={relatedSubTaskTitleValidMsg} />
                         <ReactQuill
                             className="mt-2 text-black overflow-y-auto"
                             value={relatedSubTaskDescription}
@@ -366,7 +367,7 @@ const TaskDetail = () => {
                             modules={ReactQuillStyles.modules}
                             formats={ReactQuillStyles.formats}
                         />
-                        {relatedSubTaskDescriptionValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskDescriptionValidMsg}</div>}
+                        <ValidationErrorMessage message={relatedSubTaskDescriptionValidMsg} />
                         <div className="mt-2 text-black">優先度</div>
                         <label className="text-black">
                             <select
@@ -430,7 +431,7 @@ const TaskDetail = () => {
                             </select>
                         </label>
                         </div>
-                        {relatedSubTaskDueDateValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskDueDateValidMsg}</div>}
+                        <ValidationErrorMessage message={relatedSubTaskDueDateValidMsg} />
                         <label className="text-black">
                             <span>親チケット</span>
                             <select
@@ -457,7 +458,7 @@ const TaskDetail = () => {
                                 />
                             <span>🥺ྀི</span>
                         </div>
-                        {relatedSubTaskCreatedByValidMsg !== "" && <div className="text-sm text-red-500">{relatedSubTaskCreatedByValidMsg}</div>}
+                        <ValidationErrorMessage message={relatedSubTaskCreatedByValidMsg} />
                         <div className="flex justify-center space-x-4">
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -619,7 +620,7 @@ const TaskDetail = () => {
                                     modules={ReactQuillStyles.modules}
                                     formats={ReactQuillStyles.formats}
                                 />
-                                {commentValidMsg !== "" && <div className="text-sm text-red-500">{commentValidMsg}</div>}
+                                <ValidationErrorMessage message={commentValidMsg} />
                                 <div className="text-black">登録者</div>
                                 <div className="text-3xl text-center">
                                     <input

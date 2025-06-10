@@ -13,6 +13,7 @@ import MonthPaginator from '@components/MonthPaginator'
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
 import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
@@ -532,7 +533,7 @@ const Schedule = () => {
                                         value={description}
                                         onChange={e => setDescription(e.target.value)}
                                     />
-                                    {descriptionValidMsg !== "" && <div className="text-sm text-red-500">{descriptionValidMsg}</div>}
+                                    <ValidationErrorMessage message={descriptionValidMsg} />
                                     <div className="flex justify-center">
                                     <label className="text-black">
                                         <span>年{isMultipleDays && '(開始年)'}</span>
@@ -611,9 +612,9 @@ const Schedule = () => {
                                         </label>
                                     </div>
                                     }
-                                    {yearValidMsg !== "" && <div className="text-sm text-red-500">{yearValidMsg}</div>}
-                                    {monthValidMsg !== "" && <div className="text-sm text-red-500">{monthValidMsg}</div>}
-                                    {dateValidMsg !== "" && <div className="text-sm text-red-500">{dateValidMsg}</div>}
+                                    <ValidationErrorMessage message={yearValidMsg} />
+                                    <ValidationErrorMessage message={monthValidMsg} />
+                                    <ValidationErrorMessage message={dateValidMsg} />
                                     <label className="flex items-center space-x-2 text-black">
                                         <input
                                             type="checkbox"
@@ -674,7 +675,7 @@ const Schedule = () => {
                                             />
                                             <span>🥺ྀི</span>
                                     </div>
-                                    {createdByValidMsg !== "" && <div className="text-sm text-red-500">{createdByValidMsg}</div>}
+                                    <ValidationErrorMessage message={createdByValidMsg} />
                                     <div>
                                         <label className="text-black">
                                         <span>ラベル(任意)</span>
