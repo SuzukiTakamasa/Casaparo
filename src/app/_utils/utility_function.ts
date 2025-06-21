@@ -128,7 +128,14 @@ export const validateFromTimeAndToTime = (fromTimeStr: string, toTimeStr: string
     return isValid
 }
 
-export const sortSchedulesByDateTime = (schedules: ScheduleResponse): ScheduleResponse => {
+export const sortSchedulesByFromDate = (schedules: ScheduleResponse): ScheduleResponse => {
+    schedules.sort((a, b) => {
+        return a.from_date - b.from_date
+    })
+    return schedules
+}
+
+export const sortSchedulesByTime = (schedules: ScheduleResponse): ScheduleResponse => {
     schedules.sort((a, b) => {
         if (sliceHour(a.from_time) > sliceHour(b.from_time)) {
             return 1

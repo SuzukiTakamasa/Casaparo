@@ -15,7 +15,7 @@ import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
-import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByDateTime, validateFromTimeAndToTime } from '@utils/utility_function'
+import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByTime, validateFromTimeAndToTime } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
 
 
@@ -173,7 +173,7 @@ const Schedule = () => {
                     </div>
                 </td>
                 <td className="border-b py-1 flex-col justify-center items-center space-x-1 text-sm">
-                    {sortSchedulesByDateTime(schedules).map((schedule, i) => (
+                    {sortSchedulesByTime(schedules).map((schedule, i) => (
                         isDisplayed(schedule) &&
                         <button 
                             key={i}
