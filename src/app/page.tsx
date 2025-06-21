@@ -12,7 +12,7 @@ import { TextLink } from '@components/TextLink'
 import { APIClient } from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@utils/interfaces'
-import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByDateTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
+import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByFromDate, sortSchedulesByTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold, TaskConstants } from '@utils/constants' 
 import { ExclamationTriangleIcon } from '@components/Heroicons'
 
@@ -131,7 +131,7 @@ export default function Home() {
         <CardWithTitleAndTextLink title="今日・明日の予定" path="/schedule" text="スケジュール一覧へ" margin="my-1">
           <table className="flex justify-center">
             <tbody>
-              {sortSchedulesByDateTime(schedules).map((schedule, i) => (
+              {sortSchedulesByFromDate(sortSchedulesByTime(schedules)).map((schedule, i) => (
                 <div key={i} className="text-lg">
                   {schedules.length > 0 &&
                     <tr>
