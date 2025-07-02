@@ -114,13 +114,13 @@ export default function Home() {
         <h1 className="text-2xl font-bold pb-8">🥺ダッシュボード🥺ྀི</h1>
         <CardWithTitleAndTextLink title="今月の生活費・各負担分" path="/household" text="家計簿一覧へ">
           {isCompletedLastMonth === HouseholdConstants.IsCompleted.NOT_COMPLETED &&
-            <div className="flex justify-center bg-red-700">
+            <div className="flex justify-center bg-red-700 text-xl">
               <ExclamationTriangleIcon/>
             <p>{`${month === 1 ? `(${year - 1}年)12` : month - 1}月の家計簿がまだ確定されていません。`}</p>
             </div>
           }
           {(isCompletedCurrentMonth === HouseholdConstants.IsCompleted.NOT_COMPLETED && today >= DateOfFixedHousehold) &&
-          <div className="flex justify-center bg-yellow-700">
+          <div className="flex justify-center bg-yellow-700 text-xl">
             <ExclamationTriangleIcon/>
             <p>{`${month}月の家計簿を確定してください。`}</p>
           </div>
