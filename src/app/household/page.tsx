@@ -13,6 +13,7 @@ import { CheckBadgeIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 
 import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
@@ -49,6 +50,7 @@ const Household = () => {
 
     const [isCompleted, setIsCompleted] = useState(0)
     const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
+    const [isLoading, setIsLoading] = useState(true)
 
     const today = getToday()
 
@@ -122,6 +124,7 @@ const Household = () => {
         setHouseholds(households.data || [])
     }, [householdYear, householdMonth])
     const fetchIsCompleted = useCallback(async () => {
+        setIsLoading(true)
             const res = await client.get<IsCompleted>(`/v2/completed_household/${householdYear}/${householdMonth}`)
             if (res.data) {
                 setIsCompleted(res.data.is_completed)
@@ -132,6 +135,7 @@ const Household = () => {
                     }
                 }
             }
+            setIsLoading(false)
     }, [householdYear, householdMonth])
     const addHousehold = async () => {
         const addedHouseholdData = {
@@ -220,39 +224,44 @@ const Household = () => {
             </YearProvider>
 
             <div className="container mx-auto p-4">
-                {!isCompleted &&
-                <button
-                    className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
-                    onClick={handleOpenAddDialog}
-                >
-                    登録
-                </button>
-                }
-                <MonthPaginator className="text-lg font-bold mx-4" />
-                {intToBool(isCompleted) &&
-                    <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                        <div className="mt-1">
-                            <CheckBadgeIcon/>
+                {isLoading ?
+                    <div className="flex justify-center items-center h-64">
+                        <Loader size={50} isLoading={isLoading}/>
+                    </div>
+                    :
+                    !isCompleted &&
+                    <button
+                        className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
+                        onClick={handleOpenAddDialog}
+                    >
+                        登録
+                    </button>
+                    }
+                    <MonthPaginator className="text-lg font-bold mx-4" />
+                    {intToBool(isCompleted) &&
+                        <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                            <div className="mt-1">
+                                <CheckBadgeIcon/>
+                            </div>
+                            清算済み
                         </div>
-                        清算済み
+                    }
+                    {!isCompleted &&
+                    (householdYear < year ||
+                    (householdYear === year && householdMonth < month) ||
+                    (householdYear === year && householdMonth === month && today >= DateOfFixedHousehold)) &&
+                    <div>
+                        <div className="flex justify-center">
+                            <button
+                                className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
+                                onClick={handleAddCompletedHousehold}
+                            >
+                                確定
+                            </button>
+                        </div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(billingAmount)}</div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(totalAmount)}</div>
                     </div>
-                }
-                {!isCompleted &&
-                (householdYear < year ||
-                (householdYear === year && householdMonth < month) ||
-                (householdYear === year && householdMonth === month && today >= DateOfFixedHousehold)) &&
-                <div>
-                    <div className="flex justify-center">
-                        <button
-                            className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
-                            onClick={handleAddCompletedHousehold}
-                        >
-                            確定
-                        </button>
-                    </div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(billingAmount)}</div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(totalAmount)}</div>
-                </div>
                 }
 
                 {showDialog && (
