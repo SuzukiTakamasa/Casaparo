@@ -236,17 +236,17 @@ const Household = () => {
                     >
                         登録
                     </button>
-                    }
-                    <MonthPaginator className="text-lg font-bold mx-4" />
-                    {intToBool(isCompleted) &&
-                        <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                            <div className="mt-1">
-                                <CheckBadgeIcon/>
-                            </div>
-                            清算済み
+                }
+                <MonthPaginator className="text-lg font-bold mx-4" />
+                {intToBool(isCompleted) &&
+                    <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                        <div className="mt-1">
+                            <CheckBadgeIcon/>
                         </div>
-                    }
-                    {!isCompleted &&
+                        清算済み
+                    </div>
+                }
+                {!isCompleted &&
                     (householdYear < year ||
                     (householdYear === year && householdMonth < month) ||
                     (householdYear === year && householdMonth === month && today >= DateOfFixedHousehold)) &&
