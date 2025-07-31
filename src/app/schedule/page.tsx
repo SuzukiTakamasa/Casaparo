@@ -96,6 +96,19 @@ const Schedule = () => {
                 dateColorStr += isHoliday ? "text-red-500 font-bold" : "text-white font-bold"
         }
 
+        const getButtonColorStr = (schedule: ScheduleData) => {
+            switch(schedule.created_by) {
+                case CreatedBy.TY:
+                    return "bg-purple-600 hover:bg-purple-800"
+                case CreatedBy.T:
+                    return "bg-blue-600 hover:bg-blue-800"
+                case CreatedBy.Y:
+                    return "bg-pink-600 hover:bg-pink-800"
+                default:
+                    return "bg-gray-600 hover:bg-gray-800"
+            }
+        }
+
         const isDisplayed = (schedule: ScheduleData) => {
             let isDisplayedFlag = false
             if (schedule.from_year <= year && year <= schedule.to_year) {
@@ -177,7 +190,7 @@ const Schedule = () => {
                         isDisplayed(schedule) &&
                         <button 
                             key={i}
-                            className="bg-blue-600 hover:bg-blue-800 text-white py-1 px-2 m-1 rounded-full"
+                            className={`${getButtonColorStr(schedule)} text-white py-1 px-2 m-1 rounded-full`}
                             onClick={() => handleOpenUpdateDialog({
                                 id: schedule.id,
                                 description: schedule.description,
