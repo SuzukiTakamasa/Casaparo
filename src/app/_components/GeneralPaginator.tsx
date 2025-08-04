@@ -7,7 +7,7 @@ export type GeneralPaginationContextType = {
     handlePageDecrement: () => void
     firstDataIndexPerPage: number
     lastDataIndexPerPage: number
-     handleFilterDataWithPagination: <T>(data: T[]) => T[]
+    handleFilterDataWithPagination: <T>(data: T[]) => T[]
 }
 
 type GeneralPaginationProviderProps = {

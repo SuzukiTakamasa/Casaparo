@@ -11,6 +11,7 @@ import { MonthContext } from '@components/MonthPaginator'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
@@ -62,11 +63,12 @@ const Task = () => {
     const [parentTaskId, setParentTaskId] = useState(0)
     const [version, setVersion] = useState(0)
 
+    const [isBlocking, setIsBlocking] = useState(false)
+
     const [hasChildTaskErrTxt, setHasChildTaskErrTxt] = useState("")
 
     const [isDisplayedCompletedTask, setIsDisplayedCompletedTask] = useState(false)
 
-    const { handleFilterDataWithPagination } = useContext(GeneralPaginationContext)
     const numberOfDataPerPage = 10
 
     const displaySubTasks = (subTasks: TaskResponse, parentTaskId: number) => {
@@ -136,13 +138,17 @@ const Task = () => {
     }
     const handleAddTask = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await addTask()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "タスクを登録しました。", "タスクの登録に失敗しました。")
     }
     const handleUpdateTask = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await updateTask()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "タスクを更新しました。", "タスクの更新に失敗しました。")
     }
@@ -473,8 +479,9 @@ const Task = () => {
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 onClick={isUpdate ? handleUpdateTask : handleAddTask}
+                                disabled={isBlocking}
                             >
-                            {isUpdate ? "変更" : "登録"}
+                            {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdate ? "変更" : "登録"}
                             </button>
                             <button
                                 className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"

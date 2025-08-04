@@ -14,6 +14,7 @@ import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, Anniver
 import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
 import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByTime, validateFromTimeAndToTime } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
@@ -78,6 +79,8 @@ const Schedule = () => {
     const [isMultipleDays, setIsMultipleDays] = useState(false)
     const [isNotified, setIsNotified] = useState(false)
     const [isSubscribed, setIsSubscribed] = useState(false)
+
+    const [isBlocking, setIsBlocking] = useState(false)
 
     const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
@@ -281,13 +284,17 @@ const Schedule = () => {
     }
     const handleAddSchedule = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await addSchedule()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "予定を登録しました。", "予定の登録に失敗しました。")
     }
     const handleUpdateSchedule = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await updateSchedule()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "予定を更新しました。", "予定の更新に失敗しました。")
     }
@@ -719,8 +726,9 @@ const Schedule = () => {
                                     <button
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                         onClick={isUpdate ? handleUpdateSchedule : handleAddSchedule}
+                                        disabled={isBlocking}
                                     >
-                                        {isUpdate ? "変更" : "登録"}
+                                        {isBlocking ? <Loader size={20} isLoading={isBlocking}/> : isUpdate ? "変更" : "登録"}
                                     </button>
                                     <button
                                         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"

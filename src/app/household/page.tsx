@@ -51,6 +51,8 @@ const Household = () => {
     const [isCompleted, setIsCompleted] = useState(0)
     const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
     const [isLoading, setIsLoading] = useState(true)
+    
+    const [isBlocking, setIsBlocking] = useState(false)
 
     const today = getToday()
 
@@ -73,13 +75,17 @@ const Household = () => {
 
     const handleAddHousehold = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await addHousehold()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "家計簿を登録しました。", "登録に失敗しました。")
     }
     const handleUpdateHousehold = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await updateHousehold()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "家計簿を変更しました。", "変更に失敗しました。")
     }
@@ -314,9 +320,9 @@ const Household = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
-                                    disabled={newItemName == "" || newAmount == ""}
+                                    disabled={newItemName == "" || newAmount == "" || isBlocking}
                                 >
-                                    {isUpdate ? "変更" : "登録"}
+                                    {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdate ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"

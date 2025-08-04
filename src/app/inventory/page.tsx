@@ -13,6 +13,7 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 import { CreatedBy, ShoppingNoteConstants } from '@utils/constants' 
 
 
@@ -59,6 +60,8 @@ const Inventory = () => {
 
     const [isDisplayedRegisteredShoppingNotes, setIsDisplayedRegisteredShoppingNotes] = useState(false)
 
+    const [isBlocking, setIsBlocking] = useState(false)
+
     const setInventoryTypesStr = (types: number) => {
         return inventoryTypes.filter(i => i.id === types)[0]?.types ?? "-"
     }
@@ -97,13 +100,17 @@ const Inventory = () => {
 
     const handleAddInventory = async () => {
         if (!validateInventory()) return
+        setIsBlocking(true)
         const response = await addInventory()
+        setIsBlocking(false)
         handleCloseInventoryDialog()
         APIResponseToast(response, "在庫を登録しました。", "在庫の登録に失敗しました。")
     }
     const handleUpdateInventory = async () => {
         if (!validateInventory()) return
+        setIsBlocking(true)
         const response = await updateInventory()
+        setIsBlocking(false)
         handleCloseInventoryDialog()
         APIResponseToast(response, "在庫を変更しました。", "在庫の変更に失敗しました。")
     }
@@ -197,13 +204,17 @@ const Inventory = () => {
 
     const handleAddShoppingNote = async () => {
         if (!validateShoppingNote()) return
+        setIsBlocking(true)
         const response = await addShoppingNote()
+        setIsBlocking(false)
         handleCloseShoppingNoteDialog()
         APIResponseToast(response, "買い物メモを登録しました。", "買い物メモの登録に失敗しました。")
     }
     const handleUpdateShoppingNote = async () => {
         if (!validateShoppingNote()) return
+        setIsBlocking(true)
         const response = await updateShoppingNote()
+        setIsBlocking(false)
         handleCloseShoppingNoteDialog()
         APIResponseToast(response, "買い物メモを変更しました。", "買い物メモの変更に失敗しました。")
     }
@@ -398,7 +409,7 @@ const Inventory = () => {
         await fetchShoppingNotes()
     }
     
-    const completeShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
+    const _completeShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         const response = await client.post<ShoppingNoteData>("/v2/shopping_note/register_to_inventory", registerToInventoryShoppingNote)
         await fetchShoppingNotes()
         await fetchInventories()
@@ -406,7 +417,7 @@ const Inventory = () => {
     }
     const handleCompleteShoppingNote = async (registerToInventoryShoppingNote: ShoppingNoteData) => {
         if (!window.confirm("在庫に登録せずに完了としますか？")) return
-        const response = await completeShoppingNote(registerToInventoryShoppingNote)
+        const response = await _completeShoppingNote(registerToInventoryShoppingNote)
         APIResponseToast(response, "買い物メモのステータスを「完了」に更新しました。", "買い物メモのステータスの更新に失敗しました。")
     }
     const handleIsDisplayedRegisteredShoppingNotes = () => {
@@ -672,8 +683,9 @@ const Inventory = () => {
                                     <button
                                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                         onClick={isUpdateInventory ? handleUpdateInventory : handleAddInventory}
+                                        disabled={isBlocking}
                                     >
-                                        {isUpdateInventory ? "変更" : "登録"}
+                                        {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdateInventory ? "変更" : "登録"}
                                     </button>
                                     <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -874,8 +886,9 @@ const Inventory = () => {
                                         <button
                                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                             onClick={isUpdateShoppingNote ? handleUpdateShoppingNote : handleAddShoppingNote}
+                                            disabled={isBlocking}
                                         >
-                                            {isUpdateShoppingNote ? "変更" : "登録"}
+                                            {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdateShoppingNote ? "変更" : "登録"}
                                         </button>
                                         <button
                                             className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
