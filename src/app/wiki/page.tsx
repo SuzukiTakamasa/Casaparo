@@ -12,6 +12,7 @@ import { TrashBoxIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient, R2Client } from '@utils/api_client'
@@ -42,6 +43,8 @@ const Wiki = () => {
     const [imageUrl, setImageUrl] = useState("")
     const [version, setVersion] = useState(1)
 
+    const [isBlocking, setIsBlocking] = useState(false)
+
     const validate = () => {
         let isValid = true
         if (title === "") {
@@ -60,13 +63,17 @@ const Wiki = () => {
 
     const handleAddWiki = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await addWiki()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "Wikiを登録しました。", "Wikiの登録に失敗しました。")
     }
     const handleUpdateWiki = async () => {
         if (!validate()) return
+        setIsBlocking(true)
         const response = await updateWiki()
+        setIsBlocking(false)
         handleCloseDialog()
         APIResponseToast(response, "Wikiを更新しました。", "Wikiの更新に失敗しました。")
     }
@@ -264,7 +271,7 @@ const Wiki = () => {
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdate ? handleUpdateWiki : handleAddWiki}
                                 >
-                                    {isUpdate ? "変更" : "登録"}
+                                    {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdate ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"

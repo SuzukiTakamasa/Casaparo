@@ -9,6 +9,7 @@ import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse,
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
@@ -52,6 +53,8 @@ const Setting = () => {
 
     const [isSubscribed, setIsSubscribed] = useState(false)
 
+    const [isBlocking, setIsBlocking] = useState(false)
+
     const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
     const validateLabel = () => {
@@ -88,13 +91,17 @@ const Setting = () => {
 
     const handleAddLabel = async () => {
         if (!validateLabel()) return
+        setIsBlocking(true)
         const response = await addlabel()
+        setIsBlocking(false)
         handleCloseLabelDialog()
         APIResponseToast(response, "ラベルを登録しました。", "ラベルの登録に失敗しました。")
     }
     const handleUpdateLabel = async () => {
         if (!validateLabel()) return
+        setIsBlocking(true)
         const response = await updateLabel()
+        setIsBlocking(false)
         handleCloseLabelDialog()
         APIResponseToast(response, "ラベルを変更しました。", "ラベルの変更に失敗しました。")
     }
@@ -163,13 +170,17 @@ const Setting = () => {
 
     const handleAddAnniversary = async () => {
         if (!validateAnniversary()) return
+        setIsBlocking(true)
         const response = await addAnniversary()
+        setIsBlocking(false)
         handleCloseAnniversaryDialog()
         APIResponseToast(response, "記念日を登録しました。", "記念日の登録に失敗しました。")
     }
     const handleUpdateAnniversary = async () => {
         if (!validateAnniversary()) return
+        setIsBlocking(true)
         const response = await updateAnniversary()
+        setIsBlocking(false)
         handleCloseAnniversaryDialog()
         APIResponseToast(response, "記念日を変更しました。", "記念日の変更に失敗しました。")
     }
@@ -236,13 +247,17 @@ const Setting = () => {
 
     const handleAddInventoryType = async () => {
         if (!validateInventoryType()) return
+        setIsBlocking(true)
         const response = await addInventoryType()
+        setIsBlocking(false)
         handleCloseInventoryTypeDialog()
         APIResponseToast(response, "在庫種別を登録しました。", "在庫種別の登録に失敗しました。")
     }
     const handleUpdateInventoryType = async () => {
         if (!validateInventoryType()) return
+        setIsBlocking(true)
         const response = await updateInventoryType()
+        setIsBlocking(false)
         handleCloseInventoryTypeDialog()
         APIResponseToast(response, "在庫種別を変更しました。", "在庫種別の変更に失敗しました。")
     }
@@ -366,8 +381,9 @@ const Setting = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdateLabel ? handleUpdateLabel : handleAddLabel}
+                                    disabled={isBlocking}
                                 >
-                                    {isUpdateLabel ? "変更" : "登録"}
+                                    {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdateLabel ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -472,8 +488,9 @@ const Setting = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdateAnniversary ? handleUpdateAnniversary : handleAddAnniversary}
+                                    disabled={isBlocking}
                                 >
-                                    {isUpdateAnniversary ? "変更" : "登録"}
+                                    {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdateAnniversary ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -553,8 +570,9 @@ const Setting = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdateInventoryType ? handleUpdateInventoryType : handleAddInventoryType}
+                                    disabled={isBlocking}
                                 >
-                                    {isUpdateInventoryType ? "変更" : "登録"}
+                                    {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdateInventoryType ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"

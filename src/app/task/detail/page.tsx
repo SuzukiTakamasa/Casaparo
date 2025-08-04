@@ -14,6 +14,7 @@ import { TextLinkToBackToPreviousPage } from '@components/TextLink'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
+import Loader from '@components/Loader'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
@@ -73,6 +74,8 @@ const TaskDetail = () => {
     const [relatedSubTaskDueDate, setRelatedSubTaskDueDate] = useState("")
     const [relatedSubTaskParentTaskId, setRelatedSubTaskParentTaskId] = useState(taskDetail?.id ?? 0)
     const [relatedSubTaskVersion, setRelatedSubTaskVersion] = useState(0)
+
+    const [isBlocking, setIsBlocking] = useState(false)
 
     const param = useSearchParams()
     const id = param.get("id")
@@ -138,13 +141,17 @@ const TaskDetail = () => {
     }
     const handleAddRelatedSubTask = async () => {
         if (!validateRelatedSubTask()) return
+        setIsBlocking(true)
         const response = await addRelatedSubTask()
+        setIsBlocking(false)
         handleCloseRelatedSubTaskDialog()
         APIResponseToast(response, "サブタスクを追加しました。", "サブタスクの追加に失敗しました。")
     }
     const handleUpdateRelatedSubTask = async () => {
         if (!validateRelatedSubTask()) return
+        setIsBlocking(true)
         const response = await updateRelatedSubTask()
+        setIsBlocking(false)
         handleCloseRelatedSubTaskDialog()
         APIResponseToast(response, "サブタスクを変更しました。", "サブタスクの変更に失敗しました。")
     }
@@ -256,13 +263,17 @@ const TaskDetail = () => {
 
     const handleAddTaskComment = async () => {
         if (!validateTaskComment()) return
+        setIsBlocking(true)
         const response = await addTaskComment()
+        setIsBlocking(false)
         handleCloseTaskCommentDialog()
         APIResponseToast(response, "コメントを追加しました。", "コメントの追加に失敗しました。")
     }
     const handleUpdateTaskComment = async () => {
         if (!validateTaskComment()) return
+        setIsBlocking(true)
         const response = await updateTaskComment()
+        setIsBlocking(false)
         handleCloseTaskCommentDialog()
         APIResponseToast(response, "コメントを変更しました。", "コメントの変更に失敗しました。")
     }
@@ -463,8 +474,9 @@ const TaskDetail = () => {
                             <button
                                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                 onClick={isUpdateRelatedSubTask ? handleUpdateRelatedSubTask : handleAddRelatedSubTask}
+                                disabled={isBlocking}
                             >
-                            {isUpdateRelatedSubTask ? "変更" : "登録"}
+                            {isBlocking ? <Loader size={20} isLoading={isBlocking }/> : isUpdateRelatedSubTask ? "変更" : "登録"}
                             </button>
                             <button
                                 className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -643,8 +655,9 @@ const TaskDetail = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdateTaskComment ? handleUpdateTaskComment : handleAddTaskComment}
+                                    disabled={isBlocking}
                                 >
-                                    {isUpdateTaskComment ? "変更" : "登録"}
+                                    {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdateTaskComment ? "変更" : "登録"}
                                 </button>
                                 <button
                                     className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
