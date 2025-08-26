@@ -230,43 +230,38 @@ const Household = () => {
             </YearProvider>
 
             <div className="container mx-auto p-4">
+                <MonthPaginator className="text-lg font-bold mx-4" />
                 {isLoading ?
-                    <div className="flex justify-center items-center h-64">
+                    <div className="flex justify-center items-center h-16">
                         <Loader size={50} isLoading={isLoading}/>
                     </div>
                     :
-                    !isCompleted &&
-                    <button
-                        className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
-                        onClick={handleOpenAddDialog}
-                    >
-                        登録
-                    </button>
-                }
-                <MonthPaginator className="text-lg font-bold mx-4" />
-                {intToBool(isCompleted) &&
-                    <div className="text-2xl font-bold bg-green-900 flex justify-center">
-                        <div className="mt-1">
-                            <CheckBadgeIcon/>
-                        </div>
-                        清算済み
-                    </div>
-                }
-                {!isCompleted &&
-                    (householdYear < year ||
-                    (householdYear === year && householdMonth < month) ||
-                    (householdYear === year && householdMonth === month && today >= DateOfFixedHousehold)) &&
                     <div>
-                        <div className="flex justify-center">
-                            <button
-                                className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
-                                onClick={handleAddCompletedHousehold}
-                            >
-                                確定
-                            </button>
-                        </div>
-                        <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(billingAmount)}</div>
-                        <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(totalAmount)}</div>
+                        {intToBool(isCompleted) &&
+                            <div className="text-2xl font-bold bg-green-900 flex justify-center">
+                                <div className="mt-1">
+                                    <CheckBadgeIcon/>
+                                </div>
+                                清算済み
+                            </div>
+                        }
+                        {!isCompleted &&
+                            (householdYear < year ||
+                            (householdYear === year && householdMonth < month) ||
+                            (householdYear === year && householdMonth === month && today >= DateOfFixedHousehold)) &&
+                            <div>
+                                <div className="flex justify-center">
+                                    <button
+                                        className="text-2xl bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-8 rounded mb-4"
+                                        onClick={handleAddCompletedHousehold}
+                                    >
+                                        確定
+                                    </button>
+                                </div>
+                                <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(billingAmount)}</div>
+                                <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(totalAmount)}</div>
+                            </div>
+                        }
                     </div>
                 }
 
@@ -334,6 +329,7 @@ const Household = () => {
                         </div>
                     </div>
                 )}
+
                 {isCompleted ?
                 <div>
                     <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense[0]?.billing_amount ? formatNumberWithCommas(expense[0]?.billing_amount) : "-"}</div>
@@ -369,6 +365,13 @@ const Household = () => {
                     </div>
                 </div>
                 :
+                <>
+                <button
+                        className={"bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"}
+                        onClick={handleOpenAddDialog}
+                    >
+                        登録
+                    </button>
                 <table className="table-auto min-w-full mt-4">
                     <thead>
                         <tr>
@@ -414,6 +417,7 @@ const Household = () => {
                         <td className="border-b px-4 py-2 text-xl text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
                     </tfoot>
                 </table>
+                </>
                 }
             </div>
         </MonthProvider>
