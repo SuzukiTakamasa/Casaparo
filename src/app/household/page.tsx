@@ -141,7 +141,7 @@ const Household = () => {
                     }
                 }
             }
-            setIsLoading(false)
+        setIsLoading(false)
     }, [householdYear, householdMonth])
     const addHousehold = async () => {
         const addedHouseholdData = {
@@ -232,9 +232,7 @@ const Household = () => {
             <div className="container mx-auto p-4">
                 <MonthPaginator className="text-lg font-bold mx-4" />
                 {isLoading ?
-                    <div className="flex justify-center items-center h-16">
-                        <Loader size={50} isLoading={isLoading}/>
-                    </div>
+                    <></>
                     :
                     <div>
                         {intToBool(isCompleted) &&
@@ -258,10 +256,14 @@ const Household = () => {
                                         確定
                                     </button>
                                 </div>
-                                <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{formatNumberWithCommas(billingAmount)}</div>
-                                <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{formatNumberWithCommas(totalAmount)}</div>
                             </div>
                         }
+                    </div>
+                }
+                {!isCompleted &&
+                    <div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{isLoading ? "-" : formatNumberWithCommas(billingAmount)}</div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{isLoading ? "-" : formatNumberWithCommas(totalAmount)}</div>
                     </div>
                 }
 
@@ -332,15 +334,17 @@ const Household = () => {
 
                 {isCompleted ?
                 <div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{expense[0]?.billing_amount ? formatNumberWithCommas(expense[0]?.billing_amount) : "-"}</div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{expense[0]?.total_amount ? formatNumberWithCommas(expense[0]?.total_amount): "-"}</div>
-                    <div className="flex justify-center">
-                        <button
-                            className="text-white"
-                            onClick={handleSetShowDetail}
-                        >
-                            {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
-                        </button>
+                    <div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{isLoading ? "-" : expense[0]?.billing_amount ? formatNumberWithCommas(expense[0]?.billing_amount) : "-"}</div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{isLoading ? "-" : expense[0]?.total_amount ? formatNumberWithCommas(expense[0]?.total_amount): "-"}</div>
+                        <div className="flex justify-center">
+                            <button
+                                className="text-white"
+                                onClick={handleSetShowDetail}
+                            >
+                                {showDetail ? "▼ 明細を非表示" : "▶︎ 明細を表示"}
+                            </button>
+                        </div>
                     </div>
                     {showDetail && 
                         <table className="table_auto min-w-full mt-4">
@@ -411,11 +415,6 @@ const Household = () => {
                             </tr>
                         ))}
                     </tbody>
-                    <tfoot>
-                        <td className="border-b"></td>
-                        <td className="border-b px-2 py-1 text-center font-bold">清算金額</td>
-                        <td className="border-b px-4 py-2 text-xl text-right font-bold">¥{formatNumberWithCommas(billingAmount)}</td>
-                    </tfoot>
                 </table>
                 </>
                 }
