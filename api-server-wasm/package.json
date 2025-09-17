@@ -21,6 +21,7 @@
 		"dump-web_push_subscription": "wrangler d1 execute casaparo --command \"SELECT * FROM web_push_subscriptions\" > ./dumps/dump_web_push_subscriptions.json"
 	},
 	"devDependencies": {
+		"esbuild": "^0.25.9",
 		"wrangler": "^3.1.2"
 	}
 }
