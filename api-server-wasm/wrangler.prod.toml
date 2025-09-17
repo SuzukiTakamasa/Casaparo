@@ -3,7 +3,7 @@ main = "build/worker/shim.mjs"
 compatibility_date = "2023-06-28"
 
 [build]
-command = "bash ./scripts/build-wasm.sh"
+command = "cargo install -q worker-build && worker-build --release"
 
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
