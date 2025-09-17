@@ -21,10 +21,6 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
-    
-    - name: Install npm deps for api-server-wasm
-      run: npm ci
-      working-directory: ${{ github.workspace }}/api-server-wasm
 
     - name: Install Wrangler CLI
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
