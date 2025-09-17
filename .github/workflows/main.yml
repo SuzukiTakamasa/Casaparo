@@ -21,6 +21,11 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
+    - name: Install esbuild for api-server-wasm
+      run: |
+        cd ${{ github.workspace }}/api-server-wasm
+        npm install --no-audit --no-fund esbuild
+      working-directory: ${{ github.workspace }}/api-server-wasm
 
     - name: Install Wrangler CLI
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
