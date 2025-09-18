@@ -5,9 +5,6 @@ compatibility_date = "2023-06-28"
 [build]
 command = "cargo install -q worker-build && worker-build --release"
 
-[build.upload]
-format = "modules"
-
 [[d1_databases]]
 binding = "DB-DEV" # i.e. available in your Worker on env.DB
 database_name = "casaparo-dev"
