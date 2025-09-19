@@ -4,7 +4,10 @@ compatibility_date = "2023-06-28"
 minify = false
 
 [build]
-command = "cargo install -q worker-build && worker-build --release"
+command = """cargo clean && \
+cargo install --force wasm-bindgen-cli --version "=0.2.103" --locked && \
+cargo install -q worker-build --version "=0.5.0" --locked && \
+worker-build --release"""
 
 [[d1_databases]]
 binding = "DB-DEV" # i.e. available in your Worker on env.DB
