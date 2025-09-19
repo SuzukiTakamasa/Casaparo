@@ -1,6 +1,6 @@
 // api-server-wasm/worker.entry.js
 import initWasm, * as wasm from "../build/index.js";
-import wasmModule from "../build/index_bg.wasm.js"; // 生成名が違うなら後述
+import wasmModule from "../build/index_bg.wasm";
 
 await initWasm(wasmModule);
 
