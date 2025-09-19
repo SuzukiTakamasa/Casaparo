@@ -1,11 +1,17 @@
 name = "worker-rust"
-main = "worker.entry.js"
-compatibility_date = "2023-06-28"
+main = "custom_build/worker.entry.js"
+compatibility_date = "2025-09-01"
 minify = false
 
-[[rules]]
+[build.upload]
+format = "modules"
+dir = "custom_build"
+main = "worker.entry.js"
+
+[[build.upload.rules]]
 globs = ["**/*.wasm"]
 type = "CompiledWasm"
+fallthrough = false
 
 [build]
 command = """cargo clean && \
