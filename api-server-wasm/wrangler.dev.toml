@@ -5,7 +5,7 @@ minify = false
 
 [build.upload]
 format = "modules"
-dir = "custome_build"
+dir = "custom_build"
 main = "worker.entry.js"
 
 [[build.upload.rules]]

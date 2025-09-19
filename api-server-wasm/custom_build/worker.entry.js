@@ -1,44 +1,76 @@
-import initWasm, * as wasm from "../build/index.js";
-import wasmModule from "../build/index_bg.wasm";
 
-try {
-  await initWasm(wasmModule);
-} catch (e) {
-  // 初期化に失敗した場合でも明示的にログを残しておく
-  console.error("wasm init failed:", e);
-  // init に失敗したら以降の呼び出しで意味のあるエラーレスポンスを返すために続行
+let _wasm = null;
+let _wasmInitializing = null;
+
+async function loadWasm() {
+  if (_wasm) return _wasm;
+  if (_wasmInitializing) return _wasmInitializing;
+
+  _wasmInitializing = (async () => {
+    try {
+      // 動的 import してトップレベル評価の副作用を遅延
+      const mod = await import("../build/index.js");
+      // wasm バイナリを取得して init 関数に渡す（wasm-bindgen の初期化パターンに対応）
+      const wasmUrl = new URL("../build/index_bg.wasm", import.meta.url);
+      const resp = await fetch(wasmUrl);
+      const bytes = await resp.arrayBuffer();
+
+      // デフォルトエクスポートが初期化関数になっているケースに対応
+      if (typeof mod.default === "function") {
+        await mod.default(bytes);
+      } else if (typeof mod.init === "function") {
+        await mod.init(bytes);
+      }
+      _wasm = mod;
+      return _wasm;
+    } catch (e) {
+      console.error("loadWasm failed:", e);
+      // 初期化失敗は上位でハンドルできるように再投げ
+      throw e;
+    } finally {
+      _wasmInitializing = null;
+    }
+  })();
+
+  return _wasmInitializing;
 }
 
-function invokeIfFunction(fn, args) {
+function safeCall(fn, args) {
+  if (typeof fn !== "function") return null;
   try {
-    if (typeof fn === "function") {
-      return fn(...args);
-    }
+    return fn(...args);
   } catch (e) {
-    console.error("wasm invocation error:", e);
+    console.error("wasm call error:", e);
     throw e;
   }
-  return null;
 }
 
 export default {
   async fetch(request, env, ctx) {
-    // wasm.fetch が存在すれば呼び出し、なければ 501 を返す
-    const result = invokeIfFunction(wasm.fetch, [request, env, ctx])
-                 ?? invokeIfFunction(wasm.default?.fetch, [request, env, ctx]);
-    if (result !== null) return result;
+    const mod = await loadWasm().catch(() => null);
+    if (mod) {
+      // さまざまなエクスポート配置パターンに対応
+      const fn = mod.fetch ?? mod.default?.fetch ?? null;
+      if (fn) return await Promise.resolve(safeCall(fn, [request, env, ctx]));
+    }
     return new Response("fetch not implemented", { status: 501 });
   },
+
   async queue(batch, env, ctx) {
-    const result = invokeIfFunction(wasm.queue, [batch, env, ctx])
-                 ?? invokeIfFunction(wasm.default?.queue, [batch, env, ctx]);
-    if (result !== null) return result;
+    const mod = await loadWasm().catch(() => null);
+    if (mod) {
+      const fn = mod.queue ?? mod.default?.queue ?? null;
+      if (fn) return await Promise.resolve(safeCall(fn, [batch, env, ctx]));
+    }
     return new Response("queue not implemented", { status: 501 });
   },
+
   async scheduled(event, env, ctx) {
-    const result = invokeIfFunction(wasm.scheduled, [event, env, ctx])
-                 ?? invokeIfFunction(wasm.default?.scheduled, [event, env, ctx]);
-    if (result !== null) return result;
+    const mod = await loadWasm().catch(() => null);
+    if (mod) {
+      const fn = mod.scheduled ?? mod.default?.scheduled ?? null;
+      if (fn) return await Promise.resolve(safeCall(fn, [event, env, ctx]));
+    }
     return new Response("scheduled not implemented", { status: 501 });
   }
 }
