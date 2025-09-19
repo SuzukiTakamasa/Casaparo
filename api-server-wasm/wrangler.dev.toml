@@ -1,5 +1,5 @@
 name = "worker-rust-dev"
-main = "build/worker.js"
+main = "worker.entry.js"
 compatibility_date = "2023-06-28"
 minify = false
 

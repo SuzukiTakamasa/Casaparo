@@ -26,14 +26,6 @@ jobs:
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
       working-directory: ${{ github.workspace }}/api-server-wasm
 
-    - name: Clean up old caches
-      run: cargo clean
-      working-directory: ${{ github.workspace }}/api-server-wasm
-      
-    - name: Install wasm-bindgen-cli
-      run: cargo install -f wasm-bindgen-cli --version 0.2.103
-      working-directory: ${{ github.workspace }}/api-server-wasm
-
     - name: Publish to Cloudflare Workers (Development)
       if: github.ref == 'refs/heads/dev'
       run: npm run deploy-dev
