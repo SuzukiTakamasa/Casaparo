@@ -1,7 +1,11 @@
 name = "worker-rust-dev"
-main = "build/worker/shim.mjs"
+main = "build/worker.js"
 compatibility_date = "2023-06-28"
 minify = false
+
+[[rules]]
+globs = ["**/*.wasm"]
+type = "CompiledWasm"
 
 [build]
 command = """cargo clean && \
