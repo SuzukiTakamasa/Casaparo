@@ -3,7 +3,7 @@ main = "build/worker/shim.mjs"
 compatibility_date = "2023-06-28"
 
 [build]
-command = "cargo install -q worker-build && worker-build --release"
+command = "cargo clean && cargo install --force wasm-bindgen-cli --version 0.2.103 && cargo install -q worker-build && worker-build --release"
 
 [[d1_databases]]
 binding = "DB-DEV" # i.e. available in your Worker on env.DB
