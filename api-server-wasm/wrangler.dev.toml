@@ -1,9 +1,23 @@
 name = "worker-rust-dev"
-main = "build/worker/shim.mjs"
-compatibility_date = "2023-06-28"
+main = "custom_build/worker.entry.js"
+compatibility_date = "2025-09-01"
+minify = false
+
+[build.upload]
+format = "modules"
+dir = "custom_build"
+main = "worker.entry.js"
+
+[[build.upload.rules]]
+globs = ["**/*.wasm"]
+type = "CompiledWasm"
+fallthrough = false
 
 [build]
-command = "cargo install -q worker-build && worker-build --release"
+command = """cargo clean && \
+cargo install --force wasm-bindgen-cli --version "=0.2.103" --locked && \
+cargo install -q worker-build --version "=0.1.8" --locked && \
+worker-build --release"""
 
 [[d1_databases]]
 binding = "DB-DEV" # i.e. available in your Worker on env.DB
