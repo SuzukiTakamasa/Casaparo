@@ -34,6 +34,7 @@ const Task = () => {
     const [descriptionValidMsg, setDescriptionValidMsg] = useState("")
     const [createdByValidMsg, setCreatedByValidMsg] = useState("")
     const [dueDateValidMsg, setDueDateValidMsg] = useState("")
+    const [subTaskNotCompletedValidMsg, setSubTaskNotCompletedValidMsg] = useState("")
 
     const { month } = useContext(MonthContext)
     const { year } = useContext(YearContext)
@@ -103,6 +104,10 @@ const Task = () => {
         if (status !== TaskConstants.Status.COMPLETED && getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
             isValid = false
             setDueDateValidMsg("本日より後の日付を設定してください。")
+        }
+        if (subTasks.filter(st => st.parent_task_id === id).filter(st => st.status !== TaskConstants.Status.COMPLETED).length > 0 && status === TaskConstants.Status.COMPLETED) {
+            isValid = false
+            setSubTaskNotCompletedValidMsg("完了していない子タスクが存在するため、完了にできません。")
         }
         return isValid
     }
@@ -197,6 +202,7 @@ const Task = () => {
         setDescriptionValidMsg("")
         setCreatedByValidMsg("")
         setDueDateValidMsg("")
+        setSubTaskNotCompletedValidMsg("")
     }
     const fetchTasks = useCallback(async () => {
         const tasks = await client.get<TaskResponse>('/v2/task')
@@ -406,6 +412,7 @@ const Task = () => {
                                 <option value="2">完了</option>
                             </select>
                         </label>
+                        <ValidationErrorMessage message={subTaskNotCompletedValidMsg} />
                         <div className="mt-2 text-black">期限</div>
                         <div className="flex justify-center">
                         <label className="text-black">
