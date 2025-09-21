@@ -86,6 +86,14 @@ function safeCall(fn, args) {
   }
 }
 
+try {
+  // top-level await を利用してモジュールロード時に初期化（Cloudflare Modules は対応）
+  await loadWasm()
+  console.log("WASM preloaded at module initialization")
+} catch (e) {
+  console.error("WASM preloading failed at module initialization:", e)
+}
+
 export default {
   async fetch(request, env, ctx) {
     const mod = await loadWasm().catch((e) => {
