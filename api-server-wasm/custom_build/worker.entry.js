@@ -1,4 +1,3 @@
-
 let _wasm = null;
 let _wasmInitializing = null;
 
@@ -8,24 +7,65 @@ async function loadWasm() {
 
   _wasmInitializing = (async () => {
     try {
-      // 動的 import してトップレベル評価の副作用を遅延
       const mod = await import("../build/index.js");
-      // wasm バイナリを取得して init 関数に渡す（wasm-bindgen の初期化パターンに対応）
-      const wasmUrl = new URL("../build/index_bg.wasm", import.meta.url);
-      const resp = await fetch(wasmUrl);
-      const bytes = await resp.arrayBuffer();
+      console.log("imported module keys:", Object.keys(mod));
 
-      // デフォルトエクスポートが初期化関数になっているケースに対応
-      if (typeof mod.default === "function") {
-        await mod.default(bytes);
-      } else if (typeof mod.init === "function") {
-        await mod.init(bytes);
+      // try to load wasm bytes if present
+      let bytes = null;
+      try {
+        const wasmUrl = new URL("../build/index_bg.wasm", import.meta.url);
+        const resp = await fetch(wasmUrl);
+        if (resp.ok) bytes = await resp.arrayBuffer();
+      } catch (e) {
+        console.warn("failed to fetch index_bg.wasm:", e);
       }
+
+      // try common init patterns
+      if (typeof mod.default === "function") {
+        try {
+          if (bytes) {
+            await mod.default(bytes);
+            console.log("initialized via mod.default(bytes)");
+          } else {
+            await mod.default();
+            console.log("initialized via mod.default()");
+          }
+        } catch (e) {
+          console.warn("mod.default init failed, error:", e);
+        }
+      }
+
+      if (typeof mod.init === "function" && bytes) {
+        try {
+          await mod.init(bytes);
+          console.log("initialized via mod.init(bytes)");
+        } catch (e) {
+          console.warn("mod.init init failed, error:", e);
+        }
+      }
+
+      if (typeof mod.__wbindgen_start === "function") {
+        try {
+          mod.__wbindgen_start();
+          console.log("called __wbindgen_start");
+        } catch (e) {
+          console.warn("__wbindgen_start failed:", e);
+        }
+      }
+
+      if (typeof mod.start === "function") {
+        try {
+          await mod.start();
+          console.log("called start()");
+        } catch (e) {
+          console.warn("start() failed:", e);
+        }
+      }
+
       _wasm = mod;
       return _wasm;
     } catch (e) {
       console.error("loadWasm failed:", e);
-      // 初期化失敗は上位でハンドルできるように再投げ
       throw e;
     } finally {
       _wasmInitializing = null;
@@ -38,7 +78,8 @@ async function loadWasm() {
 function safeCall(fn, args) {
   if (typeof fn !== "function") return null;
   try {
-    return fn(...args);
+    const res = fn(...args);
+    return Promise.resolve(res);
   } catch (e) {
     console.error("wasm call error:", e);
     throw e;
@@ -47,29 +88,38 @@ function safeCall(fn, args) {
 
 export default {
   async fetch(request, env, ctx) {
-    const mod = await loadWasm().catch(() => null);
+    const mod = await loadWasm().catch((e) => {
+      console.error("loadWasm error in fetch:", e);
+      return null;
+    });
     if (mod) {
-      // さまざまなエクスポート配置パターンに対応
+      console.log("module keys at fetch:", Object.keys(mod));
       const fn = mod.fetch ?? mod.default?.fetch ?? null;
-      if (fn) return await Promise.resolve(safeCall(fn, [request, env, ctx]));
+      if (fn) return await safeCall(fn, [request, env, ctx]);
     }
     return new Response("fetch not implemented", { status: 501 });
   },
-
   async queue(batch, env, ctx) {
-    const mod = await loadWasm().catch(() => null);
+    const mod = await loadWasm().catch((e) => {
+      console.error("loadWasm error in queue:", e);
+      return null;
+    });
     if (mod) {
+      console.log("module keys at queue:", Object.keys(mod));
       const fn = mod.queue ?? mod.default?.queue ?? null;
-      if (fn) return await Promise.resolve(safeCall(fn, [batch, env, ctx]));
+      if (fn) return await safeCall(fn, [batch, env, ctx]);
     }
     return new Response("queue not implemented", { status: 501 });
   },
-
   async scheduled(event, env, ctx) {
-    const mod = await loadWasm().catch(() => null);
+    const mod = await loadWasm().catch((e) => {
+      console.error("loadWasm error in scheduled:", e);
+      return null;
+    });
     if (mod) {
+      console.log("module keys at scheduled:", Object.keys(mod));
       const fn = mod.scheduled ?? mod.default?.scheduled ?? null;
-      if (fn) return await Promise.resolve(safeCall(fn, [event, env, ctx]));
+      if (fn) return await safeCall(fn, [event, env, ctx]);
     }
     return new Response("scheduled not implemented", { status: 501 });
   }
