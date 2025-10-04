@@ -72,7 +72,7 @@ export default function Home() {
     setSchedules(schedules.data || [])
   }, [year, month, today])
   const fetchAnniversaries = useCallback(async() => {
-    const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
+    const anniversaries = await client.get<AnniversaryResponse>(`/v2/anniversary/today_or_tomorrow/${month}/${today}`)
     setAnniversaries(anniversaries.data || [])
   }, [])
   const fetchInventories = useCallback(async () => {
@@ -145,9 +145,6 @@ export default function Home() {
               {anniversaries.map((anniversary, i) => (
                 <div key={i} className="text-lg">
                   {anniversaries.length > 0 &&
-                   anniversary.month === month &&
-                   (anniversary.date === today ||
-                   anniversary.date === today + 1) &&
                     <tr>
                       <td>🎉 {anniversary.date}日({getWeekDay(year, month, anniversary.date)}) {anniversary.description}</td>
                     </tr>
