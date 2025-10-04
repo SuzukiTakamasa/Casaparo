@@ -16,6 +16,10 @@ impl<R: AnniversaryRepository> AnniversaryUsecases<R> {
         self.repository.get_anniversaries().await
     }
 
+    pub async fn get_today_or_tomorrow_anniversaries(&self, month: u8, day: u8) -> Result<Vec<Anniversaries>> {
+        self.repository.get_today_or_tomorrow_anniversaries(month, day).await
+    }
+
     pub async fn create_anniversary(&self, anniversary: &Anniversaries) -> Result<()> {
         self.repository.create_anniversary(anniversary).await
     }
