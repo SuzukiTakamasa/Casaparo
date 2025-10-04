@@ -27,6 +27,16 @@ impl AnniversaryRepository for D1AnniversaryRepository {
         result.results::<Anniversaries>()
     }
 
+    async fn get_today_or_tomorrow_anniversaries(&self, month: u8, day: u8) -> Result<Vec<Anniversaries>> {
+        let statement = self.db.prepare(r#"select *
+                                                                from anniversaries
+                                                                where month = ?1 and (date = ?2 or date = ?2 + 1)"#);
+        let query = statement.bind(&[month.into(),
+                                                          day.into()])?;
+        let result = query.all().await?;
+        result.results::<Anniversaries>()
+    }
+
     async fn create_anniversary(&self, anniversary: &Anniversaries) -> Result<()> {
         let statement = self.db.prepare(r#"insert into anniversaries
                                                                 (month, date, description, version)

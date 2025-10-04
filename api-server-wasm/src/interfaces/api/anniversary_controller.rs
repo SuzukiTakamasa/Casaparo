@@ -1,6 +1,8 @@
 use crate::application::usecases::anniversary_usecases::AnniversaryUsecases;
 use crate::domain::entities::setting::Anniversaries;
 use crate::domain::repositories::anniversary_repository::AnniversaryRepository;
+use worker::{RouteContext};
+use crate::AppState;
 use super::*;
 
 
@@ -15,6 +17,19 @@ impl<R: AnniversaryRepository> AnniversaryController<R> {
 
     pub async fn get_anniversaries(&self) -> Result<Response> {
         match self.usecases.get_anniversaries().await {
+            Ok(anniversary) => return JSONResponse::new(Status::Ok, None, Some(anniversary)),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
+        };
+    }
+
+    pub async fn get_today_or_tomorrow_anniversaries(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let month = ctx.param("month").unwrap();
+        let day = ctx.param("day").unwrap();
+
+        let month_as_u8: u8 = month.parse().unwrap();
+        let day_as_u8: u8 = day.parse().unwrap();
+
+        match self.usecases.get_today_or_tomorrow_anniversaries(month_as_u8, day_as_u8).await {
             Ok(anniversary) => return JSONResponse::new(Status::Ok, None, Some(anniversary)),
             Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         };

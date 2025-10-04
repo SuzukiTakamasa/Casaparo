@@ -266,6 +266,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/anniversary", |_req, ctx| async move {
             ctx.data.anniversary_controller.get_anniversaries().await
         })
+        .get_async("/v2/anniversary/today_or_tomorrow/:month/:day", |_req, ctx| async move {
+            ctx.data.anniversary_controller.get_today_or_tomorrow_anniversaries(&ctx).await
+        })
         .post_async("/v2/anniversary/create", |mut req, ctx| async move {
             ctx.data.anniversary_controller.create_anniversary(&mut req).await
         })
