@@ -46,8 +46,7 @@ export default function Home() {
   const { month } = useContext(MonthContext)
   const { year } = useContext(YearContext)
 
-  const [totalAmount, setTotalAmount] = useState(0)
-  const [billingAmount, setBillingAmount] = useState(0)
+  const [fixedAmount, setFixedAmount] = useState<FixedAmount>({ billing_amount: 0, total_amount: 0})
   const [schedules, setSchedules] = useState<ScheduleResponse>([])
   const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
   const [inventories, setInventories] = useState<InventoryResponse>([])
@@ -62,8 +61,7 @@ export default function Home() {
   const fetchFixedAmount = useCallback(async () => {
       const fixedAmount = await client.get<FixedAmount>(`/v2/household/fixed_amount/${year}/${month}`)
       if (fixedAmount.data) {
-        setTotalAmount(fixedAmount.data.total_amount)
-        setBillingAmount(fixedAmount.data.billing_amount)
+        setFixedAmount(fixedAmount.data)
         setIsLoading(false)
       }
   }, [year, month])
@@ -125,8 +123,8 @@ export default function Home() {
             <p>{`${month}月の家計簿を確定してください。`}</p>
           </div>
           }
-          <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(totalAmount)}`}</p>
-          <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(billingAmount)}`})</p>
+          <p className="text-xl mb-2 text-right">生活費合計： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(fixedAmount.total_amount)}`}</p>
+          <p className="text-xl mb-2 text-right">(🥺ྀི負担分： ¥ {isLoading ? <Loader size={20} isLoading={isLoading} /> : `${formatNumberWithCommas(fixedAmount.billing_amount)}`})</p>
         </CardWithTitleAndTextLink>
         <CardWithTitleAndTextLink title="今日・明日の予定" path="/schedule" text="スケジュール一覧へ" margin="my-1">
           <table className="flex justify-center">

@@ -15,7 +15,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 
-import { HouseholdData, HouseholdResponse, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
+import { HouseholdData, HouseholdResponse, FixedAmount, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { APIClient } from '@utils/api_client'
 import { adaptTwoPointReader, setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
@@ -45,8 +45,7 @@ const Household = () => {
     const [isOwner, setIsOwner] = useState(1)
     const [version, setVersion] = useState(1)
 
-    const [billingAmount, setBillingAmount] = useState(0)
-    const [totalAmount, setTotalAmount] = useState(0)
+    const [fixedAmount, setFixedAmount] = useState<FixedAmount>({ billing_amount: 0, total_amount: 0})
 
     const [isCompleted, setIsCompleted] = useState(0)
     const [expense, setExpense] = useState<HouseholdMonthlySummaryResponse>([])
@@ -143,6 +142,12 @@ const Household = () => {
             }
         setIsLoading(false)
     }, [householdYear, householdMonth])
+    const fetchFixedAmount = useCallback(async () => {
+        const fixedAmount = await client.get<FixedAmount>(`/v2/household/fixed_amount/${householdYear}/${householdMonth}`)
+        if (fixedAmount.data) {
+            setFixedAmount(fixedAmount.data)
+        }
+    }, [householdYear, householdMonth])
     const addHousehold = async () => {
         const addedHouseholdData = {
             name: newItemName,
@@ -178,18 +183,6 @@ const Household = () => {
         APIResponseToast(response, "家計簿を削除しました。", "削除に失敗しました。")
         await fetchHouseholds()
     }
-    const calculateBillingAmount = useCallback(() => {
-        let balance = 0
-        households.forEach((household, _) => {
-            household.is_owner ? balance += household.amount : balance -= household.amount
-        })
-        setBillingAmount(balance)
-    }, [households])
-    const calculateTotalAmount = useCallback(() => {
-        let balance = 0
-        households.forEach(household => balance += household.amount)
-        setTotalAmount(balance)
-    }, [households])
     const handleAddCompletedHousehold = async () => {
         if (!window.confirm("家計簿を確定しますか？")) return
         let detailArray = []
@@ -200,8 +193,8 @@ const Household = () => {
             year: householdYear,
             month: householdMonth,
             detail: JSON.stringify(detailArray),
-            billing_amount: billingAmount,
-            total_amount: totalAmount
+            billing_amount: fixedAmount.billing_amount,
+            total_amount: fixedAmount.total_amount
         }
         const response = await client.post<CompletedHouseholdData>('/v2/completed_household/create', completedHousehold)
         APIResponseToast(response, "家計簿を確定しました。", "確定に失敗しました。")
@@ -211,13 +204,8 @@ const Household = () => {
     useEffect(() => {
         fetchHouseholds()
         fetchIsCompleted()
-    }, [fetchHouseholds, fetchIsCompleted])
-
-    useEffect(() => {
-        calculateBillingAmount()
-        calculateTotalAmount()
-    }, [calculateBillingAmount, calculateTotalAmount])
-
+        fetchFixedAmount()
+    }, [fetchHouseholds, fetchIsCompleted, fetchFixedAmount])
 
     return (
         <>
@@ -262,8 +250,8 @@ const Household = () => {
                 }
                 {!isCompleted &&
                     <div>
-                        <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{isLoading ? "-" : formatNumberWithCommas(billingAmount)}</div>
-                        <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{isLoading ? "-" : formatNumberWithCommas(totalAmount)}</div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">清算金額： ¥{isLoading ? "-" : formatNumberWithCommas(fixedAmount.billing_amount)}</div>
+                        <div className="px-1 py-2 text-xl text-center text-white font-bold">合計金額： ¥{isLoading ? "-" : formatNumberWithCommas(fixedAmount.total_amount)}</div>
                     </div>
                 }
 
