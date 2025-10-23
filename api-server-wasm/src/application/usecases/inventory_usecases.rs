@@ -16,6 +16,10 @@ impl<R: InventoryRepository> InventoryUsecases<R> {
         self.repository.get_inventories().await
     }
 
+    pub async fn get_empty_inventories(&self) -> Result<Vec<Inventories>> {
+        self.repository.get_empty_inventories().await
+    }
+
     pub async fn create_inventory(&self, inventory: &Inventories) -> Result<()> {
         self.repository.create_inventory(inventory).await
     }

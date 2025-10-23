@@ -26,6 +26,15 @@ impl InventoryRepository for D1InventoryRepository {
         result.results::<Inventories>()
     }
 
+    async fn get_empty_inventories(&self) -> Result<Vec<Inventories>> {
+        let query = self.db.prepare(r#"select *
+                                                           from inventories
+                                                           where amount = 0
+                                                           order by id asc"#);
+        let result = query.all().await?;
+        result.results::<Inventories>()
+    }
+
     async fn create_inventory(&self, inventory: &Inventories) -> Result<()> {
         let statement = self.db.prepare(r#"insert into inventories
                                                                 (types, name, amount, created_by, version)
