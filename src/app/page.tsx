@@ -78,7 +78,7 @@ export default function Home() {
     setInventories(inventories.data || [])
   }, [])
   const fetchTasks = useCallback(async () => {
-    const tasks = await client.get<TaskResponse>('/v2/task/completed')
+    const tasks = await client.get<TaskResponse>('/v2/task/not_completed')
     setTasks(tasks.data || [])
   }, [])
   const fetchIsCompletedCurrentMonth = useCallback(async () => {
