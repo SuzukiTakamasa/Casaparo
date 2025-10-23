@@ -19,6 +19,13 @@ impl<R: TaskRepository> TaskController<R> {
         };
     }
 
+    pub async fn get_completed_tasks(&self) -> Result<Response> {
+        match self.usecases.get_completed_tasks().await {
+            Ok(tasks) => return JSONResponse::new(Status::Ok, None, Some(tasks)),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
+        }
+    } 
+
     pub async fn get_related_sub_tasks(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();

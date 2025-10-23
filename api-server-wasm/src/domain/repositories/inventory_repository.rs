@@ -6,6 +6,7 @@ use worker::Result;
 pub trait InventoryRepository {
     async fn get_inventories(&self) -> Result<Vec<Inventories>>;
     async fn create_inventory(&self, inventory: &Inventories) -> Result<()>;
+    async fn get_empty_inventories(&self) -> Result<Vec<Inventories>>;
     async fn update_amount(&self, inventory: &mut Inventories) -> Result<()>;
     async fn update_inventory(&self, inventory: &mut Inventories) -> Result<()>;
     async fn delete_inventory(&self, inventory: &mut Inventories) -> Result<()>;

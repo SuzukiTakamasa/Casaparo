@@ -19,6 +19,13 @@ impl<R: InventoryRepository> InventoryController<R> {
         };   
     }
 
+    pub async fn get_empty_inventories(&self) -> Result<Response> {
+        match self.usecases.get_empty_inventories().await {
+            Ok(inventories) => return JSONResponse::new(Status::Ok, None, Some(inventories)),
+            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
+        };   
+    }
+
     pub async fn create_inventory(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,

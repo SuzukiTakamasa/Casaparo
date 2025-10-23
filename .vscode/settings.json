@@ -3,5 +3,6 @@
         "./api-server-wasm/Cargo.toml"
     ],
     "rust-analyzer.procMacro.enable": true,
+    "kiroAgent.configureMCP": "Disabled",
     
 }

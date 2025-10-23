@@ -282,6 +282,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/inventory", |_req, ctx| async move {
             ctx.data.inventory_controller.get_inventories().await
         })
+        .get_async("/v2/inventory/empty", |_req, ctx| async move {
+            ctx.data.inventory_controller.get_empty_inventories().await
+        })
         .post_async("/v2/inventory/create", |mut req, ctx| async move {
             ctx.data.inventory_controller.create_inventory(&mut req).await
         })
@@ -332,6 +335,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
      //task
         .get_async("/v2/task", |_req, ctx| async move {
             ctx.data.task_controller.get_tasks().await
+        })
+        .get_async("/v2/task/completed", |_req, ctx| async move {
+            ctx.data.task_controller.get_completed_tasks().await
         })
         .get_async("/v2/task/related_sub_task/:id", |_req, ctx| async move {
             ctx.data.task_controller.get_related_sub_tasks(&ctx).await
