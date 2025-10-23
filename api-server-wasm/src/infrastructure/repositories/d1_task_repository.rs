@@ -26,10 +26,10 @@ impl TaskRepository for D1TaskRepository {
         result.results::<Tasks>()
     }
 
-    async fn get_completed_tasks(&self) -> Result<Vec<Tasks>> {
+    async fn get_not_completed_tasks(&self) -> Result<Vec<Tasks>> {
         let query = self.db.prepare(r#"select *
                                                             from tasks
-                                                            where status = 2
+                                                            where status != 2
                                                             order by id asc"#);
         let result = query.all().await?;
         result.results::<Tasks>()

@@ -19,8 +19,8 @@ impl<R: TaskRepository> TaskController<R> {
         };
     }
 
-    pub async fn get_completed_tasks(&self) -> Result<Response> {
-        match self.usecases.get_completed_tasks().await {
+    pub async fn get_not_completed_tasks(&self) -> Result<Response> {
+        match self.usecases.get_not_completed_tasks().await {
             Ok(tasks) => return JSONResponse::new(Status::Ok, None, Some(tasks)),
             Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
         }

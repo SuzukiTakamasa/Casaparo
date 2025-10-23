@@ -336,8 +336,8 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/task", |_req, ctx| async move {
             ctx.data.task_controller.get_tasks().await
         })
-        .get_async("/v2/task/completed", |_req, ctx| async move {
-            ctx.data.task_controller.get_completed_tasks().await
+        .get_async("/v2/task/not_completed", |_req, ctx| async move {
+            ctx.data.task_controller.get_not_completed_tasks().await
         })
         .get_async("/v2/task/related_sub_task/:id", |_req, ctx| async move {
             ctx.data.task_controller.get_related_sub_tasks(&ctx).await

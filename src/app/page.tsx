@@ -74,12 +74,12 @@ export default function Home() {
     setAnniversaries(anniversaries.data || [])
   }, [])
   const fetchInventories = useCallback(async () => {
-    const inventories = await client.get<InventoryResponse>('/v2/inventory')
-    setInventories(inventories.data?.filter(i => i.amount === 0) || [])
+    const inventories = await client.get<InventoryResponse>('/v2/inventory/empty')
+    setInventories(inventories.data || [])
   }, [])
   const fetchTasks = useCallback(async () => {
-    const tasks = await client.get<TaskResponse>('/v2/task')
-    setTasks(tasks.data?.filter(t => t.status !== TaskConstants.Status.COMPLETED) || [])
+    const tasks = await client.get<TaskResponse>('/v2/task/completed')
+    setTasks(tasks.data || [])
   }, [])
   const fetchIsCompletedCurrentMonth = useCallback(async () => {
     const isCompletedCurrentMonth = await client.get<IsCompleted>(`/v2/completed_household/${year}/${month}`)
