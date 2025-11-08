@@ -7,12 +7,19 @@ pub struct LatestVersion {
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, Debug)]
+#[serde(into = "u16")]
 pub enum Status {
     Ok = 200,
     Created = 201,
     BadRequest = 400,
     InternalServerError = 500,
     Forbidden = 403,
+}
+
+impl From<Status> for u16 {
+    fn from(status: Status) -> Self {
+        status as u16
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug)]
