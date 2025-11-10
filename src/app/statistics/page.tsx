@@ -4,6 +4,7 @@
 
 import React, { useState, useContext, useCallback, useEffect } from 'react'
 import { LineChartComponent, PieChartComponent } from '@components/Chart'
+import { PageTitle } from '@components/Title'
 import Loader from '@components/Loader'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
