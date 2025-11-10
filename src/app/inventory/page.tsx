@@ -14,6 +14,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import { PageTitle } from '@components/Title'
 import { CreatedBy, ShoppingNoteConstants } from '@utils/constants' 
 
 
@@ -568,7 +569,7 @@ const Inventory = () => {
     return (
     <>
         <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
-            <h1 className="text-2xl font-bold mc-4">🚨 在庫・買い物メモ 🚨</h1>
+            <PageTitle title={"🚨 在庫・買い物メモ 🚨"} />
 
             <div className="container mx-auto p-4">
                 <div className="flex justify-center">

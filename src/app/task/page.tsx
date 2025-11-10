@@ -12,6 +12,7 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import { PageTitle } from '@components/Title'
 import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
@@ -350,7 +351,7 @@ const Task = () => {
     return (
     <>
         <GeneralPaginationProvider numberOfDataPerPage={numberOfDataPerPage}>
-        <h1 className="text-2xl font-bold mc-4">🛏️ タスク 🛏️</h1>
+        <PageTitle title={"🛏️ タスク 🛏️"} />
 
         <div className="container mx-auto p-4">
             <button

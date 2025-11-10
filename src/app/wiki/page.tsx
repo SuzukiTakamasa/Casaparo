@@ -13,6 +13,7 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import { PageTitle } from '@components/Title'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient, R2Client } from '@utils/api_client'
@@ -193,7 +194,7 @@ const Wiki = () => {
 
     return (
     <>
-        <h1 className="text-2xl font-bold mc-4">💥 Wiki 💥</h1>
+        <PageTitle title={"💥 Wiki 💥"} />
 
         <div className="container mx-auto p-4">
             <button

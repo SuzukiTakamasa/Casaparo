@@ -8,12 +8,13 @@ import { MonthContext } from '@components/MonthPaginator'
 import { YearContext } from '@components/YearPicker'
 import Loader from '@components/Loader'
 import { TextLink } from '@components/TextLink'
+import { PageTitle, CardTitle } from '@components/Title'
 
 import { APIClient } from '@utils/api_client'
 
 import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@utils/interfaces'
 import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByFromDate, sortSchedulesByTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
-import { HouseholdConstants, DateOfFixedHousehold, TaskConstants } from '@utils/constants' 
+import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants' 
 import { ExclamationTriangleIcon } from '@components/Heroicons'
 
 
@@ -31,7 +32,7 @@ const CardWithTitleAndTextLink = ({ title, path, text, margin, children }: CardW
   return (
     <div className={`rounded-lg overflow-hidden shadow-lg bg-white p-1 ${margin}`}>
       <div className="bg-black text-white p-2">
-        <h2 className="text-2xl font-bold mb-4 text-center">{title}</h2>
+        <CardTitle title={title} />
         {children}
         <div className="flex justify-end">
           <TextLink path={path} text={text} />
@@ -109,7 +110,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
       <div className="container max-w-full">
-        <h1 className="text-2xl font-bold pb-8">🥺ダッシュボード🥺ྀི</h1>
+        <PageTitle title={"🥺ダッシュボード🥺ྀི"} />
         <CardWithTitleAndTextLink title="今月の生活費・各負担分" path="/household" text="家計簿一覧へ">
           {isCompletedLastMonth === HouseholdConstants.IsCompleted.NOT_COMPLETED &&
             <div className="flex justify-center bg-red-700 text-xl">

@@ -10,6 +10,7 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import { PageTitle } from '@components/Title'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { getMonthArray, getDateArray } from '@utils/utility_function'
 
@@ -343,7 +344,7 @@ const Setting = () => {
 
     return (
         <>
-            <h1 className="text-2xl font-bold mc-4">🦵 設定 🦵</h1>
+            <PageTitle title={"🦵 設定 🦵"} />
 
             <div className="container mx-auto p-4">
                 <div className="flex justify-left space-x-4">
