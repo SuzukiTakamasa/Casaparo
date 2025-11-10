@@ -5,7 +5,7 @@ type LoaderProps = {
     isLoading: boolean
 }
 
-const Loader = ({size, isLoading}: LoaderProps) => {
+const Loader = ({ size, isLoading }: LoaderProps) => {
     return (
         <ClipLoader
             color="#747474"

@@ -14,6 +14,7 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import { PageTitle } from '@components/Title' 
 
 import { HouseholdData, HouseholdResponse, FixedAmount, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
@@ -211,7 +212,7 @@ const Household = () => {
         <>
         <ToasterComponent />
         <MonthProvider month={householdMonth} setMonth={setHouseholdMonth} setYear={setHouseholdYear}>
-            <h1 className="text-2xl font-bold mc-4">⚪️ 家計簿 ⚪️</h1>
+            <PageTitle title={"⚪️ 家計簿 ⚪️"} />
 
             <YearProvider year={householdYear} setYear={setHouseholdYear}>
                 <YearPicker />

@@ -4,6 +4,7 @@
 
 import React, { useState, useContext, useCallback, useEffect } from 'react'
 import { LineChartComponent, PieChartComponent } from '@components/Chart'
+import { PageTitle } from '@components/Title'
 import Loader from '@components/Loader'
 
 import { YearProvider, YearContext } from '@components/YearPicker'
@@ -55,7 +56,7 @@ const Statistics = () => {
 
     return (
         <>
-            <h1 className="text-2xl font-bold mc-4">🛀 統計 🛀</h1>
+            <PageTitle title={"🛀 統計 🛀"} />
             <div className="flex justify-left">
                 <YearProvider year={statisticsYear} setYear={setStatisticsYear}>
                     <YearPicker />

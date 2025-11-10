@@ -15,6 +15,7 @@ import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import { PageTitle } from '@components/Title'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
 import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByTime, validateFromTimeAndToTime } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
@@ -527,7 +528,7 @@ const Schedule = () => {
     return (
         <>
             <MonthProvider month={scheduleMonth} setMonth={setScheduleMonth} setYear={setScheduleYear}>
-                <h1 className="text-2xl font-bold mc-4">🦀 スケジュール 🦀</h1>
+                <PageTitle title={"🦀 スケジュール 🦀"} />
 
                 <YearProvider year={scheduleYear} setYear={setScheduleYear}>
                     <YearPicker />

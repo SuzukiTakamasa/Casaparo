@@ -5,6 +5,7 @@
 import React, { useState } from 'react'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import { Result } from '@utils/interfaces'
+import { PageTitle } from '@components/Title'
 import patchList from './patch_list'
 
 const Patch = () => {
@@ -27,7 +28,7 @@ const Patch = () => {
 
     return (
         <>
-            <h1 className="text-2xl font-bold mb-4">🛠️ 開発者パッチ 🛠️</h1>
+            <PageTitle title={"🛠️ 開発者パッチ 🛠️"} />
             <div className="container mx-auto p-4">
                 <table className="table-auto min-w-full mt-4">
                     <thead>
