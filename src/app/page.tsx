@@ -73,7 +73,7 @@ export default function Home() {
   const fetchAnniversaries = useCallback(async() => {
     const anniversaries = await client.get<AnniversaryResponse>(`/v2/anniversary/today_or_tomorrow/${month}/${today}`)
     setAnniversaries(anniversaries.data || [])
-  }, [])
+  }, [month, today])
   const fetchInventories = useCallback(async () => {
     const inventories = await client.get<InventoryResponse>('/v2/inventory/empty')
     setInventories(inventories.data || [])
