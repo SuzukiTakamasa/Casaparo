@@ -8,6 +8,7 @@ import Image from 'next/image'
 import DOMPurify from 'dompurify'
 import { APIClient } from '@utils/api_client'
 import { TextLinkToBackToPreviousPage } from '@components/TextLink'
+import SafeHTMLRenderer from '@components/SafeHTMLRenderer'
 import { WikiData } from '@utils/interfaces'
 import { convertUrlsToLinks } from '@utils/utility_function'
 
@@ -38,7 +39,7 @@ const WikiDetail = () => {
                 <h1 className="text-2xl font-bold">{wikiDetail.title}</h1>
                 {wikiDetail.image_url !== "" && <Image src={wikiDetail.image_url} width={150} height={150} alt={wikiDetail.title} />}
                 <div className="text-lg mt-8">
-                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(wikiDetail.content), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
+                    <SafeHTMLRenderer className="mb-2" description={wikiDetail.content} />
                 </div>
             </div>
         </>

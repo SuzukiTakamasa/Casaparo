@@ -6,7 +6,6 @@ import React, { useEffect, useState, useCallback, useContext } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
-import DOMPurify from 'dompurify'
 
 import { YearContext } from '@components/YearPicker'
 import { MonthContext } from '@components/MonthPaginator'
@@ -15,11 +14,12 @@ import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
+import SafeHTMLRenderer from '@components/SafeHTMLRenderer'
 import { CreatedBy } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/interfaces'
-import { convertUrlsToLinks, setCreatedByStr, setStatusStr, setPriorityStr, splitYearMonthDayStr,
+import { setCreatedByStr, setStatusStr, setPriorityStr, splitYearMonthDayStr,
          getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
@@ -504,7 +504,7 @@ const TaskDetail = () => {
                 <div className="rounded-lg overflow-hidden shadow-lg bg-white p-1 mt-1">
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300">
-                            <div className="mb-2" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(taskDetail.description), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
+                            <SafeHTMLRenderer className="mb-2" description={taskDetail.description} />
                         </div>
                         <table className="mt-2">
                             <tbody>
@@ -592,7 +592,7 @@ const TaskDetail = () => {
                         <div className="flex justify-left space-x-2">
                             <div className="text-lg">{setCreatedByStr(taskComment.created_by)}</div>
                             <div className="rounded-lg overflow-hidden shadow-lg bg-green-500 p-1">
-                                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(convertUrlsToLinks(taskComment.comment), { ADD_URI_SAFE_ATTR: ['target', 'rel'] })}} />
+                                <SafeHTMLRenderer description={taskComment.comment} />
                                 <div className="flex justify-right space-x-1">
                                     <EditButton
                                         onClick={() => handleOpenUpdateTaskCommentDialog({
