@@ -5,12 +5,10 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
-import DOMPurify from 'dompurify'
 import { APIClient } from '@utils/api_client'
 import { TextLinkToBackToPreviousPage } from '@components/TextLink'
 import SafeHTMLRenderer from '@components/SafeHTMLRenderer'
 import { WikiData } from '@utils/interfaces'
-import { convertUrlsToLinks } from '@utils/utility_function'
 
 
 const client = new APIClient()
