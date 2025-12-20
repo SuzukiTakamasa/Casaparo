@@ -27,6 +27,48 @@ body {
 }
 
 /* Description styles */
+.description h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.description h2 {
+  font-size: 1.75rem;
+  font-weight: bold;
+  margin-bottom: 0.875rem;
+  line-height: 1.25;
+}
+
+.description h3 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.description h4 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 0.625rem;
+  line-height: 1.35;
+}
+
+.description h5 {
+  font-size: 1.125rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.description h6 {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
 .description ol {
   list-style-type: decimal;
   padding-left: 1.5rem;
