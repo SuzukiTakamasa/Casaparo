@@ -188,7 +188,7 @@ const Task = () => {
         setId(0)
         setTitle("")
         setStatus(TaskConstants.Status.NEW)
-        setPriority(0)
+        setPriority(TaskConstants.Priority.LOW)
         setDescription("")
         setCreatedBy(null)
         setCreatedByT(false)

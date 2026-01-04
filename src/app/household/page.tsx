@@ -112,7 +112,7 @@ const Household = () => {
         setNewItemName("")
         setNewAmount("")
         setIsDefault(false)
-        setIsOwner(1)
+        setIsOwner(HouseholdConstants.IsOwner.OWNER)
         setVersion(1)
         setIsUpdate(false)
         setNewItemNameValidMsg("")
