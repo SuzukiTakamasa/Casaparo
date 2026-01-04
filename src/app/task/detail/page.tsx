@@ -15,7 +15,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import SafeHTMLRenderer from '@components/SafeHTMLRenderer'
-import { CreatedBy } from '@utils/constants'
+import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/interfaces'
@@ -30,7 +30,7 @@ const client = new APIClient()
 
 
 const TaskDetail = () => {
-    const [taskDetail, setTaskDetail] = useState<TaskData>({id: 0, title: "", status: 0, priority: 0, description: "", created_by: 0, updated_at: "", due_date: "", parent_task_id: 0, version: 0})
+    const [taskDetail, setTaskDetail] = useState<TaskData>({id: 0, title: "", status: TaskConstants.Status.NEW, priority: TaskConstants.Priority.LOW, description: "", created_by: CreatedBy.Y, updated_at: "", due_date: "", parent_task_id: 0, version: 0})
 
     const [showTaskCommentDialog, setShowTaskCommentDialog] = useState(false)
     const [isUpdateTaskComment, setIsUpdateTaskComment] = useState(false)
@@ -103,7 +103,7 @@ const TaskDetail = () => {
             isValid = false
             setRelatedSubTaskCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
         }
-        if (relatedSubTaskStatus !== 2 && getDate(year, month, today) > getDate(relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay)) {
+        if (relatedSubTaskStatus !== TaskConstants.Status.COMPLETED && getDate(year, month, today) > getDate(relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay)) {
             isValid = false
             setRelatedSubTaskDueDateValidMsg("本日より後の日付を設定してください。")
         }
@@ -188,8 +188,8 @@ const TaskDetail = () => {
         setIsUpdateRelatedSubTask(false)
         setRelatedSubTaskId(0)
         setRelatedSubTaskTitle("")
-        setRelatedSubTaskStatus(0)
-        setRelatedSubTaskPriority(0)
+        setRelatedSubTaskStatus(TaskConstants.Status.NEW)
+        setRelatedSubTaskPriority(TaskConstants.Priority.LOW)
         setRelatedSubTaskDescription("")
         setRelatedSubTaskCreatedBy(CreatedBy.T)
         setRelatedSubTaskDueDate("")
