@@ -17,7 +17,7 @@ import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
 import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
-import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, getMonthArray, sortSchedulesByTime, validateFromTimeAndToTime } from '@utils/utility_function'
+import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, MonthArray, sortSchedulesByTime, validateFromTimeAndToTime } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
 
 
@@ -76,10 +76,15 @@ const Schedule = () => {
     const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
 
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
+    const [monthDaysArrayFromDate, setMonthDaysArrayFromDate] = useState<number[]>([])
+    const [monthDaysArrayToDate, setMonthDaysArrayToDate] = useState<number[]>([])
     const [weekDaysArray, setWeekDaysArray] = useState<number[]>([])
     const [isMultipleDays, setIsMultipleDays] = useState(false)
     const [isNotified, setIsNotified] = useState(false)
     const [isSubscribed, setIsSubscribed] = useState(false)
+
+    const numberOfDaysFromDate = getNumberOfDays(fromYear, fromMonth)
+    const numberOfDaysToDate = getNumberOfDays(toYear, toMonth)
 
     const [isBlocking, setIsBlocking] = useState(false)
 
@@ -459,13 +464,14 @@ const Schedule = () => {
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
-        setMonthDaysArray([])
-        const darr = []
-            for (let d = 1; d <= numberOfDays; d++) {
-                darr.push(d)
-            }
-        setMonthDaysArray(darr)
+        setMonthDaysArray(Array.from({ length: numberOfDays}, (_, i) => i + 1))
     }, [numberOfDays])
+    const handleGenerateMonthDaysArrayFromDate = useCallback(() => {
+        setMonthDaysArrayFromDate(Array.from({ length: numberOfDaysFromDate}, (_, i) => i + 1))
+    }, [numberOfDaysFromDate])
+    const handleGenerateMonthDaysArrayToDate = useCallback(() => {
+        setMonthDaysArrayToDate(Array.from({ length: numberOfDaysToDate}, (_, i) => i + 1))
+    }, [numberOfDaysToDate])
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
         const darr = []
@@ -508,7 +514,12 @@ const Schedule = () => {
     useEffect(() => {
         handleGenerateMonthDaysArray()
         handleGenerateWeekDaysArray()
-    }, [handleGenerateMonthDaysArray, handleGenerateWeekDaysArray])
+        handleGenerateMonthDaysArrayFromDate()
+        handleGenerateMonthDaysArrayToDate()
+    }, [handleGenerateMonthDaysArray,
+        handleGenerateWeekDaysArray,
+        handleGenerateMonthDaysArrayFromDate,
+        handleGenerateMonthDaysArrayToDate])
 
     useEffect(() => {
         const newCreatedBy = handleSetCreatedBy()
@@ -575,7 +586,7 @@ const Schedule = () => {
                                             value={fromMonth}
                                             onChange={e => setFromMonth(Number(e.target.value))}
                                         >
-                                            {getMonthArray().map((m, i) => (
+                                            {MonthArray.map((m, i) => (
                                                 <option key={i} value={m}>{`${m}月`}</option>
                                         ))}
                                         </select>
@@ -587,7 +598,7 @@ const Schedule = () => {
                                             value={fromDate}
                                             onChange={e => setFromDate(Number(e.target.value))}
                                         >
-                                            {monthDaysArray.map((d, i) => (
+                                            {monthDaysArrayFromDate.map((d, i) => (
                                                 <option key={i} value={d}>{`${d}日(${getWeekDay(fromYear, fromMonth, d)})`}</option>
                                         ))}
                                         </select>
@@ -614,7 +625,7 @@ const Schedule = () => {
                                                 value={toMonth}
                                                 onChange={e => setToMonth(Number(e.target.value))}
                                             >
-                                                {getMonthArray().map((m, i) => (
+                                                {MonthArray.map((m, i) => (
                                                     <option key={i} value={m}>{`${m}月`}</option>
                                             ))}
                                             </select>
@@ -626,7 +637,7 @@ const Schedule = () => {
                                                 value={toDate}
                                                 onChange={e => setToDate(Number(e.target.value))}
                                             >
-                                                {monthDaysArray.map((d, i) => (
+                                                {monthDaysArrayToDate.map((d, i) => (
                                                     <option key={i} value={d}>{`${d}日(${getWeekDay(toYear, toMonth, d)})`}</option>
                                             ))}
                                             </select>
