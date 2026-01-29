@@ -12,7 +12,7 @@ import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
-import { getMonthArray, getDateArray } from '@utils/utility_function'
+import { MonthArray, getDateArray } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -458,7 +458,7 @@ const Setting = () => {
                                             value={anniversaryMonth}
                                             onChange={e => setAnniversaryMonth(Number(e.target.value))}
                                         >
-                                            {getMonthArray().map((m, i) => (
+                                            {MonthArray.map((m, i) => (
                                                 <option key={i} value={m}>{`${m}月`}</option>
                                             ))}
                                         </select>

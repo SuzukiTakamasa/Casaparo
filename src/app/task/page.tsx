@@ -17,7 +17,7 @@ import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse } from '@utils/interfaces'
-import { setStatusStr, getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime,
+import { setStatusStr, getToday, getDateStr, getNumberOfDays, getWeekDay, MonthArray, getCurrentDateTime,
          splitYearMonthDayStr, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
@@ -102,7 +102,7 @@ const Task = () => {
             isValid = false
             setCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
         }
-        if (status !== TaskConstants.Status.COMPLETED && getDate(year, month, today) > getDate(dueDateYear, dueDateMonth, dueDateDay)) {
+        if (status !== TaskConstants.Status.COMPLETED && getDateStr(year, month, today) > getDateStr(dueDateYear, dueDateMonth, dueDateDay)) {
             isValid = false
             setDueDateValidMsg("本日より後の日付を設定してください。")
         }
@@ -435,7 +435,7 @@ const Task = () => {
                                 value={dueDateMonth}
                                 onChange={e => setDueDateMonth(Number(e.target.value))}
                             >
-                                {getMonthArray().map((m, i) => (
+                                {MonthArray.map((m, i) => (
                                     <option key={i} value={m}>{`${m}月`}</option>
                             ))}
                             </select>

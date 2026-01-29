@@ -20,7 +20,7 @@ import { CreatedBy, TaskConstants } from '@utils/constants'
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/interfaces'
 import { setCreatedByStr, setStatusStr, setPriorityStr, splitYearMonthDayStr,
-         getToday, getDate, getNumberOfDays, getWeekDay, getMonthArray, getCurrentDateTime } from '@utils/utility_function'
+         getToday, getDateStr, getNumberOfDays, getWeekDay, MonthArray, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
@@ -103,7 +103,7 @@ const TaskDetail = () => {
             isValid = false
             setRelatedSubTaskCreatedByValidMsg("いずれかまたは両方の登録者を選択してください。")
         }
-        if (relatedSubTaskStatus !== TaskConstants.Status.COMPLETED && getDate(year, month, today) > getDate(relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay)) {
+        if (relatedSubTaskStatus !== TaskConstants.Status.COMPLETED && getDateStr(year, month, today) > getDateStr(relatedSubTaskDueDateYear, relatedSubTaskDueDateMonth, relatedSubTaskDueDateDay)) {
             isValid = false
             setRelatedSubTaskDueDateValidMsg("本日より後の日付を設定してください。")
         }
@@ -424,7 +424,7 @@ const TaskDetail = () => {
                                 value={relatedSubTaskDueDateMonth}
                                 onChange={e => setRelatedSubTaskDueDateMonth(Number(e.target.value))}
                             >
-                                {getMonthArray().map((m, i) => (
+                                {MonthArray.map((m, i) => (
                                     <option key={i} value={m}>{`${m}月`}</option>
                             ))}
                             </select>

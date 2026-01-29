@@ -40,7 +40,7 @@ export const getToday = (): number => {
     return new Date().getDate()
 }
 
-export const getDate = (year: number, month: number, day: number): Date => {
+export const getDateStr = (year: number, month: number, day: number): Date => {
     return new Date(`${year}-${month}-${day}`)
 }
 
@@ -51,7 +51,7 @@ export const splitYearMonthDayStr = (yyyymmddStr: string): readonly number[] & {
 
 export const _getCurrentDateAndDueDate = (dueDateStr: string): readonly Date[] & { length: 2} => {
     const [year, month, day] = splitYearMonthDayStr(dueDateStr)
-    const dueDate = getDate(year, month, day)
+    const dueDate = getDateStr(year, month, day)
     const currentDate = new Date()
     return [currentDate, dueDate] as const
 } 
@@ -88,9 +88,7 @@ export const getWeekDay = (year: number, month: number, day: number): string => 
     return weekDays[weekDayIndex]
 }
 
-export const getMonthArray = (): number[] & { length: 12 } => {
-    return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const
-}
+export const MonthArray = Array.from({ length: 12}, (_, i) => i + 1)
 
 export const getDateArray = (month: number): number[] => {
     const dateArray = []
