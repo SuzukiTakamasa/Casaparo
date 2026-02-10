@@ -17,7 +17,7 @@ const SlideAnimation = () => {
         {"🌸": isRarePattern ? "< ﾁﾒﾃｰ!!" : "< ﾊﾙｷﾀｰ!"},
         {"🐽": isRarePattern ? "< ﾌﾞｯﾌﾞｯ" : "< ﾌﾞ-!!"},
         {"⚔️": isRarePattern ? "< ﾋｴﾃｵﾛ~" : "< ｱﾀﾀﾏﾛ〜"},
-        {"⛄️": isRarePattern ? "< ﾏﾀ...ﾗｲ...ﾈﾝ" : "ｽﾉﾏﾛ!!"}
+        {"⛄️": isRarePattern ? "< ﾏﾀ...ﾗｲ...ﾈﾝ" : "< ｽﾉﾏﾛ!!"}
     ]
 
     const selectedFellow = casaparoFellows[fellowIndex]
