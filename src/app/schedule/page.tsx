@@ -10,14 +10,15 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse } from '@utils/interfaces'
+import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse, TaskData, TaskResponse } from '@utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
-import { APIClient, WebPushSubscriber, execExternalGetAPI} from '@utils/api_client'
-import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, MonthArray, sortSchedulesByTime, validateFromTimeAndToTime } from '@utils/utility_function'
+import Link from 'next/link'
+import { APIClient, WebPushSubscriber, execExternalGetAPI } from '@utils/api_client'
+import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, MonthArray, sortSchedulesByTime, validateFromTimeAndToTime, splitYearMonthDayStr } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
 
 
@@ -68,12 +69,13 @@ const Schedule = () => {
     const [toTime, setToTime] = useState("0:00")
     const [createdByT, setCreatedByT] = useState(false)
     const [createdByY, setCreatedByY] = useState(false)
-    const [createdBy, setCreatedBy] = useState<number|null>(null)
+    const [createdBy, setCreatedBy] = useState<number | null>(null)
     const [labelId, setLabelId] = useState(0)
     const [version, setVersion] = useState(1)
 
     const [labels, setLabels] = useState<LabelResponse>([])
     const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
+    const [tasks, setTasks] = useState<TaskResponse>([])
 
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     const [monthDaysArrayFromDate, setMonthDaysArrayFromDate] = useState<number[]>([])
@@ -101,12 +103,12 @@ const Schedule = () => {
                 dateColorStr += isHoliday ? "text-red-500 font-bold" : "text-blue-500 font-bold"
             case "日":
                 dateColorStr += "text-red-500 font-bold"
-            default: 
+            default:
                 dateColorStr += isHoliday ? "text-red-500 font-bold" : "text-white font-bold"
         }
 
         const getButtonColorStr = (schedule: ScheduleData) => {
-            switch(schedule.created_by) {
+            switch (schedule.created_by) {
                 case CreatedBy.TY:
                     return "bg-purple-600 hover:bg-purple-800"
                 case CreatedBy.T:
@@ -115,6 +117,19 @@ const Schedule = () => {
                     return "bg-pink-600 hover:bg-pink-800"
                 default:
                     return "bg-gray-600 hover:bg-gray-800"
+            }
+        }
+
+        const getButtonBorderColorStr = (task: TaskData) => {
+            switch (task.created_by) {
+                case CreatedBy.TY:
+                    return "border-purple-600"
+                case CreatedBy.T:
+                    return "border-blue-600"
+                case CreatedBy.Y:
+                    return "border-pink-600"
+                default:
+                    return "border-gray-600"
             }
         }
 
@@ -167,37 +182,42 @@ const Schedule = () => {
                             }
                         }
                     } else {
-                    isDisplayedFlag = true
+                        isDisplayedFlag = true
                     }
                 }
             }
             return isDisplayedFlag
-          }
-        
+        }
+
         const isAnniversary = (anniversary: AnniversaryData) => {
             return (month === anniversary.month &&
-                    day === anniversary.date)
+                day === anniversary.date)
         }
-    
+        const isTask = (task: TaskData) => {
+            const [taskYear, taskMonth, taskDay] = splitYearMonthDayStr(task.due_date)
+            return (year === taskYear &&
+                month === taskMonth &&
+                day === taskDay)
+        }
         return (
             <>
                 <td className="border-b py-1 flex-row justify-center items-center space-x-1 text-sm">
                     <div className="flex justify-left">
                         <div className={dateColorStr}>
-                        {`${day}日(${getWeekDay(year, month, day)})`}
+                            {`${day}日(${getWeekDay(year, month, day)})`}
                         </div>
                         <button
                             className="text-white ml-2"
                             onClick={() => handleOpenAddDialogWithPlueIcon(year, month, day)}
                         >
-                            <PlusIcon/>
+                            <PlusIcon />
                         </button>
                     </div>
                 </td>
                 <td className="border-b py-1 flex-col justify-center items-center space-x-1 text-sm">
                     {sortSchedulesByTime(schedules).map((schedule, i) => (
                         isDisplayed(schedule) &&
-                        <button 
+                        <button
                             key={i}
                             className={`${getButtonColorStr(schedule)} text-white py-1 px-2 m-1 rounded-full`}
                             onClick={() => handleOpenUpdateDialog({
@@ -226,6 +246,15 @@ const Schedule = () => {
                             className="bg-orange-600 hover:bg-orange-800 text-white py-1 px-2 m-1 rounded-full"
                         >
                             🎉{anniversary.description}
+                        </button>
+                    ))}
+                    {tasks.map((task, i) => (
+                        isTask(task) &&
+                        <button
+                            key={i}
+                            className={`${getButtonBorderColorStr(task)} bg-green-600 hover:bg-green-800 text-white py-1 px-2 m-1 rounded-full`}
+                        >
+                            📝{setCreatedByStr(task.created_by)}{<Link href={`/task/detail?id=${task.id}`} className="text-blue-700 hover:text-blue-900 font-bold hover:underline">{task.title}</Link>}
                         </button>
                     ))}
                 </td>
@@ -346,7 +375,7 @@ const Schedule = () => {
             behavior: 'smooth'
         })
     }
-    const handleOpenUpdateDialog = ({id, description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version}: ScheduleData) => {
+    const handleOpenUpdateDialog = ({ id, description, from_year, to_year, from_month, to_month, from_date, to_date, from_time, to_time, created_by, label_id, version }: ScheduleData) => {
         fetchLabels()
         setShowDialog(true)
         setId(id as number)
@@ -464,13 +493,13 @@ const Schedule = () => {
         await fetchSchedules()
     }
     const handleGenerateMonthDaysArray = useCallback(() => {
-        setMonthDaysArray(Array.from({ length: numberOfDays}, (_, i) => i + 1))
+        setMonthDaysArray(Array.from({ length: numberOfDays }, (_, i) => i + 1))
     }, [numberOfDays])
     const handleGenerateMonthDaysArrayFromDate = useCallback(() => {
-        setMonthDaysArrayFromDate(Array.from({ length: numberOfDaysFromDate}, (_, i) => i + 1))
+        setMonthDaysArrayFromDate(Array.from({ length: numberOfDaysFromDate }, (_, i) => i + 1))
     }, [numberOfDaysFromDate])
     const handleGenerateMonthDaysArrayToDate = useCallback(() => {
-        setMonthDaysArrayToDate(Array.from({ length: numberOfDaysToDate}, (_, i) => i + 1))
+        setMonthDaysArrayToDate(Array.from({ length: numberOfDaysToDate }, (_, i) => i + 1))
     }, [numberOfDaysToDate])
     const handleGenerateWeekDaysArray = useCallback(() => {
         setWeekDaysArray([])
@@ -482,21 +511,25 @@ const Schedule = () => {
         const startWeekDate = today > dateIndex ? today - dateIndex : 1
         const endWeekDate = today > dateIndex ? startWeekDate + 6 : 7 - dateIndex1
 
-            for (let d = startWeekDate; d <= endWeekDate; d++) {
-                darr.push(d)
-                if (d === numberOfDays) {
-                    break
-                }
+        for (let d = startWeekDate; d <= endWeekDate; d++) {
+            darr.push(d)
+            if (d === numberOfDays) {
+                break
             }
+        }
         setWeekDaysArray(darr)
     }, [year, month, today, numberOfDays])
     const handleGetHolidaysList = useCallback(async () => {
-        const holidayList = await execExternalGetAPI<{[key: string]: string}>(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
+        const holidayList = await execExternalGetAPI<{ [key: string]: string }>(`https://holidays-jp.github.io/api/v1/${scheduleYear}/date.json`)
         setHolidays(holidayList.data ? Object.keys(holidayList.data) : [])
     }, [scheduleYear])
     const fetchAnniversaries = useCallback(async () => {
         const anniversaries = await client.get<AnniversaryResponse>('/v2/anniversary')
         setAnniversaries(anniversaries.data || [])
+    }, [])
+    const fetchTasks = useCallback(async () => {
+        const tasks = await client.get<TaskResponse>('/v2/task')
+        setTasks(tasks.data || [])
     }, [])
     const fetchIsSubscribed = useCallback(async () => {
         const res = await subscriber.fetchSubscription()
@@ -509,7 +542,8 @@ const Schedule = () => {
         handleGetHolidaysList()
         fetchSchedules()
         fetchAnniversaries()
-    }, [handleGetHolidaysList, fetchSchedules, fetchAnniversaries])
+        fetchTasks()
+    }, [handleGetHolidaysList, fetchSchedules, fetchAnniversaries, fetchTasks])
 
     useEffect(() => {
         handleGenerateMonthDaysArray()
@@ -550,7 +584,7 @@ const Schedule = () => {
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4"
                         onClick={handleOpenAddDialog}
                     >
-                    登録
+                        登録
                     </button>
                     <MonthPaginator className="text-lg font-bold mx-4" />
 
@@ -567,51 +601,12 @@ const Schedule = () => {
                                     />
                                     <ValidationErrorMessage message={descriptionValidMsg} />
                                     <div className="flex justify-center">
-                                    <label className="text-black">
-                                        <span>年{isMultipleDays && '(開始年)'}</span>
-                                        <select
-                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                            value={fromYear}
-                                            onChange={e => setFromYear(Number(e.target.value))}
-                                        >
-                                            <option value={year - 1}>{`${year - 1}年`}</option>
-                                            <option value={year}>{`${year}年`}</option>
-                                            <option value={year + 1}>{`${year + 1}年`}</option>
-                                        </select>
-                                    </label>
-                                    <label className="text-black">
-                                        <span>月{isMultipleDays && '(開始月)'}</span>
-                                        <select
-                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                            value={fromMonth}
-                                            onChange={e => setFromMonth(Number(e.target.value))}
-                                        >
-                                            {MonthArray.map((m, i) => (
-                                                <option key={i} value={m}>{`${m}月`}</option>
-                                        ))}
-                                        </select>
-                                    </label>
-                                    <label className="text-black">
-                                        <span>日付{isMultipleDays && '(開始日)'}</span>
-                                        <select
-                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                            value={fromDate}
-                                            onChange={e => setFromDate(Number(e.target.value))}
-                                        >
-                                            {monthDaysArrayFromDate.map((d, i) => (
-                                                <option key={i} value={d}>{`${d}日(${getWeekDay(fromYear, fromMonth, d)})`}</option>
-                                        ))}
-                                        </select>
-                                    </label>
-                                    </div>
-                                    {isMultipleDays &&
-                                    <div className="flex justify-center">
                                         <label className="text-black">
-                                            <span>年(終了年)</span>
+                                            <span>年{isMultipleDays && '(開始年)'}</span>
                                             <select
                                                 className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={toYear}
-                                                onChange={e => setToYear(Number(e.target.value))}
+                                                value={fromYear}
+                                                onChange={e => setFromYear(Number(e.target.value))}
                                             >
                                                 <option value={year - 1}>{`${year - 1}年`}</option>
                                                 <option value={year}>{`${year}年`}</option>
@@ -619,30 +614,69 @@ const Schedule = () => {
                                             </select>
                                         </label>
                                         <label className="text-black">
-                                            <span>月(終了月)</span>
+                                            <span>月{isMultipleDays && '(開始月)'}</span>
                                             <select
                                                 className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={toMonth}
-                                                onChange={e => setToMonth(Number(e.target.value))}
+                                                value={fromMonth}
+                                                onChange={e => setFromMonth(Number(e.target.value))}
                                             >
                                                 {MonthArray.map((m, i) => (
                                                     <option key={i} value={m}>{`${m}月`}</option>
-                                            ))}
+                                                ))}
                                             </select>
                                         </label>
                                         <label className="text-black">
-                                            <span>日付(終了日)</span>
+                                            <span>日付{isMultipleDays && '(開始日)'}</span>
                                             <select
                                                 className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={toDate}
-                                                onChange={e => setToDate(Number(e.target.value))}
+                                                value={fromDate}
+                                                onChange={e => setFromDate(Number(e.target.value))}
                                             >
-                                                {monthDaysArrayToDate.map((d, i) => (
-                                                    <option key={i} value={d}>{`${d}日(${getWeekDay(toYear, toMonth, d)})`}</option>
-                                            ))}
+                                                {monthDaysArrayFromDate.map((d, i) => (
+                                                    <option key={i} value={d}>{`${d}日(${getWeekDay(fromYear, fromMonth, d)})`}</option>
+                                                ))}
                                             </select>
                                         </label>
                                     </div>
+                                    {isMultipleDays &&
+                                        <div className="flex justify-center">
+                                            <label className="text-black">
+                                                <span>年(終了年)</span>
+                                                <select
+                                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                    value={toYear}
+                                                    onChange={e => setToYear(Number(e.target.value))}
+                                                >
+                                                    <option value={year - 1}>{`${year - 1}年`}</option>
+                                                    <option value={year}>{`${year}年`}</option>
+                                                    <option value={year + 1}>{`${year + 1}年`}</option>
+                                                </select>
+                                            </label>
+                                            <label className="text-black">
+                                                <span>月(終了月)</span>
+                                                <select
+                                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                    value={toMonth}
+                                                    onChange={e => setToMonth(Number(e.target.value))}
+                                                >
+                                                    {MonthArray.map((m, i) => (
+                                                        <option key={i} value={m}>{`${m}月`}</option>
+                                                    ))}
+                                                </select>
+                                            </label>
+                                            <label className="text-black">
+                                                <span>日付(終了日)</span>
+                                                <select
+                                                    className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                    value={toDate}
+                                                    onChange={e => setToDate(Number(e.target.value))}
+                                                >
+                                                    {monthDaysArrayToDate.map((d, i) => (
+                                                        <option key={i} value={d}>{`${d}日(${getWeekDay(toYear, toMonth, d)})`}</option>
+                                                    ))}
+                                                </select>
+                                            </label>
+                                        </div>
                                     }
                                     <ValidationErrorMessage message={yearValidMsg} />
                                     <ValidationErrorMessage message={monthValidMsg} />
@@ -657,39 +691,39 @@ const Schedule = () => {
                                     </label>
                                     <div className="flex justify-center">
                                         <label className="text-black mx-1">
-                                        <span>時刻(開始)</span>
-                                        <select
-                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                            value={fromTime}
-                                            onChange={e => {
-                                                setFromTime(e.target.value)
-                                                if (!isMultipleDays && !validateFromTimeAndToTime(e.target.value, toTime)) {
-                                                    setToTime(e.target.value)
-                                                }
-                                            }}
-                                        >
-                                            {getTimeArray().map((t, i) => (
-                                                <option key={i} value={t}>{t}</option>
-                                            ))}
-                                        </select>
+                                            <span>時刻(開始)</span>
+                                            <select
+                                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                value={fromTime}
+                                                onChange={e => {
+                                                    setFromTime(e.target.value)
+                                                    if (!isMultipleDays && !validateFromTimeAndToTime(e.target.value, toTime)) {
+                                                        setToTime(e.target.value)
+                                                    }
+                                                }}
+                                            >
+                                                {getTimeArray().map((t, i) => (
+                                                    <option key={i} value={t}>{t}</option>
+                                                ))}
+                                            </select>
                                         </label>
                                         <label className="text-black mx-1">
-                                        <span>時刻(終了)</span>
-                                        <select
-                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                            value={toTime}
-                                            onChange={e => setToTime(e.target.value)}
-                                        >
-                                            {isMultipleDays ?
-                                            getTimeArray().map((t, i) => (
-                                                <option key={i} value={t}>{t}</option>
-                                            ))
-                                            :
-                                            getTimeArray().filter(t => validateFromTimeAndToTime(fromTime, t)).map((t, i) => (
-                                                <option key={i} value={t}>{t}</option>
-                                            ))
-                                            }
-                                        </select>
+                                            <span>時刻(終了)</span>
+                                            <select
+                                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                value={toTime}
+                                                onChange={e => setToTime(e.target.value)}
+                                            >
+                                                {isMultipleDays ?
+                                                    getTimeArray().map((t, i) => (
+                                                        <option key={i} value={t}>{t}</option>
+                                                    ))
+                                                    :
+                                                    getTimeArray().filter(t => validateFromTimeAndToTime(fromTime, t)).map((t, i) => (
+                                                        <option key={i} value={t}>{t}</option>
+                                                    ))
+                                                }
+                                            </select>
                                         </label>
                                     </div>
                                     <div className="text-black">作成者</div>
@@ -698,29 +732,29 @@ const Schedule = () => {
                                             type="checkbox"
                                             checked={createdByT}
                                             onClick={() => setCreatedByT(!createdByT)}
-                                            />
-                                            <span className="mr-8">🥺</span>
+                                        />
+                                        <span className="mr-8">🥺</span>
                                         <input
                                             type="checkbox"
                                             checked={createdByY}
                                             onClick={() => setCreatedByY(!createdByY)}
-                                            />
-                                            <span>🥺ྀི</span>
+                                        />
+                                        <span>🥺ྀི</span>
                                     </div>
                                     <ValidationErrorMessage message={createdByValidMsg} />
                                     <div>
                                         <label className="text-black">
-                                        <span>ラベル(任意)</span>
-                                        <select
-                                            className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                            value={labelId}
-                                            onChange={e => setLabelId(Number(e.target.value))}
-                                        >
-                                            <option value={0}>ラベルを選択</option>
-                                            {labels.map((l, i) => (
-                                                <option key={i} value={l.id}>{`${l.label} ${l.name}`}</option>
-                                            ))}
-                                        </select>
+                                            <span>ラベル(任意)</span>
+                                            <select
+                                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                value={labelId}
+                                                onChange={e => setLabelId(Number(e.target.value))}
+                                            >
+                                                <option value={0}>ラベルを選択</option>
+                                                {labels.map((l, i) => (
+                                                    <option key={i} value={l.id}>{`${l.label} ${l.name}`}</option>
+                                                ))}
+                                            </select>
                                         </label>
                                     </div>
                                     {/*<div>
@@ -740,7 +774,7 @@ const Schedule = () => {
                                         onClick={isUpdate ? handleUpdateSchedule : handleAddSchedule}
                                         disabled={isBlocking}
                                     >
-                                        {isBlocking ? <Loader size={20} isLoading={isBlocking}/> : isUpdate ? "変更" : "登録"}
+                                        {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdate ? "変更" : "登録"}
                                     </button>
                                     <button
                                         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
@@ -748,7 +782,7 @@ const Schedule = () => {
                                     >
                                         キャンセル
                                     </button>
-                                    {isUpdate && 
+                                    {isUpdate &&
                                         <button
                                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
                                             onClick={handleDeleteSchedule}
@@ -763,39 +797,39 @@ const Schedule = () => {
 
                     <div className="flex justify-center">
                         <button
-                            className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${activeTab === 'month' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
+                            className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${activeTab === 'month' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100'}`}
                             onClick={() => setActiveTab('month')}
                         >
                             月
                         </button>
                         <button
-                            className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${!(year === scheduleYear && month === scheduleMonth) && 'opacity-50 cursor-not-allowed'} ${activeTab === 'week' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100' }`}
+                            className={`px-4 py-2 text-sm font-medium rounded-t lg border-b-2 ${!(year === scheduleYear && month === scheduleMonth) && 'opacity-50 cursor-not-allowed'} ${activeTab === 'week' ? 'bg-blue-100 border-blue-500 text-blue-700' : 'border-transparent nover:bg-gray-100'}`}
                             onClick={() => setActiveTab('week')}
                             disabled={!(year === scheduleYear && month === scheduleMonth)}
                         >
                             週
                         </button>
                     </div>
-                        <table className="table-auto min-w-full mt-4">
-                            <thead>
-                                <tr>
-                                    <th className="border-b-2 py-1 bg-blue-900 text-sm">日付</th>
-                                    <th className="border-b-2 py-1 bg-blue-900 text-sm">予定</th>
+                    <table className="table-auto min-w-full mt-4">
+                        <thead>
+                            <tr>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">日付</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm">予定</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {activeTab === "month" && monthDaysArray.map((d, i) => (
+                                <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && today === d && "bg-gray-500"}`}>
+                                    {getCalendar(scheduleYear, scheduleMonth, d)}
                                 </tr>
-                            </thead>
-                            <tbody>
-                                {activeTab === "month" && monthDaysArray.map((d, i) => (
-                                    <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && today === d && "bg-gray-500"}`}>
-                                        {getCalendar(scheduleYear, scheduleMonth, d)}
-                                    </tr>
-                                ))}
-                                {activeTab === "week" && weekDaysArray.map((d, i) => (
-                                    <tr key={i} className={`${today === d && "bg-gray-500"}`}>
-                                        {getCalendar(scheduleYear, scheduleMonth, d)}
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                            ))}
+                            {activeTab === "week" && weekDaysArray.map((d, i) => (
+                                <tr key={i} className={`${today === d && "bg-gray-500"}`}>
+                                    {getCalendar(scheduleYear, scheduleMonth, d)}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
             </MonthProvider>
             <ToasterComponent />
