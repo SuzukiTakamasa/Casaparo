@@ -22,6 +22,9 @@ jobs:
       with:
         node-version: '20'
 
+    - name: Set npm registry
+      run: npm config set registry https://npm.flatt.tech/
+
     - name: Install Wrangler CLI
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
       working-directory: ${{ github.workspace }}/api-server-wasm
@@ -50,6 +53,9 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
+
+    - name: Set npm registry
+      run: npm config set registry https://npm.flatt.tech/
 
     - name: Install Wrangler CLI
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
@@ -83,6 +89,9 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '20'
+
+    - name: Set npm registry
+      run: npm config set registry https://npm.flatt.tech/
 
     - name: Install Wrangler CLI
       run: npm uninstall -g @cloudflare/wrangler && npm install -g wrangler
