@@ -28,7 +28,7 @@ const client = new APIClient()
 const getTimeArray = (): string[] => {
     const timeArray = []
     for (let h = 0; h <= 23; h++) {
-        for (let m = 0; m <= 30; m += 30) {
+        for (let m = 0; m <= 45; m += 15) {
             timeArray.push(`${h}:${m === 0 ? '00' : m}`)
         }
     }
