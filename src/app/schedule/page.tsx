@@ -24,18 +24,6 @@ import { CreatedBy } from '@utils/constants'
 
 const client = new APIClient()
 
-
-const getTimeArray = (): string[] => {
-    const timeArray = []
-    for (let h = 0; h <= 23; h++) {
-        for (let m = 0; m <= 45; m += 15) {
-            timeArray.push(`${h}:${m === 0 ? '00' : m}`)
-        }
-    }
-    timeArray.push("未定")
-    return timeArray
-}
-
 const Schedule = () => {
     const [showDialog, setShowDialog] = useState(false)
     const [isUpdate, setIsUpdate] = useState(false)
@@ -89,9 +77,22 @@ const Schedule = () => {
     const numberOfDaysToDate = getNumberOfDays(toYear, toMonth)
 
     const [isBlocking, setIsBlocking] = useState(false)
+    const [isEvery15Mins, setIsEvery15Mins] = useState(false)
 
     const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
+    const getTimeArray = (): string[] => {
+        const timeArray = []
+        const everyMins = isEvery15Mins ? 15 : 30
+        const maxMins = isEvery15Mins ? 45 : 30
+        for (let h = 0; h <= 23; h++) {
+            for (let m = 0; m <= maxMins; m += everyMins) {
+                timeArray.push(`${h}:${m === 0 ? '00' : m}`)
+            }
+        }
+        timeArray.push("未定")
+        return timeArray
+    }
 
     const getCalendar = (year: number, month: number, day: number) => {
 
@@ -427,6 +428,9 @@ const Schedule = () => {
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
     }
+    const handleIsEvery15Mins = () => {
+        setIsEvery15Mins(!isEvery15Mins)
+    }
     const fetchSchedules = useCallback(async () => {
         const schedules = await client.get<ScheduleResponse>(`/v2/schedule`)
         setSchedules(schedules.data || [])
@@ -528,7 +532,7 @@ const Schedule = () => {
         setAnniversaries(anniversaries.data || [])
     }, [])
     const fetchTasks = useCallback(async () => {
-        const tasks = await client.get<TaskResponse>('/v2/task')
+        const tasks = await client.get<TaskResponse>('/v2/task/not_completed')
         setTasks(tasks.data || [])
     }, [])
     const fetchIsSubscribed = useCallback(async () => {
@@ -726,6 +730,14 @@ const Schedule = () => {
                                             </select>
                                         </label>
                                     </div>
+                                    <label className="flex justify-center space-x-2 text-black">
+                                        <input
+                                            type="checkbox"
+                                            checked={isEvery15Mins}
+                                            onChange={handleIsEvery15Mins}
+                                        />
+                                        <span>15分毎の時刻にする</span>
+                                    </label>
                                     <div className="text-black">作成者</div>
                                     <div className="text-3xl text-center">
                                         <input
