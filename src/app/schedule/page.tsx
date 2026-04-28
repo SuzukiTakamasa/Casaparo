@@ -424,6 +424,7 @@ const Schedule = () => {
         setDescriptionValidMsg("")
         setCreatedByValidMsg("")
         setIsNotified(false)
+        setIsEvery15Mins(false)
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
