@@ -13,6 +13,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
+import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 import { CreatedBy, TaskConstants } from '@utils/constants'
 
 import { APIClient } from '@utils/api_client'
@@ -282,7 +283,7 @@ const Task = () => {
             <>
                 {handleFilterDataWithPagination<TaskData>(handleDisplayTasks(tasks)).map((task, i) => (
                     <tr key={i}>
-                        <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                        <td className="border-b py-1 flex-row justify-center items-center space-x-1 whitespace-nowrap">
                             <EditButton
                                 onClick={() => handleOpenUpdateDialog({
                                     id: task.id,
@@ -321,8 +322,8 @@ const Task = () => {
                                 </div>
                             </div>
                         </td>
-                        <td className="border-b px-1 py-1 text-center text-sm">{setStatusStr(task.status)}</td>
-                        <td className="border-b px-1 py-1 text-center text-xs">
+                        <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{setStatusStr(task.status)}</td>
+                        <td className="border-b px-1 py-1 text-center text-xs whitespace-nowrap">
                             {task.due_date}
                             {task.status !== TaskConstants.Status.COMPLETED && isWithinAWeekFromDueDate(task) && <div className="text-yellow-500">期限間近</div>}
                             {task.status !== TaskConstants.Status.COMPLETED && isOverDueDate(task) && <div className="text-red-500">期限切れ</div>}
@@ -502,19 +503,19 @@ const Task = () => {
                 </div>
             )}
             <ValidationErrorMessage message={hasChildTaskErrTxt} />
-            <table className="table-auto min-w-full mt-4">
+            <HorizontallyScrollableTable>
                 <thead>
                     <tr>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm"></th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">タイトル</th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">ステータス</th>
-                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm">期限</th>                  
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm whitespace-nowrap"></th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm whitespace-nowrap">タイトル</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm whitespace-nowrap">ステータス</th>
+                        <th className="border-b-2 py-1 bg-blue-900 text-white text-sm whitespace-nowrap">期限</th>                  
                     </tr>
                 </thead>
                 <tbody>
                     <PaginatedTasks />
                 </tbody>
-            </table>
+            </HorizontallyScrollableTable>
         </div>
         <ToasterComponent />
         </GeneralPaginationProvider>

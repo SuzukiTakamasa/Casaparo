@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback, useContext } from 'react'
 import { APIClient } from '@utils/api_client'
 import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse } from '@utils/interfaces'
 
-import { adaptTwoPointReader, setCreatedByStr, boolToInt, intToBool } from '@utils/utility_function'
+import { adaptThreePointReader, setCreatedByStr, boolToInt, intToBool } from '@utils/utility_function'
 import { CheckBadgeIcon, PlusIcon, MinusIcon } from '@components/Heroicons'
 import { EditButton, DeleteButton } from '@components/Buttons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
@@ -702,17 +702,17 @@ const Inventory = () => {
                     <table className="table-auto min-w-full mt-4">
                         <thead>
                             <tr>
-                                <th className="border-b-2 py-1 bg-blue-900"></th>
-                                <th className="border-b-2 py-1 bg-blue-900 text-sm">種別</th>
-                                <th className="border-b-2 py-1 bg-blue-900 text-sm">項目名</th>
-                                <th className="border-b-2 py-1 bg-blue-900 text-sm">個数</th>
-                                <th className="border-b-2 py-1 bg-blue-900 text-sm">登録者</th>
+                                <th className="border-b-2 py-1 bg-blue-900 whitespace-nowrap"></th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm whitespace-nowrap">種別</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm whitespace-nowrap">項目名</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm whitespace-nowrap">個数</th>
+                                <th className="border-b-2 py-1 bg-blue-900 text-sm whitespace-nowrap">登録者</th>
                             </tr>
                         </thead>
                         <tbody>
                         {handleDisaplySelectedTypeOfInventories(inventories).map((inventory, i) => (
                             <tr key={i} className={`${inventory.amount === 0 && "bg-red-900"}`}>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                <td className="border-b py-1 flex-row justify-center items-center space-x-1 whitespace-nowrap">
                                     <EditButton
                                         onClick={() => handleOpenUpdateInventoryDialog({
                                             id: inventory.id,
@@ -733,10 +733,10 @@ const Inventory = () => {
                                         })}
                                     />
                                 </td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{setInventoryTypesStr(inventory.types)}</td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(inventory.name, 10)}</td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{inventory.amount}</td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{setCreatedByStr(inventory.created_by)}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{setInventoryTypesStr(inventory.types)}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm">{inventory.name}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{inventory.amount}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{setCreatedByStr(inventory.created_by)}</td>
                             </tr>
                         ))}
                         </tbody>

@@ -11,6 +11,7 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
+import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 import { APIClient, WebPushSubscriber } from '@utils/api_client'
 import { MonthArray, getDateArray } from '@utils/utility_function'
 
@@ -398,18 +399,18 @@ const Setting = () => {
                 )}
 
                 <ValidationErrorMessage message={isUsedErrMsg} />
-                <table className="table-auto min-w-full mt-4">
+                <HorizontallyScrollableTable>
                     <thead>
                         <tr>
-                            <th className="border-b-2 py-1"></th>
-                            <th className="border-b-2 py-1">ラベル</th>
-                            <th className="border-b-2 py-1">ラベル名</th>
+                            <th className="border-b-2 py-1 whitespace-nowrap"></th>
+                            <th className="border-b-2 py-1 whitespace-nowrap">ラベル</th>
+                            <th className="border-b-2 py-1 whitespace-nowrap">ラベル名</th>
                         </tr>
                     </thead>
                     <tbody>
                         {labels.map((label, i) => (
                             <tr key={i}>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                <td className="border-b py-1 flex-row justify-center items-center space-x-1 whitespace-nowrap">
                                     <EditButton
                                         onClick={() => handleOpenUpdateLabelDialog({
                                             id: label.id,
@@ -427,12 +428,12 @@ const Setting = () => {
                                         })}
                                     />
                                 </td>
-                                <td className="border-b px-1 py-1 text-center">{label.label}</td>
+                                <td className="border-b px-1 py-1 text-center whitespace-nowrap">{label.label}</td>
                                 <td className="border-b px-1 py-1 text-center">{label.name}</td>
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </HorizontallyScrollableTable>
             </div>
 
             <div className="container mx-auto p-4">
@@ -504,18 +505,18 @@ const Setting = () => {
                     </div>
                 )}
 
-                <table className="table-auto min-w-full mt-4">
+                <HorizontallyScrollableTable>
                     <thead>
                         <tr>
-                            <th className="border-b-2 py-1"></th>
-                            <th className="border-b-2 py-1">日付</th>
-                            <th className="border-b-2 py-1">記念日</th>
+                            <th className="border-b-2 py-1 whitespace-nowrap"></th>
+                            <th className="border-b-2 py-1 whitespace-nowrap">日付</th>
+                            <th className="border-b-2 py-1 whitespace-nowrap">記念日</th>
                         </tr>
                     </thead>
                     <tbody>
                         {anniversaries.map((anniversary, i) => (
                             <tr key={i}>
-                            <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                            <td className="border-b py-1 flex-row justify-center items-center space-x-1 whitespace-nowrap">
                                 <EditButton
                                     onClick={() => handleOpenUpdateAnniversaryDialog({
                                         id: anniversary.id,
@@ -535,12 +536,12 @@ const Setting = () => {
                                     })}
                                 />
                             </td>
-                            <td className="border-b px-1 py-1 text-center">{`${anniversary.month}/${anniversary.date}`}</td>
+                            <td className="border-b px-1 py-1 text-center whitespace-nowrap">{`${anniversary.month}/${anniversary.date}`}</td>
                             <td className="border-b px-1 py-1 text-center">{anniversary.description}</td>
                         </tr>
                         ))}
                     </tbody>
-                </table>
+                </HorizontallyScrollableTable>
             </div>
 
             <div className="container mx-auto p-4">
@@ -587,11 +588,11 @@ const Setting = () => {
                 )}
 
                 <ValidationErrorMessage message={isUsedInventoryTypeErrMsg} />
-                <table className="table-auto min-w-full mt-4">
+                <HorizontallyScrollableTable>
                     <thead>
                         <tr>
-                            <th className="border-b-2 py-1"></th>
-                            <th className="border-b-2 py-1">在庫種別</th>
+                            <th className="border-b-2 py-1 whitespace-nowrap"></th>
+                            <th className="border-b-2 py-1 whitespace-nowrap">在庫種別</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -613,11 +614,11 @@ const Setting = () => {
                                         })}
                                     />
                                 </td>
-                                <td className="border-b px-1 py-1 text-center">{inventoryType.types}</td>
+                                <td className="border-b px-1 py-1 text-center whitespace-nowrap">{inventoryType.types}</td>
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </HorizontallyScrollableTable>
                 <h2 className="text-xl font-bold mt-8">Push通知</h2>
                 <div className="flex justify-between items-center mt-2">
                     <Toggle
