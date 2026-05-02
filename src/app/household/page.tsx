@@ -15,11 +15,12 @@ import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title' 
+import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 
 import { HouseholdData, HouseholdResponse, FixedAmount, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { APIClient } from '@utils/api_client'
-import { adaptTwoPointReader, setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { adaptThreePointReader, setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants'
 
 const client = new APIClient()
@@ -365,19 +366,19 @@ const Household = () => {
                     >
                         登録
                     </button>
-                <table className="table-auto min-w-full mt-4">
+                <HorizontallyScrollableTable>
                     <thead>
                         <tr>
                             <th className="border-b-2 py-1 bg-blue-900"></th>
-                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm">項目</th>
-                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm">金額</th>
-                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm">登録者</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm whitespace-nowrap">項目</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm whitespace-nowrap">金額</th>
+                            <th className="border-b-2 px-1 py-1 bg-blue-900 text-white text-sm whitespace-nowrap">登録者</th>
                         </tr>
                     </thead>
                     <tbody>
                         {households.map((household, i) => (
                             <tr key={i} className={`${household.is_default === HouseholdConstants.IsDefault.DEFAULT && "bg-gray-500"}`}>
-                                <td className="border-b py-1 flex-row justify-center items-center space-x-1">
+                                <td className="border-b py-1 flex-row justify-center items-center space-x-1 whitespace-nowrap">
                                     <EditButton
                                         onClick={() => handleOpenUpdateDialog({
                                             id: household.id,
@@ -398,13 +399,13 @@ const Household = () => {
                                         })}
                                     />
                                 </td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{adaptTwoPointReader(household.name, 10)}</td>
-                                <td className="border-b px-1 py-1 text-right text-sm">¥{household.is_owner === HouseholdConstants.IsOwner.OWNER ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
-                                <td className="border-b px-1 py-1 text-center text-sm">{setCreatedByStr(household.is_owner)}</td>  
+                                <td className="border-b px-1 py-1 text-center text-sm">{household.name}</td>
+                                <td className="border-b px-1 py-1 text-right text-sm whitespace-nowrap">¥{household.is_owner === HouseholdConstants.IsOwner.OWNER ? formatNumberWithCommas(household.amount) : `-${formatNumberWithCommas(household.amount)}`}</td>
+                                <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{setCreatedByStr(household.is_owner)}</td>  
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </HorizontallyScrollableTable>
                 </>
                 }
             </div>
