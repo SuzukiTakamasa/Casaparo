@@ -2,6 +2,9 @@
   "name": "casaparo",
   "version": "0.1.0",
   "private": true,
+  "overrides": {
+    "@fortawesome/fontawesome-common-types": "^6.5.1"
+  },
   "scripts": {
     "dev": "next dev",
     "prebuild": "node prebuild.js",
