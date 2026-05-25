@@ -592,7 +592,7 @@ const Schedule = () => {
                     >
                         登録
                     </button>
-                    <MonthPaginator className="text-lg font-bold mx-4" />
+                    <MonthPaginator className="text-lg font-bold" />
 
                     {showDialog && (
                         <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">

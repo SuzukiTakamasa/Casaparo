@@ -72,7 +72,7 @@ const Statistics = () => {
             </div>
             {mode === "month" &&
                 <MonthProvider month={statisticsMonth} setMonth={setStatisticsMonth} setYear={setStatisticsYear}>
-                    <MonthPaginator className="mt-2 ml-4 font-bold" />
+                    <MonthPaginator className="font-bold" />
                 </MonthProvider>
             }
             <div className="flex justify-center">

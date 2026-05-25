@@ -222,7 +222,7 @@ const Household = () => {
             </YearProvider>
 
             <div className="container mx-auto p-4">
-                <MonthPaginator className="text-lg font-bold mx-4" />
+                <MonthPaginator className="text-lg font-bold" />
                 {isLoading ?
                     <></>
                     :

@@ -3,7 +3,6 @@
 //export const runtime = 'edge'
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import Toggle from 'react-styled-toggle'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@utils/interfaces'
 import { EditButton, DeleteButton } from '@components/Buttons'
@@ -621,10 +620,15 @@ const Setting = () => {
                 </HorizontallyScrollableTable>
                 <h2 className="text-xl font-bold mt-8">Push通知</h2>
                 <div className="flex justify-between items-center mt-2">
-                    <Toggle
-                        checked={isSubscribed}
-                        onChange={handleSubscribeWebPushNotification}
-                    />
+                    <button
+                        type="button"
+                        role="switch"
+                        aria-checked={isSubscribed}
+                        onClick={handleSubscribeWebPushNotification}
+                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${isSubscribed ? 'bg-blue-500' : 'bg-gray-300'}`}
+                    >
+                        <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${isSubscribed ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
                 </div>
             </div>
             <ToasterComponent />
