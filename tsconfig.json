@@ -21,6 +21,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
+    "noUncheckedSideEffectImports": false,
     "plugins": [
       {
         "name": "next"
