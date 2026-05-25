@@ -16,7 +16,6 @@ import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import SafeHTMLRenderer from '@components/SafeHTMLRenderer'
 import { CreatedBy, TaskConstants } from '@utils/constants'
-import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/interfaces'

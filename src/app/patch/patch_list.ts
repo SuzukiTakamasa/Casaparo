@@ -1,4 +1,3 @@
-import { WikiData, WikiResponse, TaskData, TaskResponse } from '@utils/interfaces'
 import { Patches } from '@utils/interfaces'
 import { APIClient } from '@utils/api_client'
 const client  = new APIClient()

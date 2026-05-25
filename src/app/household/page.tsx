@@ -20,7 +20,7 @@ import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableT
 import { HouseholdData, HouseholdResponse, FixedAmount, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { APIClient } from '@utils/api_client'
-import { adaptThreePointReader, setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants'
 
 const client = new APIClient()
@@ -79,6 +79,7 @@ const Household = () => {
         setIsBlocking(true)
         const response = await addHousehold()
         setIsBlocking(false)
+        fetchFixedAmount()
         handleCloseDialog()
         APIResponseToast(response, "家計簿を登録しました。", "登録に失敗しました。")
     }
@@ -87,6 +88,7 @@ const Household = () => {
         setIsBlocking(true)
         const response = await updateHousehold()
         setIsBlocking(false)
+        fetchFixedAmount()
         handleCloseDialog()
         APIResponseToast(response, "家計簿を変更しました。", "変更に失敗しました。")
     }
