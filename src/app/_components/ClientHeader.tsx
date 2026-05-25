@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { XMarkIcon, HamburgerIcon } from '@components/Heroicons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, faTasks, type IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { type IconDefinition } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, faTasks } from '@fortawesome/free-solid-svg-icons'
 import SlideAnimation from '@components/SlideAnimation'
 
 type TextLinkWithIconProps = {
@@ -16,7 +17,8 @@ type TextLinkWithIconProps = {
 
 const TextLinkWithIcon = ({ path, icon, text, toggleMenuCallback }: TextLinkWithIconProps) => (
   <Link href={path} onClick={toggleMenuCallback} className="block px-4 py-2 text-white hover:bg-gray-600">
-    <FontAwesomeIcon icon={icon} style={{ marginRight: '16px' }} />
+    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+    <FontAwesomeIcon icon={icon as any} style={{ marginRight: '16px' }} />
     {text}
   </Link>
 )
