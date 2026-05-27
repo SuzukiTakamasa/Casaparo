@@ -17,7 +17,6 @@ type TextLinkWithIconProps = {
 
 const TextLinkWithIcon = ({ path, icon, text, toggleMenuCallback }: TextLinkWithIconProps) => (
   <Link href={path} onClick={toggleMenuCallback} className="block px-4 py-2 text-white hover:bg-gray-600">
-    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
     <FontAwesomeIcon icon={icon as any} style={{ marginRight: '16px' }} />
     {text}
   </Link>
