@@ -525,8 +525,8 @@ const TaskDetail = () => {
                                     <td className="text-sm">{taskDetail.due_date}</td>
                                 </tr>
                             </tbody>
-                            <div className="text-xs mt-2">{`(最終更新: ${taskDetail.updated_at})`}</div>
                         </table>
+                        <div className="text-xs mt-2">{`(最終更新: ${taskDetail.updated_at})`}</div>
                     </div>
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300"></div>
