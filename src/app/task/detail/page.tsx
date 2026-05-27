@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import React, { useEffect, useState, useCallback, useContext } from 'react'
+import React, { useEffect, useState, useCallback, useContext, Suspense } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
@@ -29,7 +29,7 @@ const ReactQuill = dynamic(() => import('react-quill'))
 const client = new APIClient()
 
 
-const TaskDetail = () => {
+const TaskDetailContent = () => {
     const [taskDetail, setTaskDetail] = useState<TaskData>({id: 0, title: "", status: TaskConstants.Status.NEW, priority: TaskConstants.Priority.LOW, description: "", created_by: CreatedBy.Y, updated_at: "", due_date: "", parent_task_id: 0, version: 0})
 
     const [showTaskCommentDialog, setShowTaskCommentDialog] = useState(false)
@@ -673,5 +673,11 @@ const TaskDetail = () => {
         </>
     )
 }
+
+const TaskDetail = () => (
+    <Suspense>
+        <TaskDetailContent />
+    </Suspense>
+)
 
 export default TaskDetail
