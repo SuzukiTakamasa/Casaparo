@@ -24,7 +24,9 @@ import { ReactQuillStyles } from '@utils/styles'
 import GeneralPaginator, { GeneralPaginationContext, GeneralPaginationProvider } from '@components/GeneralPaginator'
 
 
-const ReactQuill = dynamic(() => import('react-quill'))
+const ReactQuill = dynamic(() => import('react-quill-new'), { ssr: false })
+
+// Note: don't import Quill CSS here (Next.js global CSS restrictions)
 
 const client = new APIClient()
 
@@ -372,7 +374,7 @@ const Task = () => {
             <GeneralPaginator  numberOfData={handleDisplayTasks(tasks).length} className="text-lg font-bold mx-4" />
             
             {showDialog && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
+                <div className="fixed inset-0 bg-gray-500/50 flex items-start justify-center z-50 overflow-y-auto">
                     <div className="bg-white p-4 rounded">
                         <input
                             className="border p-2 text-black"
@@ -473,13 +475,13 @@ const Task = () => {
                             <input
                                 type="checkbox"
                                 checked={createdByT}
-                                onClick={() => setCreatedByT(!createdByT)}
+                                onChange={() => setCreatedByT(!createdByT)}
                                 />
                             <span className="mr-8">🥺</span>
                             <input
                                 type="checkbox"
                                 checked={createdByY}
-                                onClick={() => setCreatedByY(!createdByY)}
+                                onChange={() => setCreatedByY(!createdByY)}
                                 />
                             <span>🥺ྀི</span>
                         </div>

@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { APIClient } from '@utils/api_client'
@@ -14,7 +14,7 @@ import { WikiData } from '@utils/interfaces'
 const client = new APIClient()
 
 
-const WikiDetail = () => {
+const WikiDetailContent = () => {
     const [wikiDetail, setWikiDetail] = useState<WikiData>({id: 0, title: "", content: "", created_by: 0, updated_at: "", image_url: "", version: 0})
     const param = useSearchParams()
     const id = param.get("id")
@@ -43,5 +43,11 @@ const WikiDetail = () => {
         </>
     )
 }
+
+const WikiDetail = () => (
+    <Suspense>
+        <WikiDetailContent />
+    </Suspense>
+)
 
 export default WikiDetail

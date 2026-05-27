@@ -58,18 +58,18 @@ const MonthPaginator = ({ className }: MonthPaginatorProps) => {
     const { month, handleMonthIncrement, handleMonthDecrement } = useContext(MonthContext) as MonthContextType
 
     return (
-        <div className="flex justify-center space-x-16">
+        <div className="flex items-center justify-center">
             <button
-                className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
+                className="bg-transparent text-white font-bold py-2 px-16 rounded"
                 onClick={handleMonthDecrement}
             >
                 <ChevronLeftIcon />
             </button>
-            <div className={className}>
+            <div className={`w-16 text-center ${className ?? ''}`}>
                 {month + "月"}
             </div>
             <button
-                className={`bg-transparent text-white font-bold py-2 px-4 rounded`}
+                className="bg-transparent text-white font-bold py-2 px-16 rounded"
                 onClick={handleMonthIncrement}
             >
                 <ChevronRightIcon />

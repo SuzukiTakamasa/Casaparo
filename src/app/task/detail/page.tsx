@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import React, { useEffect, useState, useCallback, useContext } from 'react'
+import React, { useEffect, useState, useCallback, useContext, Suspense } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
@@ -16,7 +16,6 @@ import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import SafeHTMLRenderer from '@components/SafeHTMLRenderer'
 import { CreatedBy, TaskConstants } from '@utils/constants'
-import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 
 import { APIClient } from '@utils/api_client'
 import { TaskData, TaskResponse, TaskCommentData, TaskCommentResponse } from '@utils/interfaces'
@@ -25,12 +24,12 @@ import { setCreatedByStr, setStatusStr, setPriorityStr, splitYearMonthDayStr,
 import { ReactQuillStyles } from '@utils/styles'
 
 
-const ReactQuill = dynamic(() => import('react-quill'))
+const ReactQuill = dynamic(() => import('react-quill-new'))
 
 const client = new APIClient()
 
 
-const TaskDetail = () => {
+const TaskDetailContent = () => {
     const [taskDetail, setTaskDetail] = useState<TaskData>({id: 0, title: "", status: TaskConstants.Status.NEW, priority: TaskConstants.Priority.LOW, description: "", created_by: CreatedBy.Y, updated_at: "", due_date: "", parent_task_id: 0, version: 0})
 
     const [showTaskCommentDialog, setShowTaskCommentDialog] = useState(false)
@@ -362,7 +361,7 @@ const TaskDetail = () => {
     return (
         <>
             {showRelatedSubTaskDialog && (
-                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center overflow-y-auto">
                     <div className="bg-white p-4 rounded flex flex-col max-h-[90vh] w-[90%]">
                         <input
                             className="border p-2 text-black"
@@ -460,13 +459,13 @@ const TaskDetail = () => {
                             <input
                                 type="checkbox"
                                 checked={relatedSubTaskCreatedByT}
-                                onClick={() => setRelatedSubTaskCreatedByT(!relatedSubTaskCreatedByT)}
+                                onChange={() => setRelatedSubTaskCreatedByT(!relatedSubTaskCreatedByT)}
                                 />
                             <span className="mr-8">🥺</span>
                             <input
                                 type="checkbox"
                                 checked={relatedSubTaskCreatedByY}
-                                onClick={() => setRelatedSubTaskCreatedByY(!relatedSubTaskCreatedByY)}
+                                onChange={() => setRelatedSubTaskCreatedByY(!relatedSubTaskCreatedByY)}
                                 />
                             <span>🥺ྀི</span>
                         </div>
@@ -526,8 +525,8 @@ const TaskDetail = () => {
                                     <td className="text-sm">{taskDetail.due_date}</td>
                                 </tr>
                             </tbody>
-                            <div className="text-xs mt-2">{`(最終更新: ${taskDetail.updated_at})`}</div>
                         </table>
+                        <div className="text-xs mt-2">{`(最終更新: ${taskDetail.updated_at})`}</div>
                     </div>
                     <div className="bg-black text-white p-2">
                         <div className="border-b border-gray-300"></div>
@@ -623,7 +622,7 @@ const TaskDetail = () => {
                 ))}
             </div>
             {showTaskCommentDialog && (
-                    <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                    <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center overflow-y-auto">
                         <div className="bg-white p-4 rounded max-h-[90vh] w-[90%]">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <ReactQuill
@@ -674,5 +673,11 @@ const TaskDetail = () => {
         </>
     )
 }
+
+const TaskDetail = () => (
+    <Suspense>
+        <TaskDetailContent />
+    </Suspense>
+)
 
 export default TaskDetail

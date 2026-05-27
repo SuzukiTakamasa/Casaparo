@@ -592,10 +592,10 @@ const Schedule = () => {
                     >
                         登録
                     </button>
-                    <MonthPaginator className="text-lg font-bold mx-4" />
+                    <MonthPaginator className="text-lg font-bold" />
 
                     {showDialog && (
-                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center">
                             <div className="bg-white p-4 rounded">
                                 <div className="flex flex-col space-y-4 mb-4">
                                     <input
@@ -745,13 +745,13 @@ const Schedule = () => {
                                         <input
                                             type="checkbox"
                                             checked={createdByT}
-                                            onClick={() => setCreatedByT(!createdByT)}
+                                            onChange={() => setCreatedByT(!createdByT)}
                                         />
                                         <span className="mr-8">🥺</span>
                                         <input
                                             type="checkbox"
                                             checked={createdByY}
-                                            onClick={() => setCreatedByY(!createdByY)}
+                                            onChange={() => setCreatedByY(!createdByY)}
                                         />
                                         <span>🥺ྀི</span>
                                     </div>

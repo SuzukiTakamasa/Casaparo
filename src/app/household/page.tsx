@@ -20,7 +20,7 @@ import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableT
 import { HouseholdData, HouseholdResponse, FixedAmount, IsCompleted, CompletedHouseholdData, HouseholdMonthlySummaryResponse, Detail } from '@utils/interfaces'
 import { formatNumberWithCommas } from '@utils/utility_function'
 import { APIClient } from '@utils/api_client'
-import { adaptThreePointReader, setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
+import { setCreatedByStr, getToday, boolToInt, intToBool, isUnsignedInteger } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants'
 
 const client = new APIClient()
@@ -79,6 +79,7 @@ const Household = () => {
         setIsBlocking(true)
         const response = await addHousehold()
         setIsBlocking(false)
+        fetchFixedAmount()
         handleCloseDialog()
         APIResponseToast(response, "家計簿を登録しました。", "登録に失敗しました。")
     }
@@ -87,6 +88,7 @@ const Household = () => {
         setIsBlocking(true)
         const response = await updateHousehold()
         setIsBlocking(false)
+        fetchFixedAmount()
         handleCloseDialog()
         APIResponseToast(response, "家計簿を変更しました。", "変更に失敗しました。")
     }
@@ -220,7 +222,7 @@ const Household = () => {
             </YearProvider>
 
             <div className="container mx-auto p-4">
-                <MonthPaginator className="text-lg font-bold mx-4" />
+                <MonthPaginator className="text-lg font-bold" />
                 {isLoading ?
                     <></>
                     :
@@ -258,7 +260,7 @@ const Household = () => {
                 }
 
                 {showDialog && (
-                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <input

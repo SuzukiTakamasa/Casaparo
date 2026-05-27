@@ -22,7 +22,7 @@ import { setCreatedByStr, getCurrentDateTime } from '@utils/utility_function'
 import { ReactQuillStyles } from '@utils/styles'
 
 
-const ReactQuill = dynamic(() => import('react-quill'))
+const ReactQuill = dynamic(() => import('react-quill-new'))
 
 const client = new APIClient()
 const r2Client = new R2Client()
@@ -206,7 +206,7 @@ const Wiki = () => {
             </button>
 
             {showDialog && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
+                <div className="fixed inset-0 bg-gray-500/50 flex items-start justify-center z-50 overflow-y-auto">
                     <div className="bg-white p-4 rounded">
                         <div className="flex flex-col space-y-4 mb-4">
                             <input 
