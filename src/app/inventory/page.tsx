@@ -2,7 +2,7 @@
 
 //export const runtime = 'edge'
 
-import { useEffect, useState, useCallback, useContext } from 'react'
+import React, { useEffect, useState, useCallback, useContext } from 'react'
 
 import { APIClient } from '@utils/api_client'
 import { InventoryData, InventoryResponse, InventoryTypeResponse, ShoppingNoteData, ExtractedShoppingNoteData, ExtractedShoppingNoteResponse } from '@utils/interfaces'
@@ -612,7 +612,7 @@ const Inventory = () => {
                     </div>
 
                     {showInventoryDialog && (
-                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                        <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center">
                             <div className="bg-white p-4 rounded">
                                 <div className="flex flex-col space-y-4 mb-4">
                                     <label className="text-black">
@@ -762,15 +762,15 @@ const Inventory = () => {
                         <GeneralPaginator  numberOfData={handleDisplayShoppingNotes(shoppingNotes).length} className="text-lg font-bold mx-4" />
 
                     {showShoppingNoteDialog && (
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto">
+                        <div className="fixed inset-0 bg-gray-500/50 flex items-start justify-center z-50 overflow-y-auto">
                             <div className="bg-white p-4 rounded">
                                 <div className="flex flex-col space-y-4 mb-4">
                                     <label className="flex items-center space-x-2 text-black">
                                         <span>既存在庫の更新</span>
                                     </label>
                                      {notes.map((note, i) => (
-                                        <>
-                                            <div key={i} className="flex justify-left">
+                                        <React.Fragment key={i}>
+                                            <div className="flex justify-left">
                                                 <input
                                                     className="mr-1"
                                                     type="checkbox"
@@ -840,7 +840,7 @@ const Inventory = () => {
                                                     <MinusIcon/>
                                                 </button>
                                             </div>
-                                        </>
+                                        </React.Fragment>
                                      ))}
                                      <ValidationErrorMessage message={noteTypesValidMsg} />
                                      <ValidationErrorMessage message={noteNameValidMsg} />

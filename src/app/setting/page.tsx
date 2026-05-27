@@ -358,7 +358,7 @@ const Setting = () => {
                 </div>
 
                 {showLabelDialog && (
-                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <input 
@@ -447,7 +447,7 @@ const Setting = () => {
                 </div>
 
                 {showAnniversaryDialog && (
-                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <div className="flex justify-center">
@@ -555,7 +555,7 @@ const Setting = () => {
                 </div>
 
                 {showInventoryTypeDialog && (
-                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+                    <div className="absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center">
                         <div className="bg-white p-4 rounded">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <input

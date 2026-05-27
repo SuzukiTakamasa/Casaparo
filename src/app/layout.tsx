@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import 'react-quill-new/dist/quill.snow.css'
 
 import ClientHeader from '@components/ClientHeader'
 

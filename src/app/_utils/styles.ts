@@ -1,4 +1,4 @@
-import 'react-quill/dist/quill.snow.css'
+import 'react-quill-new/dist/quill.snow.css'
 
 export const ReactQuillStyles = {
     modules: {
@@ -17,8 +17,7 @@ export const ReactQuillStyles = {
         'italic', 
         'underline', 
         'strike',
-        'list', 
-        'bullet',
+        'list',
         'color',
         'background',
         'align',

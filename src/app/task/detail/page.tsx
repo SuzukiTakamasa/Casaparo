@@ -24,7 +24,7 @@ import { setCreatedByStr, setStatusStr, setPriorityStr, splitYearMonthDayStr,
 import { ReactQuillStyles } from '@utils/styles'
 
 
-const ReactQuill = dynamic(() => import('react-quill'))
+const ReactQuill = dynamic(() => import('react-quill-new'))
 
 const client = new APIClient()
 
@@ -361,7 +361,7 @@ const TaskDetailContent = () => {
     return (
         <>
             {showRelatedSubTaskDialog && (
-                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center overflow-y-auto">
                     <div className="bg-white p-4 rounded flex flex-col max-h-[90vh] w-[90%]">
                         <input
                             className="border p-2 text-black"
@@ -459,13 +459,13 @@ const TaskDetailContent = () => {
                             <input
                                 type="checkbox"
                                 checked={relatedSubTaskCreatedByT}
-                                onClick={() => setRelatedSubTaskCreatedByT(!relatedSubTaskCreatedByT)}
+                                onChange={() => setRelatedSubTaskCreatedByT(!relatedSubTaskCreatedByT)}
                                 />
                             <span className="mr-8">🥺</span>
                             <input
                                 type="checkbox"
                                 checked={relatedSubTaskCreatedByY}
-                                onClick={() => setRelatedSubTaskCreatedByY(!relatedSubTaskCreatedByY)}
+                                onChange={() => setRelatedSubTaskCreatedByY(!relatedSubTaskCreatedByY)}
                                 />
                             <span>🥺ྀི</span>
                         </div>
@@ -622,7 +622,7 @@ const TaskDetailContent = () => {
                 ))}
             </div>
             {showTaskCommentDialog && (
-                    <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500 bg-opacity-50 flex justify-center items-center overflow-y-auto">
+                    <div className="fixed absolute top-0 left-0 right-0 bottom-0 bg-gray-500/50 flex justify-center items-center overflow-y-auto">
                         <div className="bg-white p-4 rounded max-h-[90vh] w-[90%]">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <ReactQuill

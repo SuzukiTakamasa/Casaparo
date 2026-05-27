@@ -47,7 +47,7 @@ export default function ClientHeader() {
         </div>
         <SlideAnimation />
         <div
-          className={`fixed inset-0 bg-black bg-opacity-50 z-50 ${menuVisible ? 'block' : 'hidden'}`}
+          className={`fixed inset-0 bg-black/50 z-50 ${menuVisible ? 'block' : 'hidden'}`}
           onClick={toggleMenu}
         />
         <div
