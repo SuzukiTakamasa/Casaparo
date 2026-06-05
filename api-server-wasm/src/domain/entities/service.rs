@@ -30,7 +30,7 @@ pub struct JSONResponse<T> {
 }
 
 impl <T: Serialize>JSONResponse<T> {
-    pub fn new(status: Status, error_message: Option<String>, data: Option<T> ) -> Result<Response> {
+    pub fn build(status: Status, error_message: Option<String>, data: Option<T> ) -> Result<Response> {
     let message = match status {
         Status::Ok => "OK".to_string(),
         Status::Created => "Created".to_string(),
@@ -43,6 +43,6 @@ impl <T: Serialize>JSONResponse<T> {
         message,
         data,
     };
-    return Response::from_json(&response).map(|resp| resp.with_status(status as u16));
+    Response::from_json(&response).map(|resp| resp.with_status(status as u16))
     }
 }

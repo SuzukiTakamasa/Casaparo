@@ -17,62 +17,62 @@ impl<R: WikiRepository> WikiController<R> {
 
     pub async fn get_wikis(&self) -> Result<Response> {
         match self.usecases.get_wikis().await {
-            Ok(wikis) => return JSONResponse::new(Status::Ok, None, Some(wikis)),
-            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
-        };
+            Ok(wikis) => JSONResponse::build(Status::Ok, None, Some(wikis)),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
     }
 
     pub async fn get_wikis_by_id(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
         let id = ctx.param("id").unwrap();
         let id_as_u32: u32 = id.parse().unwrap();
         match self.usecases.get_wiki_by_id(id_as_u32).await {
-            Ok(wiki) => return JSONResponse::new(Status::Ok, None, Some(wiki)),
-            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
-        };
+            Ok(wiki) => JSONResponse::build(Status::Ok, None, Some(wiki)),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
     }
 
     pub async fn create_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let wiki: Wikis = match from_str(json_body.as_str()) {
             Ok(wiki) => wiki,
-            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.create_wiki(&wiki).await {
-            Ok(_) => return JSONResponse::<()>::new(Status::Created, None, None),
-            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
-        };
+            Ok(_) => JSONResponse::<()>::build(Status::Created, None, None),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
     }
 
     pub async fn update_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let mut wiki: Wikis = match from_str(json_body.as_str()) {
             Ok(wiki) => wiki,
-            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.update_wiki(&mut wiki).await {
-            Ok(_) => return JSONResponse::<()>::new(Status::Ok, None, None),
-            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
-        };
+            Ok(_) => JSONResponse::<()>::build(Status::Ok, None, None),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
     }
 
     pub async fn delete_wiki(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,
-            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Bad request".to_string()), None)
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Bad request".to_string()), None)
         };
         let mut wiki: Wikis = match from_str(json_body.as_str()) {
             Ok(wiki) => wiki,
-            Err(_) => return JSONResponse::<()>::new(Status::BadRequest, Some("Invalid request body".to_string()), None)
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid request body".to_string()), None)
         };
         match self.usecases.delete_wiki(&mut wiki).await {
-            Ok(_) => return JSONResponse::<()>::new(Status::Ok, None, None),
-            Err(e) => return JSONResponse::<()>::new(Status::InternalServerError, Some(e.to_string()), None)
-        };
+            Ok(_) => JSONResponse::<()>::build(Status::Ok, None, None),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
     }
 }
