@@ -292,14 +292,14 @@ const Household = () => {
                                     <input
                                         type="radio"
                                         value="1"
-                                        checked={isOwner === 1}
+                                        checked={isOwner === HouseholdConstants.IsOwner.OWNER}
                                         onChange={e => setIsOwner(Number(e.target.value))}
                                         />
                                         <span className="mr-8">🥺</span>
                                     <input
                                         type="radio"
                                         value="0"
-                                        checked={isOwner === 0}
+                                        checked={isOwner === HouseholdConstants.IsOwner.NOT_OWNER}
                                         onChange={e => setIsOwner(Number(e.target.value))}
                                         />
                                         <span>🥺ྀི</span>
@@ -309,7 +309,7 @@ const Household = () => {
                                 <button
                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                                     onClick={isUpdate ? handleUpdateHousehold : handleAddHousehold}
-                                    disabled={newItemName == "" || newAmount == "" || isBlocking}
+                                    disabled={isBlocking}
                                 >
                                     {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdate ? "変更" : "登録"}
                                 </button>
