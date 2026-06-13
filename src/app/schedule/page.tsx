@@ -79,6 +79,7 @@ const Schedule = () => {
 
     const [isBlocking, setIsBlocking] = useState(false)
     const [isEvery15Mins, setIsEvery15Mins] = useState(false)
+    const [isDuplicated, setIsDuplicated] = useState(false)
 
     const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
@@ -426,12 +427,16 @@ const Schedule = () => {
         setCreatedByValidMsg("")
         setIsNotified(false)
         setIsEvery15Mins(false)
+        setIsDuplicated(false)
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
     }
     const handleIsEvery15Mins = () => {
         setIsEvery15Mins(!isEvery15Mins)
+    }
+    const handleIsDuplicated = () => {
+        setIsDuplicated(!isDuplicated)
     }
     const fetchSchedules = useCallback(async () => {
         const schedules = await client.get<ScheduleResponse>(`/v2/schedule`)
@@ -790,6 +795,15 @@ const Schedule = () => {
                                     >
                                         {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : isUpdate ? "変更" : "登録"}
                                     </button>
+                                    {isUpdate &&
+                                        <button
+                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                            onClick={handleAddSchedule}
+                                            disabled={isBlocking}
+                                        >
+                                            {isBlocking ? <Loader size={20} isLoading={isBlocking} /> : "複製"}
+                                        </button>
+                                    }
                                     <button
                                         className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
                                         onClick={handleCloseDialog}
