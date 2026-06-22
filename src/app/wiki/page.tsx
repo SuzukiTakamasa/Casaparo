@@ -207,7 +207,7 @@ const Wiki = () => {
 
             {showDialog && (
                 <div className="fixed inset-0 bg-gray-500/50 flex items-start justify-center z-50 overflow-y-auto">
-                    <div className="bg-white p-4 rounded">
+                    <div className="bg-white p-4 rounded w-full max-w-lg max-h-screen overflow-y-auto my-4">
                         <div className="flex flex-col space-y-4 mb-4">
                             <input 
                                 className="border p-2 text-black"
@@ -243,7 +243,10 @@ const Wiki = () => {
                                     <span>🥺ྀི</span>
                             </div>
                             <div className="flex justify-center">
-                                <input className="block" type="file" onChange={handleUploadFile} />
+                                <label className="bg-gray-300 hover:bg-gray-400 text-black py-2 px-4 rounded cursor-pointer">
+                                    画像を選択
+                                    <input className="hidden" type="file" onChange={handleUploadFile} />
+                                </label>
                             </div>
                             {imageUrl &&
                             <div className='flex justify-center'>
