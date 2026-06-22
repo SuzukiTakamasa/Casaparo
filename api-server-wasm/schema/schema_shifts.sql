@@ -1,0 +1,13 @@
+DROP TABLE IF EXISTS shifts;
+CREATE TABLE shifts (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+year INTEGER NOT NULL,
+month INTEGER NOT NULL,
+date INTEGER NOT NULL,
+work TEXT NOT NULL,
+working_hour_from INTEGER NOT NULL,
+working_hour_to INTEGER NOT NULL,
+hourly_wage INTEGER NOT NULL,
+transportation_expense INTEGER DEFAULT NULL,
+version INTEGER NOT NULL
+);

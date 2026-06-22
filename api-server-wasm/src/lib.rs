@@ -59,6 +59,10 @@ use crate::infrastructure::repositories::d1_web_push_subscription_repository::D1
 use crate::application::usecases::web_push_subscription_usecases::WebPushSubscriptionUsecases;
 use crate::interfaces::api::web_push_subscription_controller::WebPushSubscriptionController;
 
+use crate::infrastructure::repositories::d1_shift_repository::D1ShiftRepository;
+use crate::application::usecases::shift_usecases::ShiftUsecases;
+use crate::interfaces::api::shift_controller::ShiftController;
+
 
 pub struct AppState {
     household_controller: HouseholdController<D1HouseholdRepository>,
@@ -73,6 +77,7 @@ pub struct AppState {
     task_controller: TaskController<D1TaskRepository>,
     task_comment_controller: TaskCommentController<D1TaskCommentRepository>,
     web_push_subscription_controller: WebPushSubscriptionController<D1WebPushSubscriptionRepository>,
+    shift_controller: ShiftController<D1ShiftRepository>,
 }
 
 #[event(fetch, respond_with_errors)]
@@ -155,9 +160,13 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let task_comment_usecases = TaskCommentUsecases::new(task_comment_repository);
     let task_comment_controller = TaskCommentController::new(task_comment_usecases);
 
-    let web_push_subscription_repository = D1WebPushSubscriptionRepository::new(db);
+    let web_push_subscription_repository = D1WebPushSubscriptionRepository::new(db.clone());
     let web_push_subscription_usecases = WebPushSubscriptionUsecases::new(web_push_subscription_repository);
     let web_push_subscription_controller = WebPushSubscriptionController::new(web_push_subscription_usecases);
+
+    let shift_repository = D1ShiftRepository::new(db);
+    let shift_usecases = ShiftUsecases::new(shift_repository);
+    let shift_controller = ShiftController::new(shift_usecases);
 
     let app_state = AppState {
         household_controller,
@@ -172,6 +181,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         task_controller,
         task_comment_controller,
         web_push_subscription_controller,
+        shift_controller,
     };
 
 
@@ -379,6 +389,22 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/web_push_subscription/delete", |mut req, ctx| async move {
             ctx.data.web_push_subscription_controller.delete_web_push_subscription(&mut req).await
+        })
+     //shift
+        .get_async("/v2/shift", |_req, ctx| async move {
+            ctx.data.shift_controller.get_shifts().await
+        })
+        .get_async("/v2/shift/:year/:month", |_req, ctx| async move {
+            ctx.data.shift_controller.get_shifts_by_year_month(&ctx).await
+        })
+        .post_async("/v2/shift/create", |mut req, ctx| async move {
+            ctx.data.shift_controller.create_shift(&mut req).await
+        })
+        .post_async("/v2/shift/update", |mut req, ctx| async move {
+            ctx.data.shift_controller.update_shift(&mut req).await
+        })
+        .post_async("/v2/shift/delete", |mut req, ctx| async move {
+            ctx.data.shift_controller.delete_shift(&mut req).await
         })
     .run(req, env)
     .await
