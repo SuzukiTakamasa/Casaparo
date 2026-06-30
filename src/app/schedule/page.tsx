@@ -43,6 +43,9 @@ const Schedule = () => {
 
     const numberOfDays = getNumberOfDays(scheduleYear, scheduleMonth)
     const today = getToday()
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth() + 1
     const [holidays, setHolidays] = useState<string[]>([])
 
     const [schedules, setSchedules] = useState<ScheduleResponse>([])
@@ -847,12 +850,12 @@ const Schedule = () => {
                         </thead>
                         <tbody>
                             {activeTab === "month" && monthDaysArray.map((d, i) => (
-                                <tr key={i} className={`${year === scheduleYear && month === scheduleMonth && today === d && "bg-gray-500"}`}>
+                                <tr key={i} className={`${currentYear === scheduleYear && currentMonth === scheduleMonth && today === d ? "bg-gray-500" : ""}`}>
                                     {getCalendar(scheduleYear, scheduleMonth, d)}
                                 </tr>
                             ))}
                             {activeTab === "week" && weekDaysArray.map((d, i) => (
-                                <tr key={i} className={`${today === d && "bg-gray-500"}`}>
+                                <tr key={i} className={`${currentYear === scheduleYear && currentMonth === scheduleMonth && today === d ? "bg-gray-500" : ""}`}>
                                     {getCalendar(scheduleYear, scheduleMonth, d)}
                                 </tr>
                             ))}
