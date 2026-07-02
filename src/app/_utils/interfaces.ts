@@ -155,6 +155,19 @@ export interface TaskCommentData {
     version: number
 }
 
+export interface ShiftData {
+    id?: number,
+    year: number,
+    month: number,
+    date: number,
+    work: string,
+    working_hour_from: number,
+    working_hour_to: number,
+    hourly_wage: number,
+    transportation_expense: number | null,
+    version: number
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -218,6 +231,8 @@ export type TaskResponse = TaskData[]
 
 export type TaskCommentResponse = TaskCommentData[]
 
+export type ShiftResponse = ShiftData[]
+
 export type WebPushSubscriptionResponse = WebPushSubscriptionData[]
 
 export type SendResultResponse = SendResultData[]
@@ -234,6 +249,7 @@ export type APIRequest = HouseholdData |
              ExtractedShoppingNoteData |
                               TaskData |
                        TaskCommentData |
+                             ShiftData |
                WebPushSubscriptionData
 
 export type APIResponse = HouseholdResponse |
@@ -248,6 +264,7 @@ export type APIResponse = HouseholdResponse |
               ExtractedShoppingNoteResponse |
                                TaskResponse |
                         TaskCommentResponse |
+                              ShiftResponse |
                                 FixedAmount |
                                 IsCompleted |
                                      IsUsed |

@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { XMarkIcon, HamburgerIcon } from '@components/Heroicons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { type IconDefinition } from '@fortawesome/free-solid-svg-icons'
-import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, faTasks } from '@fortawesome/free-solid-svg-icons'
+import { faHouse, faCalendar, faChartBar, faBook, faCog, faReceipt, faTasks, faBriefcase } from '@fortawesome/free-solid-svg-icons'
 import SlideAnimation from '@components/SlideAnimation'
 
 type TextLinkWithIconProps = {
@@ -59,6 +59,7 @@ export default function ClientHeader() {
           <TextLinkWithIcon path="/schedule"   icon={faCalendar}  text="スケジュール"     toggleMenuCallback={toggleMenu} />
           <TextLinkWithIcon path="/statistics" icon={faChartBar}  text="統計"             toggleMenuCallback={toggleMenu} />
           <TextLinkWithIcon path="/task"       icon={faTasks}     text="タスク"           toggleMenuCallback={toggleMenu} />
+          <TextLinkWithIcon path="/shift"      icon={faBriefcase} text="シフト"           toggleMenuCallback={toggleMenu} />
           <TextLinkWithIcon path="/wiki"       icon={faBook}      text="Wiki"             toggleMenuCallback={toggleMenu} />
           <TextLinkWithIcon path="/setting"    icon={faCog}       text="設定"             toggleMenuCallback={toggleMenu} />
         </div>
