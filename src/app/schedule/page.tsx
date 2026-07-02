@@ -10,7 +10,7 @@ import YearPicker from '@components/YearPicker'
 import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
-import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse, TaskData, TaskResponse } from '@utils/interfaces'
+import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse, TaskData, TaskResponse, ShiftData, ShiftResponse } from '@utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
 import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
@@ -68,6 +68,7 @@ const Schedule = () => {
     const [labels, setLabels] = useState<LabelResponse>([])
     const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
     const [tasks, setTasks] = useState<TaskResponse>([])
+    const [shifts, setShifts] = useState<ShiftResponse>([])
 
     const [monthDaysArray, setMonthDaysArray] = useState<number[]>([])
     const [monthDaysArrayFromDate, setMonthDaysArrayFromDate] = useState<number[]>([])
@@ -205,6 +206,11 @@ const Schedule = () => {
                 month === taskMonth &&
                 day === taskDay)
         }
+        const isShift = (shift: ShiftData) => {
+            return (year === shift.year &&
+                month === shift.month &&
+                day === shift.date)
+        }
         return (
             <>
                 <td className="border-b py-1 flex-row justify-center items-center space-x-1 text-sm whitespace-nowrap">
@@ -261,6 +267,15 @@ const Schedule = () => {
                             className={`${getButtonBorderColorStr(task)} bg-green-600 hover:bg-green-800 text-white py-1 px-2 m-1 rounded-full`}
                         >
                             📝{setCreatedByStr(task.created_by)}{<Link href={`/task/detail?id=${task.id}`} className="text-blue-700 hover:text-blue-900 font-bold hover:underline">{task.title}</Link>}
+                        </button>
+                    ))}
+                    {shifts.map((shift, i) => (
+                        isShift(shift) &&
+                        <button
+                            key={i}
+                            className="bg-gray-600 hover:bg-gray-800 text-white py-1 px-2 m-1 rounded-full"
+                        >
+                            {`💼${shift.work} ${shift.working_hour_from}:00-${shift.working_hour_to}:00`}
                         </button>
                     ))}
                 </td>
@@ -545,6 +560,10 @@ const Schedule = () => {
         const tasks = await client.get<TaskResponse>('/v2/task/not_completed')
         setTasks(tasks.data || [])
     }, [])
+    const fetchShifts = useCallback(async () => {
+        const shifts = await client.get<ShiftResponse>('/v2/shift')
+        setShifts(shifts.data || [])
+    }, [])
     const fetchIsSubscribed = useCallback(async () => {
         const res = await subscriber.fetchSubscription()
         if (res.data) {
@@ -557,7 +576,8 @@ const Schedule = () => {
         fetchSchedules()
         fetchAnniversaries()
         fetchTasks()
-    }, [handleGetHolidaysList, fetchSchedules, fetchAnniversaries, fetchTasks])
+        fetchShifts()
+    }, [handleGetHolidaysList, fetchSchedules, fetchAnniversaries, fetchTasks, fetchShifts])
 
     useEffect(() => {
         handleGenerateMonthDaysArray()
