@@ -4,10 +4,6 @@ const withPWA = require('next-pwa')({
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === 'development',
-    // Never cache the start URL. Behind Cloudflare Access the `/` request can be an
-    // auth redirect (opaqueredirect); next-pwa's default start-url handler would
-    // rewrite that to a 200 and cache it, serving a broken `/` afterwards. Keeping
-    // `/` network-only avoids that entirely.
     cacheStartUrl: false,
     dynamicStartUrl: false,
     runtimeCaching: [
