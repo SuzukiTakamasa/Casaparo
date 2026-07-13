@@ -4,6 +4,8 @@ const withPWA = require('next-pwa')({
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === 'development',
+    cacheStartUrl: false,
+    dynamicStartUrl: false,
     runtimeCaching: [
         {
             urlPattern: /^\/$/,

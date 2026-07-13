@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { XMarkIcon, HamburgerIcon } from '@components/Heroicons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,14 +25,6 @@ const TextLinkWithIcon = ({ path, icon, text, toggleMenuCallback }: TextLinkWith
 export default function ClientHeader() {
   const [menuVisible, setMenuVisible] = useState(false)
   const toggleMenu = () => setMenuVisible(v => !v)
-
-  useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(r => console.log('Service Worker registered:', r.scope))
-        .catch(e => console.error('Service Worker registration failed', e))
-    }
-  }, [])
 
   return (
     <header className="bg-gray-800 text-white p-4 z-10">
