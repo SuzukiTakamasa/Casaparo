@@ -309,6 +309,7 @@ const Shift = () => {
                         </div>
                     )}
 
+                    <div className="px-1 py-2 text-xl text-center text-white font-bold">今月の勤務日数: {shifts.length}日</div>
                     <div className="px-1 py-2 text-xl text-center text-white font-bold">今月の給料： ¥{formatNumberWithCommas(totalWage)}</div>
                     <div className={`px-1 py-2 text-xl text-center font-bold ${totalWage > DependentWall ? "text-red-500" : "text-white"}`}>
                         {totalWage > DependentWall
