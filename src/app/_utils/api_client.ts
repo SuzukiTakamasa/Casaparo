@@ -1,4 +1,4 @@
-import { APIRequest, APIResponse, R2Response, Result, JSONResponse, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result, JSONResponse, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload, BroadcastData } from './interfaces'
 import { urlBase64ToUint8Array } from '@/app/_utils/utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -168,21 +168,17 @@ export class WebPushSubscriber {
         }
     }
 
-    public async broadcast(payload: BroadcastPayload): Promise<Result<NextResponse>> {
+    public async broadcast(payload: BroadcastPayload): Promise<Result<BroadcastData>> {
         try {
             const subscriptions = await this.client.get<WebPushSubscriptionResponse>('/v2/web_push_subscription')
             if (subscriptions.error !== null) {
                 return { data: null, error: `Internal Server Error: ${subscriptions.error}` }
             }
-            const res = await fetch(`${this.webPushHost}/broadcast`, {
-                method: 'POST',
-                headers: this.headers,
-                body: JSON.stringify({
-                    subscriptions: subscriptions.data,
-                    payload: payload
-                })
+            const res = await this.client.post<BroadcastData>('/v2/web_push_subscription/broadcast', {
+                payload: payload,
+                subscriptions: subscriptions.data || []
             })
-            return { data: <NextResponse>res, error: null }
+            return { data: res.data, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
