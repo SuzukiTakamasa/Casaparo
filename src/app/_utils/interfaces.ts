@@ -190,7 +190,7 @@ export interface BroadcastPayload {
     body: string
 }
 
-export interface BroadcastRequest {
+export interface BroadcastData {
     payload: BroadcastPayload
     subscriptions: WebPushSubscriptionResponse
 }
@@ -250,7 +250,8 @@ export type APIRequest = HouseholdData |
                               TaskData |
                        TaskCommentData |
                              ShiftData |
-               WebPushSubscriptionData
+               WebPushSubscriptionData |
+                         BroadcastData
 
 export type APIResponse = HouseholdResponse |
                            ScheduleResponse |
