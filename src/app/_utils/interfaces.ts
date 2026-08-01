@@ -188,16 +188,27 @@ export interface WebPushSubscriptionData {
 export interface BroadcastPayload {
     title: string
     body: string
+    icon?: string
 }
 
+/** Request body of /v2/web_push_subscription/broadcast. The worker reads the
+ *  subscriptions from D1 itself, so only the payload is sent. */
 export interface BroadcastData {
     payload: BroadcastPayload
-    subscriptions: WebPushSubscriptionResponse
 }
 
-export interface SendResultData {
-    body: string
-    statusCode: number
+export interface BroadcastDetail {
+    subscription_id: string
+    status_code: number
+    message?: string
+}
+
+export interface BroadcastResult {
+    success: number
+    failed: number
+    /** Subscriptions the push service reported as gone and that were dropped. */
+    expired: number
+    details: BroadcastDetail[]
 }
 
 export interface Patches<T> {
@@ -235,7 +246,6 @@ export type ShiftResponse = ShiftData[]
 
 export type WebPushSubscriptionResponse = WebPushSubscriptionData[]
 
-export type SendResultResponse = SendResultData[]
 
 export type APIRequest = HouseholdData |
                           ScheduleData |
@@ -270,4 +280,4 @@ export type APIResponse = HouseholdResponse |
                                 IsCompleted |
                                      IsUsed |
                 WebPushSubscriptionResponse |
-                         SendResultResponse
+                            BroadcastResult

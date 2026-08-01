@@ -6,7 +6,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 
 import { LabelData, LabelResponse, IsUsed, AnniversaryData, AnniversaryResponse, InventoryTypeData, InventoryTypeResponse } from '@utils/interfaces'
 import { EditButton, DeleteButton } from '@components/Buttons'
-import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import { ToasterComponent, APIResponseToast, toastMessage } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
@@ -321,15 +321,27 @@ const Setting = () => {
     }
     const fetchIsSubscribed = useCallback(async () => {
         const subscription = await subscriber.fetchSubscription()
-        if (subscription.data !== null) {
-            setIsSubscribed(true)
-        }
+        setIsSubscribed(subscription.data !== null)
     }, [subscriber])
     const handleSubscribeWebPushNotification = async () => {
+        if (!subscriber.isSupported()) {
+            toastMessage({ message: "このブラウザはPush通知に対応していません。", type: "error" })
+            return
+        }
         const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
         if (!window.confirm(popupMsg)) return
+
+        setIsBlocking(true)
         const res = isSubscribed ? await subscriber.unsubscribe() : await subscriber.subscribe()
-        setIsSubscribed(!isSubscribed)
+        setIsBlocking(false)
+
+        APIResponseToast(
+            res,
+            isSubscribed ? "Push通知の購読を解除しました。" : "Push通知を購読しました。",
+            isSubscribed ? "Push通知の購読解除に失敗しました。" : "Push通知の購読に失敗しました。"
+        )
+        // Only flip the switch when the change actually went through.
+        if (res.error === null) setIsSubscribed(!isSubscribed)
     }
     
     useEffect(() => {
@@ -624,8 +636,10 @@ const Setting = () => {
                         type="button"
                         role="switch"
                         aria-checked={isSubscribed}
+                        aria-label="Push通知"
+                        disabled={isBlocking}
                         onClick={handleSubscribeWebPushNotification}
-                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${isSubscribed ? 'bg-blue-500' : 'bg-gray-300'}`}
+                        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${isSubscribed ? 'bg-blue-500' : 'bg-gray-300'}`}
                     >
                         <span className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${isSubscribed ? 'translate-x-6' : 'translate-x-1'}`} />
                     </button>

@@ -34,15 +34,37 @@ self.addEventListener('fetch', (event) => {
 
 // --- Web Push handlers (moved here from public/service-worker.js) ---
 self.addEventListener('push', (event) => {
-  const data = event.data.json()
-  const title = data.title
+  // `userVisibleOnly` subscriptions must always show something, so fall back to
+  // a generic notification rather than letting a bad payload throw.
+  let data = {}
+  try {
+    data = event.data ? event.data.json() : {}
+  } catch (e) {
+    data = { body: event.data ? event.data.text() : '' }
+  }
+
+  const title = data.title || 'Casaparo'
   const options = {
-    body: data.body,
-    icon: data.icon,
+    body: data.body || '',
+    icon: data.icon || '/icon512_rounded.png',
+    badge: '/icon512_rounded.png',
+    data: { url: data.url || '/' },
   }
   event.waitUntil(self.registration.showNotification(title, options))
 })
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
+
+  const target = (event.notification.data && event.notification.data.url) || '/'
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const client of clients) {
+        if (new URL(client.url).origin === self.location.origin && 'focus' in client) {
+          return client.focus()
+        }
+      }
+      return self.clients.openWindow(target)
+    })
+  )
 })

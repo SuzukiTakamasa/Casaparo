@@ -41,6 +41,14 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
     }
 
     async fn create_web_push_subscription(&self, web_push_subscription: &WebPushSubscription) -> Result<()> {
+        // A browser that re-subscribes (or a client that lost its saved
+        // subscription_id) sends a fresh subscription_id for an endpoint that is
+        // already stored. Keeping both would deliver the notification twice.
+        let delete_duplicated_statement = self.db.prepare(r#"delete from web_push_subscriptions
+                                                                                 where endpoint = ?1"#);
+        let delete_duplicated_query = delete_duplicated_statement.bind(&[web_push_subscription.endpoint.clone().into()])?;
+        delete_duplicated_query.run().await?;
+
         let statement = self.db.prepare(r#"insert into web_push_subscriptions
                                                                 (subscription_id, endpoint, p256h_key, auth_key, version)
                                                                 values (?1, ?2, ?3, ?4, ?5)"#);
@@ -65,6 +73,14 @@ impl WebPushSubscriptionRepository for D1WebPushSubscriptionRepository {
         let statement = self.db.prepare(r#"delete from web_push_subscriptions
                                                                 where subscription_id = ?1"#);
         let query = statement.bind(&[web_push_subscription.subscription_id.clone().into()])?;
+        query.run().await?;
+        Ok(())
+    }
+
+    async fn delete_expired_web_push_subscription(&self, subscription_id: &str) -> Result<()> {
+        let statement = self.db.prepare(r#"delete from web_push_subscriptions
+                                                                where subscription_id = ?1"#);
+        let query = statement.bind(&[subscription_id.into()])?;
         query.run().await?;
         Ok(())
     }
