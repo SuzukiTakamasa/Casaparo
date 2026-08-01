@@ -1,6 +1,6 @@
 use crate::application::usecases::web_push_subscription_usecases::WebPushSubscriptionUsecases;
 use crate::domain::repositories::web_push_subscription_repository::WebPushSubscriptionRepository;
-use crate::domain::entities::web_push_subscription::WebPushSubscription;
+use crate::domain::entities::web_push_subscription::{BroadcastRequest, WebPushSubscription};
 use super::*;
 
 pub struct WebPushSubscriptionController<R: WebPushSubscriptionRepository> {
@@ -53,6 +53,24 @@ impl<R: WebPushSubscriptionRepository> WebPushSubscriptionController<R> {
         };
         match self.usecases.delete_web_push_subscription(&mut web_push_subscription).await {
             Ok(_) => JSONResponse::<()>::build(Status::Ok, None, None),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
+    }
+
+    pub async fn broadcast(&self, req: &mut Request) -> Result<Response> {
+        let json_body = match req.text().await {
+            Ok(body) => body,
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Bad request".to_string()), None)
+        };
+        let broadcast_request: BroadcastRequest = match from_str(json_body.as_str()) {
+            Ok(broadcast_request) => broadcast_request,
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid request body".to_string()), None)
+        };
+        if broadcast_request.payload.title.is_empty() || broadcast_request.payload.body.is_empty() {
+            return JSONResponse::<()>::build(Status::BadRequest, Some("A title and a body are required".to_string()), None)
+        }
+        match self.usecases.broadcast(&broadcast_request.payload).await {
+            Ok(result) => JSONResponse::build(Status::Ok, None, Some(result)),
             Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
         }
     }

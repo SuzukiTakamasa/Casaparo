@@ -12,7 +12,7 @@ import MonthPaginator from '@components/MonthPaginator'
 
 import { ScheduleData, ScheduleResponse, LabelResponse, AnniversaryData, AnniversaryResponse, TaskData, TaskResponse, ShiftData, ShiftResponse } from '@utils/interfaces'
 import { TrashBoxIcon, PlusIcon } from '@components/Heroicons'
-import { ToasterComponent, APIResponseToast } from '@components/ToastMessage'
+import { ToasterComponent, APIResponseToast, toastMessage } from '@components/ToastMessage'
 import ValidationErrorMessage from '@components/ValidationErrorMessage'
 import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
@@ -460,6 +460,19 @@ const Schedule = () => {
         const schedules = await client.get<ScheduleResponse>(`/v2/schedule`)
         setSchedules(schedules.data || [])
     }, [])
+    // A failed broadcast must not read as a failed save, so it gets its own
+    // warning instead of being folded into the schedule's toast.
+    const notify = async (title: string) => {
+        const res = await subscriber.broadcast({
+            title: title,
+            body: `${description}\n${fromYear}-${fromMonth}-${fromDate} ${fromTime}\n~${toYear}-${toMonth}-${toDate} ${toTime}`
+        })
+        if (res.error !== null) {
+            toastMessage({ message: `Push通知の送信に失敗しました。:\n${res.error}`, type: "warning" })
+        } else if (res.data && res.data.failed > 0) {
+            toastMessage({ message: `${res.data.failed}件のPush通知の送信に失敗しました。`, type: "warning" })
+        }
+    }
     const addSchedule = async () => {
         const addScheduleData = {
             description: description,
@@ -477,10 +490,7 @@ const Schedule = () => {
         }
         const response = await client.post<ScheduleData>('/v2/schedule/create', addScheduleData)
         if (isNotified) {
-            await subscriber.broadcast({
-                title: "新しい予定が追加されました",
-                body: `${description}\n${fromYear}-${fromMonth}-${fromDate} ${fromTime}\n~${toYear}-${toMonth}-${toDate} ${toTime}`
-            })
+            await notify("新しい予定が追加されました")
         }
         await fetchSchedules()
         return response
@@ -507,10 +517,7 @@ const Schedule = () => {
         }
         const response = await client.post<ScheduleData>('/v2/schedule/update', updateSchedule)
         if (isNotified) {
-            await subscriber.broadcast({
-                title: "予定が更新されました",
-                body: `${description}\n${fromYear}-${fromMonth}-${fromDate} ${fromTime}\n~${toYear}-${toMonth}-${toDate} ${toTime}`
-            })
+            await notify("予定が更新されました")
         }
         await fetchSchedules()
         return response

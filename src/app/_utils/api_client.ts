@@ -1,9 +1,10 @@
-import { APIRequest, APIResponse, R2Response, Result, JSONResponse, WebPushSubscriptionData, WebPushSubscriptionResponse, BroadcastPayload, BroadcastData } from './interfaces'
+import { APIRequest, APIResponse, R2Response, Result, JSONResponse, WebPushSubscriptionData, BroadcastPayload, BroadcastData, BroadcastResult } from './interfaces'
 import { urlBase64ToUint8Array } from '@/app/_utils/utility_function'
 import * as dotenv from 'dotenv'
 dotenv.config()
-import { NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
+
+const SUBSCRIPTION_ID_STORAGE_KEY = 'subscription_id'
 
 
 export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
@@ -44,14 +45,16 @@ export class APIClient {
             return { data: null, error: String(e) }
         }
     }
-    public async post<T extends APIRequest>(endpoint: string, data: T): Promise<Result<T>> {
+    // `R` defaults to the request type because most endpoints echo it back, but
+    // it can be widened for the ones that answer with a different shape.
+    public async post<T extends APIRequest, R extends APIRequest | APIResponse = T>(endpoint: string, data: T): Promise<Result<R>> {
         try {
             const res = await fetch(this.host + endpoint, {
                 method: 'POST',
                 headers: this.headers,
                 body: JSON.stringify(data)
             })
-            const jsonResponse: JSONResponse<T> = await res.json()
+            const jsonResponse: JSONResponse<R> = await res.json()
             if (jsonResponse.status >= 400) {
                 return { data: null, error: jsonResponse.message }
             }
@@ -91,27 +94,28 @@ export class R2Client {
 }
 
 export class WebPushSubscriber {
-    private readonly headers: {[key: string]: string}
-    private readonly subscribeOptions: PushSubscriptionOptions
     private readonly client: APIClient
-    private readonly webPushHost: string
 
     constructor(apiClient: APIClient) {
-        this.headers = {
-            'Content-Type': 'application/json',
-        } as const
-        this.subscribeOptions = {
+        this.client = apiClient
+    }
+    // Built lazily: `urlBase64ToUint8Array` needs `window`, so building this in
+    // the constructor would yield an empty key during the static export render.
+    private buildSubscribeOptions(): PushSubscriptionOptions {
+        return {
             userVisibleOnly: true,
             applicationServerKey: new Uint8Array(urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!)).buffer
-        } as const
-        this.client = apiClient
-        this.webPushHost = process.env.NEXT_PUBLIC_WEB_PUSH_HOST_NAME as string
+        }
     }
     private arrayBufferToBase64(buffer: ArrayBuffer): string {
         const bytes = new Uint8Array(buffer)
         return btoa(String.fromCharCode.apply(null, Array.from(bytes)))
     }
+    public isSupported(): boolean {
+        return typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
+    }
     public async fetchSubscription(): Promise<Result<PushSubscription>> {
+        if (!this.isSupported()) return { data: null, error: 'Push notifications are not supported' }
         try {
             const registration = await navigator.serviceWorker.ready
             const subscription = await registration.pushManager.getSubscription()
@@ -128,9 +132,17 @@ export class WebPushSubscriber {
     }
 
     public async subscribe(): Promise<Result<WebPushSubscriptionData>> {
+        if (!this.isSupported()) return { data: null, error: 'Push notifications are not supported' }
         try {
+            // Chrome throws from subscribe() when permission is denied, so ask
+            // for it up front and report the refusal as a plain error instead.
+            const permission = await Notification.requestPermission()
+            if (permission !== 'granted') {
+                return { data: null, error: `Notification permission was ${permission}` }
+            }
+
             const registration = await navigator.serviceWorker.ready
-            const subscription = await registration.pushManager.subscribe(this.subscribeOptions)
+            const subscription = await registration.pushManager.subscribe(this.buildSubscribeOptions())
             const webPushSubscription: WebPushSubscriptionData = {
                 subscription_id: uuidv4(),
                 endpoint: subscription.endpoint,
@@ -138,9 +150,12 @@ export class WebPushSubscriber {
                 auth_key: this.arrayBufferToBase64(subscription.getKey('auth') as ArrayBuffer),
                 version: 0
             }
+            // `create` answers 201 with an empty body, so success is `error === null`.
             const res = await this.client.post<WebPushSubscriptionData>('/v2/web_push_subscription/create', webPushSubscription)
-            if (res.data) localStorage.setItem('subscription_id', webPushSubscription.subscription_id)
-            return { data: res.data, error: null }
+            if (res.error !== null) return { data: null, error: res.error }
+
+            localStorage.setItem(SUBSCRIPTION_ID_STORAGE_KEY, webPushSubscription.subscription_id)
+            return { data: webPushSubscription, error: null }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
@@ -148,37 +163,32 @@ export class WebPushSubscriber {
     }
 
     public async unsubscribe(): Promise<Result<WebPushSubscriptionData>> {
+        if (!this.isSupported()) return { data: null, error: 'Push notifications are not supported' }
         try {
             const subscription = await this.fetchSubscription()
-            if (!subscription.data) return { data: null, error: 'No Subscription' }
-            const subscription_id = localStorage.getItem('subscription_id')
+            const subscriptionId = localStorage.getItem(SUBSCRIPTION_ID_STORAGE_KEY)
 
-            if (!subscription_id) return { data: null, error: 'No Subscription ID' }
-            const savedSubscription = await this.client.get<WebPushSubscriptionData>(`/v2/web_push_subscription/${subscription_id}`)
+            // Revoke in the browser first so the toggle always takes effect. A
+            // row left behind is dropped on the next broadcast, when the push
+            // service reports the endpoint as gone.
+            if (subscription.data) await subscription.data.unsubscribe()
+            localStorage.removeItem(SUBSCRIPTION_ID_STORAGE_KEY)
 
-            if (!savedSubscription.data) return { data: null, error: 'No Saved Subscription' }
+            if (!subscriptionId) return { data: null, error: null }
+            const savedSubscription = await this.client.get<WebPushSubscriptionData>(`/v2/web_push_subscription/${subscriptionId}`)
+            if (savedSubscription.error !== null || !savedSubscription.data) return { data: null, error: null }
+
             const res = await this.client.post<WebPushSubscriptionData>('/v2/web_push_subscription/delete', savedSubscription.data)
-
-            if (res.data) localStorage.removeItem('subscription_id')
-            await subscription.data.unsubscribe()
-            return { data: res.data, error: null }
+            return { data: savedSubscription.data, error: res.error }
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }
         }
     }
 
-    public async broadcast(payload: BroadcastPayload): Promise<Result<BroadcastData>> {
+    public async broadcast(payload: BroadcastPayload): Promise<Result<BroadcastResult>> {
         try {
-            const subscriptions = await this.client.get<WebPushSubscriptionResponse>('/v2/web_push_subscription')
-            if (subscriptions.error !== null) {
-                return { data: null, error: `Internal Server Error: ${subscriptions.error}` }
-            }
-            const res = await this.client.post<BroadcastData>('/v2/web_push_subscription/broadcast', {
-                payload: payload,
-                subscriptions: subscriptions.data || []
-            })
-            return { data: res.data, error: null }
+            return await this.client.post<BroadcastData, BroadcastResult>('/v2/web_push_subscription/broadcast', { payload })
         } catch (e) {
             console.log(e)
             return { data: null, error: String(e) }

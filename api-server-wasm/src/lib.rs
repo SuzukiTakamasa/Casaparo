@@ -58,6 +58,7 @@ use crate::interfaces::api::task_comment_controller::TaskCommentController;
 use crate::infrastructure::repositories::d1_web_push_subscription_repository::D1WebPushSubscriptionRepository;
 use crate::application::usecases::web_push_subscription_usecases::WebPushSubscriptionUsecases;
 use crate::interfaces::api::web_push_subscription_controller::WebPushSubscriptionController;
+use crate::services::web_push::VapidConfig;
 
 use crate::infrastructure::repositories::d1_shift_repository::D1ShiftRepository;
 use crate::application::usecases::shift_usecases::ShiftUsecases;
@@ -85,11 +86,12 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
 
     let db_str = env.secret("D1_DATABASE_BINDING")?.to_string();
 
+    // The standalone web push server was folded into this worker, so its origin
+    // is no longer allow-listed here.
     let mut allowed_origins = vec![
         env.secret("CORS_FRONTEND_HOST")?.to_string(),
         env.secret("CORS_LINE_BOT_SERVER_HOST")?.to_string(),
-        env.secret("CORS_R2_HOST")?.to_string(),
-        env.secret("CORS_WEB_PUSH_HOST")?.to_string()
+        env.secret("CORS_R2_HOST")?.to_string()
     ];
     
     if db_str == "DB-DEV" {
@@ -161,7 +163,7 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
     let task_comment_controller = TaskCommentController::new(task_comment_usecases);
 
     let web_push_subscription_repository = D1WebPushSubscriptionRepository::new(db.clone());
-    let web_push_subscription_usecases = WebPushSubscriptionUsecases::new(web_push_subscription_repository);
+    let web_push_subscription_usecases = WebPushSubscriptionUsecases::new(web_push_subscription_repository, VapidConfig::from_env(&env));
     let web_push_subscription_controller = WebPushSubscriptionController::new(web_push_subscription_usecases);
 
     let shift_repository = D1ShiftRepository::new(db);
@@ -389,6 +391,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         })
         .post_async("/v2/web_push_subscription/delete", |mut req, ctx| async move {
             ctx.data.web_push_subscription_controller.delete_web_push_subscription(&mut req).await
+        })
+        .post_async("/v2/web_push_subscription/broadcast", |mut req, ctx| async move {
+            ctx.data.web_push_subscription_controller.broadcast(&mut req).await
         })
      //shift
         .get_async("/v2/shift", |_req, ctx| async move {

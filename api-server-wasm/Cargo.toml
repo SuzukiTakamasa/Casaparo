@@ -16,6 +16,16 @@ serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 serde_urlencoded = "0.7.1"
 
+# Web Push (RFC 8291 / RFC 8292).
+# The default features of these crates pull in `getrandom`, which has no
+# wasm32-unknown-unknown backend, so they are switched off and the randomness we
+# need is taken straight from the Workers runtime (crypto.getRandomValues).
+p256 = { version = "0.13.2", default-features = false, features = ["alloc", "arithmetic", "ecdh", "ecdsa"] }
+aes-gcm = { version = "0.10.3", default-features = false, features = ["aes", "alloc"] }
+hkdf = "0.12.4"
+sha2 = "0.10.9"
+base64 = "0.22.1"
+
 [profile.release]
 lto = true
 strip = true
