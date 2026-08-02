@@ -489,7 +489,7 @@ const Schedule = () => {
             version: version
         }
         const response = await client.post<ScheduleData>('/v2/schedule/create', addScheduleData)
-        if (isNotified) {
+        if (isSubscribed && isNotified) {
             await notify("新しい予定が追加されました")
         }
         await fetchSchedules()
@@ -516,7 +516,7 @@ const Schedule = () => {
             version: version
         }
         const response = await client.post<ScheduleData>('/v2/schedule/update', updateSchedule)
-        if (isNotified) {
+        if (isSubscribed && isNotified) {
             await notify("予定が更新されました")
         }
         await fetchSchedules()
@@ -806,16 +806,18 @@ const Schedule = () => {
                                             </select>
                                         </label>
                                     </div>
-                                    {/*<div>
-                                        <label className="text-black">
-                                        <input
-                                            type="checkbox"
-                                            checked={isNotified}
-                                            onChange={e => setIsNotified(!isNotified)}
-                                        />
-                                        <span className="ml-2">通知を受け取る</span>
-                                        </label>
-                                    </div>*/}
+                                    {isSubscribed &&
+                                        <div>
+                                            <label className="text-black">
+                                            <input
+                                                type="checkbox"
+                                                checked={isNotified}
+                                                onChange={e => setIsNotified(!isNotified)}
+                                            />
+                                            <span className="ml-2">通知を受け取る</span>
+                                            </label>
+                                        </div>
+                                    }
                                 </div>
                                 <div className="flex justify-center space-x-4">
                                     <button
