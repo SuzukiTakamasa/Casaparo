@@ -23,3 +23,7 @@ worker-build --release"""
 binding = "DB-DEV" # i.e. available in your Worker on env.DB
 database_name = "casaparo-dev"
 database_id = "14a0d526-a91e-44da-861c-2bd2e2a54b3b"
+
+[observability.logs]
+enabled = true
+invocation_logs = true
