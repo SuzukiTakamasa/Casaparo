@@ -23,3 +23,7 @@ worker-build --release"""
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "casaparo"
 database_id = "9f32bbb8-b727-499f-b323-de1c399466df"
+
+[observability.logs]
+enabled = true
+invocation_logs = true

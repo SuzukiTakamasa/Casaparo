@@ -3,6 +3,10 @@
         "./api-server-wasm/Cargo.toml"
     ],
     "rust-analyzer.procMacro.enable": true,
-    "kiroAgent.configureMCP": "Disabled",
-    
+    "rust-analyzer.diagnostics.disabled": [
+        "missing-unsafe"
+    ],
+    "rust-analyzer.cargo.target": "wasm32-unknown-unknown",
+    "rust-analyzer.check.allTargets": false,
+    "kiroAgent.configureMCP": "Disabled"
 }
