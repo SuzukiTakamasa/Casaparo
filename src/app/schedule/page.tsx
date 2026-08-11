@@ -83,7 +83,6 @@ const Schedule = () => {
 
     const [isBlocking, setIsBlocking] = useState(false)
     const [isEvery15Mins, setIsEvery15Mins] = useState(false)
-    const [isDuplicated, setIsDuplicated] = useState(false)
 
     const subscriber = useMemo(() => new WebPushSubscriber(client), [])
 
@@ -445,7 +444,6 @@ const Schedule = () => {
         setCreatedByValidMsg("")
         setIsNotified(false)
         setIsEvery15Mins(false)
-        setIsDuplicated(false)
     }
     const handleIsMultipleDays = () => {
         setIsMultipleDays(!isMultipleDays)
@@ -453,15 +451,10 @@ const Schedule = () => {
     const handleIsEvery15Mins = () => {
         setIsEvery15Mins(!isEvery15Mins)
     }
-    const handleIsDuplicated = () => {
-        setIsDuplicated(!isDuplicated)
-    }
     const fetchSchedules = useCallback(async () => {
         const schedules = await client.get<ScheduleResponse>(`/v2/schedule`)
         setSchedules(schedules.data || [])
     }, [])
-    // A failed broadcast must not read as a failed save, so it gets its own
-    // warning instead of being folded into the schedule's toast.
     const notify = async (title: string) => {
         const res = await subscriber.broadcast({
             title: title,

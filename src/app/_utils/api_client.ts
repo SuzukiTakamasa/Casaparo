@@ -5,6 +5,10 @@ dotenv.config()
 import { v4 as uuidv4 } from 'uuid'
 
 const SUBSCRIPTION_ID_STORAGE_KEY = 'subscription_id'
+/** How long to wait for a service worker to reach "activated". */
+const SERVICE_WORKER_READY_TIMEOUT_MS = 10_000
+/** How long to leave the notification permission prompt unanswered. */
+const PERMISSION_PROMPT_TIMEOUT_MS = 60_000
 
 
 export const execExternalGetAPI = async<T>(url: string, getParams?: string): Promise<Result<T>> => {
@@ -99,8 +103,7 @@ export class WebPushSubscriber {
     constructor(apiClient: APIClient) {
         this.client = apiClient
     }
-    // Built lazily: `urlBase64ToUint8Array` needs `window`, so building this in
-    // the constructor would yield an empty key during the static export render.
+
     private buildSubscribeOptions(): PushSubscriptionOptions {
         return {
             userVisibleOnly: true,
@@ -111,13 +114,32 @@ export class WebPushSubscriber {
         const bytes = new Uint8Array(buffer)
         return btoa(String.fromCharCode.apply(null, Array.from(bytes)))
     }
+
+    private withTimeout<T>(promise: Promise<T>, timeoutMs: number, message: string): Promise<T> {
+        let timer: ReturnType<typeof setTimeout>
+        const timeout = new Promise<never>((_, reject) => {
+            timer = setTimeout(() => reject(new Error(message)), timeoutMs)
+        })
+        return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
+    }
+
+    private awaitRegistration(): Promise<ServiceWorkerRegistration> {
+        return this.withTimeout(
+            navigator.serviceWorker.ready,
+            SERVICE_WORKER_READY_TIMEOUT_MS,
+            'The service worker is not active on this origin'
+        )
+    }
     public isSupported(): boolean {
-        return typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window
+        return typeof window !== 'undefined'
+            && 'serviceWorker' in navigator
+            && 'PushManager' in window
+            && 'Notification' in window
     }
     public async fetchSubscription(): Promise<Result<PushSubscription>> {
         if (!this.isSupported()) return { data: null, error: 'Push notifications are not supported' }
         try {
-            const registration = await navigator.serviceWorker.ready
+            const registration = await this.awaitRegistration()
             const subscription = await registration.pushManager.getSubscription()
 
             if (subscription?.expirationTime && subscription.expirationTime < Date.now()) {
@@ -134,14 +156,21 @@ export class WebPushSubscriber {
     public async subscribe(): Promise<Result<WebPushSubscriptionData>> {
         if (!this.isSupported()) return { data: null, error: 'Push notifications are not supported' }
         try {
-            // Chrome throws from subscribe() when permission is denied, so ask
-            // for it up front and report the refusal as a plain error instead.
-            const permission = await Notification.requestPermission()
-            if (permission !== 'granted') {
-                return { data: null, error: `Notification permission was ${permission}` }
+            if (Notification.permission === 'denied') {
+                return { data: null, error: 'Notification permission is blocked for this site' }
+            }
+            if (Notification.permission === 'default') {
+                const permission = await this.withTimeout(
+                    Notification.requestPermission(),
+                    PERMISSION_PROMPT_TIMEOUT_MS,
+                    'The notification permission prompt went unanswered'
+                )
+                if (permission !== 'granted') {
+                    return { data: null, error: `Notification permission was ${permission}` }
+                }
             }
 
-            const registration = await navigator.serviceWorker.ready
+            const registration = await this.awaitRegistration()
             const subscription = await registration.pushManager.subscribe(this.buildSubscribeOptions())
             const webPushSubscription: WebPushSubscriptionData = {
                 subscription_id: uuidv4(),
@@ -150,7 +179,6 @@ export class WebPushSubscriber {
                 auth_key: this.arrayBufferToBase64(subscription.getKey('auth') as ArrayBuffer),
                 version: 0
             }
-            // `create` answers 201 with an empty body, so success is `error === null`.
             const res = await this.client.post<WebPushSubscriptionData>('/v2/web_push_subscription/create', webPushSubscription)
             if (res.error !== null) return { data: null, error: res.error }
 
@@ -168,9 +196,6 @@ export class WebPushSubscriber {
             const subscription = await this.fetchSubscription()
             const subscriptionId = localStorage.getItem(SUBSCRIPTION_ID_STORAGE_KEY)
 
-            // Revoke in the browser first so the toggle always takes effect. A
-            // row left behind is dropped on the next broadcast, when the push
-            // service reports the endpoint as gone.
             if (subscription.data) await subscription.data.unsubscribe()
             localStorage.removeItem(SUBSCRIPTION_ID_STORAGE_KEY)
 
