@@ -328,20 +328,20 @@ const Setting = () => {
             toastMessage({ message: "このブラウザはPush通知に対応していません。", type: "error" })
             return
         }
-        const popupMsg = isSubscribed ? "Push通知の購読を解除しますか?" : "Push通知を購読しますか?"
-        if (!window.confirm(popupMsg)) return
+        if (isSubscribed && !window.confirm("Push通知の購読を解除しますか?")) return
 
         setIsBlocking(true)
-        const res = isSubscribed ? await subscriber.unsubscribe() : await subscriber.subscribe()
-        setIsBlocking(false)
-
-        APIResponseToast(
-            res,
-            isSubscribed ? "Push通知の購読を解除しました。" : "Push通知を購読しました。",
-            isSubscribed ? "Push通知の購読解除に失敗しました。" : "Push通知の購読に失敗しました。"
-        )
-        // Only flip the switch when the change actually went through.
-        if (res.error === null) setIsSubscribed(!isSubscribed)
+        try {
+            const res = isSubscribed ? await subscriber.unsubscribe() : await subscriber.subscribe()
+            APIResponseToast(
+                res,
+                isSubscribed ? "Push通知の購読を解除しました。" : "Push通知を購読しました。",
+                isSubscribed ? "Push通知の購読解除に失敗しました。" : "Push通知の購読に失敗しました。"
+            )
+            if (res.error === null) setIsSubscribed(!isSubscribed)
+        } finally {
+            setIsBlocking(false)
+        }
     }
     
     useEffect(() => {
