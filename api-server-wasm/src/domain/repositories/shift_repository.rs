@@ -9,4 +9,5 @@ pub trait ShiftRepository {
     async fn create_shift(&self, shift: &Shift) -> Result<()>;
     async fn update_shift(&self, shift: &mut Shift) -> Result<()>;
     async fn delete_shift(&self, shift: &mut Shift) -> Result<()>;
+    async fn migrate_schema(&self, shifts: &[Shift]) -> Result<()>;
 }

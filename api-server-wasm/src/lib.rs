@@ -411,6 +411,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .post_async("/v2/shift/delete", |mut req, ctx| async move {
             ctx.data.shift_controller.delete_shift(&mut req).await
         })
+        .post_async("/v2/shift/migrate_schema", |mut req, ctx| async move {
+            ctx.data.shift_controller.migrate_schema(&mut req).await
+        })
     .run(req, env)
     .await
     .map(|resp| resp.with_headers(headers))
