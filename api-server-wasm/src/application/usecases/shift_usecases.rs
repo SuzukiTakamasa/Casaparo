@@ -27,6 +27,10 @@ impl<R: ShiftRepository> ShiftUsecases<R> {
         self.repository.update_shift(shift).await
     }
 
+    pub async fn migrate_schema(&self, shifts: &[Shift]) -> Result<()> {
+        self.repository.migrate_schema(shifts).await
+    }
+
     pub async fn delete_shift(&self, shift: &mut Shift) -> Result<()> {
         self.repository.delete_shift(shift).await
     }

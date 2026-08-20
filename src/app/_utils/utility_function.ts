@@ -107,6 +107,22 @@ export const getDateArray = (month: number): number[] => {
     return dateArray
 }
 
+export const WorkingHourArray = Array.from({ length: 24 }, (_, i) => i)
+export const WorkingMinuteArray = [0, 30]
+
+export const splitWorkingHour = (workingHour: number): readonly number[] & { length: 2 } => {
+    const hour = Math.floor(workingHour)
+    const minute = Math.round((workingHour - hour) * 60)
+    return [hour, minute] as const
+}
+
+export const toWorkingHour = (hour: number, minute: number): number => hour + minute / 60
+
+export const formatWorkingHour = (workingHour: number): string => {
+    const [hour, minute] = splitWorkingHour(workingHour)
+    return `${hour}:${String(minute).padStart(2, "0")}`
+}
+
 export const isUnsignedInteger = (intStr: string): boolean => {
     return /^\d+$/.test(intStr)
 }

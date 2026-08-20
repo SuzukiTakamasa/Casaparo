@@ -168,6 +168,10 @@ export interface ShiftData {
     version: number
 }
 
+export interface ShiftMigrationData {
+    shifts: ShiftData[]
+}
+
 export interface R2Response extends Response {
     image_url: string
 }
@@ -260,6 +264,7 @@ export type APIRequest = HouseholdData |
                               TaskData |
                        TaskCommentData |
                              ShiftData |
+                    ShiftMigrationData |
                WebPushSubscriptionData |
                          BroadcastData
 

@@ -1,5 +1,5 @@
 use crate::application::usecases::shift_usecases::ShiftUsecases;
-use crate::domain::entities::shift::Shift;
+use crate::domain::entities::shift::{Shift, ShiftMigration};
 use crate::domain::repositories::shift_repository::ShiftRepository;
 use super::*;
 
@@ -74,6 +74,21 @@ impl<R: ShiftRepository> ShiftController<R> {
             Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid request body".to_string()), None),
         };
         match self.usecases.delete_shift(&mut shift).await {
+            Ok(_) => JSONResponse::<()>::build(Status::Ok, None, None),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
+    }
+
+    pub async fn migrate_schema(&self, req: &mut Request) -> Result<Response> {
+        let json_body = match req.text().await {
+            Ok(body) => body,
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Bad request".to_string()), None),
+        };
+        let migration: ShiftMigration = match from_str(json_body.as_str()) {
+            Ok(migration) => migration,
+            Err(_) => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid request body".to_string()), None),
+        };
+        match self.usecases.migrate_schema(&migration.shifts).await {
             Ok(_) => JSONResponse::<()>::build(Status::Ok, None, None),
             Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
         }

@@ -19,7 +19,7 @@ import { PageTitle } from '@components/Title'
 import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 import Link from 'next/link'
 import { APIClient, WebPushSubscriber, execExternalGetAPI } from '@utils/api_client'
-import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, MonthArray, sortSchedulesByTime, validateFromTimeAndToTime, splitYearMonthDayStr } from '@utils/utility_function'
+import { setCreatedByStr, getToday, getNumberOfDays, getWeekDay, MonthArray, sortSchedulesByTime, validateFromTimeAndToTime, splitYearMonthDayStr, formatWorkingHour } from '@utils/utility_function'
 import { CreatedBy } from '@utils/constants'
 
 
@@ -274,7 +274,7 @@ const Schedule = () => {
                             key={i}
                             className="bg-gray-600 hover:bg-gray-800 text-white py-1 px-2 m-1 rounded-full"
                         >
-                            {`💼${shift.work} ${shift.working_hour_from}:00-${shift.working_hour_to}:00`}
+                            {`💼${shift.work} ${formatWorkingHour(shift.working_hour_from)}-${formatWorkingHour(shift.working_hour_to)}`}
                         </button>
                     ))}
                 </td>

@@ -18,12 +18,10 @@ import Loader from '@components/Loader'
 import { PageTitle } from '@components/Title'
 import { HorizontallyScrollableTable } from '@components/HorizontallyScrollableTable'
 import { APIClient } from '@utils/api_client'
-import { getToday, getNumberOfDays, getWeekDay, formatNumberWithCommas, isUnsignedInteger } from '@utils/utility_function'
+import { getToday, getNumberOfDays, getWeekDay, formatNumberWithCommas, isUnsignedInteger, WorkingHourArray, WorkingMinuteArray, splitWorkingHour, toWorkingHour, formatWorkingHour } from '@utils/utility_function'
 
 
 const client = new APIClient()
-
-const HoursArray = Array.from({ length: 24 }, (_, i) => i)
 
 const DependentWall = 108333
 
@@ -59,7 +57,7 @@ const Shift = () => {
     const monthDaysArray = Array.from({ length: numberOfDays }, (_, i) => i + 1)
 
     const calcWage = (shift: ShiftData): number => {
-        return (shift.working_hour_to - shift.working_hour_from) * shift.hourly_wage + (shift.transportation_expense ?? 0)
+        return Math.floor((shift.working_hour_to - shift.working_hour_from) * shift.hourly_wage) + (shift.transportation_expense ?? 0)
     }
 
     const totalWage = shifts.reduce((total, shift) => total + calcWage(shift), 0)
@@ -234,27 +232,49 @@ const Shift = () => {
                                     <div className="flex justify-center">
                                         <label className="text-black mx-1">
                                             <span>開始時刻</span>
-                                            <select
-                                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={workingHourFrom}
-                                                onChange={e => setWorkingHourFrom(Number(e.target.value))}
-                                            >
-                                                {HoursArray.map((h, i) => (
-                                                    <option key={i} value={h}>{`${h}:00`}</option>
-                                                ))}
-                                            </select>
+                                            <div className="flex mt-2">
+                                                <select
+                                                    className="block w-full px-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                    value={splitWorkingHour(workingHourFrom)[0]}
+                                                    onChange={e => setWorkingHourFrom(toWorkingHour(Number(e.target.value), splitWorkingHour(workingHourFrom)[1]))}
+                                                >
+                                                    {WorkingHourArray.map((h, i) => (
+                                                        <option key={i} value={h}>{`${h}時`}</option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    className="block w-full px-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
+                                                    value={splitWorkingHour(workingHourFrom)[1]}
+                                                    onChange={e => setWorkingHourFrom(toWorkingHour(splitWorkingHour(workingHourFrom)[0], Number(e.target.value)))}
+                                                >
+                                                    {WorkingMinuteArray.map((m, i) => (
+                                                        <option key={i} value={m}>{`${String(m).padStart(2, "0")}分`}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </label>
                                         <label className="text-black mx-1">
                                             <span>終了時刻</span>
-                                            <select
-                                                className="block w-full px-4 py-2 mt-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
-                                                value={workingHourTo}
-                                                onChange={e => setWorkingHourTo(Number(e.target.value))}
-                                            >
-                                                {HoursArray.map((h, i) => (
-                                                    <option key={i} value={h}>{`${h}:00`}</option>
-                                                ))}
-                                            </select>
+                                            <div className="flex mt-2">
+                                                <select
+                                                    className="block w-full px-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50"
+                                                    value={splitWorkingHour(workingHourTo)[0]}
+                                                    onChange={e => setWorkingHourTo(toWorkingHour(Number(e.target.value), splitWorkingHour(workingHourTo)[1]))}
+                                                >
+                                                    {WorkingHourArray.map((h, i) => (
+                                                        <option key={i} value={h}>{`${h}時`}</option>
+                                                    ))}
+                                                </select>
+                                                <select
+                                                    className="block w-full px-2 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 focus:ring-opacity-50 ml-1"
+                                                    value={splitWorkingHour(workingHourTo)[1]}
+                                                    onChange={e => setWorkingHourTo(toWorkingHour(splitWorkingHour(workingHourTo)[0], Number(e.target.value)))}
+                                                >
+                                                    {WorkingMinuteArray.map((m, i) => (
+                                                        <option key={i} value={m}>{`${String(m).padStart(2, "0")}分`}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
                                         </label>
                                     </div>
                                     <ValidationErrorMessage message={workingHourValidMsg} />
@@ -363,7 +383,7 @@ const Shift = () => {
                                     </td>
                                     <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{`${shift.date}日(${getWeekDay(shift.year, shift.month, shift.date)})`}</td>
                                     <td className="border-b px-1 py-1 text-center text-sm">{shift.work}</td>
-                                    <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{`${shift.working_hour_from}:00-${shift.working_hour_to}:00`}</td>
+                                    <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{`${formatWorkingHour(shift.working_hour_from)}-${formatWorkingHour(shift.working_hour_to)}`}</td>
                                     <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{`¥${formatNumberWithCommas(calcWage(shift))}`}</td>
                                     <td className="border-b px-1 py-1 text-center text-sm whitespace-nowrap">{`¥${formatNumberWithCommas(shift.transportation_expense ?? 0)}`}</td>
                                 </tr>
