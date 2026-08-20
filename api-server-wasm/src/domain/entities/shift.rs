@@ -13,10 +13,3 @@ pub struct Shift {
     pub transportation_expense: Option<u32>,
     pub version: u32,
 }
-
-/// Body of the schema migration patch: the rows fetched from the old table,
-/// handed back so they can be re-inserted after `shifts` is rebuilt.
-#[derive(Serialize, Deserialize, Debug)]
-pub struct ShiftMigration {
-    pub shifts: Vec<Shift>,
-}
