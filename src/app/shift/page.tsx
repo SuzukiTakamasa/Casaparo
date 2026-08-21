@@ -61,6 +61,8 @@ const Shift = () => {
     }
 
     const totalWage = shifts.reduce((total, shift) => total + calcWage(shift), 0)
+    const totalTransportationExpense = shifts.reduce((total, shift) => total + (shift.transportation_expense ?? 0), 0)
+    const totalWageExcludingTransportationExpense = totalWage - totalTransportationExpense
 
     const validate = () => {
         let isValid = true
@@ -329,12 +331,27 @@ const Shift = () => {
                         </div>
                     )}
 
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">今月の勤務日数: {shifts.length}日</div>
-                    <div className="px-1 py-2 text-xl text-center text-white font-bold">今月の給料： ¥{formatNumberWithCommas(totalWage)}</div>
-                    <div className={`px-1 py-2 text-xl text-center font-bold ${totalWage > DependentWall ? "text-red-500" : "text-white"}`}>
-                        {totalWage > DependentWall
-                            ? `扶養の壁まであと： ¥${formatNumberWithCommas(totalWage - DependentWall)}(超過)`
-                            : `扶養の壁まであと： ¥${formatNumberWithCommas(DependentWall - totalWage)}`}
+                    <div className="w-full max-w-sm mx-auto">
+                        <div className="px-1 py-2 flex justify-between text-xl text-white font-bold">
+                            <span>今月の勤務日数:</span>
+                            <span>{shifts.length}日</span>
+                        </div>
+                        <div className="px-1 py-2 flex justify-between text-xl text-white font-bold">
+                            <span>今月の給料：</span>
+                            <span>¥{formatNumberWithCommas(totalWage)}</span>
+                        </div>
+                        <div className="px-1 py-2 flex justify-between text-lg text-white">
+                            <span>(交通費を除いた額)：</span>
+                            <span>¥{formatNumberWithCommas(totalWageExcludingTransportationExpense)}</span>
+                        </div>
+                        <div className={`px-1 py-2 flex justify-between text-xl font-bold ${totalWage > DependentWall ? "text-red-500" : "text-white"}`}>
+                            <span>扶養の壁まであと：</span>
+                            <span>
+                                {totalWage > DependentWall
+                                    ? `¥${formatNumberWithCommas(totalWage - DependentWall)}(超過)`
+                                    : `¥${formatNumberWithCommas(DependentWall - totalWage)}`}
+                            </span>
+                        </div>
                     </div>
 
                     <HorizontallyScrollableTable>
