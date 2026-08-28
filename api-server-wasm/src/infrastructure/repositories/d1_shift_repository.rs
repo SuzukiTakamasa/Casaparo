@@ -37,6 +37,18 @@ impl ShiftRepository for D1ShiftRepository {
         result.results::<Shift>()
     }
 
+    async fn get_today_or_tomorrow_shifts(&self, year: u32, month: u32, day: u32) -> Result<Vec<Shift>> {
+        let statement = self.db.prepare(r#"select *
+                                           from shifts
+                                           where year = ?1
+                                           and month = ?2
+                                           and (date = ?3 or date = ?3 + 1)
+                                           order by date asc, id asc"#);
+        let query = statement.bind(&[year.into(), month.into(), day.into()])?;
+        let result = query.all().await?;
+        result.results::<Shift>()
+    }
+
     async fn create_shift(&self, shift: &Shift) -> Result<()> {
         let statement = self.db.prepare(r#"insert into shifts
                                            (year, month, date, work, working_hour_from, working_hour_to, hourly_wage, transportation_expense, version)
