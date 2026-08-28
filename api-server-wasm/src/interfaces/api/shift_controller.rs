@@ -34,6 +34,25 @@ impl<R: ShiftRepository> ShiftController<R> {
         }
     }
 
+    pub async fn get_today_or_tomorrow_shifts(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let year: u32 = match ctx.param("year").and_then(|v| v.parse().ok()) {
+            Some(v) => v,
+            None => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid year".to_string()), None),
+        };
+        let month: u32 = match ctx.param("month").and_then(|v| v.parse().ok()) {
+            Some(v) => v,
+            None => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid month".to_string()), None),
+        };
+        let day: u32 = match ctx.param("day").and_then(|v| v.parse().ok()) {
+            Some(v) => v,
+            None => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid day".to_string()), None),
+        };
+        match self.usecases.get_today_or_tomorrow_shifts(year, month, day).await {
+            Ok(shifts) => JSONResponse::build(Status::Ok, None, Some(shifts)),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
+    }
+
     pub async fn create_shift(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,

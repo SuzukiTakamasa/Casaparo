@@ -19,6 +19,10 @@ impl<R: ShiftRepository> ShiftUsecases<R> {
         self.repository.get_shifts_by_year_month(year, month).await
     }
 
+    pub async fn get_today_or_tomorrow_shifts(&self, year: u32, month: u32, day: u32) -> Result<Vec<Shift>> {
+        self.repository.get_today_or_tomorrow_shifts(year, month, day).await
+    }
+
     pub async fn create_shift(&self, shift: &Shift) -> Result<()> {
         self.repository.create_shift(shift).await
     }

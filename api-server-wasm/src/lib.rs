@@ -402,6 +402,9 @@ async fn main(req: Request, env: Env, _ctx: Context) -> Result<Response> {
         .get_async("/v2/shift/:year/:month", |_req, ctx| async move {
             ctx.data.shift_controller.get_shifts_by_year_month(&ctx).await
         })
+        .get_async("/v2/shift/today_or_tomorrow/:year/:month/:day", |_req, ctx| async move {
+            ctx.data.shift_controller.get_today_or_tomorrow_shifts(&ctx).await
+        })
         .post_async("/v2/shift/create", |mut req, ctx| async move {
             ctx.data.shift_controller.create_shift(&mut req).await
         })

@@ -12,8 +12,8 @@ import { PageTitle, CardTitle } from '@components/Title'
 
 import { APIClient } from '@utils/api_client'
 
-import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse } from '@utils/interfaces'
-import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByFromDate, sortSchedulesByTime, isWithinAWeekFromDueDate, isOverDueDate } from '@utils/utility_function'
+import { IsCompleted, FixedAmount, ScheduleResponse, AnniversaryResponse, InventoryResponse, TaskResponse, ShiftResponse } from '@utils/interfaces'
+import { formatNumberWithCommas, getToday, getWeekDay, setCreatedByStr, sortSchedulesByFromDate, sortSchedulesByTime, isWithinAWeekFromDueDate, isOverDueDate, formatWorkingHour } from '@utils/utility_function'
 import { HouseholdConstants, DateOfFixedHousehold } from '@utils/constants' 
 import { ExclamationTriangleIcon } from '@components/Heroicons'
 
@@ -50,6 +50,7 @@ export default function Home() {
   const [fixedAmount, setFixedAmount] = useState<FixedAmount>({ billing_amount: 0, total_amount: 0})
   const [schedules, setSchedules] = useState<ScheduleResponse>([])
   const [anniversaries, setAnniversaries] = useState<AnniversaryResponse>([])
+  const [shifts, setShifts] = useState<ShiftResponse>([])
   const [inventories, setInventories] = useState<InventoryResponse>([])
   const [tasks, setTasks] = useState<TaskResponse>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -74,6 +75,10 @@ export default function Home() {
     const anniversaries = await client.get<AnniversaryResponse>(`/v2/anniversary/today_or_tomorrow/${month}/${today}`)
     setAnniversaries(anniversaries.data || [])
   }, [month, today])
+  const fetchShifts = useCallback(async () => {
+    const shifts = await client.get<ShiftResponse>(`/v2/shift/today_or_tomorrow/${year}/${month}/${today}`)
+    setShifts(shifts.data || [])
+  }, [year, month, today])
   const fetchInventories = useCallback(async () => {
     const inventories = await client.get<InventoryResponse>('/v2/inventory/empty')
     setInventories(inventories.data || [])
@@ -101,11 +106,12 @@ export default function Home() {
     fetchSchedules()
     fetchTasks()
     fetchAnniversaries()
+    fetchShifts()
     fetchInventories()
 
     fetchIsCompletedCurrentMonth()
     fetchIsCompletedLastMonth()
-   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchInventories, fetchTasks, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
+   }, [fetchFixedAmount, fetchSchedules, fetchAnniversaries, fetchShifts, fetchInventories, fetchTasks, fetchIsCompletedCurrentMonth, fetchIsCompletedLastMonth])
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
@@ -140,6 +146,11 @@ export default function Home() {
               {anniversaries.map((anniversary, i) => (
                 <tr key={`anniversary-${i}`} className="text-lg">
                   <td>🎉 {anniversary.date}日({getWeekDay(year, month, anniversary.date)}) {anniversary.description}</td>
+                </tr>
+              ))}
+              {shifts.map((shift, i) => (
+                <tr key={`shift-${i}`} className="text-lg">
+                  <td>🗒️ {shift.date}日({getWeekDay(shift.year, shift.month, shift.date)}) {formatWorkingHour(shift.working_hour_from)}-{formatWorkingHour(shift.working_hour_to)} {shift.work}</td>
                 </tr>
               ))}
             </tbody>
