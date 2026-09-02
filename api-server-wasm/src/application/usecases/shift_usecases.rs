@@ -1,4 +1,5 @@
 use crate::domain::entities::shift::Shift;
+use crate::domain::entities::shift::AnnualIncome;
 use crate::domain::repositories::shift_repository::ShiftRepository;
 use worker::Result;
 
@@ -21,6 +22,10 @@ impl<R: ShiftRepository> ShiftUsecases<R> {
 
     pub async fn get_today_or_tomorrow_shifts(&self, year: u32, month: u32, day: u32) -> Result<Vec<Shift>> {
         self.repository.get_today_or_tomorrow_shifts(year, month, day).await
+    }
+
+    pub async fn get_annual_income(&self, year: u32) -> Result<AnnualIncome> {
+        self.repository.get_annual_income(year).await
     }
 
     pub async fn create_shift(&self, shift: &Shift) -> Result<()> {

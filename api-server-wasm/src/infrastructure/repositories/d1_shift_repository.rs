@@ -1,4 +1,5 @@
 use crate::domain::entities::shift::Shift;
+use crate::domain::entities::shift::AnnualIncome;
 use crate::domain::entities::service::LatestVersion;
 use crate::domain::repositories::shift_repository::ShiftRepository;
 use crate::{optimistic_lock, worker_error};
@@ -47,6 +48,18 @@ impl ShiftRepository for D1ShiftRepository {
         let query = statement.bind(&[year.into(), month.into(), day.into()])?;
         let result = query.all().await?;
         result.results::<Shift>()
+    }
+
+    async fn get_annual_income(&self, year: u32) -> Result<AnnualIncome> {
+        let statement = self.db.prepare(r#"select sum((working_hour_to - working_hour_from) * hourly_wage + transportation_expense) as annual_income
+                                        from shifts
+                                        where year = ?1"#);
+        let query = statement.bind(&[year.into()])?;
+        let result = query.first::<AnnualIncome>(None).await?;
+        match result {
+            Some(annual_income) => Ok(annual_income),
+            None => worker_error!("Failed to fetch annual income")
+        }
     }
 
     async fn create_shift(&self, shift: &Shift) -> Result<()> {
