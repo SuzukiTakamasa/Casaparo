@@ -53,6 +53,17 @@ impl<R: ShiftRepository> ShiftController<R> {
         }
     }
 
+    pub async fn get_annual_income(&self, ctx: &RouteContext<AppState>) -> Result<Response> {
+        let year: u32 = match ctx.param("year").and_then(|v| v.parse().ok()) {
+            Some(v) => v,
+            None => return JSONResponse::<()>::build(Status::BadRequest, Some("Invalid year".to_string()), None),
+        };
+        match self.usecases.get_annual_income(year).await {
+            Ok(annual_income) => JSONResponse::build(Status::Ok, None, Some(annual_income)),
+            Err(e) => JSONResponse::<()>::build(Status::InternalServerError, Some(e.to_string()), None),
+        }
+    }
+ 
     pub async fn create_shift(&self, req: &mut Request) -> Result<Response> {
         let json_body = match req.text().await {
             Ok(body) => body,

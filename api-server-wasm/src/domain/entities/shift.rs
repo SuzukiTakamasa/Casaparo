@@ -13,3 +13,8 @@ pub struct Shift {
     pub transportation_expense: Option<u32>,
     pub version: u32,
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct AnnualIncome {
+    pub annual_income: u32
+}
