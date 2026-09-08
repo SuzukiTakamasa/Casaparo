@@ -7,19 +7,22 @@ import worker from "../src/index";
 // `Request` to pass to `worker.fetch()`.
 const IncomingRequest = Request<unknown, IncomingRequestCfProperties>;
 
-describe("Hello World worker", () => {
-  it("responds with Hello World! (unit style)", async () => {
-    const request = new IncomingRequest("http://example.com");
+describe("R2 worker", () => {
+  it("returns 404 when the requested object does not exist (unit style)", async () => {
+    const request = new IncomingRequest("http://example.com/missing-object");
     // Create an empty context to pass to `worker.fetch()`.
     const ctx = createExecutionContext();
-    const response = await worker.fetch(request, env, ctx);
+    const testEnv = { ...env, R2_WORKER_HOST: "http://localhost:8787" };
+    const response = await worker.fetch(request, testEnv, ctx);
     // Wait for all `Promise`s passed to `ctx.waitUntil()` to settle before running test assertions
     await waitOnExecutionContext(ctx);
-    expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+    expect(response.status).toBe(404);
+    expect(await response.text()).toBe("Not found: null; key name: missing-object");
   });
 
-  it("responds with Hello World! (integration style)", async () => {
-   const response = await SELF.fetch("https://example.com");
-   expect(await response.text()).toMatchInlineSnapshot(`"Hello World!"`);
+  it("returns 404 when the requested object does not exist (integration style)", async () => {
+   const response = await SELF.fetch("https://example.com/missing-object");
+   expect(response.status).toBe(404);
+   expect(await response.text()).toBe("Not found: null; key name: missing-object");
  });
 });
