@@ -7,6 +7,9 @@ compatibility_flags = ["nodejs_compat"]
 binding = "CASAPARO_DEV"
 bucket_name = "casaparo-dev"
 
+[vars]
+R2_WORKER_HOST = "http://localhost:8787"
+
 # Variable bindings. These are arbitrary, plaintext strings (similar to environment variables)
 # Note: Use secrets to store sensitive data.
 # Docs: https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables

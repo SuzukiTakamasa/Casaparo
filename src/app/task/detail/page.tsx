@@ -626,7 +626,7 @@ const TaskDetailContent = () => {
                         <div className="bg-white p-4 rounded max-h-[90vh] w-[90%]">
                             <div className="flex flex-col space-y-4 mb-4">
                                 <ReactQuill
-                                    className="text-black"
+                                    className="text-black max-h-[50vh] overflow-y-auto"
                                     value={comment}
                                     onChange={handleSetComment}
                                     modules={ReactQuillStyles.modules}
