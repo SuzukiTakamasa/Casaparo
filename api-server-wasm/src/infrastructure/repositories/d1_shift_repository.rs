@@ -51,7 +51,7 @@ impl ShiftRepository for D1ShiftRepository {
     }
 
     async fn get_annual_income(&self, year: u32) -> Result<AnnualIncome> {
-        let statement = self.db.prepare(r#"select sum((working_hour_to - working_hour_from) * hourly_wage + transportation_expense) as annual_income
+        let statement = self.db.prepare(r#"select coalesce(sum(cast((working_hour_to - working_hour_from) * hourly_wage as integer) + coalesce(transportation_expense, 0)), 0) as annual_income
                                         from shifts
                                         where year = ?1"#);
         let query = statement.bind(&[year.into()])?;

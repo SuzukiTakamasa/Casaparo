@@ -47,6 +47,10 @@ export interface FixedAmount {
     total_amount: number
 }
 
+export interface AnnualIncome {
+    annual_income: number
+}
+
 export interface CompletedHouseholdData {
     year: number
     month: number
@@ -277,6 +281,7 @@ export type APIResponse = HouseholdResponse |
                         TaskCommentResponse |
                               ShiftResponse |
                                 FixedAmount |
+                               AnnualIncome |
                                 IsCompleted |
                                      IsUsed |
                 WebPushSubscriptionResponse |

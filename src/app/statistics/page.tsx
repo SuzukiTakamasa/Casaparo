@@ -14,7 +14,8 @@ import { MonthProvider, MonthContext } from '@components/MonthPaginator'
 import MonthPaginator from '@components/MonthPaginator'
 
 import { APIClient } from '@utils/api_client'
-import { HouseholdMonthlySummaryResponse } from "@utils/interfaces"
+import { HouseholdMonthlySummaryResponse, AnnualIncome } from "@utils/interfaces"
+import { formatNumberWithCommas } from '@utils/utility_function'
 
 
 const client = new APIClient()
@@ -24,6 +25,7 @@ const Statistics = () => {
 
     const [annualHouseholdSummary, setAnnualHouseholdSummary] = useState<HouseholdMonthlySummaryResponse>([])
     const [monthlyHouseholdSummary, setMonthlyHouseholdSummary] = useState<HouseholdMonthlySummaryResponse>([])
+    const [annualIncome, setAnnualIncome] = useState<AnnualIncome>({ annual_income: 0 })
 
     const { year } = useContext(YearContext)
     const { month } = useContext(MonthContext)
@@ -48,11 +50,16 @@ const Statistics = () => {
             setIsLoading(false)
         }
     }, [statisticsYear, statisticsMonth])
+    const fetchAnnualIncome = useCallback(async () => {
+        const res = await client.get<AnnualIncome>(`/v2/shift/annual_income/${statisticsYear}`)
+        setAnnualIncome(res.data || { annual_income: 0 })
+    }, [statisticsYear])
 
     useEffect(() => {
         fetchAnnualHousehold()
         fetchMonthlyHousehold()
-    }, [fetchAnnualHousehold, fetchMonthlyHousehold])
+        fetchAnnualIncome()
+    }, [fetchAnnualHousehold, fetchMonthlyHousehold, fetchAnnualIncome])
 
     return (
         <>
@@ -80,6 +87,12 @@ const Statistics = () => {
                  (mode === "year" ? <LineChartComponent expenses={annualHouseholdSummary}/> :
                                     <PieChartComponent expenses={monthlyHouseholdSummary} month={statisticsMonth}/>)
                 }
+            </div>
+            <div className="w-full max-w-sm mx-auto mt-4">
+                <div className="px-1 py-2 flex justify-between text-xl text-white font-bold">
+                    <span>{statisticsYear}年の給料：</span>
+                    <span>¥{formatNumberWithCommas(annualIncome.annual_income)}</span>
+                </div>
             </div>
         </>
     )
